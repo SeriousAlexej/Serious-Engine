@@ -1,8 +1,7 @@
 %{
 // rcg10042001 Changed to specify Ecc directory...
-#include "Ecc/StdH.h"
-#include "Ecc/Main.h"
-#include "Ecc/Parser.h"
+#include "Main.h"
+#include "Parser.hpp"
 
 #define YY_NEVER_INTERACTIVE 1
 
@@ -20,10 +19,10 @@ int iLastLine = -1;
   }                                  \
   return symbolname;
 
-char *_strCppBlock;
+std::string _strCppBlock;
 
 %}
-
+%option nounistd
 %x COMMENT
 %x CPPBLOCK
 
@@ -130,7 +129,7 @@ EXP_FLT (({DIGIT}+("."({DIGIT}*)?)?)("E"|"e")("+"|"-")?{DIGIT}+)
 "%{" {
   char strLine[512];
   sprintf(strLine, "#line %d \"%s\"\n", _iLinesCt, _strInputFileName );
-  _strCppBlock = strdup(strLine);
+  _strCppBlock = strLine;
   BEGIN(CPPBLOCK);
 }
 <CPPBLOCK>"%}" {

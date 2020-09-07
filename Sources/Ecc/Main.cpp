@@ -13,7 +13,6 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#include "StdH.h"
 #include "Main.h"
 
 FILE *_fInput;
@@ -38,35 +37,17 @@ extern "C" int yywrap(void)
 }
 int ctErrors = 0;
 
-char *stradd(char *str1, char *str2)
-{
-  char *strResult;
-  strResult = (char*)malloc(strlen(str1)+strlen(str2)+1);
-  strcpy(strResult, str1);
-  strcat(strResult, str2);
-  return strResult;
-}
-char *stradd(char *str1, char *str2, char *str3)
-{
-  char *strResult;
-  strResult = (char*)malloc(strlen(str1)+strlen(str2)+strlen(str3)+1);
-  strcpy(strResult, str1);
-  strcat(strResult, str2);
-  strcat(strResult, str3);
-  return strResult;
-}
-
-char *LineDirective(int i)
+std::string LineDirective(int i)
 {
   char str[256];
   sprintf(str, "\n#line %d %s\n", i, _strInputFileName);
-  return strdup(str);
+  return {str};
 }
 
 SType SType::operator+(const SType &other)
 {
   SType sum;
-  sum.strString = stradd(strString, other.strString);
+  sum.strString = strString + other.strString;
   sum.iLine = -1;
   sum.bCrossesStates = bCrossesStates||other.bCrossesStates;
   return sum;
@@ -75,16 +56,16 @@ SType SType::operator+(const SType &other)
 /*
  * Function used for reporting errors.
  */
-void yyerror(char *s)
+void yyerror(const std::string& s)
 {
-  fprintf( stderr, "%s(%d): Error: %s\n", _strInputFileName, _iLinesCt, s);
+  fprintf( stderr, "%s(%d): Error: %s\n", _strInputFileName, _iLinesCt, s.c_str());
   ctErrors++;
 }
 
 /*
  * Change the extension of the filename.
  */
-char *ChangeFileNameExtension(char *strFileName, char *strNewExtension)
+char *ChangeFileNameExtension(const char *strFileName, const char *strNewExtension)
 {
   char *strChanged = (char*)malloc(strlen(strFileName)+strlen(strNewExtension)+2);
   strcpy(strChanged, strFileName);
@@ -99,7 +80,7 @@ char *ChangeFileNameExtension(char *strFileName, char *strNewExtension)
 /*
  * Open a file and report an error if failed.
  */
-FILE *FOpen(const char *strFileName, char *strMode)
+FILE *FOpen(const char *strFileName, const char *strMode)
 {
   // open the input file
   FILE *f = fopen(strFileName, strMode);
@@ -178,7 +159,6 @@ void ReplaceFileRL(const char *strOld, const char *strNew)
     // process each charachter
     for(int ich=0;ich<ctch;ich++)
     {
-      char *pchOld = &strOldBuff[iOldch];
       char *pchNew = &strNewBuff[ich];
 
       if((*pchNew == '{') || (*pchNew == '}') || *pchNew == ';')

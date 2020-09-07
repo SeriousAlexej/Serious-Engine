@@ -1,0 +1,7 @@
+if(WIN32)
+    set(BISON_COMMAND "${CMAKE_SOURCE_DIR}/../Tools.Win32/Bison.exe")
+    set(FLEX_COMMAND  "${CMAKE_SOURCE_DIR}/../Tools.Win32/Flex.exe")
+else()
+    set(BISON_COMMAND "bison")
+    set(FLEX_COMMAND  "flex")
+endif()

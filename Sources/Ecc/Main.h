@@ -15,7 +15,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 /* rcg10042001 */
-#ifdef PLATFORM_WIN32
+#pragma once
+#ifdef WIN32
 #define alloca _alloca
 #endif
 
@@ -24,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 extern int yylex(void);
-extern void yyerror(char *s);
+extern void yyerror(const std::string& s);
 extern int yyparse(void);
 
 extern FILE *_fInput;
@@ -40,33 +41,38 @@ extern char *_strFileNameBase;
 extern char *_strFileNameBaseIdentifier;
 
 struct SType {
-  char *strString;
+  std::string strString;
   int bCrossesStates;
   int iLine;
 
   SType(void) {
-    strString = strdup("");
+    strString = "";
     bCrossesStates = 0;
     iLine = -1;
   };
   SType(const char *str) {
-    strString = strdup(str);
+    strString = str;
+    bCrossesStates = 0;
+    iLine = -1;
+  };
+  SType(const std::string& str) {
+    strString = str;
     bCrossesStates = 0;
     iLine = -1;
   };
   SType(const SType &other) {
-    strString = strdup(other.strString);
+    strString = other.strString;
     bCrossesStates = other.bCrossesStates;
     iLine = other.iLine;
   };
   const SType &operator=(const SType &other) {
-    strString = strdup(other.strString);
+    strString = other.strString;
     bCrossesStates = other.bCrossesStates;
     iLine = other.iLine;
     return *this;
   };
   const SType &operator=(char *str) {
-    strString = strdup(str);
+    strString = str;
     bCrossesStates = 0;
     iLine = -1;
     return *this;

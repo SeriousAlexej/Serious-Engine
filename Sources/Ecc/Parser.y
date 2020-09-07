@@ -1,31 +1,31 @@
 %{
 // rcg10042001 Changed to specify Ecc directory...
-#include "Ecc/StdH.h"
-#include "Ecc/Main.h"
+#include "Main.h"
+#define YYINITDEPTH 3000
 
-static char *_strCurrentClass;
+static std::string _strCurrentClass;
 static int _iCurrentClassID;
-static char *_strCurrentBase;
-static char *_strCurrentDescription;
-static char *_strCurrentThumbnail;
-static char *_strCurrentEnum;
+static std::string _strCurrentBase;
+static std::string _strCurrentDescription;
+static std::string _strCurrentThumbnail;
+static std::string _strCurrentEnum;
 static int _bClassIsExported = 0;
 
-static char *_strCurrentPropertyID;         
-static char *_strCurrentPropertyIdentifier; 
-static char *_strCurrentPropertyPropertyType;
-static char *_strCurrentPropertyEnumType;   
-static char *_strCurrentPropertyDataType;
-static char *_strCurrentPropertyName;       
-static char *_strCurrentPropertyShortcut;
-static char *_strCurrentPropertyColor;
-static char *_strCurrentPropertyFlags;
-static char *_strCurrentPropertyDefaultCode;
+static std::string _strCurrentPropertyID;
+static std::string _strCurrentPropertyIdentifier;
+static std::string _strCurrentPropertyPropertyType;
+static std::string _strCurrentPropertyEnumType;
+static std::string _strCurrentPropertyDataType;
+static std::string _strCurrentPropertyName;
+static std::string _strCurrentPropertyShortcut;
+static std::string _strCurrentPropertyColor;
+static std::string _strCurrentPropertyFlags;
+static std::string _strCurrentPropertyDefaultCode;
 
-static char *_strCurrentComponentIdentifier;
-static char *_strCurrentComponentType;
-static char *_strCurrentComponentID;     
-static char *_strCurrentComponentFileName;
+static std::string _strCurrentComponentIdentifier;
+static std::string _strCurrentComponentType;
+static std::string _strCurrentComponentID;
+static std::string _strCurrentComponentFileName;
 
 static int _ctInProcedureHandler = 0;
 static char _strLastProcedureName[256];
@@ -45,7 +45,7 @@ static int _bInProcedure;   // set if currently compiling a procedure
 static int _bInHandler;
 static int _bHasOtherwise;  // set if current 'wait' block has an 'otherwise' statement
 
-static char *_strCurrentEvent;
+static std::string _strCurrentEvent;
 static int _bFeature_AbstractBaseClass;
 static int _bFeature_ImplementsOnInitClass;
 static int _bFeature_ImplementsOnEndClass;
@@ -74,42 +74,41 @@ SType Braces(int iBraces) {
   strBraces[iBraces] = 0;
   return SType(strBraces);
 }
-char *RemoveLineDirective(char *str) 
+std::string RemoveLineDirective(const std::string& str)
 {
   if (str[0]=='\n' && str[1]=='#') {
-    return strchr(str+2, '\n')+1;
+    return str.substr(str.find_first_of('\n', 2)+1);
   } else {
     return str;
   }
 }
-char *GetLineDirective(SType &st) 
+std::string GetLineDirective(SType &st)
 {
-  char *str = st.strString;
+  auto& str = st.strString;
   if (str[0]=='\n' && str[1]=='#' && str[2]=='l') {
-    char *strResult = strdup(str);
-    strchr(strResult+3,'\n')[1] = 0;
-    return strResult;
+    return str.substr(0, str.find_first_of('\n',3)+1);
   } else {
     return "";
   }
 }
-void AddHandlerFunction(char *strProcedureName, int iStateID)
+void AddHandlerFunction(const char *strProcedureName, int iStateID)
 {
   fprintf(_fDeclaration, "  BOOL %s(const CEntityEvent &__eeInput);\n", strProcedureName);
   fprintf(_fTables, " {0x%08x, -1, CEntity::pEventHandler(&%s::%s), "
     "DEBUGSTRING(\"%s::%s\")},\n",
-    iStateID, _strCurrentClass, strProcedureName, _strCurrentClass, strProcedureName);
+    iStateID, _strCurrentClass.c_str(), strProcedureName, _strCurrentClass.c_str(), strProcedureName);
 }
 
 
-void AddHandlerFunction(char *strProcedureName, char *strStateID, char *strBaseStateID)
+void AddHandlerFunction(const char *strProcedureName, const char *strStateID, const char *strBaseStateID)
 {
+  auto tmp = RemoveLineDirective(strProcedureName);
   fprintf(_fDeclaration, "  BOOL %s(const CEntityEvent &__eeInput);\n", strProcedureName);
   fprintf(_fTables, " {%s, %s, CEntity::pEventHandler(&%s::%s),"
     "DEBUGSTRING(\"%s::%s\")},\n",
-    strStateID, strBaseStateID, _strCurrentClass, strProcedureName,
-    _strCurrentClass, RemoveLineDirective(strProcedureName));
-  strcpy(_strLastProcedureName, RemoveLineDirective(strProcedureName));
+    strStateID, strBaseStateID, _strCurrentClass.c_str(), strProcedureName,
+    _strCurrentClass.c_str(), tmp.c_str());
+  strcpy(_strLastProcedureName, tmp.c_str());
   _ctInProcedureHandler = 0;
 }
 
@@ -128,7 +127,7 @@ void DeclareFeatureProperties(void)
     fprintf(_fTables, " CEntityProperty(CEntityProperty::EPT_ENTITYPTR, NULL, (0x%08x<<8)+%s, offsetof(%s, %s), %s, %s, %s, %s),\n",
       _iCurrentClassID,
       "255",
-      _strCurrentClass,
+      _strCurrentClass.c_str(),
       "m_penPrediction",
       "\"\"",
       "0",
@@ -245,7 +244,7 @@ void DeclareFeatureProperties(void)
 program 
   : /* empty file */ {}
   | c_int {
-    int iID = atoi($1.strString);
+    int iID = std::stoi($1.strString);
     if(iID>32767) {
       yyerror("Maximum allowed id for entity source file is 32767");
     }
@@ -275,7 +274,7 @@ program
  */
 opt_global_cppblock
   : /* null */
-  | cppblock { fprintf(_fImplementation, "%s\n", $1.strString); }
+  | cppblock { fprintf(_fImplementation, "%s\n", $1.strString.c_str()); }
   ;
 
 uses_list
@@ -284,9 +283,9 @@ uses_list
   ;
 uses_statement
   : k_uses c_string ';' {
-    char *strUsedFileName = strdup($2.strString);
-    strUsedFileName[strlen(strUsedFileName)-1] = 0;
-    fprintf(_fDeclaration, "#include <%s.h>\n", strUsedFileName+1);
+    auto strUsedFileName = $2.strString;
+    strUsedFileName = strUsedFileName.substr(1, strUsedFileName.length()-2);
+    fprintf(_fDeclaration, "#include <%s.h>\n", strUsedFileName.c_str());
   }
   ;
 
@@ -302,13 +301,13 @@ enum_and_event_declarations_list
 enum_declaration
   : k_enum identifier { 
     _strCurrentEnum = $2.strString;
-    fprintf(_fTables, "EP_ENUMBEG(%s)\n", _strCurrentEnum );
-    fprintf(_fDeclaration, "extern DECL_DLL CEntityPropertyEnumType %s_enum;\n", _strCurrentEnum );
-    fprintf(_fDeclaration, "enum %s {\n", _strCurrentEnum );
+    fprintf(_fTables, "EP_ENUMBEG(%s)\n", _strCurrentEnum.c_str() );
+    fprintf(_fDeclaration, "extern DECL_DLL CEntityPropertyEnumType %s_enum;\n", _strCurrentEnum.c_str() );
+    fprintf(_fDeclaration, "enum %s {\n", _strCurrentEnum.c_str() );
   } '{' enum_values_list opt_comma '}' ';' {
-    fprintf(_fTables, "EP_ENUMEND(%s);\n\n", _strCurrentEnum);
+    fprintf(_fTables, "EP_ENUMEND(%s);\n\n", _strCurrentEnum.c_str());
     fprintf(_fDeclaration, "};\n");
-    fprintf(_fDeclaration, "DECL_DLL inline void ClearToDefault(%s &e) { e = (%s)0; } ;\n", _strCurrentEnum, _strCurrentEnum);
+    fprintf(_fDeclaration, "DECL_DLL inline void ClearToDefault(%s &e) { e = (%s)0; } ;\n", _strCurrentEnum.c_str(), _strCurrentEnum.c_str());
   }
   ;
 opt_comma : /*null*/ | ',';
@@ -319,8 +318,8 @@ enum_values_list
 
 enum_value
   : c_int identifier c_string {
-    fprintf(_fTables, "  EP_ENUMVALUE(%s, %s),\n", $2.strString, $3.strString);
-    fprintf(_fDeclaration, "  %s = %s,\n", $2.strString, $1.strString);
+    fprintf(_fTables, "  EP_ENUMVALUE(%s, %s),\n", $2.strString.c_str(), $3.strString.c_str());
+    fprintf(_fDeclaration, "  %s = %s,\n", $2.strString.c_str(), $1.strString.c_str());
   }
   ;
 
@@ -331,22 +330,22 @@ event_declaration
   : k_event identifier { 
     _strCurrentEvent = $2.strString;
     int iID = CreateID();
-    fprintf(_fDeclaration, "#define EVENTCODE_%s 0x%08x\n", _strCurrentEvent, iID);
+    fprintf(_fDeclaration, "#define EVENTCODE_%s 0x%08x\n", _strCurrentEvent.c_str(), iID);
     fprintf(_fDeclaration, "class DECL_DLL %s : public CEntityEvent {\npublic:\n",
-      _strCurrentEvent);
-    fprintf(_fDeclaration, "%s();\n", _strCurrentEvent );
+      _strCurrentEvent.c_str());
+    fprintf(_fDeclaration, "%s();\n", _strCurrentEvent.c_str() );
     fprintf(_fDeclaration, "CEntityEvent *MakeCopy(void);\n");
     fprintf(_fImplementation, 
       "CEntityEvent *%s::MakeCopy(void) { "
       "CEntityEvent *peeCopy = new %s(*this); "
       "return peeCopy;}\n",
-      _strCurrentEvent, _strCurrentEvent);
+      _strCurrentEvent.c_str(), _strCurrentEvent.c_str());
     fprintf(_fImplementation, "%s::%s() : CEntityEvent(EVENTCODE_%s) {;\n",
-      _strCurrentEvent, _strCurrentEvent, _strCurrentEvent);
+      _strCurrentEvent.c_str(), _strCurrentEvent.c_str(), _strCurrentEvent.c_str());
   } '{' event_members_list opt_comma '}' ';' {
     fprintf(_fImplementation, "};\n");
     fprintf(_fDeclaration, "};\n");
-    fprintf(_fDeclaration, "DECL_DLL inline void ClearToDefault(%s &e) { e = %s(); } ;\n", _strCurrentEvent, _strCurrentEvent);
+    fprintf(_fDeclaration, "DECL_DLL inline void ClearToDefault(%s &e) { e = %s(); } ;\n", _strCurrentEvent.c_str(), _strCurrentEvent.c_str());
   }
   ;
 
@@ -362,8 +361,8 @@ non_empty_event_members_list
 
 event_member
   : any_type identifier {
-    fprintf(_fDeclaration, "%s %s;\n", $1.strString, $2.strString);
-    fprintf(_fImplementation, " ClearToDefault(%s);\n", $2.strString);
+    fprintf(_fDeclaration, "%s %s;\n", $1.strString.c_str(), $2.strString.c_str());
+    fprintf(_fImplementation, " ClearToDefault(%s);\n", $2.strString.c_str());
   }
   ;
 
@@ -385,25 +384,25 @@ class_declaration
     _strCurrentDescription = $7.strString;
     _strCurrentThumbnail = $10.strString;
 
-    fprintf(_fTables, "#define ENTITYCLASS %s\n\n", _strCurrentClass);
+    fprintf(_fTables, "#define ENTITYCLASS %s\n\n", _strCurrentClass.c_str());
     fprintf(_fDeclaration, "extern \"C\" DECL_DLL CDLLEntityClass %s_DLLClass;\n",
-      _strCurrentClass);
+      _strCurrentClass.c_str());
     fprintf(_fDeclaration, "%s %s : public %s {\npublic:\n",
-      $1.strString, _strCurrentClass, _strCurrentBase);
+      $1.strString.c_str(), _strCurrentClass.c_str(), _strCurrentBase.c_str());
 
   } opt_features {
     fprintf(_fDeclaration, "  %s virtual void SetDefaultProperties(void);\n", _bClassIsExported?"":"DECL_DLL");
-    fprintf(_fImplementation, "void %s::SetDefaultProperties(void) {\n", _strCurrentClass);
-    fprintf(_fTables, "CEntityProperty %s_properties[] = {\n", _strCurrentClass);
+    fprintf(_fImplementation, "void %s::SetDefaultProperties(void) {\n", _strCurrentClass.c_str());
+    fprintf(_fTables, "CEntityProperty %s_properties[] = {\n", _strCurrentClass.c_str());
 
   } k_properties ':' property_declaration_list {
-    fprintf(_fImplementation, "  %s::SetDefaultProperties();\n}\n", _strCurrentBase);
+    fprintf(_fImplementation, "  %s::SetDefaultProperties();\n}\n", _strCurrentBase.c_str());
 
-    fprintf(_fTables, "CEntityComponent %s_components[] = {\n", _strCurrentClass);
+    fprintf(_fTables, "CEntityComponent %s_components[] = {\n", _strCurrentClass.c_str());
   } opt_internal_properties {
   } k_components ':' component_declaration_list {
     _bTrackLineInformation = 1;
-    fprintf(_fTables, "CEventHandlerEntry %s_handlers[] = {\n", _strCurrentClass);
+    fprintf(_fTables, "CEventHandlerEntry %s_handlers[] = {\n", _strCurrentClass.c_str());
 
     _bInProcedure = 0;
     _bInHandler = 0;
@@ -413,63 +412,63 @@ class_declaration
   } k_procedures ':' procedure_list {
   } '}' ';' {
     fprintf(_fTables, "};\n#define %s_handlersct ARRAYCOUNT(%s_handlers)\n", 
-      _strCurrentClass, _strCurrentClass);
+      _strCurrentClass.c_str(), _strCurrentClass.c_str());
     fprintf(_fTables, "\n");
 
     if (_bFeature_AbstractBaseClass) {
       fprintf(_fTables, "CEntity *%s_New(void) { return NULL; };\n",
-        _strCurrentClass);
+        _strCurrentClass.c_str());
     } else {
       fprintf(_fTables, "CEntity *%s_New(void) { return new %s; };\n",
-        _strCurrentClass, _strCurrentClass);
+        _strCurrentClass.c_str(), _strCurrentClass.c_str());
     }
 
     if (!_bFeature_ImplementsOnInitClass) {
-      fprintf(_fTables, "void %s_OnInitClass(void) {};\n", _strCurrentClass);
+      fprintf(_fTables, "void %s_OnInitClass(void) {};\n", _strCurrentClass.c_str());
     } else {
-      fprintf(_fTables, "void %s_OnInitClass(void);\n", _strCurrentClass);
+      fprintf(_fTables, "void %s_OnInitClass(void);\n", _strCurrentClass.c_str());
     }
 
     if (!_bFeature_ImplementsOnEndClass) {
-      fprintf(_fTables, "void %s_OnEndClass(void) {};\n", _strCurrentClass);
+      fprintf(_fTables, "void %s_OnEndClass(void) {};\n", _strCurrentClass.c_str());
     } else {
-      fprintf(_fTables, "void %s_OnEndClass(void);\n", _strCurrentClass);
+      fprintf(_fTables, "void %s_OnEndClass(void);\n", _strCurrentClass.c_str());
     }
 
     if (!_bFeature_ImplementsOnPrecache) {
-      fprintf(_fTables, "void %s_OnPrecache(CDLLEntityClass *pdec, INDEX iUser) {};\n", _strCurrentClass);
+      fprintf(_fTables, "void %s_OnPrecache(CDLLEntityClass *pdec, INDEX iUser) {};\n", _strCurrentClass.c_str());
     } else {
-      fprintf(_fTables, "void %s_OnPrecache(CDLLEntityClass *pdec, INDEX iUser);\n", _strCurrentClass);
+      fprintf(_fTables, "void %s_OnPrecache(CDLLEntityClass *pdec, INDEX iUser);\n", _strCurrentClass.c_str());
     }
 
     if (!_bFeature_ImplementsOnWorldEnd) {
-      fprintf(_fTables, "void %s_OnWorldEnd(CWorld *pwo) {};\n", _strCurrentClass);
+      fprintf(_fTables, "void %s_OnWorldEnd(CWorld *pwo) {};\n", _strCurrentClass.c_str());
     } else {
-      fprintf(_fTables, "void %s_OnWorldEnd(CWorld *pwo);\n", _strCurrentClass);
+      fprintf(_fTables, "void %s_OnWorldEnd(CWorld *pwo);\n", _strCurrentClass.c_str());
     }
 
     if (!_bFeature_ImplementsOnWorldInit) {
-      fprintf(_fTables, "void %s_OnWorldInit(CWorld *pwo) {};\n", _strCurrentClass);
+      fprintf(_fTables, "void %s_OnWorldInit(CWorld *pwo) {};\n", _strCurrentClass.c_str());
     } else {
-      fprintf(_fTables, "void %s_OnWorldInit(CWorld *pwo);\n", _strCurrentClass);
+      fprintf(_fTables, "void %s_OnWorldInit(CWorld *pwo);\n", _strCurrentClass.c_str());
     }
 
     if (!_bFeature_ImplementsOnWorldTick) {
-      fprintf(_fTables, "void %s_OnWorldTick(CWorld *pwo) {};\n", _strCurrentClass);
+      fprintf(_fTables, "void %s_OnWorldTick(CWorld *pwo) {};\n", _strCurrentClass.c_str());
     } else {
-      fprintf(_fTables, "void %s_OnWorldTick(CWorld *pwo);\n", _strCurrentClass);
+      fprintf(_fTables, "void %s_OnWorldTick(CWorld *pwo);\n", _strCurrentClass.c_str());
     }
 
     if (!_bFeature_ImplementsOnWorldRender) {
-      fprintf(_fTables, "void %s_OnWorldRender(CWorld *pwo) {};\n", _strCurrentClass);
+      fprintf(_fTables, "void %s_OnWorldRender(CWorld *pwo) {};\n", _strCurrentClass.c_str());
     } else {
-      fprintf(_fTables, "void %s_OnWorldRender(CWorld *pwo);\n", _strCurrentClass);
+      fprintf(_fTables, "void %s_OnWorldRender(CWorld *pwo);\n", _strCurrentClass.c_str());
     }
 
     fprintf(_fTables, "ENTITY_CLASSDEFINITION(%s, %s, %s, %s, 0x%08x);\n",
-      _strCurrentClass, _strCurrentBase, 
-      _strCurrentDescription, _strCurrentThumbnail, _iCurrentClassID);
-    fprintf(_fTables, "DECLARE_CTFILENAME(_fnm%s_tbn, %s);\n", _strCurrentClass, _strCurrentThumbnail);
+      _strCurrentClass.c_str(), _strCurrentBase.c_str(),
+      _strCurrentDescription.c_str(), _strCurrentThumbnail.c_str(), _iCurrentClassID);
+    fprintf(_fTables, "DECLARE_CTFILENAME(_fnm%s_tbn, %s);\n", _strCurrentClass.c_str(), _strCurrentThumbnail.c_str());
 
     fprintf(_fDeclaration, "};\n");
   }
@@ -500,40 +499,40 @@ features_list
   ;
 feature
   : c_string {
-    if (strcmp($1.strString, "\"AbstractBaseClass\"")==0) {
+    if ($1.strString== "\"AbstractBaseClass\"") {
       _bFeature_AbstractBaseClass = 1;
-    } else if (strcmp($1.strString, "\"IsTargetable\"")==0) {
+    } else if ($1.strString== "\"IsTargetable\"") {
       fprintf(_fDeclaration, "virtual BOOL IsTargetable(void) const { return TRUE; };\n");
-    } else if (strcmp($1.strString, "\"IsImportant\"")==0) {
+    } else if ($1.strString== "\"IsImportant\"") {
       fprintf(_fDeclaration, "virtual BOOL IsImportant(void) const { return TRUE; };\n");
-    } else if (strcmp($1.strString, "\"HasName\"")==0) {
+    } else if ($1.strString== "\"HasName\"") {
       fprintf(_fDeclaration, 
         "virtual const CTString &GetName(void) const { return m_strName; };\n");
-    } else if (strcmp($1.strString, "\"CanBePredictable\"")==0) {
+    } else if ($1.strString== "\"CanBePredictable\"") {
       fprintf(_fDeclaration, 
         "virtual CEntity *GetPredictionPair(void) { return m_penPrediction; };\n");
       fprintf(_fDeclaration, 
         "virtual void SetPredictionPair(CEntity *penPair) { m_penPrediction = penPair; };\n");
       _bFeature_CanBePredictable = 1;
-    } else if (strcmp($1.strString, "\"HasDescription\"")==0) {
+    } else if ($1.strString== "\"HasDescription\"") {
       fprintf(_fDeclaration, 
         "virtual const CTString &GetDescription(void) const { return m_strDescription; };\n");
-    } else if (strcmp($1.strString, "\"HasTarget\"")==0) {
+    } else if ($1.strString== "\"HasTarget\"") {
       fprintf(_fDeclaration, 
         "virtual CEntity *GetTarget(void) const { return m_penTarget; };\n");
-    } else if (strcmp($1.strString, "\"ImplementsOnInitClass\"")==0) {
+    } else if ($1.strString== "\"ImplementsOnInitClass\"") {
       _bFeature_ImplementsOnInitClass = 1;
-    } else if (strcmp($1.strString, "\"ImplementsOnEndClass\"")==0) {
+    } else if ($1.strString== "\"ImplementsOnEndClass\"") {
       _bFeature_ImplementsOnEndClass = 1;
-    } else if (strcmp($1.strString, "\"ImplementsOnPrecache\"")==0) {
+    } else if ($1.strString== "\"ImplementsOnPrecache\"") {
       _bFeature_ImplementsOnPrecache = 1;
-    } else if (strcmp($1.strString, "\"ImplementsOnWorldInit\"")==0) {
+    } else if ($1.strString== "\"ImplementsOnWorldInit\"") {
       _bFeature_ImplementsOnWorldInit = 1;
-    } else if (strcmp($1.strString, "\"ImplementsOnWorldEnd\"")==0) {
+    } else if ($1.strString== "\"ImplementsOnWorldEnd\"") {
       _bFeature_ImplementsOnWorldEnd = 1;
-    } else if (strcmp($1.strString, "\"ImplementsOnWorldTick\"")==0) {
+    } else if ($1.strString== "\"ImplementsOnWorldTick\"") {
       _bFeature_ImplementsOnWorldTick = 1;
-    } else if (strcmp($1.strString, "\"ImplementsOnWorldRender\"")==0) {
+    } else if ($1.strString== "\"ImplementsOnWorldRender\"") {
       _bFeature_ImplementsOnWorldRender = 1;
     } else {
       yyerror((SType("Unknown feature: ")+$1).strString);
@@ -551,7 +550,7 @@ internal_property_list
   ;
 internal_property
   : any_type identifier ';' { 
-    fprintf(_fDeclaration, "%s %s;\n", $1.strString, $2.strString);
+    fprintf(_fDeclaration, "%s %s;\n", $1.strString.c_str(), $2.strString.c_str());
   }
   ;
 
@@ -563,7 +562,7 @@ property_declaration_list
   : empty_property_declaration_list {
     DeclareFeatureProperties(); // this won't work, but at least it will generate an error!!!!
     fprintf(_fTables, "  CEntityProperty()\n};\n");
-    fprintf(_fTables, "#define %s_propertiesct 0\n", _strCurrentClass);
+    fprintf(_fTables, "#define %s_propertiesct 0\n", _strCurrentClass.c_str());
     fprintf(_fTables, "\n");
     fprintf(_fTables, "\n");
   }
@@ -571,7 +570,7 @@ property_declaration_list
     DeclareFeatureProperties();
     fprintf(_fTables, "};\n");
     fprintf(_fTables, "#define %s_propertiesct ARRAYCOUNT(%s_properties)\n", 
-      _strCurrentClass, _strCurrentClass);
+      _strCurrentClass.c_str(), _strCurrentClass.c_str());
     fprintf(_fTables, "\n");
   }
   ;
@@ -586,23 +585,23 @@ empty_property_declaration_list
 property_declaration
   : property_id property_type property_identifier property_wed_name_opt property_default_opt property_flags_opt {
     fprintf(_fTables, " CEntityProperty(%s, %s, (0x%08x<<8)+%s, offsetof(%s, %s), %s, %s, %s, %s),\n",
-      _strCurrentPropertyPropertyType,
-      _strCurrentPropertyEnumType,
+      _strCurrentPropertyPropertyType.c_str(),
+      _strCurrentPropertyEnumType.c_str(),
       _iCurrentClassID,
-      _strCurrentPropertyID,
-      _strCurrentClass,
-      _strCurrentPropertyIdentifier,
-      _strCurrentPropertyName,
-      _strCurrentPropertyShortcut,
-      _strCurrentPropertyColor,
-      _strCurrentPropertyFlags);
+      _strCurrentPropertyID.c_str(),
+      _strCurrentClass.c_str(),
+      _strCurrentPropertyIdentifier.c_str(),
+      _strCurrentPropertyName.c_str(),
+      _strCurrentPropertyShortcut.c_str(),
+      _strCurrentPropertyColor.c_str(),
+      _strCurrentPropertyFlags.c_str());
     fprintf(_fDeclaration, "  %s %s;\n",
-      _strCurrentPropertyDataType,
-      _strCurrentPropertyIdentifier
+      _strCurrentPropertyDataType.c_str(),
+      _strCurrentPropertyIdentifier.c_str()
       );
 
-    if (strlen(_strCurrentPropertyDefaultCode)>0) {
-      fprintf(_fImplementation, "  %s\n", _strCurrentPropertyDefaultCode);
+    if (!_strCurrentPropertyDefaultCode.empty()) {
+      fprintf(_fImplementation, "  %s\n", _strCurrentPropertyDefaultCode.c_str());
     }
   }
   ;
@@ -778,19 +777,19 @@ property_flags_opt
 
 property_default_opt
   : /* null */ {
-    if (strcmp(_strCurrentPropertyDataType,"CEntityPointer")==0)  {
+    if (_strCurrentPropertyDataType=="CEntityPointer")  {
       _strCurrentPropertyDefaultCode = (SType(_strCurrentPropertyIdentifier)+" = NULL;").strString;
-    } else if (strcmp(_strCurrentPropertyDataType,"CModelObject")==0)  {
+    } else if (_strCurrentPropertyDataType=="CModelObject")  {
       _strCurrentPropertyDefaultCode = 
         (SType(_strCurrentPropertyIdentifier)+".SetData(NULL);\n"+
         _strCurrentPropertyIdentifier+".mo_toTexture.SetData(NULL);").strString;
-    } else if (strcmp(_strCurrentPropertyDataType,"CModelInstance")==0)  {
+    } else if (_strCurrentPropertyDataType=="CModelInstance")  {
       _strCurrentPropertyDefaultCode = 
         (SType(_strCurrentPropertyIdentifier)+".Clear();\n").strString;
-    } else if (strcmp(_strCurrentPropertyDataType,"CAnimObject")==0)  {
+    } else if (_strCurrentPropertyDataType=="CAnimObject")  {
       _strCurrentPropertyDefaultCode = 
         (SType(_strCurrentPropertyIdentifier)+".SetData(NULL);\n").strString;
-    } else if (strcmp(_strCurrentPropertyDataType,"CSoundObject")==0)  {
+    } else if (_strCurrentPropertyDataType=="CSoundObject")  {
       _strCurrentPropertyDefaultCode = 
         (SType(_strCurrentPropertyIdentifier)+".SetOwner(this);\n"+
          _strCurrentPropertyIdentifier+".Stop_internal();").strString;
@@ -800,7 +799,7 @@ property_default_opt
     }
   }
   | '=' property_default_expression {
-    if (strcmp(_strCurrentPropertyDataType,"CEntityPointer")==0)  {
+    if (_strCurrentPropertyDataType=="CEntityPointer")  {
       yyerror("CEntityPointer type properties always default to NULL");
     } else {
       _strCurrentPropertyDefaultCode = (SType(_strCurrentPropertyIdentifier)+" = "+$2.strString+";").strString;
@@ -822,14 +821,14 @@ property_default_expression
 component_declaration_list
   : empty_component_declaration_list {
     fprintf(_fTables, "  CEntityComponent()\n};\n");
-    fprintf(_fTables, "#define %s_componentsct 0\n", _strCurrentClass);
+    fprintf(_fTables, "#define %s_componentsct 0\n", _strCurrentClass.c_str());
     fprintf(_fTables, "\n");
     fprintf(_fTables, "\n");
   }
   | nonempty_component_declaration_list opt_comma {
     fprintf(_fTables, "};\n");
     fprintf(_fTables, "#define %s_componentsct ARRAYCOUNT(%s_components)\n", 
-      _strCurrentClass, _strCurrentClass);
+      _strCurrentClass.c_str(), _strCurrentClass.c_str());
     fprintf(_fTables, "\n");
   }
   ;
@@ -844,14 +843,14 @@ empty_component_declaration_list
 component_declaration
   : component_id component_type component_identifier component_filename {
   fprintf(_fTables, "#define %s ((0x%08x<<8)+%s)\n",
-      _strCurrentComponentIdentifier,
+      _strCurrentComponentIdentifier.c_str(),
       _iCurrentClassID,
-      _strCurrentComponentID);
+      _strCurrentComponentID.c_str());
     fprintf(_fTables, " CEntityComponent(%s, %s, \"%s%s\" %s),\n",
-      _strCurrentComponentType,
-      _strCurrentComponentIdentifier,
+      _strCurrentComponentType.c_str(),
+      _strCurrentComponentIdentifier.c_str(),
       "EF","NM",
-      _strCurrentComponentFileName);
+      _strCurrentComponentFileName.c_str());
   }
   ;
 
@@ -870,51 +869,51 @@ component_type
  * Functions
  */
 function_list
-  : { $$ = "";}
+  : { $$ = std::string("");}
   | function_list function_implementation {$$ = $1+$2;}
   ;
 
 function_implementation
   : opt_export opt_virtual return_type opt_tilde identifier '(' parameters_list ')' opt_const
   '{' statements '}' opt_semicolon {
-    char *strReturnType = $3.strString;
-    char *strFunctionHeader = ($4+$5+$6+$7+$8+$9).strString;
-    char *strFunctionBody = ($10+$11+$12).strString;
-    if (strcmp($5.strString, _strCurrentClass)==0) {
-      if (strcmp(strReturnType+strlen(strReturnType)-4, "void")==0 ) {
+    auto strReturnType = $3.strString;
+    auto strFunctionHeader = ($4+$5+$6+$7+$8+$9).strString;
+    auto strFunctionBody = ($10+$11+$12).strString;
+    if ($5.strString== _strCurrentClass) {
+      if (strReturnType.substr(strReturnType.length()-4) == "void") {
         strReturnType = "";
       } else {
         yyerror("use 'void' as return type for constructors");
       }
     }
     fprintf(_fDeclaration, " %s %s %s %s;\n", 
-      $1.strString, $2.strString, strReturnType, strFunctionHeader);
+      $1.strString.c_str(), $2.strString.c_str(), strReturnType.c_str(), strFunctionHeader.c_str());
     fprintf(_fImplementation, "  %s %s::%s %s\n", 
-      strReturnType, _strCurrentClass, strFunctionHeader, strFunctionBody);
+      strReturnType.c_str(), _strCurrentClass.c_str(), strFunctionHeader.c_str(), strFunctionBody.c_str());
   }
   ;
 opt_tilde
-  : { $$ = "";}
-  | '~' { $$ = " ~ "; }
+  : { $$ = std::string("");}
+  | '~' { $$ = std::string(" ~ "); }
   ;
 
 opt_export
-  : { $$ = "";}
+  : { $$ = std::string("");}
   | k_export { 
     if (_bClassIsExported) {
-      $$ = ""; 
+      $$ = std::string("");
     } else {
-      $$ = " DECL_DLL "; 
+      $$ = std::string(" DECL_DLL ");
     }
   }
   ;
 
 opt_const
-  : { $$ = "";}
+  : { $$ = std::string("");}
   | k_const { $$ = $1; }
   ;
 opt_virtual
-  : { $$ = "";}
+  : { $$ = std::string("");}
   | k_virtual { $$ = $1; }
   ;
 opt_semicolon
@@ -922,7 +921,7 @@ opt_semicolon
   | ';'
   ;
 parameters_list
-  : { $$ = "";}
+  : { $$ = std::string("");}
   | k_void
   | non_void_parameters_list
   ;
@@ -958,12 +957,12 @@ any_type
  * Procedures
  */
 procedure_list
-  : { $$ = "";}
+  : { $$ = std::string("");}
   | procedure_list procedure_implementation {$$ = $1+$2;}
   ;
 
 opt_override
-  : { $$ = "-1"; }
+  : { $$ = std::string("-1"); }
   | ':' identifier ':' ':' identifier {
     $$ = SType("STATE_")+$2+"_"+$5;
   }
@@ -971,14 +970,13 @@ opt_override
 
 procedure_implementation
   : identifier '(' event_specification ')' opt_override {
-    char *strProcedureName = $1.strString;
+    const auto& strProcedureName = $1.strString;
     char strInputEventType[80];
     char strInputEventName[80];
-    sscanf($3.strString, "%s %s", strInputEventType, strInputEventName);
+    sscanf($3.strString.c_str(), "%s %s", strInputEventType, strInputEventName);
 
     char strStateID[256];
-    char *strBaseStateID = "-1";
-    if(strcmp(RemoveLineDirective(strProcedureName), "Main")==0){
+    if(RemoveLineDirective(strProcedureName)== "Main"){
       strcpy(strStateID, "1");
       if(strncmp(strInputEventType, "EVoid", 4)!=0 && _strCurrentThumbnail[2]!=0) {
         yyerror("procedure 'Main' can take input parameters only in classes without thumbnails");
@@ -987,29 +985,29 @@ procedure_implementation
       sprintf(strStateID, "0x%08x", CreateID());
     }
 
+    auto tmp = RemoveLineDirective(strProcedureName);
     sprintf(_strCurrentStateID, "STATE_%s_%s", 
-      _strCurrentClass, RemoveLineDirective(strProcedureName));
+      _strCurrentClass.c_str(), tmp.c_str());
     fprintf(_fDeclaration, "#define  %s %s\n", _strCurrentStateID, strStateID);
-    AddHandlerFunction(strProcedureName, strStateID, $5.strString);
+    AddHandlerFunction(strProcedureName.c_str(), strStateID, $5.strString.c_str());
     fprintf(_fImplementation, 
       "BOOL %s::%s(const CEntityEvent &__eeInput) {\n#undef STATE_CURRENT\n#define STATE_CURRENT %s\n", 
-      _strCurrentClass, strProcedureName, _strCurrentStateID);
+      _strCurrentClass.c_str(), strProcedureName.c_str(), _strCurrentStateID);
     fprintf(_fImplementation, 
       "  ASSERTMSG(__eeInput.ee_slEvent==EVENTCODE_%s, \"%s::%s expects '%s' as input!\");",
-      strInputEventType, _strCurrentClass, RemoveLineDirective(strProcedureName), 
+      strInputEventType, _strCurrentClass.c_str(), tmp.c_str(),
       strInputEventType);
     fprintf(_fImplementation, "  const %s &%s = (const %s &)__eeInput;",
       strInputEventType, strInputEventName, strInputEventType);
 
   } '{' statements '}' opt_semicolon {
-    char *strFunctionBody = $8.strString;
-    fprintf(_fImplementation, "%s ASSERT(FALSE); return TRUE;};", strFunctionBody);
+    fprintf(_fImplementation, "%s ASSERT(FALSE); return TRUE;};", $8.strString.c_str());
   }
   ;
 
 event_specification 
   : {
-    $$="EVoid e";
+    $$=std::string("EVoid e");
   }
   | identifier {
     $$=$1+" e";
@@ -1069,7 +1067,7 @@ case_constant_expression
 /* Simple statements:
  */
 statements
-  : { $$ = "";}
+  : { $$ = std::string("");}
   | statements statement { $$ = $1+$2; } 
   ;
 statement
@@ -1215,7 +1213,7 @@ statement_wait
   } '{' handlers_list '}' {
     if ($5.bCrossesStates) {
       yyerror("'wait' statements must not be nested");
-      $$ = "";
+      $$ = std::string("");
     } else {
       SType stDefault;
       if (!_bHasOtherwise) {
@@ -1387,7 +1385,7 @@ statement_return
     if (!_bInProcedure) {
       $$ = $1+" "+$2+$3;
     } else {
-      if (strlen($2.strString)==0) {
+      if ($2.strString.empty()) {
         $2 = SType("EVoid()");
       }
       $$ = SType(GetLineDirective($1))
@@ -1397,7 +1395,7 @@ statement_return
   }
   ;
 opt_expression
-  : {$$ = "";}
+  : {$$ = std::string("");}
   | expression
   ;
 
@@ -1405,7 +1403,7 @@ handler
   : k_on '(' event_specification ')' ':' '{' statements '}' opt_semicolon {
     char strInputEventType[80];
     char strInputEventName[80];
-    sscanf($3.strString, "%s %s", strInputEventType, strInputEventName);
+    sscanf($3.strString.c_str(), "%s %s", strInputEventType, strInputEventName);
 
     $$ = SType("case")+$2+"EVENTCODE_"+strInputEventType+$4+$5+$6+
       "const "+strInputEventType+"&"+strInputEventName+"= ("+
@@ -1414,14 +1412,14 @@ handler
   | k_otherwise '(' event_specification ')' ':' '{' statements '}' opt_semicolon {
     char strInputEventType[80];
     char strInputEventName[80];
-    sscanf($3.strString, "%s %s", strInputEventType, strInputEventName);
+    sscanf($3.strString.c_str(), "%s %s", strInputEventType, strInputEventName);
 
     $$ = SType("default")+$5+$6+$7+$8+"ASSERT(FALSE);break;";
     _bHasOtherwise = 1;
   }
   ;
 handlers_list 
-  : { $$ = "";}
+  : { $$ = std::string("");}
   | handlers_list handler { $$ = $1+$2; } 
   ;
 
