@@ -250,8 +250,7 @@ program
     }
     _iCurrentClassID = iID;
     _iNextFreeID = iID<<16;
-    fprintf(_fDeclaration, "#ifndef _%s_INCLUDED\n", _strFileNameBaseIdentifier);
-    fprintf(_fDeclaration, "#define _%s_INCLUDED 1\n", _strFileNameBaseIdentifier);
+    fprintf(_fDeclaration, "#pragma once\n");
 
   } opt_global_cppblock {
 
@@ -264,7 +263,6 @@ program
   } enum_and_event_declarations_list {
   } opt_global_cppblock {
   } opt_class_declaration {
-    fprintf(_fDeclaration, "#endif // _%s_INCLUDED\n", _strFileNameBaseIdentifier);
   }
   ;
 
