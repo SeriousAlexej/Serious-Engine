@@ -76,7 +76,14 @@ struct SType {
     iLine = -1;
     return *this;
   };
-  SType operator+(const SType &other);
+  SType operator+(const SType& other)
+  {
+    SType sum;
+    sum.strString = strString + other.strString;
+    sum.iLine = -1;
+    sum.bCrossesStates = bCrossesStates || other.bCrossesStates;
+    return sum;
+  }
 };
 
 #define YYSTYPE SType

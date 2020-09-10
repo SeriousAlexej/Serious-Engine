@@ -31,8 +31,6 @@ FILE *_fExports;
 char *_strFileNameBase;
 char *_strFileNameBaseIdentifier;
 
-extern FILE *Scanner_in;
-
 extern "C" int Scanner_wrap(void)
 {
   return 1;
@@ -45,15 +43,6 @@ std::string LineDirective(int i)
   sprintf(str, "\n#line %d %s\n", i, _strInputFileName);
   return {str};
 }
-
-SType SType::operator+(const SType &other)
-{
-  SType sum;
-  sum.strString = strString + other.strString;
-  sum.iLine = -1;
-  sum.bCrossesStates = bCrossesStates||other.bCrossesStates;
-  return sum;
-};
 
 int Parser_lex(void)
 {
