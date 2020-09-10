@@ -1,7 +1,7 @@
 %{
 // rcg10042001 Changed to specify Ecc directory...
 #include "Main.h"
-#include "Parser.hpp"
+#include "Parser.h"
 
 #define YY_NEVER_INTERACTIVE 1
 
@@ -10,11 +10,11 @@ int iLastLine = -1;
 
 #define RETURN(symbolname)            \
   if (iLastLine==_iLinesCt || !_bTrackLineInformation){\
-    yylval = yytext;                  \
+    Parser_lval = yytext;                  \
   } else {                            \
     char strLine[512];                \
     sprintf(strLine, "\n#line %d \"%s\"\n", _iLinesCt, _strInputFileName);\
-    yylval = SType(strLine)+yytext;  \
+    Parser_lval = SType(strLine)+yytext;  \
     iLastLine=_iLinesCt;             \
   }                                  \
   return symbolname;
@@ -22,7 +22,7 @@ int iLastLine = -1;
 std::string _strCppBlock;
 
 %}
-%option nounistd
+
 %x COMMENT
 %x CPPBLOCK
 
@@ -134,7 +134,7 @@ EXP_FLT (({DIGIT}+("."({DIGIT}*)?)?)("E"|"e")("+"|"-")?{DIGIT}+)
 }
 <CPPBLOCK>"%}" {
   BEGIN(INITIAL);
-  yylval = SType(_strCppBlock);
+  Parser_lval = SType(_strCppBlock);
   return cppblock;
 }
 <CPPBLOCK>\n	{
@@ -164,7 +164,7 @@ EXP_FLT (({DIGIT}+("."({DIGIT}*)?)?)("E"|"e")("+"|"-")?{DIGIT}+)
   char strError[80];
   sprintf(strError, "Unrecognized character '%c' (ASCII 0x%02x)\n", 
 	  yytext[0], yytext[0] );
-  yyerror(strError);
+  Parser_error(strError);
 }
 
 %%

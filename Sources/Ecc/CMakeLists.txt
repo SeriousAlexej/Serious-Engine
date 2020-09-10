@@ -8,44 +8,13 @@ set(SRC_LIST
     StdH.h
 )
 
-set(PARSER_SRC
-    ${CMAKE_CURRENT_BINARY_DIR}/Parser.cpp
-    ${CMAKE_CURRENT_BINARY_DIR}/Parser.hxx
-)
+add_executable(${TARGET_NAME} ${SRC_LIST})
 
-set(SCANNER_SRC
-    ${CMAKE_CURRENT_BINARY_DIR}/Scanner.cpp
-)
-
-add_executable(${TARGET_NAME}
-    ${SRC_LIST}
-    ${PARSER_SRC}
-    ${SCANNER_SRC}
-)
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SRC_LIST})
 
 target_precompile_headers(${TARGET_NAME}
     PRIVATE StdH.h
 )
 
-add_custom_command(
-    OUTPUT ${PARSER_SRC}
-    COMMAND
-        "${BISON_COMMAND}"
-    ARGS
-        "-o"
-        "${CMAKE_CURRENT_BINARY_DIR}/Parser.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/Parser.y"
-        "-d"
-    MAIN_DEPENDENCY Parser.y
-)
-
-add_custom_command(
-    OUTPUT ${SCANNER_SRC}
-    COMMAND
-        "${FLEX_COMMAND}"
-    ARGS
-        "-o"
-        "${CMAKE_CURRENT_BINARY_DIR}/Scanner.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/Scanner.l"
-    MAIN_DEPENDENCY Scanner.l
-)
+bison_add(${TARGET_NAME} Parser.y)
+flex_add(${TARGET_NAME} Scanner.l)

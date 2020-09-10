@@ -14,6 +14,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 #include "Main.h"
+#include "Parser.h"
+#include "Scanner.h"
 
 FILE *_fInput;
 int _iLinesCt = 1;
@@ -29,9 +31,9 @@ FILE *_fExports;
 char *_strFileNameBase;
 char *_strFileNameBaseIdentifier;
 
-extern FILE *yyin;
+extern FILE *Scanner_in;
 
-extern "C" int yywrap(void)
+extern "C" int Scanner_wrap(void)
 {
   return 1;
 }
@@ -53,10 +55,14 @@ SType SType::operator+(const SType &other)
   return sum;
 };
 
+int Parser_lex(void)
+{
+  return Scanner_lex();
+}
 /*
  * Function used for reporting errors.
  */
-void yyerror(const std::string& s)
+void Parser_error(const std::string& s)
 {
   fprintf( stderr, "%s(%d): Error: %s\n", _strInputFileName, _iLinesCt, s.c_str());
   ctErrors++;
@@ -299,10 +305,10 @@ int main(int argc, char *argv[])
   _strInputFileName = strFullInputName;
   TranslateBackSlashes(_strInputFileName);
   // make lex use the input file
-  yyin = _fInput;
+  Scanner_in = _fInput;
 
   // parse input file and generate the output files
-  yyparse();
+  Parser_parse();
 
   // close all files
   fclose(_fImplementation);

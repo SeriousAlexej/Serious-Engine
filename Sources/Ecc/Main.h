@@ -24,9 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MAXPATHLEN 256
 #endif
 
-extern int yylex(void);
-extern void yyerror(const std::string& s);
-extern int yyparse(void);
+extern int Parser_lex(void);
+extern void Parser_error(const std::string& s);
 
 extern FILE *_fInput;
 extern int _iLinesCt;
