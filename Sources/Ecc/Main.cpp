@@ -252,7 +252,7 @@ int main(int argc, char *argv[])
 
   fs::path es_path(argv[1]);
   fs::path out_base_name(argv[2]);
-  if (!fs::is_regular_file(es_path) || !fs::is_directory(out_dir_path))
+  if (!fs::is_regular_file(es_path) || !fs::is_directory(out_base_name))
   {
     PrintUsage();
     return EXIT_FAILURE;
