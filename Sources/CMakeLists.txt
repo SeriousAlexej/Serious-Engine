@@ -13,4 +13,4 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeConfigs/BisonFlex.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeConfigs/Ecc.cmake)
 
 add_subdirectory(Ecc)
-#add_subdirectory(Engine)
+add_subdirectory(Engine)
