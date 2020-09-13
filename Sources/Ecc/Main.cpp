@@ -259,11 +259,11 @@ int main(int argc, char *argv[])
   auto strTables            = out_base_name;  strTables += "_tables.h_tmp";
   auto strTablesOld         = out_base_name;  strTablesOld += "_tables.h";
 
-  _fImplementation = FOpen(strImplementation.c_str(), "w");
-  _fDeclaration    = FOpen(strDeclaration.c_str()   , "w");
-  _fTables         = FOpen(strTables.c_str()        , "w");
+  _fImplementation = FOpen(strImplementation.generic_string().c_str(), "w");
+  _fDeclaration    = FOpen(strDeclaration.generic_string().c_str()   , "w");
+  _fTables         = FOpen(strTables.generic_string().c_str()        , "w");
   // get the filename as preprocessor usable identifier
-  _strFileNameBase = strdup(out_base_name.c_str());
+  _strFileNameBase = strdup(out_base_name.generic_string().c_str());
 
   // print their headers
   PrintHeader(_fImplementation );
@@ -289,9 +289,9 @@ int main(int argc, char *argv[])
   // if there were no errors
   if (ctErrors==0) {
     // update the files that have changed
-    ReplaceFile(strImplementationOld.c_str(), strImplementation.c_str());
-    ReplaceIfChanged(strDeclarationOld.c_str(), strDeclaration.c_str());
-    ReplaceIfChanged(strTablesOld.c_str(), strTables.c_str());
+    ReplaceFile(strImplementationOld.generic_string().c_str(), strImplementation.generic_string().c_str());
+    ReplaceIfChanged(strDeclarationOld.generic_string().c_str(), strDeclaration.generic_string().c_str());
+    ReplaceIfChanged(strTablesOld.generic_string().c_str(), strTables.generic_string().c_str());
 
     return EXIT_SUCCESS;
   // if there were errors
