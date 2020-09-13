@@ -37,7 +37,6 @@ extern FILE *_fDeclaration;
 extern FILE *_fTables;
 extern FILE *_fExports;
 extern char *_strFileNameBase;
-extern char *_strFileNameBaseIdentifier;
 
 struct SType {
   std::string strString;

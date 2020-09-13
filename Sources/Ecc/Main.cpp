@@ -13,9 +13,11 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
+#include <filesystem>
 #include "Main.h"
 #include "Parser.h"
 #include "Scanner.h"
+namespace fs = std::filesystem;
 
 FILE *_fInput;
 int _iLinesCt = 1;
@@ -29,7 +31,6 @@ FILE *_fDeclaration;
 FILE *_fTables;
 FILE *_fExports;
 char *_strFileNameBase;
-char *_strFileNameBaseIdentifier;
 
 extern "C" int Scanner_wrap(void)
 {
@@ -55,21 +56,6 @@ void Parser_error(const std::string& s)
 {
   fprintf( stderr, "%s(%d): Error: %s\n", _strInputFileName, _iLinesCt, s.c_str());
   ctErrors++;
-}
-
-/*
- * Change the extension of the filename.
- */
-char *ChangeFileNameExtension(const char *strFileName, const char *strNewExtension)
-{
-  char *strChanged = (char*)malloc(strlen(strFileName)+strlen(strNewExtension)+2);
-  strcpy(strChanged, strFileName);
-  char *pchDot = strrchr(strChanged, '.');
-  if (pchDot==NULL) {
-    pchDot = strChanged+strlen(strChanged);
-  }
-  strcpy(pchDot, strNewExtension);
-  return strChanged;
 }
 
 /*
@@ -246,13 +232,13 @@ int main(int argc, char *argv[])
   // if there is not one argument on the command line
   if (argc<1+1) {
     // print usage
-    printf("Usage: Ecc <es_file_name>\n       -line\n");
+    printf("Usage: Ecc <es_file_name> <output_directory>\n       -line\n");
     //quit
     return EXIT_FAILURE;
   }
-  if(argc>2)
+  if(argc>3)
   {
-    if(strcmp(argv[2],"-line")==0)
+    if(strcmp(argv[3],"-line")==0)
     {
       _bRemoveLineDirective=1;
     }
@@ -262,27 +248,23 @@ int main(int argc, char *argv[])
 
   //printf("%s\n", argv[1]);
   // open all the output files
-  char *strImplementation    = ChangeFileNameExtension(argv[1], ".cpp_tmp");
-  char *strImplementationOld = ChangeFileNameExtension(argv[1], ".cpp");
-  char *strDeclaration       = ChangeFileNameExtension(argv[1], ".h_tmp");
-  char *strDeclarationOld    = ChangeFileNameExtension(argv[1], ".h");
-  char *strTables            = ChangeFileNameExtension(argv[1], "_tables.h_tmp");
-  char *strTablesOld         = ChangeFileNameExtension(argv[1], "_tables.h");
 
-  _fImplementation = FOpen(strImplementation, "w");
-  _fDeclaration    = FOpen(strDeclaration   , "w");
-  _fTables         = FOpen(strTables        , "w");
+  fs::path es_path(argv[1]);
+  fs::path out_base_name = fs::path(argv[2]) / es_path.stem();
+
+  auto strImplementation    = out_base_name;  strImplementation += ".cpp_tmp";
+  auto strImplementationOld = out_base_name;  strImplementationOld += ".cpp";
+  auto strDeclaration       = out_base_name;  strDeclaration += ".h_tmp";
+  auto strDeclarationOld    = out_base_name;  strDeclarationOld += ".h";
+  auto strTables            = out_base_name;  strTables += "_tables.h_tmp";
+  auto strTablesOld         = out_base_name;  strTablesOld += "_tables.h";
+
+  _fImplementation = FOpen(strImplementation.c_str(), "w");
+  _fDeclaration    = FOpen(strDeclaration.c_str()   , "w");
+  _fTables         = FOpen(strTables.c_str()        , "w");
   // get the filename as preprocessor usable identifier
-  _strFileNameBase = ChangeFileNameExtension(argv[1], "");
-  _strFileNameBaseIdentifier = strdup(_strFileNameBase);
-  {char *strNextSlash = _strFileNameBaseIdentifier;
-  while((strNextSlash = strchr(strNextSlash, '/'))!=NULL) {
-    *strNextSlash = '_';
-  }}
-  {char *strNextSlash = _strFileNameBaseIdentifier;
-  while((strNextSlash = strchr(strNextSlash, '\\'))!=NULL) {
-    *strNextSlash = '_';
-  }}
+  _strFileNameBase = strdup(out_base_name.c_str());
+
   // print their headers
   PrintHeader(_fImplementation );
   PrintHeader(_fDeclaration    );
@@ -307,9 +289,9 @@ int main(int argc, char *argv[])
   // if there were no errors
   if (ctErrors==0) {
     // update the files that have changed
-    ReplaceFile(strImplementationOld, strImplementation);
-    ReplaceIfChanged(strDeclarationOld, strDeclaration);
-    ReplaceIfChanged(strTablesOld, strTables);
+    ReplaceFile(strImplementationOld.c_str(), strImplementation.c_str());
+    ReplaceIfChanged(strDeclarationOld.c_str(), strDeclaration.c_str());
+    ReplaceIfChanged(strTablesOld.c_str(), strTables.c_str());
 
     return EXIT_SUCCESS;
   // if there were errors
