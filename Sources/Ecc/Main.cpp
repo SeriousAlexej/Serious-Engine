@@ -227,30 +227,41 @@ void ReplaceIfChanged(const char *strOld, const char *strNew)
   }
 }
 
+void PrintUsage()
+{
+  printf("Usage: Ecc <es_file_name> <output_directory>\n       -line\n");
+}
+
 int main(int argc, char *argv[])
 {
   // if there is not one argument on the command line
-  if (argc<1+1) {
-    // print usage
-    printf("Usage: Ecc <es_file_name> <output_directory>\n       -line\n");
-    //quit
+  if (!(argc == 3 || argc == 4)) {
+    PrintUsage();
     return EXIT_FAILURE;
   }
-  if(argc>3)
+  if (argc>3)
   {
     if(strcmp(argv[3],"-line")==0)
     {
       _bRemoveLineDirective=1;
+    } else {
+      PrintUsage();
+      return EXIT_FAILURE;
     }
   }
-  // open the input file
-  _fInput = FOpen(argv[1], "r");
-
-  //printf("%s\n", argv[1]);
-  // open all the output files
 
   fs::path es_path(argv[1]);
-  fs::path out_base_name = fs::path(argv[2]) / es_path.stem();
+  fs::path out_base_name(argv[2]);
+  if (!fs::is_regular_file(es_path) || !fs::is_directory(out_dir_path))
+  {
+    PrintUsage();
+    return EXIT_FAILURE;
+  }
+  
+  // open the input file
+  _fInput = FOpen(es_path.generic_string().c_str(), "r");
+  
+  out_base_name /= es_path.stem();
 
   auto strImplementation    = out_base_name;  strImplementation += ".cpp_tmp";
   auto strImplementationOld = out_base_name;  strImplementationOld += ".cpp";
