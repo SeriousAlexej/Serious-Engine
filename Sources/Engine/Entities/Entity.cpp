@@ -13,7 +13,7 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#include "stdh.h"
+
 
 #include <Engine/Entities/Entity.h>
 #include <Engine/Entities/EntityClass.h>
@@ -42,7 +42,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <Engine/Terrain/TerrainArchive.h>
 #include <Engine/World/World.h>
 #include <Engine/World/WorldRayCasting.h>
-#include <Engine/World/PhysicsProfile.h>
 #include <Engine/Base/ReplaceFile.h>
 #include <Engine/Entities/InternalClasses.h>
 #include <Engine/Models/ModelObject.h>
@@ -57,10 +56,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <Engine/Base/ListIterator.inl>
 
 #include <Engine/Templates/BSP.h>
-#include <Engine/Templates/DynamicArray.cpp>
-#include <Engine/Templates/DynamicContainer.cpp>
-#include <Engine/Templates/StaticArray.cpp>
-#include <Engine/Templates/StaticStackArray.cpp>
+#include <Engine/Templates/DynamicArray.h>
+#include <Engine/Templates/DynamicContainer.h>
+#include <Engine/Templates/StaticArray.h>
+#include <Engine/Templates/StaticStackArray.h>
 
 #include <Engine/Templates/Stock_CAnimData.h>
 #include <Engine/Templates/Stock_CTextureData.h>
@@ -127,6 +126,8 @@ BOOL IsDerivedFromClass(CEntity *pen, const char *pstrClassName)
  * Default constructor.
  */
 CEntity::CEntity(void)
+  : en_rdSectors(this)
+  , en_lnInParent(this)
 {
   en_pbrBrush = NULL;
   en_psiShadingInfo = NULL;
@@ -1011,30 +1012,25 @@ void CEntity::FallDownToFloor( void)
 
 
 extern CEntity *_penLightUpdating;
-extern BOOL _bDontDiscardLinks = FALSE;
+BOOL _bDontDiscardLinks = FALSE;
 
 // internal repositioning function
 void CEntity::SetPlacement_internal(const CPlacement3D &plNew, const FLOATmatrix3D &mRotation,
    BOOL bNear)
 {
   ASSERT(GetFPUPrecision()==FPT_24BIT);
-  _pfPhysicsProfile.StartTimer(CPhysicsProfile::PTI_SETPLACEMENT);
-  _pfPhysicsProfile.IncrementTimerAveragingCounter(CPhysicsProfile::PTI_SETPLACEMENT);
 
   // invalidate eventual cached info for still models
   en_ulFlags &= ~ENF_VALIDSHADINGINFO;
 
-  _pfPhysicsProfile.StartTimer(CPhysicsProfile::PTI_SETPLACEMENT_COORDSUPDATE);
   // remembel old placement of the entity
   CPlacement3D plOld = en_plPlacement;
   // set new placement of the entity
   en_plPlacement = plNew;
   en_mRotation = mRotation;
-  _pfPhysicsProfile.StopTimer(CPhysicsProfile::PTI_SETPLACEMENT_COORDSUPDATE);
 
   // if this is a brush entity
   if (en_RenderType==RT_BRUSH || en_RenderType==RT_FIELDBRUSH) {
-    _pfPhysicsProfile.StartTimer(CPhysicsProfile::PTI_SETPLACEMENT_BRUSHUPDATE);
     // recalculate all bounding boxes relative to new position
     _bDontDiscardLinks = TRUE;
     en_pbrBrush->CalculateBoundingBoxes();
@@ -1042,7 +1038,7 @@ void CEntity::SetPlacement_internal(const CPlacement3D &plNew, const FLOATmatrix
 
     BOOL bHasShadows=FALSE;
     // for all brush mips
-    FOREACHINLIST(CBrushMip, bm_lnInBrush, en_pbrBrush->br_lhBrushMips, itbm) {
+    FOREACHINLIST(CBrushMip, en_pbrBrush->br_lhBrushMips, itbm) {
       // for all sectors in the mip
       {FOREACHINDYNAMICARRAY(itbm->bm_abscSectors, CBrushSector, itbsc) {
         // for all polygons in this sector
@@ -1074,7 +1070,7 @@ void CEntity::SetPlacement_internal(const CPlacement3D &plNew, const FLOATmatrix
       CSetFPUPrecision FPUPrecision(FPT_53BIT);
 
       // for all brush mips
-      FOREACHINLIST(CBrushMip, bm_lnInBrush, en_pbrBrush->br_lhBrushMips, itbm) {
+      FOREACHINLIST(CBrushMip, en_pbrBrush->br_lhBrushMips, itbm) {
         // for all sectors in the mip
         {FOREACHINDYNAMICARRAY(itbm->bm_abscSectors, CBrushSector, itbsc) {
           // find entities in sector
@@ -1083,7 +1079,6 @@ void CEntity::SetPlacement_internal(const CPlacement3D &plNew, const FLOATmatrix
       }
     }
 
-    _pfPhysicsProfile.StopTimer(CPhysicsProfile::PTI_SETPLACEMENT_BRUSHUPDATE);
   } else if(en_RenderType==RT_TERRAIN) {
     // Update terrain shadow map
     CTerrain *ptrTerrain = GetTerrain();
@@ -1092,15 +1087,12 @@ void CEntity::SetPlacement_internal(const CPlacement3D &plNew, const FLOATmatrix
   }
 
   // set spatial clasification
-  _pfPhysicsProfile.StartTimer(CPhysicsProfile::PTI_SETPLACEMENT_SPATIALUPDATE);
   if (bNear) {
     FindSectorsAroundEntityNear();
   } else {
     FindSectorsAroundEntity();
   }
-  _pfPhysicsProfile.StopTimer(CPhysicsProfile::PTI_SETPLACEMENT_SPATIALUPDATE);
 
-  _pfPhysicsProfile.StartTimer(CPhysicsProfile::PTI_SETPLACEMENT_LIGHTUPDATE);
   // if it is a light source
   {CLightSource *pls = GetLightSource();
   if (pls!=NULL) {
@@ -1110,11 +1102,9 @@ void CEntity::SetPlacement_internal(const CPlacement3D &plNew, const FLOATmatrix
     pls->UpdateTerrains(plOld,en_plPlacement);
   }}
 
-  _pfPhysicsProfile.StopTimer(CPhysicsProfile::PTI_SETPLACEMENT_LIGHTUPDATE);
 
   // move the entity to new position in collision grid
   if (en_pciCollisionInfo!=NULL) {
-    _pfPhysicsProfile.StartTimer(CPhysicsProfile::PTI_SETPLACEMENT_COLLISIONUPDATE);
     FLOATaabbox3D boxNew;
     en_pciCollisionInfo->MakeBoxAtPlacement(
       en_plPlacement.pl_PositionVector, en_mRotation, boxNew);
@@ -1122,15 +1112,11 @@ void CEntity::SetPlacement_internal(const CPlacement3D &plNew, const FLOATmatrix
       en_pwoWorld->MoveEntityInCollisionGrid( this, en_pciCollisionInfo->ci_boxCurrent, boxNew);
     }
     en_pciCollisionInfo->ci_boxCurrent = boxNew;
-    _pfPhysicsProfile.StopTimer(CPhysicsProfile::PTI_SETPLACEMENT_COLLISIONUPDATE);
   }
-
-  _pfPhysicsProfile.StopTimer(CPhysicsProfile::PTI_SETPLACEMENT);
-
   // NOTE: this is outside profile because it uses recursion
 
   // for each child of this entity
-  {FOREACHINLIST(CEntity, en_lnInParent, en_lhChildren, itenChild) {
+  {FOREACHINLIST(CEntity, en_lhChildren, itenChild) {
     CPlacement3D plNew = itenChild->en_plRelativeToParent;
     plNew.RelativeToAbsoluteSmooth(en_plPlacement);
     itenChild->SetPlacement(plNew);
@@ -1210,7 +1196,7 @@ void CEntity::SetParent(CEntity *penNewParent)
 CEntity *CEntity::GetChildOfClass(const char *strClass)
 {
   // for each child of this entity
-  {FOREACHINLIST(CEntity, en_lnInParent, en_lhChildren, itenChild) {
+  {FOREACHINLIST(CEntity, en_lhChildren, itenChild) {
     // if it is of given class
     if (IsOfClass(itenChild, strClass)) {
       return itenChild;
@@ -1247,7 +1233,7 @@ void CEntity::Destroy(void)
     en_penParent = NULL;
     en_lnInParent.Remove();
   }
-  {FORDELETELIST( CEntity, en_lnInParent, en_lhChildren, itenChild) {
+  {FORDELETELIST( CEntity, en_lhChildren, itenChild) {
     itenChild->en_penParent = NULL;
     itenChild->en_lnInParent.Remove();
   }}
@@ -1400,9 +1386,9 @@ void CEntity::FindShadingInfo(void)
   }
 
   // for each sector that this entity is in
-  {FOREACHSRCOFDST(en_rdSectors, CBrushSector, bsc_rsEntities, pbsc)
+  {FOREACHSRCOFDST(en_rdSectors, CBrushSector, pbsc)
     // for each brush or terrain in this sector
-    {FOREACHDSTOFSRC(pbsc->bsc_rsEntities, CEntity, en_rdSectors, pen)
+    {FOREACHDSTOFSRC(pbsc->bsc_rsEntities, CEntity, pen)
       if(pen->en_RenderType==CEntity::RT_TERRAIN) {
         CheckTerrainForShadingInfo(pen->GetTerrain());
       } else if(pen->en_RenderType!=CEntity::RT_BRUSH && pen->en_RenderType!=CEntity::RT_FIELDBRUSH) {
@@ -1414,7 +1400,7 @@ void CEntity::FindShadingInfo(void)
   // if this is non-movable entity, or no polygon or terrain found so far
   if (_pbpoNear==NULL && _ptrTerrainNear==NULL) {
     // for each sector that this entity is in
-    {FOREACHSRCOFDST(en_rdSectors, CBrushSector, bsc_rsEntities, pbsc)
+    {FOREACHSRCOFDST(en_rdSectors, CBrushSector, pbsc)
       // for each polygon in the sector
       {FOREACHINSTATICARRAY(pbsc->bsc_abpoPolygons, CBrushPolygon, itbpo) {
         CBrushPolygon &bpo = *itbpo;
@@ -1468,7 +1454,7 @@ void CEntity::FindShadingInfo(void)
 
 CBrushSector *CEntity::GetFirstSector(void)
 {
-  {FOREACHSRCOFDST(en_rdSectors, CBrushSector, bsc_rsEntities, pbsc)
+  {FOREACHSRCOFDST(en_rdSectors, CBrushSector, pbsc)
     return pbsc;
   ENDFOR};
   return NULL;
@@ -1477,7 +1463,7 @@ CBrushSector *CEntity::GetFirstSector(void)
 CBrushSector *CEntity::GetFirstSectorWithName(void)
 {
   CBrushSector *pbscResult = NULL;
-  {FOREACHSRCOFDST(en_rdSectors, CBrushSector, bsc_rsEntities, pbsc)
+  {FOREACHSRCOFDST(en_rdSectors, CBrushSector, pbsc)
     if (pbsc->bsc_strName!="") {
       pbscResult = pbsc;
       break;
@@ -1840,7 +1826,7 @@ void CEntity::FindSectorsAroundEntity(void)
       continue;
     }
     // for each mip in the brush
-    FOREACHINLIST(CBrushMip, bm_lnInBrush, itbr->br_lhBrushMips, itbm) {
+    FOREACHINLIST(CBrushMip, itbr->br_lhBrushMips, itbm) {
       // for each sector in the brush mip
       FOREACHINDYNAMICARRAY(itbm->bm_abscSectors, CBrushSector, itbsc) {
         // if the sector's bounding box has contact with the sphere 
@@ -1894,7 +1880,7 @@ void CEntity::FindSectorsAroundEntityNear(void)
 
   CListHead lhActive;
   // for each sector around this entity
-  {FOREACHSRCOFDST(en_rdSectors, CBrushSector, bsc_rsEntities, pbsc)
+  {FOREACHSRCOFDST(en_rdSectors, CBrushSector, pbsc)
     // remember its link
     pbsc->bsc_prlLink = pbsc_iter;
     // add it to list of active sectors
@@ -1913,7 +1899,7 @@ void CEntity::FindSectorsAroundEntityNear(void)
   }
 
   // for each active sector
-  FOREACHINLIST(CBrushSector, bsc_lnInActiveSectors, lhActive, itbsc) {
+  FOREACHINLIST(CBrushSector, lhActive, itbsc) {
     CBrushSector *pbsc = itbsc;
     // test if entity is in sector
     BOOL bIn =
@@ -1953,7 +1939,7 @@ void CEntity::FindSectorsAroundEntityNear(void)
   }
 
   // clear list of active sectors
-  {FORDELETELIST(CBrushSector, bsc_lnInActiveSectors, lhActive, itbsc) {
+  {FORDELETELIST(CBrushSector, lhActive, itbsc) {
     itbsc->bsc_prlLink = NULL;
     itbsc->bsc_lnInActiveSectors.Remove();
   }}
@@ -1978,7 +1964,7 @@ void CEntity::UncacheShadowsForGradient(INDEX iGradient)
   }
 
   // for all brush mips
-  FOREACHINLIST(CBrushMip, bm_lnInBrush, en_pbrBrush->br_lhBrushMips, itbm)
+  FOREACHINLIST(CBrushMip, en_pbrBrush->br_lhBrushMips, itbm)
   {
     // for all sectors in the mip
     {FOREACHINDYNAMICARRAY(itbm->bm_abscSectors, CBrushSector, itbsc)
@@ -2072,7 +2058,7 @@ void CEntity::FindEntitiesInRange(
         }
 
         // for all entities in the sector
-        {FOREACHDSTOFSRC(itbsc->bsc_rsEntities, CEntity, en_rdSectors, pen)
+        {FOREACHDSTOFSRC(itbsc->bsc_rsEntities, CEntity, pen)
           // if the model entity touches the box
           if ((pen->en_RenderType==RT_MODEL || pen->en_RenderType==RT_EDITORMODEL)
             && boxRange.HasContactWith(
@@ -2867,7 +2853,7 @@ void CEntity::GetEntityPointFixed(const FLOAT3D &vFixed, FLOAT3D &vAbsPoint)
 CBrushSector *CEntity::GetSectorFromPoint(const FLOAT3D &vPointAbs)
 {
   // for each sector around entity
-  {FOREACHSRCOFDST(en_rdSectors, CBrushSector, bsc_rsEntities, pbsc)
+  {FOREACHSRCOFDST(en_rdSectors, CBrushSector, pbsc)
     // if point is in this sector
     if( pbsc->bsc_bspBSPTree.TestSphere(FLOATtoDOUBLE(vPointAbs), 0.01)>=0) {
       // return that
@@ -3193,7 +3179,7 @@ void CEntity::NotifyGravityChanged(void)
         // if controlled by this entity
         if ( penBrush->GetForceController(itbsc->GetForceType()) == this ) {
           // for each entity in the sector
-          {FOREACHDSTOFSRC(itbsc->bsc_rsEntities, CEntity, en_rdSectors, pen) {
+          {FOREACHDSTOFSRC(itbsc->bsc_rsEntities, CEntity, pen) {
             // if movable
             if (pen->en_ulPhysicsFlags&EPF_MOVABLE) {
               CMovableEntity *pmen = (CMovableEntity*)pen;
@@ -3701,6 +3687,7 @@ void CLiveEntity::ReceiveDamage(CEntity *penInflictor, enum DamageType dmtType,
  * Constructor.
  */
 CRationalEntity::CRationalEntity(void)
+  : en_lnInTimers(this)
 {
 }
 
@@ -3894,15 +3881,15 @@ void CRationalEntity::Return(SLONG slThisState, const CEntityEvent &eeReturn)
 // print stack to debug output
 const char *CRationalEntity::PrintStackDebug(void)
 {
-  _RPT2(_CRT_WARN, "-- stack of '%s'@%gs\n", GetName(), _pTimer->CurrentTick());
+  CPrintF("-- stack of '%s'@%gs\n", GetName(), _pTimer->CurrentTick());
 
   INDEX ctStates = en_stslStateStack.Count();
   for(INDEX iState=ctStates-1; iState>=0; iState--) {
     SLONG slState = en_stslStateStack[iState];
-    _RPT2(_CRT_WARN, "0x%08x %s\n", slState, 
+    CPrintF("0x%08x %s\n", slState,
       en_pecClass->ec_pdecDLLClass->HandlerNameForState(slState));
   }
-  _RPT0(_CRT_WARN, "----\n");
+  CPrintF("----\n");
   return "ok";
 }
 

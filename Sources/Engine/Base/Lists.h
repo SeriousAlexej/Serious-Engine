@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class ENGINE_API CListNode {
 //implementation:
 public:
+  void* p_data;
   CListNode *ln_Succ;	/* pointer to previous node (successor) */
   CListNode *ln_Pred;	/* pointer to next node (predecessor) */
 
@@ -36,7 +37,7 @@ public:
 //interface:
 public:
   /* Default constructor */
-  inline CListNode(void);
+  inline explicit CListNode(void* data);
   /* Copy constructor */
   inline CListNode(const CListNode &lnOriginal);
   /* Destructor */
@@ -121,7 +122,7 @@ public:
   /* Return the number of elements in list. */
   INDEX Count(void) const;
   /* Sort the list. */
-  void Sort(int (*pCompare)(const void *p0, const void *p1), int iNodeOffset);
+  void Sort(int (*pCompare)(const void *p0, const void *p1));
 };
 
 #include <Engine/Base/Lists.inl>

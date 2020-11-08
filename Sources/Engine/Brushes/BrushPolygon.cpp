@@ -13,22 +13,20 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#include "stdh.h"
+
 
 #include <Engine/Brushes/Brush.h>
 #include <Engine/Brushes/BrushTransformed.h>
 #include <Engine/Entities/ShadingInfo.h>
 #include <Engine/Templates/BSP_internal.h>
 #include <Engine/Base/ListIterator.inl>
-#include <Engine/Templates/DynamicArray.cpp>
-#include <Engine/Templates/StaticArray.cpp>
+#include <Engine/Templates/DynamicArray.h>
+#include <Engine/Templates/StaticArray.h>
 #include <Engine/Math/Float.h>
 #include <Engine/Entities/Entity.h>
-#include <Engine/Templates/Selection.cpp>
+#include <Engine/Templates/Selection.h>
 
-template CStaticArray<CBrushPolygonEdge>;
-template CStaticArray<CBrushPolygon>;
-template CStaticArray<long>;
+template class CStaticArray<CBrushPolygonEdge>;
 
 // set new absolute position for the vertex
 void CBrushVertex::SetAbsolutePosition(const DOUBLE3D &vAbsolute)
@@ -237,7 +235,7 @@ void CBrushPolygon::Clear(void)
 // discard all cached shading info for models
 void CBrushPolygon::DiscardShadingInfos(void)
 {
-  FORDELETELIST( CShadingInfo, si_lnInPolygon, bpo_lhShadingInfos, itsi) {
+  FORDELETELIST( CShadingInfo, bpo_lhShadingInfos, itsi) {
     itsi->si_penEntity->en_ulFlags &= ~ENF_VALIDSHADINGINFO;
     itsi->si_lnInPolygon.Remove();
     itsi->si_pbpoPolygon = NULL;

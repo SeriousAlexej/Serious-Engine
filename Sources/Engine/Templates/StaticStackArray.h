@@ -68,6 +68,7 @@ public:
   CStaticStackArray<Type> &operator=(const CStaticStackArray<Type> &arOriginal);
 };
 
+#include "StaticStackArray.inl"
 
 #endif  /* include-once check. */
 

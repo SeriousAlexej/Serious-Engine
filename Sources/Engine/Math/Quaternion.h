@@ -56,7 +56,7 @@ public:
   // multiplication/division by a scalar
   inline Quaternion<Type> operator*(Type t) const;
   inline Quaternion<Type> &operator*=(Type t);
-  friend Quaternion<Type> operator*(Type t, Quaternion<Type> q);
+  //friend Quaternion<Type> operator*(Type t, Quaternion<Type> q);
   inline Quaternion<Type> operator/(Type t) const;
   inline Quaternion<Type> &operator/=(Type t);
   

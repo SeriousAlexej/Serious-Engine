@@ -13,13 +13,16 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#include "stdh.h"
+
 
 #include <Engine/Base/CTString.h>
 #include <Engine/Base/Memory.h>
 #include <Engine/Base/Stream.h>
 #include <Engine/Base/Console.h>
 
+#include <SDL2/SDL_stdinc.h>
+
+#include <climits>
 
 /*
  * Equality comparison.
@@ -28,13 +31,13 @@ BOOL CTString::operator==(const CTString &strOther) const
 {
   ASSERT(IsValid() && strOther.IsValid());
 
-  return stricmp( str_String, strOther.str_String) == 0;
+  return SDL_strcasecmp( str_String, strOther.str_String) == 0;
 }
 BOOL CTString::operator==(const char *strOther) const
 {
   ASSERT(IsValid() && strOther!=NULL);
 
-  return stricmp( str_String, strOther) == 0;
+  return SDL_strcasecmp( str_String, strOther) == 0;
 }
  BOOL operator==(const char *strThis, const CTString &strOther)
 {
@@ -98,7 +101,7 @@ BOOL CTString::RemovePrefix( const CTString &strPrefix)
   INDEX lenPrefix = strlen( strPrefix);
   INDEX lenDest = strlen( str_String) - lenPrefix;
 
-  if( strnicmp( str_String, strPrefix, lenPrefix) != 0)
+  if( SDL_strncasecmp( str_String, strPrefix, lenPrefix) != 0)
     return FALSE;
   CTString strTemp = CTString( &str_String[ lenPrefix]);
   ShrinkMemory( (void **)&str_String, lenDest+1);
@@ -109,7 +112,7 @@ BOOL CTString::RemovePrefix( const CTString &strPrefix)
 BOOL CTString::HasPrefix( const CTString &strPrefix) const
 {
   INDEX lenPrefix = strlen( strPrefix);
-  if( strnicmp( str_String, strPrefix, lenPrefix) != 0)
+  if( SDL_strncasecmp( str_String, strPrefix, lenPrefix) != 0)
     return FALSE;
   return TRUE;
 }
@@ -288,7 +291,9 @@ ULONG CTString::GetHash(void) const
   INDEX len = strlen(str_String);
 
   for(INDEX i=0; i<len; i++) {
-    ulKey = _rotl(ulKey,4)+toupper(str_String[i]);
+    ulKey =
+        ((ulKey << 4) | (ulKey >> (sizeof(ULONG)*CHAR_BIT - 4)))
+        +toupper(str_String[i]);
   }
   return ulKey;
 }
@@ -489,7 +494,7 @@ INDEX CTString::VPrintF(const char *strFormat, va_list arg)
   INDEX iLen;
   FOREVER {
     // print to the buffer
-    iLen = _vsnprintf(_pchBuffer, _ctBufferSize, strFormat, arg);
+    iLen = SDL_vsnprintf(_pchBuffer, _ctBufferSize, strFormat, arg);
     // if printed ok
     if (iLen!=-1) {
       // stop
@@ -505,19 +510,12 @@ INDEX CTString::VPrintF(const char *strFormat, va_list arg)
 }
 
 
-
-static void *psscanf = &sscanf;
 // Scan formatted from a string
-__declspec(naked) INDEX CTString::ScanF(const char *strFormat, ...)
+INDEX CTString::ScanF(const char *strFormat, ...)
 {
-  __asm {
-    push    eax
-    mov     eax,dword ptr [esp+8]
-    mov     eax,dword ptr [eax]
-    mov     dword ptr [esp+8], eax
-    pop     eax
-    jmp     dword ptr [psscanf]
-  }
+  va_list args;
+  va_start(args, strFormat);
+  return SDL_sscanf(str_String, strFormat, args);
 }
 
 

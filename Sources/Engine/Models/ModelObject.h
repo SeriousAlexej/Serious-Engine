@@ -180,6 +180,8 @@ public:
 
 class ENGINE_API CAttachmentModelObject {
 public:
+  CAttachmentModelObject() : amo_lnInMain(this) {}
+
   CListNode amo_lnInMain;
   INDEX amo_iAttachedPosition;        // indentifier of positions saved in model data
   CPlacement3D amo_plRelative;        // relative placement used for rendering

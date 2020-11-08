@@ -13,17 +13,6 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-
-#ifndef SE_INCL_ALLOCATIONARRAY_CPP
-#define SE_INCL_ALLOCATIONARRAY_CPP
-#ifdef PRAGMA_ONCE
-  #pragma once
-#endif
-
-#include <Engine/Templates/StaticStackArray.h>
-#include <Engine/Templates/StaticStackArray.cpp>
-#include <Engine/Templates/StaticArray.cpp>
-
 extern BOOL _bAllocationArrayParanoiaCheck;
 
 /*
@@ -90,7 +79,7 @@ inline INDEX CAllocationArray<Type>::Allocate(void)
     // remember old size
     INDEX ctOldSize = CStaticArray<Type>::Count();
     // expand the array by the allocation step
-    Expand(ctOldSize+aa_ctAllocationStep);
+    this->Expand(ctOldSize+aa_ctAllocationStep);
     // create new free indices
     INDEX *piNewFree = aa_aiFreeElements.Push(aa_ctAllocationStep);
     // fill them up
@@ -191,7 +180,7 @@ INDEX CAllocationArray<Type>::Count(void) const
 
 /* Get index of a object from it's pointer. */
 template<class Type>
-INDEX CAllocationArray<Type>::Index(Type *ptObject)
+INDEX CAllocationArray<Type>::Index(Type *ptMember)
 {
   ASSERT(this!=NULL);
   INDEX i = CStaticArray<Type>::Index(ptMember);
@@ -209,7 +198,3 @@ CAllocationArray<Type> &CAllocationArray<Type>::operator=(
   aa_aiFreeElements = aaOriginal.aa_aiFreeElements;
   aa_ctAllocationStep = aaOriginal.aa_ctAllocationStep;
 }
-
-
-#endif  /* include-once check. */
-

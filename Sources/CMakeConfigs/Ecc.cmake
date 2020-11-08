@@ -5,6 +5,8 @@ else()
 endif()
 
 function(add_classes TARGET_NAME)
+    add_dependencies(${TARGET_NAME} Ecc)
+    target_include_directories(${TARGET_NAME} PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/..")
     foreach(CLASS_FILE IN ITEMS ${ARGN})
         get_filename_component(CLASS_NAME ${CLASS_FILE} NAME_WE)
         get_filename_component(CLASS_DIR ${CLASS_FILE} DIRECTORY)

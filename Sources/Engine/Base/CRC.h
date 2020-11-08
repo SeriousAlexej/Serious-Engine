@@ -19,6 +19,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
+#include <climits>
+
 extern ENGINE_API ULONG crc_aulCRCTable[256];
 
 // begin crc calculation
@@ -43,6 +45,12 @@ inline void CRC_AddLONG( ULONG &ulCRC, ULONG ul)
   CRC_AddBYTE(ulCRC, UBYTE(ul>> 8));
   CRC_AddBYTE(ulCRC, UBYTE(ul>> 0));
 };
+
+inline void CRC_AddPTR(ULONG& ulCRC, std::uintptr_t ptr)
+{
+  for (std::size_t i = 0; i < sizeof(ptr); ++i)
+    CRC_AddBYTE(ulCRC, UBYTE(ptr >> (i*CHAR_BIT)));
+}
 
 inline void CRC_AddFLOAT(ULONG &ulCRC, FLOAT f)
 {

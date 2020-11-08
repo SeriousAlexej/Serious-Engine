@@ -24,10 +24,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Object representing a link at the member of relation domain.
 class CRelationSrc : public CListHead {
 public:
+  void* p_data;
 // implementation:
 // interface:
   // Construction/destruction.
-  ENGINE_API CRelationSrc(void);
+  ENGINE_API explicit CRelationSrc(void* data);
   ENGINE_API ~CRelationSrc(void);
   void Clear(void);
 };
@@ -35,10 +36,11 @@ public:
 // Object representing a link at the member of relation codomain.
 class CRelationDst : public CListHead {
 public:
+  void* p_data;
 // implementation:
 // interface:
   // Construction/destruction.
-  ENGINE_API CRelationDst(void);
+  ENGINE_API explicit CRelationDst(void* data);
   ENGINE_API ~CRelationDst(void);
   void Clear(void);
 };
@@ -68,26 +70,26 @@ void ENGINE_API AddRelationPairHeadHead(CRelationSrc &rsSrc, CRelationDst &rdDst
 
 // make 'for' construct for walking a list in domain member
 #define FOREACHSRCLINK(head, iter) \
-  for ( LISTITER(CRelationLnk, rl_lnSrc) iter(head); !iter.IsPastEnd(); iter.MoveToNext() )
+  for ( LISTITER(CRelationLnk) iter(head); !iter.IsPastEnd(); iter.MoveToNext() )
 // make 'for' construct for walking a list in codomain member
 #define FOREACHDSTLINK(head, iter) \
-  for ( LISTITER(CRelationLnk, rl_lnDst) iter(head); !iter.IsPastEnd(); iter.MoveToNext() )
+  for ( LISTITER(CRelationLnk) iter(head); !iter.IsPastEnd(); iter.MoveToNext() )
 
 // get a domain member related to a codomain member through a link
-#define DST(plink, dstclass, dstmember) \
-  ( (dstclass *) ( ((UBYTE *)(&(plink->GetDst()))) - offsetof(dstclass, dstmember) ) )
+#define DST(plink, dstclass) \
+  ( (dstclass *) plink->GetDst().p_data )
 // get a codomain member that a domain member is related to through a link
-#define SRC(plink, srcclass, srcmember) \
-  ( (srcclass *) ( ((UBYTE *)(&(plink->GetSrc()))) - offsetof(srcclass, srcmember) ) )
+#define SRC(plink, srcclass) \
+  ( (srcclass *) plink->GetSrc().p_data )
 
 // make 'for' construct for walking all codomain members related to a domain member
-#define FOREACHDSTOFSRC(srchead, dstclass, dstmember, pdst) \
+#define FOREACHDSTOFSRC(srchead, dstclass, pdst) \
   FOREACHSRCLINK(srchead, pdst##_iter) { \
-    dstclass *pdst = DST(pdst##_iter, dstclass, dstmember);
+    dstclass *pdst = DST(pdst##_iter, dstclass);
 // make 'for' construct for walking all domain members related to a codomain member
-#define FOREACHSRCOFDST(dsthead, srcclass, srcmember, psrc) \
+#define FOREACHSRCOFDST(dsthead, srcclass, psrc) \
   FOREACHDSTLINK(dsthead, psrc##_iter) { \
-    srcclass *psrc = SRC(psrc##_iter, srcclass, srcmember);
+    srcclass *psrc = SRC(psrc##_iter, srcclass);
 #define ENDFOR }
 
 

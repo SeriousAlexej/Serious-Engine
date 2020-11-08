@@ -19,8 +19,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
-#include <Engine/Templates/StaticArray.h>
+#include <Engine/Base/Stream.h>
+#include <Engine/Math/Vector.h>
+#include <Engine/Math/Plane.h>
+#include <Engine/Math/OBBox.h>
+#include <Engine/Math/Functions.h>
 
+#include <Engine/Templates/StaticStackArray.h>
+#include <Engine/Templates/DynamicArray.h>
 /*
  * Template class for BSP-tree
  */
@@ -68,6 +74,8 @@ public:
   void Write_t(CTStream &strm); // throw char *
 };
 
+#include "BSP_internal.h"
+#include "BSP.inl"
 
 #endif  /* include-once check. */
 

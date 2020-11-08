@@ -18,7 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  */
 1
 %{
-#include "StdH.h"
+
 #include <Engine/Entities/InternalClasses.h>
 #include <Engine/World/PhysicsProfile.h>
 #include <Engine/Math/Geometry.inl>

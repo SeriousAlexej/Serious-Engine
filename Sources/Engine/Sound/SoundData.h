@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <Engine/Base/Lists.h>
 #include <Engine/Base/Serial.h>
+#include <Engine/Sound/WaveFormat.h>
 
 #define SDF_ENCODED       (1UL<<0) // this is ogg or mpx compressed file
 #define SDF_STREAMING     (1UL<<1) // streaming from disk
@@ -43,7 +44,7 @@ public:
   void ResumePlayingObjects(void);
 
   // Sound Buffer
-  WAVEFORMATEX sd_wfeFormat;     // primary sound buffer format
+  SAM_WAVEFORMATEX sd_wfeFormat;     // primary sound buffer format
   SWORD *sd_pswBuffer;           // pointer on buffer
   SLONG  sd_slBufferSampleSize;  // buffer sample size
   double sd_dSecondsLength;      // sound length in seconds

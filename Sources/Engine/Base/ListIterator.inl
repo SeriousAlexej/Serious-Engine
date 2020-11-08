@@ -5,10 +5,10 @@
   #pragma once
 #endif
 
-/* simple list iterator: 4 bytes structure, all functions are inline */
-template<class Cbase, int iOffset>
+/* simple list iterator: all functions are inline */
+template<class Cbase>
 class CListIter {
-private:
+public:
   CListNode *li_CurrentNode;
 public:
   /* default constructor - no list attached */
@@ -49,49 +49,44 @@ public:
     li_CurrentNode->IterationInsertBefore(lnNew);
   };
 
-	/* Get current element. */
-  Cbase &Current(void) { return *((Cbase*)((UBYTE *)li_CurrentNode - iOffset)); }
-  Cbase &operator*(void) { return *((Cbase*)((UBYTE *)li_CurrentNode - iOffset)); }
-  operator Cbase *(void) { return ((Cbase*)((UBYTE *)li_CurrentNode - iOffset)); }
-  Cbase *operator->(void) { return ((Cbase*)((UBYTE *)li_CurrentNode - iOffset)); }
+  /* Get current element. */
+  Cbase &Current(void) { return *((Cbase*)(li_CurrentNode->p_data)); }
+  Cbase &operator*(void) { return *((Cbase*)(li_CurrentNode->p_data)); }
+  operator Cbase* (void) { return ((Cbase*)(li_CurrentNode->p_data)); }
+  Cbase *operator->(void) { return ((Cbase*)(li_CurrentNode->p_data)); }
 };
 
-// taken from stddef.h
-//#ifndef offsetof
-//#define offsetof(s,m)	(size_t)&(((s *)0)->m)
-//#endif
-
-// declare a list iterator for a class with a CListNode member
-#define LISTITER(baseclass, member) CListIter<baseclass, offsetof(baseclass, member)>
+// declare a list iterator for a class with a CListNode
+#define LISTITER(baseclass) CListIter<baseclass>
 
 // make 'for' construct for walking a list
-#define FOREACHINLIST(baseclass, member, head, iter) \
-  for ( LISTITER(baseclass, member) iter(head); !iter.IsPastEnd(); iter.MoveToNext() )
+#define FOREACHINLIST(baseclass, head, iter) \
+  for ( LISTITER(baseclass) iter(head); !iter.IsPastEnd(); iter.MoveToNext() )
 
 // make 'for' construct for walking a list, keeping the iterator for later use
-#define FOREACHINLISTKEEP(baseclass, member, head, iter) \
-  LISTITER(baseclass, member) iter(head); \
+#define FOREACHINLISTKEEP(baseclass, head, iter) \
+  LISTITER(baseclass) iter(head); \
   for (; !iter.IsPastEnd(); iter.MoveToNext() )
 
 // make 'for' construct for deleting a list
-#define FORDELETELIST(baseclass, member, head, iter)		  \
-   for ( LISTITER(baseclass, member) iter(head), iter##next;	  \
+#define FORDELETELIST(baseclass, head, iter)		  \
+   for ( LISTITER(baseclass) iter(head), iter##next;	  \
    iter##next=iter, iter##next.IsPastEnd() || (iter##next.MoveToNext(),1), !iter.IsPastEnd(); \
      iter = iter##next)
 
 // get the pointer to the first element in the list
-#define LIST_HEAD(listhead, baseclass, member) \
-  ( (baseclass *) ( ((UBYTE *)(&(listhead).Head())) - offsetof(baseclass, member) ) )
+#define LIST_HEAD(listhead, baseclass) \
+  ( (baseclass *) (listhead.Head().p_data) )
 // get the pointer to the last element in the list
-#define LIST_TAIL(listhead, baseclass, member) \
-  ( (baseclass *) ( ((UBYTE *)(&(listhead).Tail())) - offsetof(baseclass, member) ) )
+#define LIST_TAIL(listhead, baseclass) \
+  ( (baseclass *) (listhead.Tail().p_data ) )
 
 // get the pointer to the predecessor of the element
 #define LIST_PRED(element, baseclass, member) \
-  ( (baseclass *) ( ((UBYTE *)(&(element).member.Pred())) - offsetof(baseclass, member) ) )
+  ( (baseclass *) ((element).member.Pred().p_data) )
 // get the pointer to the successor of the element
 #define LIST_SUCC(element, baseclass, member) \
-  ( (baseclass *) ( ((UBYTE *)(&(element).member.Succ())) - offsetof(baseclass, member) ) )
+  ( (baseclass *) ((element).member.Succ().p_data) )
 
 
 

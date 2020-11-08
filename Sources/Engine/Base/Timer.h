@@ -19,21 +19,22 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
-#ifndef _MT
-#error Multithreading support is required!
-#endif
-
 #include <Engine/Base/Lists.h>
 #include <Engine/Base/Synchronization.h>
+
+#include <SDL2/SDL_timer.h>
+
+#include <atomic>
+#include <thread>
 
 /*
  * Class that holds and manipulates with high-precision timer values.
  */
 class CTimerValue {
 public:
-  __int64 tv_llValue;       // 64 bit integer (MSVC specific!)
+  ULONG tv_llValue;
   /* Constructor from quad integer. */
-  inline CTimerValue(__int64 llValue) : tv_llValue(llValue) {};
+  inline CTimerValue(ULONG llValue) : tv_llValue(llValue) {};
 public:
   /* Constructor. */
   inline CTimerValue(void) {};
@@ -55,13 +56,14 @@ public:
   /* Get the timer value in seconds. - use for time spans only! */
   inline double GetSeconds(void);
   /* Get the timer value in milliseconds as integral value. */
-  inline __int64 GetMilliseconds(void);
+  inline ULONG GetMilliseconds(void);
 };
 // a base class for hooking on timer interrupt
 class CTimerHandler {
 public:
   CListNode th_Node;
 public:
+  CTimerHandler() : th_Node(this) {}
   virtual ~CTimerHandler(void) {}  /* rcg10042001 */
   /* This is called every TickQuantum seconds. */
   ENGINE_API virtual void HandleTimer(void)=0;
@@ -71,10 +73,6 @@ public:
 class ENGINE_API CTimer {
 // implementation:
 public:
-
-  __int64 tm_llPerformanceCounterFrequency; // frequency of Win32 performance counter
-  __int64 tm_llCPUSpeedHZ;  // CPU speed in HZ
-
   CTimerValue tm_tvLastTimeOnTime;  // last time when timer was on time
   TIME        tm_tmLastTickOnTime;  // last tick when timer was on time
 
@@ -82,7 +80,8 @@ public:
   FLOAT tm_fLerpFactor;   // factor used for lerping between frames
   FLOAT tm_fLerpFactor2;  // secondary lerp-factor used for unpredicted movement
 
-  ULONG tm_TimerID;       // windows timer ID
+  std::thread tm_TimerThread;
+  std::atomic_bool timerThreadIsOver;
 
   CTCriticalSection tm_csHooks;   // access to timer hooks
   CListHead         tm_lhHooks;   // a list head for timer hooks
@@ -132,11 +131,7 @@ public:
 
   /* Get current timer value of high precision timer. */
   inline CTimerValue GetHighPrecisionTimer(void) {
-   __int64 mmRet;
-    _asm rdtsc
-    _asm mov dword ptr [mmRet+0],eax
-    _asm mov dword ptr [mmRet+4],edx
-    return mmRet;
+   return SDL_GetTicks();
   };
 };
 
@@ -148,6 +143,4 @@ ENGINE_API CTString TimeToString(FLOAT fTime);
 
 #include <Engine/Base/Timer.inl>
 
-
 #endif  /* include-once check. */
-

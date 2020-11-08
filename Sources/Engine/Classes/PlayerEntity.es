@@ -18,7 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  */
 4
 %{
-#include "StdH.h"
+
 #include <Engine/Entities/InternalClasses.h>
 #include <Engine/Base/Stream.h>
 #include <Engine/Base/CRC.h>

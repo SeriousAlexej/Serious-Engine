@@ -15,7 +15,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-
 enum GfxBlend
 {
   GFX_ONE           = 21,
@@ -242,6 +241,23 @@ extern void (*gfxEnableColorArray)(void);
 extern void (*gfxDisableColorArray)(void);
 
 
+// Shader
+typedef void *GfxProgram;
+struct GfxShadersUniforms;
+extern GfxProgram gfxMakeShaderProgram(const char *vertexShader, const char *fragmentShader);
+extern void gfxUseProgram(GfxProgram program);
+extern SLONG gfxGetAttribLocation(GfxProgram _program, const char *name);
+extern void gfxUniform(const char *uniformName, float f0);
+extern void gfxUniform(const char *uniformName, float f0, float f1);
+extern void gfxUniform(const char *uniformName, float f0, float f1, float f2);
+extern void gfxUniform(const char *uniformName, float f0, float f1, float f2, float f3);
+extern void gfxUniform(const char *uniformName, GFXColor &color);
+extern void gfxUniform(const char *uniformName, const FLOATmatrix3D &matrix);
+extern void gfxVertexAttribPointer(ULONG attribPointer, ULONG size, ULONG stride, ULONG offset);
+extern void gfxEnableVertexAttribArray(ULONG index);
+extern void gfxDisableVertexAttribArray(ULONG index);
+extern void gfxSyncProgram(GfxShadersUniforms &params);
+
 // MISC
 
 
@@ -272,36 +288,7 @@ extern void gfxFlushQuads(void);
 // check GFX errors only in debug builds
 #ifndef NDEBUG
   extern void OGL_CheckError(void);
-  extern void D3D_CheckError(HRESULT hr);
   #define OGL_CHECKERROR     OGL_CheckError();
-  #define D3D_CHECKERROR(hr) D3D_CheckError(hr);
 #else
   #define OGL_CHECKERROR     (void)(0);
-  #define D3D_CHECKERROR(hr) (void)(0);
 #endif
-
-
-
-// ATI's TRUFORM support
-
-
-// set truform parameters
-extern void gfxSetTruform( const INDEX iLevel, BOOL bLinearNormals);
-extern void (*gfxEnableTruform)( void);
-extern void (*gfxDisableTruform)(void);
-
-
-// set D3D vertex shader only if different than last time
-extern void d3dSetVertexShader(DWORD dwHandle);
-
-
-// macro for releasing D3D objects
-#define D3DRELEASE(object,check) \
-{ \
-  INDEX ref; \
-  do { \
-    ref = (object)->Release(); \
-    if(check) ASSERT(ref==0); \
-  } while(ref>0);  \
-  object = NONE; \
-}

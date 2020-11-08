@@ -1,16 +1,13 @@
 %{
-#include "StdH.h"
+#define YYINITDEPTH 3000
 
 #include <Engine/Base/Console.h>
 #include <Engine/Base/Shell.h>
-#include "ParsingSymbols.h"
+#include <Engine/Base/ParsingSymbols.h>
 
 #include <Engine/Templates/DynamicStackArray.cpp>
 #include <Engine/Templates/AllocationArray.cpp>
 
-%}
-
-%{
 #define YYERROR_VERBOSE 1
 // if error occurs in parsing
 void yyerror(char *str)
@@ -187,7 +184,7 @@ void DoComparison(value &vRes, value &v0, value &v1, int token)
 /* BISON Declarations */
 
 // we need to be reentrant!
-%pure_parser
+%define api.pure
 
 %union {
   value val;                  // for constants and expressions
@@ -195,7 +192,7 @@ void DoComparison(value &vRes, value &v0, value &v1, int token)
   ULONG ulFlags;              // for declaration qualifiers
   INDEX istType;              // for types
   CShellSymbol *pssSymbol;    // for symbols
-  struct LValue lvLValue;
+  LValue lvLValue;
   INDEX (*pPreFunc)(INDEX);  // pre-set function for a variable
   void (*pPostFunc)(INDEX); // post-set function for a variable
 }

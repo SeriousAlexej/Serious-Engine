@@ -13,7 +13,7 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#include "stdh.h"
+
 
 #include <Engine/Base/Shell.h>
 #include <Engine/Base/Shell_internal.h>
@@ -21,9 +21,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <Engine/Templates/DynamicStackArray.h>
 
-#include <Engine/Templates/AllocationArray.cpp>
-#include <Engine/Templates/DynamicArray.cpp>
-#include <Engine/Templates/DynamicStackArray.cpp>
+#include <Engine/Templates/AllocationArray.h>
+#include <Engine/Templates/DynamicArray.h>
+#include <Engine/Templates/DynamicStackArray.h>
 
 // all types are allocated here
 CAllocationArray<ShellType> _shell_ast;

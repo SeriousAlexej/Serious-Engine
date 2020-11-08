@@ -54,7 +54,7 @@ public:
     return m_ulFlags & ulFlag;                          \
   }
 
-
+#include "Selection.inl"
 
 #endif  /* include-once check. */
 

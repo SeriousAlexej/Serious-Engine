@@ -13,20 +13,6 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#include "stdh.h"
-
-#include <Engine/Templates/BSP.h>
-#include <Engine/Templates/BSP_internal.h>
-
-#include <Engine/Base/Stream.h>
-#include <Engine/Math/Vector.h>
-#include <Engine/Math/Plane.h>
-#include <Engine/Math/OBBox.h>
-#include <Engine/Math/Functions.h>
-
-#include <Engine/Templates/StaticStackArray.cpp>
-#include <Engine/Templates/DynamicArray.cpp>
-
 
 // epsilon value used for BSP cutting
 //#define BSP_EPSILON ((Type) 0.015625)       // 1/2^6 ~= 1.5 cm
@@ -422,7 +408,7 @@ BSPNode<Type, iDimensions>::BSPNode(enum BSPNodeLocation bnl)
  * Constructor for a branch node.
  */
 template<class Type, int iDimensions>
-BSPNode<Type, iDimensions>::BSPNode(const Plane<Type, iDimensions> &plSplitPlane, ULONG ulPlaneTag,
+BSPNode<Type, iDimensions>::BSPNode(const Plane<Type, iDimensions> &plSplitPlane, std::uintptr_t ulPlaneTag,
                  BSPNode<Type, iDimensions> &bnFront, BSPNode<Type, iDimensions> &bnBack)
   : Plane<Type, iDimensions>(plSplitPlane)
   , bn_pbnFront(&bnFront)
@@ -478,7 +464,7 @@ FLOAT BSPNode<Type, iDimensions>::TestSphere(const Vector<Type, iDimensions> &vS
   } else {
     ASSERT(bn_bnlLocation == BNL_BRANCH);
     // test the sphere against the split plane
-    Type tCenterDistance = PointDistance(vSphereCenter);
+    Type tCenterDistance = this->PointDistance(vSphereCenter);
     // if the sphere is in front of the plane
     if (tCenterDistance > +tSphereRadius) {
       // recurse down the front node
@@ -587,8 +573,8 @@ void BSPNode<Type, iDimensions>::FindLineMinMax(
   } else {
     ASSERT(bn_bnlLocation == BNL_BRANCH);
     // test the points against the split plane
-    Type tD0 = PointDistance(v0);
-    Type tD1 = PointDistance(v1);
+    Type tD0 = this->PointDistance(v0);
+    Type tD1 = this->PointDistance(v1);
     // if both are front
     if (tD0>=0 && tD1>=0) {
       // recurse down the front node
@@ -1142,7 +1128,7 @@ void BSPTree<Type, iDimensions>::MoveSubTreeToArray(BSPNode<Type, iDimensions> *
   bnInArray.bn_bnlLocation = pbnSubtree->bn_bnlLocation;
   bnInArray.bn_ulPlaneTag = pbnSubtree->bn_ulPlaneTag;
   // let plane tag hold pointer to node in array
-  pbnSubtree->bn_ulPlaneTag = (ULONG)&bnInArray;
+  pbnSubtree->bn_ulPlaneTag = (std::uintptr_t)&bnInArray;
 
   // remap pointers to subnodes
   if (pbnSubtree->bn_pbnFront==NULL) {
@@ -1296,20 +1282,20 @@ void BSPTree<Type, iDimensions>::Write_t(CTStream &strm) // throw char *
 #pragma warning (disable: 4660) // if already instantiated by some class
 
 // remove templates
-template DOUBLEbspvertex3D;
-template DOUBLEbspvertexcontainer3D;
-template DOUBLEbspedge3D;
-template DOUBLEbspnode3D;
-template DOUBLEbsppolygon3D;
-template DOUBLEbsptree3D;
-template DOUBLEbspcutter3D;
+template class BSPVertex<DOUBLE, 3>;
+template class BSPVertexContainer<DOUBLE, 3>;
+template class BSPEdge<DOUBLE, 3>;
+template class BSPNode<DOUBLE, 3>;
+template class BSPPolygon<DOUBLE, 3>;
+template class BSPTree<DOUBLE, 3>;
+template class BSPCutter<DOUBLE, 3>;
 
-template FLOATbspvertex3D;
-template FLOATbspvertexcontainer3D;
-template FLOATbspedge3D;
-template FLOATbspnode3D;
-template FLOATbsppolygon3D;
-template FLOATbsptree3D;
-template FLOATbspcutter3D;
+template class BSPVertex<FLOAT, 3>;
+template class BSPVertexContainer<FLOAT, 3>;
+template class BSPEdge<FLOAT, 3>;
+template class BSPNode<FLOAT, 3>;
+template class BSPPolygon<FLOAT, 3>;
+template class BSPTree<FLOAT, 3>;
+template class BSPCutter<FLOAT, 3>;
 
 #pragma warning (default: 4660)

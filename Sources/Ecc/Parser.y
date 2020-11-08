@@ -254,9 +254,7 @@ program
 
   } opt_global_cppblock {
 
-    //fprintf(_fImplementation, "\n#undef DECL_DLL\n#define DECL_DLL _declspec(dllimport)\n");
   } uses_list {
-    //fprintf(_fImplementation, "\n#undef DECL_DLL\n#define DECL_DLL _declspec(dllexport)\n");
 
     fprintf(_fImplementation, "#include <%s.h>\n", _strFileNameBase);
     fprintf(_fImplementation, "#include <%s_tables.h>\n", _strFileNameBase);

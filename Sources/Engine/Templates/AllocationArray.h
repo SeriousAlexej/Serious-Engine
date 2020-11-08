@@ -66,6 +66,7 @@ public:
   CAllocationArray<Type> &operator=(const CAllocationArray<Type> &aaOriginal);
 };
 
+#include "AllocationArray.inl"
 
 #endif  /* include-once check. */
 

@@ -13,7 +13,7 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#include "stdh.h"
+
 
 #include <Engine/Graphics/Raster.h>
 
@@ -53,7 +53,7 @@ CRaster::~CRaster(void)
 	// remove main drawport from list of drawports
 	ra_MainDrawPort.dp_NodeInRaster.Remove();
   // remove all other drawports in this raster
-  FORDELETELIST(CDrawPort, dp_NodeInRaster, ra_DrawPortList, litdp) {
+  FORDELETELIST(CDrawPort, ra_DrawPortList, litdp) {
 		// and delete each one
     delete &litdp.Current();
   }
@@ -67,7 +67,7 @@ CRaster::~CRaster(void)
 void CRaster::RecalculateDrawPortsDimensions(void)
 {
   // for all drawports in this raster
-  FOREACHINLIST(CDrawPort, dp_NodeInRaster, ra_DrawPortList, litdp) {
+  FOREACHINLIST(CDrawPort, ra_DrawPortList, litdp) {
     // recalculate dimensions to fit new size of raster
     litdp.Current().RecalculateDimensions();
   }

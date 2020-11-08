@@ -13,7 +13,7 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#include "stdh.h"
+
 #include <tchar.h>
 #include <Engine/Graphics/MultiMonitor.h>
 #include <Engine/Base/Console.h>
@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // idea and original code courtesy of Christian Studer <cstuder@realtimesoft.com>
 // added dynamic function loading and exception throwing
 
-#pragma comment(lib, "advapi32.lib")
+
 
 extern INDEX gfx_bDisableMultiMonSupport;
 extern INDEX gfx_ctMonitors;

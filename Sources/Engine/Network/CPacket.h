@@ -79,7 +79,7 @@ public:
   CAddress pa_adrAddress;				// packet address, port and client ID
   																
 	// Constructors/destructors
-	CPacket() { Clear(); }					// Default Constructor
+  CPacket() : pa_lnListNode(this) { Clear(); }					// Default Constructor
 	CPacket(CPacket &paOriginal);		// Copy constructor
 	~CPacket() { Clear(); }
 
@@ -110,7 +110,7 @@ public:
 	void Drop();
 	
   // get the size of data transfer unit this packet belongs to
-  SLONG CPacket::GetTransferSize();
+  SLONG GetTransferSize();
 
 	// Copy operator
 	void operator=(const CPacket &paOriginal);

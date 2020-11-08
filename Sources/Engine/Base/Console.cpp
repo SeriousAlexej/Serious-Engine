@@ -13,10 +13,10 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#include "stdh.h"
+
 
 #include <Engine/Base/Console.h>
-#include <Engine/Base/Console_Internal.h>
+#include <Engine/Base/Console_internal.h>
 
 #include <Engine/Base/Timer.h>
 #include <Engine/Base/ErrorReporting.h>
@@ -26,11 +26,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <Engine/Math/Functions.h>
 
-extern CConsole *_pConsole = NULL;
+CConsole *_pConsole = NULL;
 
 extern INDEX con_iLastLines;
-extern BOOL con_bCapture = FALSE;
-extern CTString con_strCapture = "";
+BOOL con_bCapture = FALSE;
+CTString con_strCapture = "";
 
 
 // Constructor.
@@ -133,7 +133,7 @@ INDEX CConsole::NumberOfLinesAfter(TIME tmLast)
     return 0;
   }
   // clamp console variable
-  con_iLastLines = Clamp( con_iLastLines, 0L, (INDEX)CONSOLE_MAXLASTLINES);
+  con_iLastLines = Clamp( con_iLastLines, INDEX(0), (INDEX)CONSOLE_MAXLASTLINES);
   // find number of last console lines to be displayed on screen
   for(INDEX i=0; i<con_iLastLines; i++) {
     if (con_atmLines[con_ctLines-1-i]<tmLast) {
@@ -197,7 +197,7 @@ void CConsole::ScrollBufferUp(INDEX ctLines)
     con_atmLines, 
     con_atmLines+ctLines,
     (con_ctLines-ctLines)*sizeof(TIME));
-  con_ctLinesPrinted = ClampUp(con_ctLinesPrinted+1L, con_ctLines);
+  con_ctLinesPrinted = ClampUp(INDEX(con_ctLinesPrinted+1), con_ctLines);
   // clear lines at the end
   for(INDEX iLine=con_ctLines-ctLines; iLine<con_ctLines; iLine++) {
     ClearLine(iLine);
@@ -213,8 +213,6 @@ void CConsole::PutString(const char *strString)
   // synchronize access to console
   CTSingleLock slConsole(&con_csConsole, TRUE);
 
-  // if in debug version, report it to output window
-  _RPT1(_CRT_WARN, "%s", strString);
   // first append that string to the console output file
   if (con_fLog!=NULL) {
     fprintf(con_fLog, "%s", strString);

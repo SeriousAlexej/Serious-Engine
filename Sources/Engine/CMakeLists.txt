@@ -25,8 +25,6 @@ set(SRC_LIST
     Base/FileName.cpp
     Base/FileName.h
     Base/GroupFile.h
-    Base/IFeel.cpp
-    Base/IFeel.h
     Base/Input.cpp
     Base/Input.h
     Base/KeyNames.h
@@ -38,16 +36,10 @@ set(SRC_LIST
     Base/Memory.h
     Base/Parser.y
     Base/ParsingSymbols.h
-    Base/Priority.inl
-    Base/Profiling.cpp
-    Base/Profiling.h
-    Base/ProfilingEnabled.h
     Base/ProgressHook.cpp
     Base/ProgressHook.h
     Base/Protection.cpp
     Base/Protection.h
-    Base/Registry.cpp
-    Base/Registry.h
     Base/Relations.cpp
     Base/Relations.h
     Base/ReplaceFile.cpp
@@ -123,7 +115,6 @@ set(SRC_LIST
     
     Graphics/Adapter.cpp
     Graphics/Adapter.h
-    Graphics/Benchmark.cpp
     Graphics/Color.cpp
     Graphics/Color.h
     Graphics/DepthCheck.cpp
@@ -138,14 +129,18 @@ set(SRC_LIST
     Graphics/Fog.h
     Graphics/Font.cpp
     Graphics/Font.h
+    Graphics/Gfx_OpenGL_Shaders.cpp
+    Graphics/Gfx_OpenGL_Shaders.h
     Graphics/Gfx_OpenGL_Textures.cpp
     Graphics/Gfx_OpenGL.cpp
-    Graphics/Gfx_wrapper_OpenGL.cpp
+    Graphics/Gfx_OpenGL.h
+    Graphics/Gfx_wrapper_OpenGL.inl
     Graphics/Gfx_wrapper.cpp
     Graphics/Gfx_wrapper.h
     Graphics/GfxLibrary.cpp
     Graphics/GfxLibrary.h
-    Graphics/GfxProfile.cpp
+    Graphics/gl_functions.h
+    Graphics/gl_types.h
     Graphics/Graphics.cpp
     Graphics/ImageInfo.cpp
     Graphics/ImageInfo.h
@@ -260,8 +255,6 @@ set(SRC_LIST
     Network/Network.h
     Network/NetworkMessage.cpp
     Network/NetworkMessage.h
-    Network/NetworkProfile.cpp
-    Network/NetworkProfile.h
     Network/Packet.cpp
     Network/Packet.h
     Network/PlayerBuffer.cpp
@@ -321,34 +314,35 @@ set(SRC_LIST
     Sound/SoundProfile.h
     Sound/Wave.cpp
     Sound/Wave.h
+    Sound/WaveFormat.h
     
-    Templates/AllocationArray.cpp
     Templates/AllocationArray.h
+    Templates/AllocationArray.inl
     Templates/BSP_internal.h
-    Templates/BSP.cpp
     Templates/BSP.h
-    Templates/DynamicArray.cpp
+    Templates/BSP.inl
     Templates/DynamicArray.h
-    Templates/DynamicContainer.cpp
+    Templates/DynamicArray.inl
     Templates/DynamicContainer.h
-    Templates/DynamicStackArray.cpp
+    Templates/DynamicContainer.inl
     Templates/DynamicStackArray.h
+    Templates/DynamicStackArray.inl
     Templates/HashTableTemplate.cpp
     Templates/HashTableTemplate.h
-    Templates/LinearAllocator.cpp
     Templates/LinearAllocator.h
+    Templates/LinearAllocator.inl
     Templates/NameTable_CTFileName.cpp
     Templates/NameTable_CTFileName.h
     Templates/NameTable_CTranslationPair.cpp
     Templates/NameTable_CTranslationPair.h
     Templates/NameTable.cpp
     Templates/NameTable.h
-    Templates/Selection.cpp
     Templates/Selection.h
-    Templates/StaticArray.cpp
+    Templates/Selection.inl
     Templates/StaticArray.h
-    Templates/StaticStackArray.cpp
+    Templates/StaticArray.inl
     Templates/StaticStackArray.h
+    Templates/StaticStackArray.inl
     Templates/Stock_CAnimData.cpp
     Templates/Stock_CAnimData.h
     Templates/Stock_CAnimSet.cpp
@@ -388,17 +382,13 @@ set(SRC_LIST
     Terrain/TerrainRender.h
     Terrain/TerrainTile.cpp
     Terrain/TerrainTile.h
-    
-    World/PhysicsProfile.cpp
-    World/PhysicsProfile.h
+
     World/World.cpp
     World/World.h
     World/WorldCollision.cpp
     World/WorldCollision.h
     World/WorldCollisionGrid.cpp
     World/WorldCSG.cpp
-    World/WorldEditingProfile.cpp
-    World/WorldEditingProfile.h
     World/WorldIO.cpp
     World/WorldRayCasting.cpp
     World/WorldRayCasting.h
@@ -423,11 +413,14 @@ set(CLASSES_LIST
 
 add_library(${TARGET_NAME} SHARED ${SRC_LIST} ${CLASSES_LIST})
 add_classes(${TARGET_NAME} ${CLASSES_LIST})
-add_dependencies(${TARGET_NAME} Ecc)
+add_compile_definitions(ENGINE_EXPORTS)
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SRC_LIST} ${CLASSES_LIST})
 
 target_precompile_headers(${TARGET_NAME} PRIVATE StdH.h)
+
+target_include_directories(${TARGET_NAME} PRIVATE ${SDL2_INCLUDE_DIRS})
+target_link_libraries(${TARGET_NAME} ${SDL2_LIBRARIES})
 
 bison_add(${TARGET_NAME} Base/Parser.y)
 flex_add(${TARGET_NAME} Base/Scanner.l)

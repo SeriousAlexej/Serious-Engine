@@ -21,7 +21,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <Engine/Base/Lists.h>
 
-
 class ENGINE_API CDrawPort {
 // implementation:
 public:

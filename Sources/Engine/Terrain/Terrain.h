@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <Engine/Terrain/TerrainLayer.h>
 #include <Engine/Terrain/TerrainTile.h>
 #include <Engine/Terrain/ArrayHolder.h>
-#include <Engine/Templates/StaticArray.cpp>
+#include <Engine/Templates/StaticArray.h>
 
 #define TR_REGENERATE              (1UL<<0) // terrain needs to be regenerated
 #define TR_REGENERATE_TOP_MAP      (1UL<<1) // regenerate terrain top map

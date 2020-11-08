@@ -13,15 +13,6 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#ifndef SE_INCL_SELECTION_CPP
-#define SE_INCL_SELECTION_CPP
-#ifdef PRAGMA_ONCE
-  #pragma once
-#endif
-
-#include <Engine/Templates/Selection.h>
-#include <Engine/Templates/DynamicContainer.cpp>
-
 /*
  * Select one object.
  */
@@ -33,7 +24,7 @@ void CSelection<cType, ulFlag>::Select(cType &tToSelect)
     // select it
     tToSelect.Select(ulFlag);
     // add it to this container
-    Add(&tToSelect);
+    this->Add(&tToSelect);
 
   // if the object is already selected
   } else {
@@ -52,7 +43,7 @@ void CSelection<cType, ulFlag>::Deselect(cType &tToSelect)
     // deselect it
     tToSelect.Deselect(ulFlag);
     // remove it from this container
-    Remove(&tToSelect);
+    this->Remove(&tToSelect);
 
   // if the object is not selected
   } else {
@@ -79,10 +70,9 @@ void CSelection<cType, ulFlag>::Clear(void)
   // for all objects in the container
   FOREACHINDYNAMICCONTAINER(*this, cType, itObject) {
     // object must be allocated and valid
+#ifdef WIN32
     ASSERT(_CrtIsValidPointer(&*itObject, sizeof(cType), TRUE));
-/*    ASSERT(_CrtIsValidHeapPointer(&*itObject));
-    ASSERT(_CrtIsMemoryBlock(&*itObject, sizeof(cType), NULL, NULL, NULL ));
-    */
+#endif
 
     // deselect it
     itObject->Deselect(ulFlag);
@@ -94,13 +84,9 @@ void CSelection<cType, ulFlag>::Clear(void)
 template<class cType, unsigned long ulFlag>
 cType *CSelection<cType, ulFlag>::GetFirstInSelection(void)
 {
-  if( Count() == 0)
+  if( this->Count() == 0)
   {
     return NULL;
   }
   return (cType *) &CDynamicContainer<cType>::GetFirst();
 }
-
-
-#endif  /* include-once check. */
-

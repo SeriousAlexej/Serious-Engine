@@ -23,7 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <Engine/Base/Lists.h>
 #include <Engine/Templates/StaticArray.h>
 #include <Engine/Templates/DynamicArray.h>
-#include <Engine/Templates/DynamicArray.cpp>
 
 /*
  * Terrain archive class -- a collection of terrains used by a level.

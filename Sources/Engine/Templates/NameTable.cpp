@@ -14,7 +14,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 
-#include <Engine/Templates/StaticArray.cpp>
+#include <Engine/Templates/StaticArray.h>
 
 #if NAMETABLE_CASESENSITIVE==1
   #define COMPARENAMES(a, b) (strcmp(a, b)==0)

@@ -13,16 +13,7 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#ifndef SE_INCL_DYNAMICARRAY_CPP
-#define SE_INCL_DYNAMICARRAY_CPP
-#ifdef PRAGMA_ONCE
-  #pragma once
-#endif
 
-#include <Engine/Base/Memory.h>
-#include <Engine/Base/ListIterator.inl>
-
-#include <Engine/Templates/DynamicArray.h>
 
 // iterate whole dynamic array
 /* NOTE: The iterator defined by this macro must be destroyed before adding/removing
@@ -33,6 +24,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class CDABlockInfo {
 public:
+  CDABlockInfo()
+    : bi_ListNode(this)
+  {
+  }
   CListNode bi_ListNode;
   void *bi_Memory;
 };
@@ -41,7 +36,8 @@ public:
  * Default constructor.
  */
 template<class Type>
-CDynamicArray<Type>::CDynamicArray(void) {
+CDynamicArray<Type>::CDynamicArray(void)
+{
 #if CHECKARRAYLOCKING
   // not locked
   da_LockCt = 0;
@@ -90,7 +86,7 @@ void CDynamicArray<Type>::Clear(void) {
     // for all pointers
     for (INDEX iPointer=0; iPointer<da_Count; iPointer++) {
       // destroy the object that it points to
-      ::Clear(*da_Pointers[iPointer]);
+        ::Clear(*da_Pointers[iPointer]);
     }
 
     // free the pointers
@@ -105,7 +101,7 @@ void CDynamicArray<Type>::Clear(void) {
     // nothing to free
   }
   // for all memory blocks
-  FORDELETELIST(CDABlockInfo, bi_ListNode, da_BlocksList, itBlock) {
+  FORDELETELIST(CDABlockInfo, da_BlocksList, itBlock) {
     // free memory used by block (this doesn't call destructors - see note above!)
     delete[] (Type *)itBlock->bi_Memory;
     // free memory used by block info
@@ -457,8 +453,3 @@ inline BOOL CDynamicArrayIterator<Type>::IsPastEnd(void) {
   ASSERT(this!=NULL);
   return dai_Index>=dai_Array.Count();
 }
-
-
-
-#endif  /* include-once check. */
-

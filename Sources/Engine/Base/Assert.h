@@ -13,11 +13,7 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#ifndef SE_INCL_ASSERT_H
-#define SE_INCL_ASSERT_H
-#ifdef PRAGMA_ONCE
-  #pragma once
-#endif
+#pragma once
 
 #ifdef _MSC_VER  /* rcg10042001 */
 
@@ -35,7 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 
-#ifdef PLATFORM_UNIX  /* rcg10042001 */
+#ifdef unix
 #include <assert.h>
 #include <signal.h>
 #define _assert(x, y, z) assert(0)
@@ -62,7 +58,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #else	/* ndef _NTSDK */
   /* current definition */
   #ifdef	_DLL
-  #define _CRTIMP __declspec(dllimport)
+  #define _CRTIMP IMPORT_MACRO
   #else	/* ndef _DLL */
   #define _CRTIMP
   #endif	/* _DLL */
@@ -75,7 +71,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
     #define SAFEBREAKPOINT try { _asm { int 3 }; } catch(...) {;}
   #endif
 
-  #ifdef PLATFORM_UNIX /* rcg10042001 */
+  #ifdef unix
     #define SAFEBREAKPOINT raise(SIGTRAP)
   #endif
 
@@ -114,8 +110,3 @@ with this program; if not, write to the Free Software Foundation, Inc.,
     } else NOTHING
   #define DEBUGSTRING(str) (str)
 #endif
-
-
-
-#endif  /* include-once check. */
-

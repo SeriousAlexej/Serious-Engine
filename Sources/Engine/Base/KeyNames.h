@@ -154,11 +154,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define KID_MOUSEWHEELUP    0xC5
 #define KID_MOUSEWHEELDOWN  0xC6
 
-// 2nd mouse buttons
-#define KID_2MOUSE1         0xD0
-#define KID_2MOUSE2         0xD1
-#define KID_2MOUSE3         0xD2
-
 // Mouse device controls
 #define CID_MOUSE_AXIS_XP     0
 #define CID_MOUSE_AXIS_XN     1

@@ -79,6 +79,12 @@ LICENSE
   #pragma once
 #endif
 
+#ifdef unix
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#endif
+
 /* function gsvalfunc */
 unsigned char gsvalfunc(u_char reg) {
     if(reg < 0x1a) return u_char (reg + 'A');
@@ -167,15 +173,15 @@ unsigned char *gsseckey(u_char *secure, u_char *key, int enctype) {
 }
 
 /* function resolv */
-u_int resolv(char *host) {
+std::uint32_t resolv(char *host) {
     struct  hostent *hp;
-    u_int   host_ip;
+    std::uint32_t   host_ip;
 
     host_ip = inet_addr(host);
     if(host_ip == INADDR_NONE) {
         hp = gethostbyname(host);
         if(!hp) {
-            return (NULL);
+            return (0);
         } else host_ip = *(u_int *)(hp->h_addr);
     }
     return(host_ip);

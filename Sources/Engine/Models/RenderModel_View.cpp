@@ -13,9 +13,9 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
- #include "StdH.h"
+ 
 
-#include <Engine/Base/Statistics_internal.h>
+#include <Engine/Base/Statistics_Internal.h>
 #include <Engine/Base/Console.h>
 #include <Engine/Models/ModelObject.h>
 #include <Engine/Models/ModelData.h>
@@ -28,8 +28,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <Engine/Base/Lists.inl>
 #include <Engine/World/WorldEditingProfile.h>
 
-#include <Engine/Templates/StaticArray.cpp>
-#include <Engine/Templates/StaticStackArray.cpp>
+#include <Engine/Templates/StaticArray.h>
+#include <Engine/Templates/StaticStackArray.h>
 
 #include <Engine/Models/RenderModel_internal.h>
 
@@ -40,12 +40,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define W  word ptr
 #define B  byte ptr
 
-#define ASMOPT 1
-
 extern INDEX mdl_bRenderBump;
 
 extern BOOL CVA_bModels;
-extern BOOL GFX_bTruform;
 extern BOOL _bMultiPlayer;
 
 extern const UBYTE *pubClipByte;
@@ -103,8 +100,8 @@ static BOOL  _bFlatFill   = FALSE;
 static BOOL  _bHasBump    = FALSE;
 static SLONG _slLR=0, _slLG=0, _slLB=0;
 static SLONG _slAR=0, _slAG=0, _slAB=0;
-static const __int64 mmRounder = 0x007F007F007F007F;
-static const __int64 mmF000    = 0x00FF000000000000;
+static const std::int64_t mmRounder = 0x007F007F007F007F;
+static const std::int64_t mmF000    = 0x00FF000000000000;
 
 // viewer absolute and object space projection
 static FLOAT3D _vViewer;
@@ -1821,11 +1818,6 @@ void CModelObject::RenderModel_View( CRenderModel &rm)
   ASSERT( _atexSrfBase.Count()==0);  _atexSrfBase.Push(_ctAllSrfVx);   
   ASSERT( _acolSrfBase.Count()==0);  _acolSrfBase.Push(_ctAllSrfVx);   
 
-  if( GFX_bTruform) {
-    ASSERT( _anorSrfBase.Count()==0);
-    _anorSrfBase.Push(_ctAllSrfVx);   
-  }
-
   // determine multitexturing capability for overbrighting purposes
   extern INDEX mdl_bAllowOverbright;
   const BOOL bOverbright = mdl_bAllowOverbright && _pGfx->gl_ctTextureUnits>1;
@@ -1861,7 +1853,7 @@ void CModelObject::RenderModel_View( CRenderModel &rm)
   pvtxMipBase = &_avtxMipBase[0];
   pcolMipBase = &_acolMipBase[0];
   pnorMipBase = &_anorMipBase[0];
-  const BOOL bNeedNormals = GFX_bTruform || (_ulMipLayerFlags&(SRF_REFLECTIONS|SRF_SPECULAR|SRF_BUMP));
+  const BOOL bNeedNormals = _ulMipLayerFlags&(SRF_REFLECTIONS|SRF_SPECULAR|SRF_BUMP);
   UnpackFrame( rm, bNeedNormals);
 
   // cache some more pointers and vars
@@ -2030,21 +2022,10 @@ srfVtxLoop:
       pvtxSrfBase[iSrfVx].z = pvtxMipBase[iMipVx].z;
     }
 #endif
-    // setup normal array for truform (if enabled)
-    if( GFX_bTruform) {
-      GFXNormal *pnorSrfBase = &_anorSrfBase[iSrfVx0];
-      for( iSrfVx=0; iSrfVx<ctSrfVx; iSrfVx++) {
-        const INDEX iMipVx = puwSrfToMip[iSrfVx];
-        pnorSrfBase[iSrfVx].nx = pnorMipBase[iMipVx].nx;
-        pnorSrfBase[iSrfVx].ny = pnorMipBase[iMipVx].ny;
-        pnorSrfBase[iSrfVx].nz = pnorMipBase[iMipVx].nz;
-      }
-    }
   }}
   // prepare (and lock) vertex array
   gfxEnableDepthTest();
   gfxSetVertexArray( &_avtxSrfBase[0], _ctAllSrfVx);
-  if(GFX_bTruform) gfxSetNormalArray( &_anorSrfBase[0]);
   if(CVA_bModels) gfxLockArrays();
   // cache light in object space (for reflection, specular and/or bump mapping)
   _vLightObj = rm.rm_vLightObj;

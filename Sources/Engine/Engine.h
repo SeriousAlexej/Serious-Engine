@@ -16,12 +16,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // set this to 1 to enable checks whether somethig is deleted while iterating some array/container
 #define CHECKARRAYLOCKING 0
 
-#ifdef _WIN32
-  #ifndef PLATFORM_WIN32
-    #define PLATFORM_WIN32 1
-  #endif
-#endif
-
 #include <stdlib.h>
 #include <malloc.h>
 #include <stdarg.h>
@@ -34,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <float.h>    // for FPU control
 
 /* rcg10042001 !!! FIXME: Move these somewhere. */
-#if (defined PLATFORM_WIN32)
+#if (defined WIN32)
 #include <conio.h>
 #include <crtdbg.h>
 #include <winsock2.h>
@@ -63,8 +57,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <Engine/Base/CRC.h>
 #include <Engine/Base/Translation.h>
 #include <Engine/Base/ProgressHook.h>
-#include <Engine/Base/Registry.h>
-#include <Engine/Base/IFeel.h>
 
 #include <Engine/Entities/EntityClass.h>
 #include <Engine/Entities/EntityCollision.h>
@@ -99,20 +91,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <Engine/Network/PlayerBuffer.h>
 #include <Engine/Network/PlayerTarget.h>
 #include <Engine/Network/SessionState.h>
-#include <Engine/Network/NetworkProfile.h>
 
 #include <Engine/Brushes/Brush.h>
 #include <Engine/Brushes/BrushTransformed.h>
 #include <Engine/Brushes/BrushArchive.h>
 
 
-#pragma message(">> Uncomment include to terrain.h")
 //#include <Engine/Terrain/Terrain.h>
 
 #include <Engine/World/World.h>
-#include <Engine/World/WorldEditingProfile.h>
 #include <Engine/World/WorldRayCasting.h>
-#include <Engine/World/PhysicsProfile.h>
 #include <Engine/World/WorldSettings.h>
 #include <Engine/World/WorldCollision.h>
 
@@ -151,19 +139,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <Engine/Templates/BSP.h>
 #include <Engine/Templates/BSP_internal.h>
 #include <Engine/Templates/DynamicStackArray.h>
-#include <Engine/Templates/DynamicStackArray.cpp>
 #include <Engine/Templates/LinearAllocator.h>
-#include <Engine/Templates/LinearAllocator.cpp>
 #include <Engine/Templates/DynamicArray.h>
-#include <Engine/Templates/DynamicArray.cpp>
 #include <Engine/Templates/DynamicContainer.h>
-#include <Engine/Templates/DynamicContainer.cpp>
 #include <Engine/Templates/StaticArray.h>
-#include <Engine/Templates/StaticArray.cpp>
 #include <Engine/Templates/StaticStackArray.h>
-#include <Engine/Templates/StaticStackArray.cpp>
 #include <Engine/Templates/Selection.h>
-#include <Engine/Templates/Selection.cpp>
 
 
 // some global stuff
@@ -171,7 +152,6 @@ ENGINE_API void SE_InitEngine( CTString strGameID);
 ENGINE_API void SE_EndEngine(void);
 ENGINE_API void SE_LoadDefaultFonts(void);
 ENGINE_API void SE_UpdateWindowHandle( HWND hwndWindowed);
-ENGINE_API void SE_PretouchIfNeeded(void);
 
 extern ENGINE_API CTString _strEngineBuild;  // not valid before InitEngine()!
 extern ENGINE_API ULONG _ulEngineBuildMajor;

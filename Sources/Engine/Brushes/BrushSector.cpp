@@ -13,37 +13,21 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#include "stdh.h"
-
 #include <Engine/Brushes/Brush.h>
 #include <Engine/Brushes/BrushTransformed.h>
 #include <Engine/Math/Geometry.inl>
 #include <Engine/Base/Console.h>
 #include <Engine/World/World.h>
-#include <Engine/World/WorldEditingProfile.h>
 #include <Engine/Math/Projection_DOUBLE.h>
-#include <Engine/Templates/DynamicArray.cpp>
-#include <Engine/Templates/StaticArray.cpp>
-#include <Engine/Templates/DynamicContainer.cpp>
+#include <Engine/Templates/DynamicArray.h>
+#include <Engine/Templates/StaticArray.h>
+#include <Engine/Templates/DynamicContainer.h>
 #include <Engine/Math/Float.h>
 #include <Engine/Math/OBBox.h>
 #include <Engine/Entities/Entity.h>
 #include <Engine/Templates/BSP.h>
 #include <Engine/Templates/BSP_internal.h>
 
-//template CDynamicArray<CBrushVertex>;
-
-CBrushSector::CBrushSector(const CBrushSector &c) 
-: bsc_bspBSPTree(*new DOUBLEbsptree3D)
-{ 
-  ASSERT(FALSE);
-};
-
-CBrushSector &CBrushSector::operator=(const CBrushSector &c)
-{
-  ASSERT(FALSE);
-  return *this;
-};
 
 extern void AssureFPT_53(void);
 
@@ -53,6 +37,9 @@ CBrushSector::CBrushSector(void)
 , bsc_ulFlags2(0)
 , bsc_ulTempFlags(0)
 , bsc_ulVisFlags(0)
+, bsc_lnInActiveSectors(this)
+, bsc_rdOtherSidePortals(this)
+, bsc_rsEntities(this)
 , bsc_strName("")
 , bsc_bspBSPTree(*new DOUBLEbsptree3D)
 {
@@ -332,13 +319,11 @@ DOUBLE CBrushSector::CalculateVolume(void)
 }
 void CBrushSector::Triangulate(void)
 {
-  _pfWorldEditingProfile.StartTimer(CWorldEditingProfile::PTI_TRIANGULATE);
   // for each polygon
   {FOREACHINSTATICARRAY(bsc_abpoPolygons, CBrushPolygon, itbpo) {
     itbpo->Triangulate();
   }}
 
-  _pfWorldEditingProfile.StopTimer(CWorldEditingProfile::PTI_TRIANGULATE);
 }
 // update changed sector's data after dragging vertices or importing
 void CBrushSector::UpdateSector(void)

@@ -13,7 +13,7 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#include "stdh.h"
+
 
 #include <Engine/Base/Stream.h>
 #include <Engine/Base/Console.h>
@@ -48,7 +48,7 @@ public:
 };
 
 // the thread's local buffer
-static _declspec(thread) CMessageBuffer mbReceivedMessage = { 0,0 };
+static thread_local CMessageBuffer mbReceivedMessage = { 0,0 };
 
 void CMessageBuffer::Allocate(void)
 {

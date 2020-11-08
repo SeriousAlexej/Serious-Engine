@@ -280,7 +280,7 @@ public:
   ULONG pa_ulButtons;       // 32 bits for action buttons (application defined)
     // keep flags that are likely to be changed/set more often at lower bits,
     // so that better compression can be achieved for network transmission
-  __int64 pa_llCreated;     // when was created (for ping calc.) in ms
+  std::int64_t pa_llCreated;     // when was created (for ping calc.) in ms
 
 public:
   CPlayerAction(void);

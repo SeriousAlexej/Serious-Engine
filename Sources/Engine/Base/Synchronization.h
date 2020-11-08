@@ -19,11 +19,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
+#include <mutex>
+
 // intra-process mutex (only used by thread of same process)
 // NOTE: mutex has no interface - it is locked using CTSingleLock
 class CTCriticalSection {
 public:
-  void *cs_pvObject;  // object is internal to implementation
+  std::recursive_mutex m_mutex;
+  INDEX m_recurse_count;
   INDEX cs_iIndex;    // index of mutex used to prevent deadlock with assertions
   // use numbers from 1 and above for deadlock control, or -1 for no deadlock control
   ENGINE_API CTCriticalSection(void);

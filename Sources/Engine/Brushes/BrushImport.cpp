@@ -13,15 +13,14 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#include "stdh.h"
+
 
 #include <Engine/Brushes/Brush.h>
 #include <Engine/Math/Float.h>
 #include <Engine/Math/Object3D.h>
-#include <Engine/Templates/StaticArray.cpp>
-#include <Engine/Templates/DynamicContainer.cpp>
-#include <Engine/Templates/DynamicArray.cpp>
-#include <Engine/World/WorldEditingProfile.h>
+#include <Engine/Templates/StaticArray.h>
+#include <Engine/Templates/DynamicContainer.h>
+#include <Engine/Templates/DynamicArray.h>
 #include <Engine/Brushes/BrushTransformed.h>
 #include <Engine/Graphics/Color.h>
 #include <Engine/Math/Projection_DOUBLE.h>
@@ -68,7 +67,6 @@ void CBrush3D::FromObject3D_t(CObject3D &ob) // throw char *
 CBrushSector *CBrushMip::AddFromObject3D_t(CObject3D &ob) // throw char *
 {
   CSetFPUPrecision sfp(FPT_53BIT);
-  _pfWorldEditingProfile.StartTimer(CWorldEditingProfile::PTI_ADDFROMOBJECT3D);
   // optimize the object, to remove replicated and unused elements and find edge inverses
   CBrush3D::OptimizeObject3D(ob);
 
@@ -90,7 +88,6 @@ CBrushSector *CBrushMip::AddFromObject3D_t(CObject3D &ob) // throw char *
     pbscSectors++;
   }
 
-  _pfWorldEditingProfile.StopTimer(CWorldEditingProfile::PTI_ADDFROMOBJECT3D);
   // return pointer to first created sector
   return pbscFirstSector;
 }

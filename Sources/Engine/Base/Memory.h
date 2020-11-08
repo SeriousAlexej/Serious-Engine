@@ -28,7 +28,6 @@ ENGINE_API extern SLONG GetFreeMemory( void );
 
 /* Allocate a block of memory - fatal error if not enough memory. */
 ENGINE_API extern void *AllocMemory( SLONG memsize );
-ENGINE_API extern void *_debug_AllocMemory( SLONG memsize, int iType, const char *strFile, int iLine);
 ENGINE_API extern void *AllocMemoryAligned( SLONG memsize, SLONG slAlignPow2);
 /* Free a block of memory. */
 ENGINE_API extern void FreeMemory( void *memory);

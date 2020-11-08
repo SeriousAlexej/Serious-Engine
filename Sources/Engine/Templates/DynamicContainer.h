@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
+#include <Engine/Base/Memory.h>
 #include <Engine/Templates/StaticStackArray.h>
 
 
@@ -74,7 +75,7 @@ public:
   Type &GetFirst(void);
 };
 
-
+#include "DynamicContainer.inl"
 
 #endif  /* include-once check. */
 

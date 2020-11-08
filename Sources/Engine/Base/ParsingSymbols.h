@@ -16,11 +16,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <Engine/Base/Shell_internal.h>
 #include <Engine/Templates/AllocationArray.h>
 
-// needed for parser and scanner
-#define alloca _alloca
-extern void yyerror(char *s);
-extern int yyparse(void);
-
 typedef struct yy_buffer_state *YY_BUFFER_STATE;
 YY_BUFFER_STATE yy_scan_string(const char *str);
 void yy_delete_buffer(YY_BUFFER_STATE b);

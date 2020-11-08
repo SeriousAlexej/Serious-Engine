@@ -26,16 +26,24 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <Engine/Base/FileName.h>
 #include <Engine/Base/ErrorReporting.h>
 #include <Engine/Templates/DynamicStackArray.h>
+#ifdef unix
+#include <signal.h>
+#endif
 
 // maximum length of file that can be saved (default: 8Mb)
 ENGINE_API extern ULONG _ulMaxLengthOfSavingFile;
 
+#ifdef WIN32
 #define CTSTREAM_BEGIN CTStream::EnableStreamHandling(); __try
 #define CTSTREAM_END __except( CTStream::ExceptionFilter( GetExceptionCode(),\
                                                           GetExceptionInformation()) )\
   {\
      CTStream::ExceptionFatalError();\
   }; CTStream::DisableStreamHandling();
+#else
+#define CTSTREAM_BEGIN CTStream::EnableStreamHandling();
+#define CTSTREAM_END   CTStream::DisableStreamHandling();
+#endif
 
 /*
  * Chunk ID class
@@ -88,7 +96,7 @@ public:
   CDynamicStackArray<CTFileName> strm_afnmDictionary; // dictionary is stored here
 
   /* Throw an exception of formatted string. */
-  void Throw_t(char *strFormat, ...); // throw char *
+  void Throw_t(const char *strFormat, ...); // throw char *
   // read the dictionary from given offset in file (internal function)
   void ReadDictionary_intenal_t(SLONG slOffset);
   // copy filename dictionary from another stream
@@ -119,9 +127,11 @@ public:
   /* Static function disable stream handling. */
   static void DisableStreamHandling(void);
 
-#ifdef PLATFORM_WIN32 /* rcg10042001 !!! FIXME */
   /* Static function to filter exceptions and intercept access violation */
+#ifdef WIN32
   static int ExceptionFilter(DWORD dwCode, _EXCEPTION_POINTERS *pExceptionInfoPtrs);
+#elif unix
+  static void SignalHandler(int signo, siginfo_t* info, void*);
 #endif
 
   /* Static function to report fatal exception error. */
@@ -169,7 +179,7 @@ public:
   inline CTStream &operator>>(SLONG &sl) { Read_t(&sl, sizeof(sl)); return *this; } // throw char *
   inline CTStream &operator>>(SWORD &sw) { Read_t(&sw, sizeof(sw)); return *this; } // throw char *
   inline CTStream &operator>>(SBYTE &sb) { Read_t(&sb, sizeof(sb)); return *this; } // throw char *
-  inline CTStream &operator>>(BOOL   &b) { Read_t( &b, sizeof( b)); return *this; } // throw char *
+  inline CTStream &operator>>(std::uintptr_t &up) { Read_t(&up, sizeof(up)); return *this; } // throw char *
   /* Write an object into stream. */
   inline CTStream &operator<<(const float  &f) { Write_t( &f, sizeof( f)); return *this; } // throw char *
   inline CTStream &operator<<(const double &d) { Write_t( &d, sizeof( d)); return *this; } // throw char *
@@ -179,7 +189,7 @@ public:
   inline CTStream &operator<<(const SLONG &sl) { Write_t(&sl, sizeof(sl)); return *this; } // throw char *
   inline CTStream &operator<<(const SWORD &sw) { Write_t(&sw, sizeof(sw)); return *this; } // throw char *
   inline CTStream &operator<<(const SBYTE &sb) { Write_t(&sb, sizeof(sb)); return *this; } // throw char *
-  inline CTStream &operator<<(const BOOL   &b) { Write_t( &b, sizeof( b)); return *this; } // throw char *
+  inline CTStream &operator<<(const std::uintptr_t &up) { Write_t(&up, sizeof(up)); return *this; } // throw char *
 
   // CTFileName reading/writing
   ENGINE_API friend CTStream &operator>>(CTStream &strmStream, CTFileName &fnmFileName);
@@ -365,7 +375,6 @@ ENGINE_API INDEX ExpandFilePath(ULONG ulType, const CTFileName &fnmFile, CTFileN
 
 // these are input flags for directory reading
 #define DLI_RECURSIVE  (1UL<<0)  // recurse into subdirs
-#define DLI_SEARCHCD   (1UL<<1)  // search the CD path also
 // make a list of all files in a directory
 ENGINE_API void MakeDirList(
   CDynamicStackArray<CTFileName> &adeDir, 
@@ -385,8 +394,6 @@ ENGINE_API extern CTString _strModName;
 ENGINE_API extern CTString _strModURL;
 // global string with current MOD extension (for adding to dlls)
 ENGINE_API extern CTString _strModExt;
-// global string with CD path (for minimal installations)
-ENGINE_API extern CTFileName _fnmCDPath;
 // global string with filename of the started application
 ENGINE_API extern CTFileName _fnmApplicationExe;
 

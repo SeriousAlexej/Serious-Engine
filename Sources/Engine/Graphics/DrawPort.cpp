@@ -13,7 +13,7 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#include "stdh.h"
+
 
 #include <Engine/Graphics/DrawPort.h>
 
@@ -23,7 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <Engine/Math/Projection.h>
 #include <Engine/Math/AABBox.h>
 #include <Engine/Graphics/Raster.h>
-#include <Engine/Graphics/GfxProfile.h>
 #include <Engine/Graphics/GfxLibrary.h>
 #include <Engine/Graphics/ImageInfo.h>
 #include <Engine/Graphics/Color.h>
@@ -31,12 +30,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <Engine/Graphics/ViewPort.h>
 #include <Engine/Graphics/Font.h>
 
-#include <Engine/Templates/StaticArray.cpp>
-#include <Engine/Templates/StaticStackArray.cpp>
+#include <Engine/Templates/StaticArray.h>
+#include <Engine/Templates/StaticStackArray.h>
 
 extern INDEX gfx_bDecoratedText;
 extern INDEX ogl_iFinish;
-extern INDEX d3d_iFinish;
 
 
 // RECT HANDLING ROUTINES
@@ -131,6 +129,7 @@ void CDrawPort::InitCloned( CDrawPort *pdpBase, DOUBLE rMinI,DOUBLE rMinJ, DOUBL
 
 /* Create a drawport for full raster. */
 CDrawPort::CDrawPort( CRaster *praBase)
+  : dp_NodeInRaster(this)
 {
   // remember the raster structures
   dp_Raster = praBase;
@@ -157,11 +156,13 @@ CDrawPort::CDrawPort( CRaster *praBase)
 /* Clone a drawport */
 CDrawPort::CDrawPort( CDrawPort *pdpBase,
                       DOUBLE rMinI,DOUBLE rMinJ, DOUBLE rSizeI,DOUBLE rSizeJ)
+  : dp_NodeInRaster(this)
 {
   InitCloned( pdpBase, rMinI,rMinJ, rSizeI,rSizeJ);
 }
 
 CDrawPort::CDrawPort( CDrawPort *pdpBase, const PIXaabbox2D &box)
+  : dp_NodeInRaster(this)
 {
   // force dimensions
   dp_MinI   = box.Min()(1) +pdpBase->dp_MinI;
@@ -221,7 +222,7 @@ ULONG CDrawPort::GetID(void)
 {
   ULONG ulCRC;
   CRC_Start(   ulCRC);
-  CRC_AddLONG( ulCRC, (ULONG)dp_Raster);
+  CRC_AddPTR( ulCRC, (std::uintptr_t)dp_Raster);
   CRC_AddLONG( ulCRC, (ULONG)dp_MinI);
   CRC_AddLONG( ulCRC, (ULONG)dp_MinJ);
   CRC_AddLONG( ulCRC, (ULONG)dp_MaxI);
@@ -233,6 +234,7 @@ ULONG CDrawPort::GetID(void)
 
 // dualhead cloning
 CDrawPort::CDrawPort( CDrawPort *pdpBase, BOOL bLeft)
+  : dp_NodeInRaster(this)
 {
   // if it is not a dualhead drawport
   if (!pdpBase->IsDualHead()) {
@@ -306,12 +308,8 @@ void CDrawPort::RecalculateDimensions(void)
 void CDrawPort::SetOrtho(void) const
 {
   // finish all pending render-operations (if required)
-  ogl_iFinish = Clamp( ogl_iFinish, 0L, 3L);
-  d3d_iFinish = Clamp( d3d_iFinish, 0L, 3L);
+  ogl_iFinish = Clamp( ogl_iFinish, 0, 3);
   if( (ogl_iFinish==3 && _pGfx->gl_eCurrentAPI==GAT_OGL) 
-#ifdef SE1_D3D
-   || (d3d_iFinish==3 && _pGfx->gl_eCurrentAPI==GAT_D3D)
-#endif // SE1_D3D
    ) gfxFinish();
 
   // prepare ortho dimensions
@@ -329,7 +327,6 @@ void CDrawPort::SetOrtho(void) const
   // disable face culling, custom clip plane and truform
   gfxCullFace(GFX_NONE);
   gfxDisableClipPlane();
-  gfxDisableTruform();
 }
 
 
@@ -337,12 +334,8 @@ void CDrawPort::SetOrtho(void) const
 void CDrawPort::SetProjection(CAnyProjection3D &apr) const
 {
   // finish all pending render-operations (if required)
-  ogl_iFinish = Clamp( ogl_iFinish, 0L, 3L);
-  d3d_iFinish = Clamp( d3d_iFinish, 0L, 3L);
+  ogl_iFinish = Clamp( ogl_iFinish, 0, 3);
   if( (ogl_iFinish==3 && _pGfx->gl_eCurrentAPI==GAT_OGL) 
-#ifdef SE1_D3D
-   || (d3d_iFinish==3 && _pGfx->gl_eCurrentAPI==GAT_D3D)
-#endif // SE1_D3D
    ) gfxFinish();
 
   // if isometric projection
@@ -380,7 +373,6 @@ void CDrawPort::SetProjection(CAnyProjection3D &apr) const
   gfxDepthRange( apr->pr_fDepthBufferNear, apr->pr_fDepthBufferFar);
   gfxCullFace(GFX_BACK);
   gfxSetViewMatrix(NULL);
-  gfxDisableTruform();
   
   // if projection is mirrored/warped and mirroring is allowed
   if( apr->pr_bMirror || apr->pr_bWarp) {
@@ -413,7 +405,6 @@ void CDrawPort::Unlock(void)
 
 BOOL CDrawPort::Lock(void)
 {
-  _pfGfxProfile.StartTimer( CGfxProfile::PTI_LOCKDRAWPORT);
   BOOL bRasterLocked = dp_Raster->Lock();
   if( bRasterLocked) {
     // try to lock drawport with driver
@@ -423,7 +414,6 @@ BOOL CDrawPort::Lock(void)
       bRasterLocked = FALSE;
     }
   } // done
-  _pfGfxProfile.StopTimer( CGfxProfile::PTI_LOCKDRAWPORT);
   return bRasterLocked;
 }
 
@@ -436,13 +426,11 @@ BOOL CDrawPort::Lock(void)
 // draw one point
 void CDrawPort::DrawPoint( PIX pixI, PIX pixJ, COLOR col, PIX pixRadius/*=1*/) const
 {
+  throw std::runtime_error("Not implemented on GL Core profile!");
+  /*
   // check API and radius
   const GfxAPIType eAPI = _pGfx->gl_eCurrentAPI;
-#ifdef SE1_D3D
-  ASSERT( eAPI==GAT_OGL || eAPI==GAT_D3D || eAPI==GAT_NONE);
-#else // SE1_D3D
   ASSERT( eAPI==GAT_OGL || eAPI==GAT_NONE);
-#endif // SE1_D3D
   ASSERT( pixRadius>=0);
   if( pixRadius==0) return; // do nothing if radius is 0
 
@@ -468,35 +456,19 @@ void CDrawPort::DrawPoint( PIX pixI, PIX pixJ, COLOR col, PIX pixRadius/*=1*/) c
       pglVertex2f(fI,fJ);
     pglEnd();
     OGL_CHECKERROR;
-  } // Direct3D
-#ifdef SE1_D3D
-  else if( eAPI==GAT_D3D) {
-    HRESULT hr;
-    const FLOAT fI = pixI+0.75f;
-    const FLOAT fJ = pixJ+0.75f;
-    const ULONG d3dColor = rgba2argb(col);
-    CTVERTEX avtx = {fI,fJ,0, d3dColor, 0,0};
-    hr = _pGfx->gl_pd3dDevice->SetRenderState( D3DRS_POINTSIZE, *((DWORD*)&fR));
-    D3D_CHECKERROR(hr);
-    // set vertex shader and draw
-    d3dSetVertexShader(D3DFVF_CTVERTEX);
-    hr = _pGfx->gl_pd3dDevice->DrawPrimitiveUP( D3DPT_POINTLIST, 1, &avtx, sizeof(CTVERTEX));
-    D3D_CHECKERROR(hr);
   }
-#endif // SE1_D3D
+  */
 }
 
 
 // draw one point in 3D
 void CDrawPort::DrawPoint3D( FLOAT3D v, COLOR col, FLOAT fRadius/*=1.0f*/) const
 {
+  throw std::runtime_error("Not implemented on GL Core profile!");
+  /*
   // check API and radius
   const GfxAPIType eAPI = _pGfx->gl_eCurrentAPI;
-#ifdef SE1_D3D
-  ASSERT(eAPI == GAT_OGL || eAPI == GAT_D3D || eAPI == GAT_NONE);
-#else // SE1_D3D
   ASSERT(eAPI == GAT_OGL || eAPI == GAT_NONE);
-#endif // SE1_D3D
   ASSERT( fRadius>=0);
   if( fRadius==0) return; // do nothing if radius is 0
 
@@ -518,20 +490,8 @@ void CDrawPort::DrawPoint3D( FLOAT3D v, COLOR col, FLOAT fRadius/*=1.0f*/) const
       pglVertex3f( v(1),v(2),v(3));
     pglEnd();
     OGL_CHECKERROR;
-  } // Direct3D
-#ifdef SE1_D3D
-  else if( eAPI==GAT_D3D) {
-    HRESULT hr;
-    const ULONG d3dColor = rgba2argb(col);
-    CTVERTEX avtx = {v(1),v(2),v(3), d3dColor, 0,0};
-    hr = _pGfx->gl_pd3dDevice->SetRenderState( D3DRS_POINTSIZE, *((DWORD*)&fRadius));
-    D3D_CHECKERROR(hr);
-    // set vertex shader and draw
-    d3dSetVertexShader(D3DFVF_CTVERTEX);
-    hr = _pGfx->gl_pd3dDevice->DrawPrimitiveUP( D3DPT_POINTLIST, 1, &avtx, sizeof(CTVERTEX));
-    D3D_CHECKERROR(hr);
   }
-#endif // SE1_D3D
+  */
 }
 
 
@@ -539,13 +499,11 @@ void CDrawPort::DrawPoint3D( FLOAT3D v, COLOR col, FLOAT fRadius/*=1.0f*/) const
 // draw one line
 void CDrawPort::DrawLine( PIX pixI0, PIX pixJ0, PIX pixI1, PIX pixJ1, COLOR col, ULONG typ/*=_FULL*/) const
 {
+  throw std::runtime_error("Not implemented on GL Core profile!");
+  /*
   // check API
   const GfxAPIType eAPI = _pGfx->gl_eCurrentAPI;
-#ifdef SE1_D3D
-  ASSERT(eAPI == GAT_OGL || eAPI == GAT_D3D || eAPI == GAT_NONE);
-#else // SE1_D3D
   ASSERT(eAPI == GAT_OGL || eAPI == GAT_NONE);
-#endif // SE1_D3D
 
   // setup rendering mode
   gfxDisableDepthTest();
@@ -583,24 +541,10 @@ void CDrawPort::DrawLine( PIX pixI0, PIX pixJ0, PIX pixI1, PIX pixJ1, COLOR col,
       pglTexCoord2f(fD,0); pglVertex2f(fI1,fJ1);
     pglEnd();
     OGL_CHECKERROR;
-  } // Direct3D
-#ifdef SE1_D3D
-  else if( eAPI==GAT_D3D) {
-    HRESULT hr;
-    const FLOAT fI0 = pixI0+0.75f;  const FLOAT fJ0 = pixJ0+0.75f;
-    const FLOAT fI1 = pixI1+0.75f;  const FLOAT fJ1 = pixJ1+0.75f;
-    const ULONG d3dColor = rgba2argb(col);
-    CTVERTEX avtxLine[2] = {
-      {fI0,fJ0,0, d3dColor,  0,0},
-      {fI1,fJ1,0, d3dColor, fD,0} };
-    // set vertex shader and draw
-    d3dSetVertexShader(D3DFVF_CTVERTEX);
-    hr = _pGfx->gl_pd3dDevice->DrawPrimitiveUP( D3DPT_LINELIST, 1, avtxLine, sizeof(CTVERTEX));
-    D3D_CHECKERROR(hr);
   }
-#endif // SE1_D3D
   // revert to old filtering
   if( typ!=_FULL_) gfxSetTextureFiltering( iTexFilter, iTexAnisotropy);
+  */
 }
 
 
@@ -608,13 +552,11 @@ void CDrawPort::DrawLine( PIX pixI0, PIX pixJ0, PIX pixI1, PIX pixJ1, COLOR col,
 // draw one line in 3D
 void CDrawPort::DrawLine3D( FLOAT3D v0, FLOAT3D v1, COLOR col) const
 {
+  throw std::runtime_error("Not implemented on GL Core profile!");
+  /*
   // check API
   const GfxAPIType eAPI = _pGfx->gl_eCurrentAPI;
-#ifdef SE1_D3D
-  ASSERT(eAPI == GAT_OGL || eAPI == GAT_D3D || eAPI == GAT_NONE);
-#else // SE1_D3D
   ASSERT(eAPI == GAT_OGL || eAPI == GAT_NONE);
-#endif // SE1_D3D
 
   // setup rendering mode
   gfxDisableTexture(); 
@@ -633,20 +575,8 @@ void CDrawPort::DrawLine3D( FLOAT3D v0, FLOAT3D v1, COLOR col) const
       pglVertex3f( v1(1),v1(2),v1(3));
     pglEnd();
     OGL_CHECKERROR;
-  } // Direct3D
-#ifdef SE1_D3D
-  else if( eAPI==GAT_D3D) {
-    HRESULT hr;
-    const ULONG d3dColor = rgba2argb(col);
-    CTVERTEX avtxLine[2] = {
-      {v0(1),v0(2),v0(3), d3dColor, 0,0},
-      {v1(1),v1(2),v1(3), d3dColor, 0,0} };
-    // set vertex shader and draw
-    d3dSetVertexShader(D3DFVF_CTVERTEX);
-    hr = _pGfx->gl_pd3dDevice->DrawPrimitiveUP( D3DPT_LINELIST, 1, avtxLine, sizeof(CTVERTEX));
-    D3D_CHECKERROR(hr);
   }
-#endif // SE1_D3D
+  */
 }
 
 
@@ -654,13 +584,11 @@ void CDrawPort::DrawLine3D( FLOAT3D v0, FLOAT3D v1, COLOR col) const
 // draw border
 void CDrawPort::DrawBorder( PIX pixI, PIX pixJ, PIX pixWidth, PIX pixHeight, COLOR col, ULONG typ/*=_FULL_*/) const
 {
+  throw std::runtime_error("Not implemented on GL Core profile!");
+  /*
   // check API
   const GfxAPIType eAPI = _pGfx->gl_eCurrentAPI;
-#ifdef SE1_D3D
-  ASSERT(eAPI == GAT_OGL || eAPI == GAT_D3D || eAPI == GAT_NONE);
-#else // SE1_D3D
   ASSERT(eAPI == GAT_OGL || eAPI == GAT_NONE);
-#endif // SE1_D3D
 
   // setup rendering mode
   gfxDisableDepthTest();
@@ -705,24 +633,9 @@ void CDrawPort::DrawBorder( PIX pixI, PIX pixJ, PIX pixWidth, PIX pixHeight, COL
     pglEnd();
     OGL_CHECKERROR;
   }
-  // Direct3D
-#ifdef SE1_D3D
-  else if( eAPI==GAT_D3D) {
-    HRESULT hr;
-    const ULONG d3dColor = rgba2argb(col);
-    CTVERTEX avtxLines[8] = { // setup lines
-      {fI0,fJ0,  0, d3dColor, 0,0}, {fI1,  fJ0,0, d3dColor, fD,0},   // up
-      {fI1,fJ0,  0, d3dColor, 0,0}, {fI1,  fJ1,0, d3dColor, fD,0},   // right
-      {fI0,fJ1,  0, d3dColor, 0,0}, {fI1+1,fJ1,0, d3dColor, fD,0},   // down
-      {fI0,fJ0+1,0, d3dColor, 0,0}, {fI0,  fJ1,0, d3dColor, fD,0} }; // left
-    // set vertex shader and draw
-    d3dSetVertexShader(D3DFVF_CTVERTEX);
-    hr = _pGfx->gl_pd3dDevice->DrawPrimitiveUP( D3DPT_LINELIST, 4, avtxLines, sizeof(CTVERTEX));
-    D3D_CHECKERROR(hr);
-  }
-#endif // SE1_D3D
   // revert to old filtering
   if( typ!=_FULL_) gfxSetTextureFiltering( iTexFilter, iTexAnisotropy);
+  */
 }
  
 
@@ -746,11 +659,7 @@ void CDrawPort::Fill( PIX pixI, PIX pixJ, PIX pixWidth, PIX pixHeight, COLOR col
 
   // check API
   const GfxAPIType eAPI = _pGfx->gl_eCurrentAPI;
-#ifdef SE1_D3D
-  ASSERT(eAPI == GAT_OGL || eAPI == GAT_D3D || eAPI == GAT_NONE);
-#else // SE1_D3D
   ASSERT(eAPI == GAT_OGL || eAPI == GAT_NONE);
-#endif // SE1_D3D
 
   // OpenGL
   if( eAPI==GAT_OGL)
@@ -763,27 +672,6 @@ void CDrawPort::Fill( PIX pixI, PIX pixJ, PIX pixWidth, PIX pixHeight, COLOR col
     pglClear( GL_COLOR_BUFFER_BIT);
     ResetScissor(this);
   }
-  // Direct3D
-#ifdef SE1_D3D
-  else if( eAPI==GAT_D3D)
-  {
-    HRESULT hr;
-    // must convert coordinates to raster (i.e. surface)
-    pixI += dp_MinI;
-    pixJ += dp_MinJ;
-    const PIX pixRasterW = dp_Raster->ra_Width;
-    const PIX pixRasterH = dp_Raster->ra_Height;
-    const ULONG d3dColor = rgba2argb(col);
-    // do fast filling
-    if( pixI==0 && pixJ==0 && pixWidth==pixRasterW && pixHeight==pixRasterH) {
-      hr = _pGfx->gl_pd3dDevice->Clear( 0, NULL, D3DCLEAR_TARGET, d3dColor,0,0);
-    } else {
-      D3DRECT d3dRect = { pixI, pixJ, pixI+pixWidth, pixJ+pixHeight };
-      hr = _pGfx->gl_pd3dDevice->Clear( 1, &d3dRect, D3DCLEAR_TARGET, d3dColor,0,0);
-    } // done
-    D3D_CHECKERROR(hr);
-  }
-#endif // SE1_D3D
 }
 
 
@@ -797,11 +685,7 @@ void CDrawPort::Fill( PIX pixI, PIX pixJ, PIX pixWidth, PIX pixHeight,
 
   // check API
   const GfxAPIType eAPI = _pGfx->gl_eCurrentAPI;
-#ifdef SE1_D3D
-  ASSERT(eAPI == GAT_OGL || eAPI == GAT_D3D || eAPI == GAT_NONE);
-#else // SE1_D3D
   ASSERT(eAPI == GAT_OGL || eAPI == GAT_NONE);
-#endif // SE1_D3D
 
   // setup rendering mode
   gfxDisableDepthTest();
@@ -834,21 +718,6 @@ void CDrawPort::Fill( PIX pixI, PIX pixJ, PIX pixWidth, PIX pixHeight,
     pvtx[3].x = fI1;  pvtx[3].y = fJ0;  pvtx[3].z = 0;  pcol[3] = glcolUR;
     gfxFlushQuads();
   }
-#ifdef SE1_D3D
-  else if( eAPI==GAT_D3D) { 
-    // thru Direct3D
-    HRESULT hr;
-    const ULONG d3dColUL = rgba2argb(colUL);  const ULONG d3dColUR = rgba2argb(colUR);
-    const ULONG d3dColDL = rgba2argb(colDL);  const ULONG d3dColDR = rgba2argb(colDR);
-    CTVERTEX avtxTris[6] = {
-      {fI0,fJ0,0, d3dColUL, 0,0}, {fI0,fJ1,0, d3dColDL, 0,1}, {fI1,fJ1,0, d3dColDR, 1,1},
-      {fI0,fJ0,0, d3dColUL, 0,0}, {fI1,fJ1,0, d3dColDR, 1,1}, {fI1,fJ0,0, d3dColUR, 1,0} };
-    // set vertex shader and draw
-    d3dSetVertexShader(D3DFVF_CTVERTEX);
-    hr = _pGfx->gl_pd3dDevice->DrawPrimitiveUP( D3DPT_TRIANGLELIST, 2, avtxTris, sizeof(CTVERTEX));
-    D3D_CHECKERROR(hr);
-  }
-#endif // SE1_D3D
 }
 
 
@@ -867,11 +736,8 @@ void CDrawPort::Fill( COLOR col) const
 
   // check API
   const GfxAPIType eAPI = _pGfx->gl_eCurrentAPI;
-#ifdef SE1_D3D
-  ASSERT(eAPI == GAT_OGL || eAPI == GAT_D3D || eAPI == GAT_NONE);
-#else // SE1_D3D
+
   ASSERT(eAPI == GAT_OGL || eAPI == GAT_NONE);
-#endif // SE1_D3D
 
   // OpenGL
   if( eAPI==GAT_OGL)
@@ -882,15 +748,6 @@ void CDrawPort::Fill( COLOR col) const
     pglClearColor( ubR/255.0f, ubG/255.0f, ubB/255.0f, 1.0f);
     pglClear( GL_COLOR_BUFFER_BIT);
   }
-  // Direct3D
-#ifdef SE1_D3D
-  else if( eAPI==GAT_D3D)
-  {
-    const ULONG d3dColor = rgba2argb(col);
-    HRESULT hr = _pGfx->gl_pd3dDevice->Clear( 0, NULL, D3DCLEAR_TARGET, d3dColor,0,0);
-    D3D_CHECKERROR(hr);
-  }
-#endif SE1_D3D
 }
 
 
@@ -899,11 +756,7 @@ void CDrawPort::FillZBuffer( PIX pixI, PIX pixJ, PIX pixWidth, PIX pixHeight, FL
 { 
   // check API
   const GfxAPIType eAPI = _pGfx->gl_eCurrentAPI;
-#ifdef SE1_D3D
-  ASSERT(eAPI == GAT_OGL || eAPI == GAT_D3D || eAPI == GAT_NONE);
-#else // SE1_D3D
   ASSERT(eAPI == GAT_OGL || eAPI == GAT_NONE);
-#endif // SE1_D3D
 
   // clip and eventually reject
   const BOOL bInside = ClipToDrawPort( this, pixI, pixJ, pixWidth, pixHeight);
@@ -923,15 +776,6 @@ void CDrawPort::FillZBuffer( PIX pixI, PIX pixJ, PIX pixWidth, PIX pixHeight, FL
     ResetScissor(this);
     OGL_CHECKERROR;
   }
-  // Direct3D
-#ifdef SE1_D3D
-  else if( eAPI==GAT_D3D)
-  {
-    D3DRECT d3dRect = { pixI, pixJ, pixI+pixWidth, pixJ+pixHeight };
-    HRESULT hr = _pGfx->gl_pd3dDevice->Clear( 1, &d3dRect, D3DCLEAR_ZBUFFER, 0,zval,0);
-    D3D_CHECKERROR(hr);
-  }
-#endif SE1_D3D
 }
 
 
@@ -940,11 +784,8 @@ void CDrawPort::FillZBuffer( FLOAT zval) const
 { 
   // check API
   const GfxAPIType eAPI = _pGfx->gl_eCurrentAPI;
-#ifdef SE1_D3D
-  ASSERT(eAPI == GAT_OGL || eAPI == GAT_D3D || eAPI == GAT_NONE);
-#else // SE1_D3D
+
   ASSERT(eAPI == GAT_OGL || eAPI == GAT_NONE);
-#endif // SE1_D3D
   gfxEnableDepthWrite();
 
   // OpenGL
@@ -955,14 +796,7 @@ void CDrawPort::FillZBuffer( FLOAT zval) const
     pglClearStencil(0);
     pglClear( GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
   }
-  // Direct3D
-#ifdef SE1_D3D
-  else if( eAPI==GAT_D3D)
-  {
-    HRESULT hr = _pGfx->gl_pd3dDevice->Clear( 0, NULL, D3DCLEAR_ZBUFFER, 0,zval,0);
-    D3D_CHECKERROR(hr);
-  }
-#endif SE1_D3D
+
 }
 
 
@@ -971,11 +805,7 @@ void CDrawPort::GrabScreen( class CImageInfo &iiGrabbedImage, INDEX iGrabZBuffer
 {
   // check API
   const GfxAPIType eAPI = _pGfx->gl_eCurrentAPI;
-#ifdef SE1_D3D
-  ASSERT(eAPI == GAT_OGL || eAPI == GAT_D3D || eAPI == GAT_NONE);
-#else // SE1_D3D
   ASSERT(eAPI == GAT_OGL || eAPI == GAT_NONE);
-#endif // SE1_D3D
   extern INDEX ogl_bGrabDepthBuffer;
   const BOOL bGrabDepth = eAPI==GAT_OGL && ((iGrabZBuffer==1 && ogl_bGrabDepthBuffer) || iGrabZBuffer==2);
 
@@ -1017,49 +847,6 @@ void CDrawPort::GrabScreen( class CImageInfo &iiGrabbedImage, INDEX iGrabZBuffer
     FlipBitmap( iiGrabbedImage.ii_Picture, iiGrabbedImage.ii_Picture,
                 iiGrabbedImage.ii_Width, iiGrabbedImage.ii_Height, 1, iiGrabbedImage.ii_BitsPerPixel==32);
   }
-
-  // Direct3D
-#ifdef SE1_D3D
-  else if( eAPI==GAT_D3D)
-  {
-    // get back buffer
-    HRESULT hr;
-    D3DLOCKED_RECT rectLocked;
-    D3DSURFACE_DESC surfDesc;
-    LPDIRECT3DSURFACE8 pBackBuffer;
-    const BOOL bFullScreen = _pGfx->gl_ulFlags & GLF_FULLSCREEN;
-    if( bFullScreen) hr = _pGfx->gl_pd3dDevice->GetBackBuffer( 0, D3DBACKBUFFER_TYPE_MONO, &pBackBuffer);
-    else hr = dp_Raster->ra_pvpViewPort->vp_pSwapChain->GetBackBuffer( 0, D3DBACKBUFFER_TYPE_MONO, &pBackBuffer);
-    D3D_CHECKERROR(hr);
-    pBackBuffer->GetDesc(&surfDesc);
-    ASSERT( surfDesc.Width==dp_Raster->ra_Width && surfDesc.Height==dp_Raster->ra_Height);
-    const RECT rectToLock = { dp_MinI, dp_MinJ, dp_MaxI+1, dp_MaxJ+1 };
-    hr = pBackBuffer->LockRect( &rectLocked, &rectToLock, D3DLOCK_READONLY);
-    D3D_CHECKERROR(hr);
-
-    // prepare to copy'n'convert
-    SLONG slColSize;    
-    UBYTE *pubSrc = (UBYTE*)rectLocked.pBits;
-    UBYTE *pubDst = iiGrabbedImage.ii_Picture;
-    // loop thru rows
-    for( INDEX j=0; j<dp_Height; j++) {
-      // loop thru pixles in row
-      for( INDEX i=0; i<dp_Width; i++) {
-        UBYTE ubR,ubG,ubB;
-        extern COLOR UnpackColor_D3D( UBYTE *pd3dColor, D3DFORMAT d3dFormat, SLONG &slColorSize);
-        COLOR col = UnpackColor_D3D( pubSrc, surfDesc.Format, slColSize);
-        ColorToRGB( col, ubR,ubG,ubB);
-        *pubDst++ = ubR;
-        *pubDst++ = ubG;
-        *pubDst++ = ubB;
-        pubSrc += slColSize;
-      } // advance modulo
-      pubSrc += rectLocked.Pitch - (dp_Width*slColSize);
-    } // all done
-    pBackBuffer->UnlockRect();
-    D3DRELEASE( pBackBuffer, TRUE);
-  }
-#endif // SE1_D3D
 }
 
 
@@ -1073,11 +860,7 @@ BOOL CDrawPort::IsPointVisible( PIX pixI, PIX pixJ, FLOAT fOoK, INDEX iID, INDEX
 
   // check API
   const GfxAPIType eAPI = _pGfx->gl_eCurrentAPI;
-#ifdef SE1_D3D
-  ASSERT(eAPI == GAT_OGL || eAPI == GAT_D3D || eAPI == GAT_NONE);
-#else // SE1_D3D
   ASSERT(eAPI == GAT_OGL || eAPI == GAT_NONE);
-#endif // SE1_D3D
 
   // use delayed mechanism for checking
   extern BOOL CheckDepthPoint( const CDrawPort *pdp, PIX pixI, PIX pixJ, FLOAT fOoK, INDEX iID, INDEX iMirrorLevel=0);
@@ -1090,11 +873,7 @@ void CDrawPort::RenderLensFlare( CTextureObject *pto, FLOAT fI, FLOAT fJ,
 {
   // check API
   const GfxAPIType eAPI = _pGfx->gl_eCurrentAPI;
-#ifdef SE1_D3D
-  ASSERT(eAPI == GAT_OGL || eAPI == GAT_D3D || eAPI == GAT_NONE);
-#else // SE1_D3D
   ASSERT(eAPI == GAT_OGL || eAPI == GAT_NONE);
-#endif // SE1_D3D
 
   // setup rendering mode
   gfxEnableDepthTest();
@@ -1221,15 +1000,10 @@ void CDrawPort::PutText( const CTString &strText, PIX pixX0, PIX pixY0, const CO
 {
   // check API and adjust position for D3D by half pixel
   const GfxAPIType eAPI = _pGfx->gl_eCurrentAPI;
-#ifdef SE1_D3D
-  ASSERT(eAPI == GAT_OGL || eAPI == GAT_D3D || eAPI == GAT_NONE);
-#else // SE1_D3D
   ASSERT(eAPI == GAT_OGL || eAPI == GAT_NONE);
-#endif // SE1_D3D
 
   // skip drawing if text falls above or below draw port
   if( pixY0>dp_Height || pixX0>dp_Width) return;
-  _pfGfxProfile.StartTimer( CGfxProfile::PTI_PUTTEXT);
   char acTmp[7]; // needed for strtoul()
   char *pcDummy; 
   INDEX iRet;
@@ -1325,7 +1099,7 @@ void CDrawPort::PutText( const CTString &strText, PIX pixX0, PIX pixY0, const CO
       // flash?
       case 'f':
         chrCurrent = strText[++iChar];
-        if( bParse) iFlash = 1+ 2* Clamp( (INDEX)(chrCurrent-'0'), 0L, 9L);
+        if( bParse) iFlash = 1+ 2* Clamp( (INDEX)(chrCurrent-'0'), 0, 9);
         continue;
       // reset all?
       case 'r':
@@ -1439,9 +1213,6 @@ void CDrawPort::PutText( const CTString &strText, PIX pixX0, PIX pixY0, const CO
   _atexCommon.PopUntil( ctCharsPrinted*4-1);
   _acolCommon.PopUntil( ctCharsPrinted*4-1);
   gfxFlushQuads();
-
-  // all done
-  _pfGfxProfile.StopTimer( CGfxProfile::PTI_PUTTEXT);
 }
 
 
@@ -1498,7 +1269,6 @@ void CDrawPort::PutTexture( class CTextureObject *pTO,
                             const PIXaabbox2D &boxScreen, const MEXaabbox2D &boxTexture,
                             const COLOR colUL, const COLOR colUR, const COLOR colDL, const COLOR colDR) const
 {
-  _pfGfxProfile.StartTimer( CGfxProfile::PTI_PUTTEXTURE);
 
   // extract screen and texture coordinates
   const PIX pixI0 = boxScreen.Min()(1);  const PIX pixI1 = boxScreen.Max()(1);
@@ -1507,17 +1277,12 @@ void CDrawPort::PutTexture( class CTextureObject *pTO,
   // if whole texture is out of drawport
   if( pixI0>dp_Width || pixJ0>dp_Height || pixI1<0 || pixJ1<0) {
     // skip it (just to reduce OpenGL call overhead)
-    _pfGfxProfile.StopTimer( CGfxProfile::PTI_PUTTEXTURE);
     return;
   }
 
   // check API and adjust position for D3D by half pixel
   const GfxAPIType eAPI = _pGfx->gl_eCurrentAPI;
-#ifdef SE1_D3D
-  ASSERT(eAPI == GAT_OGL || eAPI == GAT_D3D || eAPI == GAT_NONE);
-#else // SE1_D3D
   ASSERT(eAPI == GAT_OGL || eAPI == GAT_NONE);
-#endif // SE1_D3D
   FLOAT fI0 = pixI0;  FLOAT fI1 = pixI1;
   FLOAT fJ0 = pixJ0;  FLOAT fJ1 = pixJ1;
 
@@ -1577,7 +1342,6 @@ void CDrawPort::PutTexture( class CTextureObject *pTO,
   pcol[2] = glcolDR;
   pcol[3] = glcolUR;
   gfxFlushQuads();
-  _pfGfxProfile.StopTimer( CGfxProfile::PTI_PUTTEXTURE);
 }
 
 
@@ -1732,7 +1496,7 @@ void CDrawPort::BlendScreen(void)
   ULONG ulRA = (dp_ulBlendingRA*fix1oA)>>16;
   ULONG ulGA = (dp_ulBlendingGA*fix1oA)>>16;
   ULONG ulBA = (dp_ulBlendingBA*fix1oA)>>16;
-  ULONG ulA  = ClampUp( dp_ulBlendingA, 255UL);
+  ULONG ulA  = ClampUp( dp_ulBlendingA, (ULONG)255);
   COLOR colBlending = RGBAToColor( ulRA, ulGA, ulBA, ulA);
                                     
   // blend drawport (thru z-buffer because of elimination of pixel artefacts)

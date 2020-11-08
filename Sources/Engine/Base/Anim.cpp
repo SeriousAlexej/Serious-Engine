@@ -13,8 +13,6 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#include "stdh.h"
-
 #include <Engine/Base/Anim.h>
 
 #include <Engine/Base/Memory.h>
@@ -25,7 +23,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <Engine/Templates/Stock_CAnimData.h>
 
 #include <Engine/Base/ListIterator.inl>
-#include <Engine/Templates/DynamicArray.cpp>
+#include <Engine/Templates/DynamicArray.h>
+
+#include <SDL2/SDL_stdinc.h>
 
 /*
  * One animation of an animateable object
@@ -72,12 +72,13 @@ public:
 
 CTmpListHead::~CTmpListHead()
 {
-	FORDELETELIST(COneAnimNode, coan_Node, *this, it)
+  FORDELETELIST(COneAnimNode, *this, it)
 		delete &it.Current();
 };
 
 // Remember ptr to animation and add this node at the end of given animation list
 COneAnimNode::COneAnimNode(COneAnim *AnimToInsert, CListHead *LH)
+  : coan_Node(this)
 {
 	coan_OneAnim = AnimToInsert;
 	LH->AddTail( coan_Node);
@@ -121,6 +122,7 @@ COneAnim &COneAnim::operator=(const COneAnim &oaAnim)
 
 // Remember given file name and add this node into string list
 CFileNameNode::CFileNameNode(const char *NewFileName, CListHead *LH)
+  : cfnn_Node(this)
 {
 	ASSERT(NewFileName != NULL);
 	ASSERT(strlen(NewFileName)>0);
@@ -249,8 +251,9 @@ INDEX FindFrameIndex( CListHead *pFrameFileList, const char *pFileName)
 {
 	UWORD i=0;
 
-	FOREACHINLIST(CFileNameNode, cfnn_Node, *pFrameFileList, it) {
-		if( strcmpi(it->cfnn_FileName, pFileName) == 0)
+  FOREACHINLIST(CFileNameNode, *pFrameFileList, it) {
+
+    if( SDL_strcasecmp(it->cfnn_FileName, pFileName) == 0)
 			return( i);
 		i++;
 	}
@@ -262,7 +265,7 @@ CTString GetFrameFileName( CListHead *pFrameFileList, INDEX iMemberInList)
 {
 	ASSERT( iMemberInList<pFrameFileList->Count());
   UWORD iMember=0;
-	FOREACHINLIST(CFileNameNode, cfnn_Node, *pFrameFileList, it)
+  FOREACHINLIST(CFileNameNode, *pFrameFileList, it)
   {
 		if( iMember == iMemberInList) return CTString( it->cfnn_FileName);
 		iMember++;
@@ -272,7 +275,7 @@ CTString GetFrameFileName( CListHead *pFrameFileList, INDEX iMemberInList)
 }
 
 // If found given word at the beginning of curently loaded line
-#define EQUAL_SUB_STR( str) (strnicmp( ld_line, str, strlen(str)) == 0)
+#define EQUAL_SUB_STR( str) (SDL_strncasecmp( ld_line, str, strlen(str)) == 0)
 
 // Loads part of given script file until word AnimEnd is reached
 // Fills ACanimData (its instance) with apropriate data (animations and their frame indices)
@@ -319,7 +322,7 @@ void CAnimData::LoadFromScript_t( CTStream *File, CListHead *pFrameFileList) // 
 		// if it is not yet there
 		else if( EQUAL_SUB_STR( "DIRECTORY"))
 		{
-			_strupr( ld_line);
+      SDL_strupr( ld_line);
       sscanf( ld_line, "DIRECTORY %s", base_path);
 			if( base_path[ strlen( base_path) - 1] != '\\')
 				strcat( base_path,"\\");
@@ -334,14 +337,14 @@ void CAnimData::LoadFromScript_t( CTStream *File, CListHead *pFrameFileList) // 
       }
 			// Create new animation
 			COneAnim *poaOneAnim = new COneAnim;
-			_strupr( ld_line);
+      SDL_strupr( ld_line);
       sscanf( ld_line, "ANIMATION %s", poaOneAnim->oa_Name);
 			File->GetLine_t(ld_line, 128);
 			if( !EQUAL_SUB_STR( "SPEED"))
       {
 				throw("Expecting key word \"SPEED\" after key word \"ANIMATION\".");
       }
-			_strupr( ld_line);
+      SDL_strupr( ld_line);
 			sscanf( ld_line, "SPEED %f", &poaOneAnim->oa_SecsPerFrame);
 
       CDynamicArray<CTString> astrFrames;
@@ -350,7 +353,7 @@ void CAnimData::LoadFromScript_t( CTStream *File, CListHead *pFrameFileList) // 
       {
         slLastPos = File->GetPos_t();
         File->GetLine_t(ld_line, 128);
-        _strupr( ld_line);
+        SDL_strupr( ld_line);
 			  // jump over old key word "FRAMES" and comments
         if( EQUAL_SUB_STR( "FRAMES") || (ld_line[0]==';') ) continue;
         // key words that start or end animations or empty line breaks frame reading
@@ -364,7 +367,7 @@ void CAnimData::LoadFromScript_t( CTStream *File, CListHead *pFrameFileList) // 
 				  // read file name from line and add it at the end of last path string loaded
 				  sscanf( ld_line, "%s %s", error_str, anim_name);
           // search trough all allready readed animations for macro one
-	        FOREACHINLIST(COneAnimNode, coan_Node, TempAnimationList, itOAN)
+          FOREACHINLIST(COneAnimNode, TempAnimationList, itOAN)
 	        {
             if( itOAN->coan_OneAnim->oa_Name == CTString( anim_name))
             {
@@ -381,7 +384,9 @@ void CAnimData::LoadFromScript_t( CTStream *File, CListHead *pFrameFileList) // 
         {
 				  // read file name from line and add it at the end of last path string loaded
 				  sscanf( ld_line, "%s", file_name);
-				  sprintf( full_path, "%s%s", base_path, file_name);
+          if (strlen(base_path) + strlen(file_name) >= MAX_PATH-1)
+            ThrowF_t("Path in script is too long, max length = %d", MAX_PATH-1);
+          sprintf( full_path, "%s%s", base_path, file_name);
           CTString *pstrNewFile = astrFrames.New(1);
           *pstrNewFile = CTString( full_path);
         }
@@ -429,7 +434,7 @@ void CAnimData::LoadFromScript_t( CTStream *File, CListHead *pFrameFileList) // 
 
 	// copy list to array
 	lc=0;
-	FOREACHINLIST(COneAnimNode, coan_Node, TempAnimationList, it2)
+  FOREACHINLIST(COneAnimNode, TempAnimationList, it2)
 	{
     strcpy( ad_Anims[ lc].oa_Name, it2->coan_OneAnim->oa_Name);
     ad_Anims[ lc].oa_SecsPerFrame = it2->coan_OneAnim->oa_SecsPerFrame;
@@ -440,7 +445,7 @@ void CAnimData::LoadFromScript_t( CTStream *File, CListHead *pFrameFileList) // 
       ad_Anims[ lc].oa_FrameIndices[ i] = it2->coan_OneAnim->oa_FrameIndices[ i];
 		lc++;
 	}
-  FORDELETELIST( COneAnimNode, coan_Node, TempAnimationList, litDel)
+  FORDELETELIST( COneAnimNode, TempAnimationList, litDel)
     delete &litDel.Current();
 
 };
@@ -471,7 +476,7 @@ void CAnimData::ExportAnimationNames_t( CTStream *ostrFile, CTString strAnimatio
   for( INDEX iAnimation=0; iAnimation<ad_NumberOfAnims; iAnimation++)
   {
     // prepare one #define line (add prefix)
-    sprintf( chrLine, "#define %s%s %d", strAnimationPrefix, ad_Anims[ iAnimation].oa_Name,
+    sprintf( chrLine, "#define %s%s %d", strAnimationPrefix.str_String, ad_Anims[ iAnimation].oa_Name,
              iAnimation);
     // put it into file
     ostrFile->PutLine_t( chrLine);
@@ -611,8 +616,8 @@ ENGINE_API void CAnimObject::Synchronize(CAnimObject &aoOther)
   // copy animations, time and flags
   INDEX ctAnims = GetAnimsCt();
   ao_tmAnimStart  = aoOther.ao_tmAnimStart;
-  ao_iCurrentAnim = ClampUp(aoOther.ao_iCurrentAnim, ctAnims-1L);
-	ao_iLastAnim    = ClampUp(aoOther.ao_iLastAnim, ctAnims-1L);
+  ao_iCurrentAnim = ClampUp(aoOther.ao_iCurrentAnim, ctAnims-1);
+  ao_iLastAnim    = ClampUp(aoOther.ao_iLastAnim, ctAnims-1);
   ao_ulFlags      = aoOther.ao_ulFlags;
 }
 
@@ -1067,12 +1072,12 @@ void CAnimObject::GetFrame( INDEX &iFrame0, INDEX &iFrame1, FLOAT &fRatio) const
       INDEX iAnim = ao_iCurrentAnim;
       ((CAnimObject*)this)->ao_iCurrentAnim = ao_iLastAnim;
       float fFrameNow = tmCurrentRelative/pOA0->oa_SecsPerFrame+pOA0->oa_NumberOfFrames;
-	    iFrame0 = pOA0->oa_FrameIndices[ Clamp(SLONG(fFrameNow),  0L, pOA0->oa_NumberOfFrames-1L)];
+      iFrame0 = pOA0->oa_FrameIndices[ Clamp(SLONG(fFrameNow),  SLONG(0), SLONG(pOA0->oa_NumberOfFrames-1))];
       INDEX iFrameNext = SLONG(fFrameNow+1);
       if (iFrameNext>=pOA0->oa_NumberOfFrames) {
 	      iFrame1 = pOA1->oa_FrameIndices[0];
       } else {
-	      iFrame1 = pOA0->oa_FrameIndices[ Clamp(iFrameNext,  0L, pOA0->oa_NumberOfFrames-1L)];
+        iFrame1 = pOA0->oa_FrameIndices[ Clamp(iFrameNext,  INDEX(0), INDEX(pOA0->oa_NumberOfFrames-1))];
       }
       ((CAnimObject*)this)->ao_iCurrentAnim = iAnim;
       fRatio = fFrameNow - (float)floor(fFrameNow);

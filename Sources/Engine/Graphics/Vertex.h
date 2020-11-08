@@ -57,17 +57,11 @@ struct GFXColor
   GFXColor() {};
 
   GFXColor( COLOR col) {
-    _asm mov   ecx,dword ptr [this]
-    _asm mov   eax,dword ptr [col]
-    _asm bswap eax
-    _asm mov   dword ptr [ecx],eax
+    abgr = ByteSwap(col);
   }
 
   __forceinline void Set( COLOR col) {
-    _asm mov   ecx,dword ptr [this]
-    _asm mov   eax,dword ptr [col]
-    _asm bswap eax
-    _asm mov   dword ptr [ecx],eax
+    abgr = ByteSwap(col);
   }
 
   void MultiplyRGBA( const GFXColor &col1, const GFXColor &col2) {
@@ -110,8 +104,8 @@ struct GFXVertex4
   }
   FLOAT x,y,z;
   union {
-    struct { struct GFXColor col; };
-    struct { SLONG shade; };
+    struct { struct GFXColor col; } gfxColor;
+    struct { SLONG shade; } gfxShade;
   };
 };
 

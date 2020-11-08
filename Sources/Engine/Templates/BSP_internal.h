@@ -144,7 +144,7 @@ public:
 
   BSPNode<Type, iDimensions> *bn_pbnFront;        // pointer to child node in front of split plane
   BSPNode<Type, iDimensions> *bn_pbnBack;         // pointer to child node behind split plane
-  ULONG bn_ulPlaneTag;         // tags for BSPs with tagged planes (-1 for no tag)
+  std::uintptr_t bn_ulPlaneTag;         // tags for BSPs with tagged planes (-1 for no tag)
 
 public:
   /* Defualt constructor (for arrays only). */
@@ -152,7 +152,7 @@ public:
   /* Constructor for a leaf node. */
   inline BSPNode(enum BSPNodeLocation bnl);
   /* Constructor for a branch node. */
-  inline BSPNode(const Plane<Type, iDimensions> &plSplitPlane, ULONG ulPlaneTag, 
+  inline BSPNode(const Plane<Type, iDimensions> &plSplitPlane, std::uintptr_t ulPlaneTag,
     BSPNode<Type, iDimensions> &bnFront, BSPNode<Type, iDimensions> &bnBack);
   /* Constructor for cloning a bsp (sub)tree. */
   BSPNode(BSPNode<Type, iDimensions> &bnRoot);

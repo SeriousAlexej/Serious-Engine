@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Used for caching shading info for models if they don't move
 class ENGINE_API CShadingInfo {
 public:
+  CShadingInfo() : si_lnInPolygon(this) {}
   CListNode si_lnInPolygon;       // for linking in the relevant polygon
   CBrushPolygon *si_pbpoPolygon;  // the polygon that entity is above
   CTerrain      *si_ptrTerrain;   // terrain that entity is above

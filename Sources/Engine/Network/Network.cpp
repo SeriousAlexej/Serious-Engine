@@ -13,7 +13,7 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#include "StdH.h"
+
 
 #include <Engine/Build.h>
 #include <Engine/Base/Console.h>
@@ -77,7 +77,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // pointer to global instance of the only game object in the application
 CNetworkLibrary *_pNetwork= NULL;
 
-extern BOOL _bNeedPretouch;
 extern BOOL _bMultiPlayer = FALSE;
 extern INDEX _ctEntities = 0;
 extern INDEX _ctPredictorEntities = 0;
@@ -213,7 +212,6 @@ extern INDEX shd_bCacheAll;
 
 
 // input
-extern INDEX inp_iKeyboardReadingMethod = 2;  // 0=getasynckey, 1=virtkeytrap, 2=scancodetrap
 extern INDEX inp_bAllowMouseAcceleration = TRUE;
 extern FLOAT inp_fMouseSensitivity = 1.0f;
 extern INDEX inp_bMousePrecision = FALSE;
@@ -224,20 +222,6 @@ extern FLOAT inp_bInvertMouse = FALSE;
 extern INDEX inp_bFilterMouse = FALSE;
 extern INDEX inp_bAllowPrescan = TRUE;
 
-extern INDEX inp_i2ndMousePort = 0; // COM no (0=disable)
-extern FLOAT inp_f2ndMouseSensitivity = 1.0f;
-extern INDEX inp_b2ndMousePrecision = FALSE;
-extern FLOAT inp_f2ndMousePrecisionFactor = 4.0f;
-extern FLOAT inp_f2ndMousePrecisionThreshold = 10.0f;
-extern FLOAT inp_f2ndMousePrecisionTimeout = 0.25f;
-extern INDEX inp_bInvert2ndMouse = FALSE;
-extern INDEX inp_bFilter2ndMouse = FALSE;
-
-extern INDEX inp_iMButton4Up;
-extern INDEX inp_iMButton4Dn;
-extern INDEX inp_iMButton5Up;
-extern INDEX inp_iMButton5Dn;
-extern INDEX inp_bMsgDebugger;
 extern INDEX inp_ctJoysticksAllowed;
 extern INDEX inp_bForceJoystickPolling;
 extern INDEX inp_bAutoDisableJoysticks;
@@ -260,8 +244,6 @@ extern void CacheShadows(void)
     if( shd_bCacheAll) CPrintF(".\n");
     else CPrintF( TRANS(", but not for long.\n(precache all shadows function is disabled)\n"));
   }
-  // mark that we need pretouching
-  _bNeedPretouch = TRUE;
 }
 
 // check if a name or IP matches a mask
@@ -855,7 +837,6 @@ void CNetworkLibrary::Init(const CTString &strGameID)
   _pShell->DeclareSymbol("user FLOAT phy_fCollisionCacheAhead;",  &phy_fCollisionCacheAhead);
   _pShell->DeclareSymbol("user FLOAT phy_fCollisionCacheAround;", &phy_fCollisionCacheAround);
 
-  _pShell->DeclareSymbol("persistent user INDEX inp_iKeyboardReadingMethod;",   &inp_iKeyboardReadingMethod);
   _pShell->DeclareSymbol("persistent user INDEX inp_bAllowMouseAcceleration;",  &inp_bAllowMouseAcceleration);
   _pShell->DeclareSymbol("persistent user FLOAT inp_fMouseSensitivity;",        &inp_fMouseSensitivity);
   _pShell->DeclareSymbol("persistent user INDEX inp_bMousePrecision;",          &inp_bMousePrecision);
@@ -866,20 +847,6 @@ void CNetworkLibrary::Init(const CTString &strGameID)
   _pShell->DeclareSymbol("persistent user INDEX inp_bFilterMouse;",    &inp_bFilterMouse);
   _pShell->DeclareSymbol("persistent user INDEX inp_bAllowPrescan;",   &inp_bAllowPrescan);
 
-  _pShell->DeclareSymbol("persistent user INDEX inp_i2ndMousePort;",   &inp_i2ndMousePort);
-  _pShell->DeclareSymbol("persistent user INDEX inp_bInvert2ndMouse;", &inp_bInvert2ndMouse);
-  _pShell->DeclareSymbol("persistent user INDEX inp_bFilter2ndMouse;", &inp_bFilter2ndMouse);
-  _pShell->DeclareSymbol("persistent user FLOAT inp_f2ndMouseSensitivity;",        &inp_f2ndMouseSensitivity);
-  _pShell->DeclareSymbol("persistent user INDEX inp_b2ndMousePrecision;",          &inp_b2ndMousePrecision);
-  _pShell->DeclareSymbol("persistent user FLOAT inp_f2ndMousePrecisionFactor;",    &inp_f2ndMousePrecisionFactor);
-  _pShell->DeclareSymbol("persistent user FLOAT inp_f2ndMousePrecisionThreshold;", &inp_f2ndMousePrecisionThreshold);
-  _pShell->DeclareSymbol("persistent user FLOAT inp_f2ndMousePrecisionTimeout;",   &inp_f2ndMousePrecisionTimeout);
-
-  _pShell->DeclareSymbol("persistent user INDEX inp_bMsgDebugger;",    &inp_bMsgDebugger);
-  _pShell->DeclareSymbol("persistent user INDEX inp_iMButton4Up;", &inp_iMButton4Up);
-  _pShell->DeclareSymbol("persistent user INDEX inp_iMButton4Dn;", &inp_iMButton4Dn);
-  _pShell->DeclareSymbol("persistent user INDEX inp_iMButton5Up;", &inp_iMButton5Up);
-  _pShell->DeclareSymbol("persistent user INDEX inp_iMButton5Dn;", &inp_iMButton5Dn);
   _pShell->DeclareSymbol("persistent user INDEX inp_ctJoysticksAllowed;",    &inp_ctJoysticksAllowed);
   _pShell->DeclareSymbol("persistent user INDEX inp_bForceJoystickPolling;", &inp_bForceJoystickPolling);
   _pShell->DeclareSymbol("persistent user INDEX inp_bAutoDisableJoysticks;", &inp_bAutoDisableJoysticks);
@@ -1077,8 +1044,6 @@ void CNetworkLibrary::StartPeerToPeer_t(const CTString &strSessionName,
   if( shd_bCacheAll) ga_World.wo_baBrushes.CacheAllShadowmaps();
   // flush stale caches
   FreeUnusedStock();
-  // mark that pretouching is required
-  _bNeedPretouch = TRUE;
 
   // start timer sync anew
   ga_ctTimersPending = 0;
@@ -1185,8 +1150,6 @@ void CNetworkLibrary::Load_t(const CTFileName &fnmGame) // throw char *
   if( shd_bCacheAll) ga_World.wo_baBrushes.CacheAllShadowmaps();
   // flush stale caches
   FreeUnusedStock();
-  // mark that pretouching is required
-  _bNeedPretouch = TRUE;
 
   // start timer sync anew
   ga_ctTimersPending = 0;
@@ -1275,8 +1238,6 @@ void CNetworkLibrary::JoinSession_t(const CNetworkSession &nsSesssion, INDEX ctL
   if( shd_bCacheAll) ga_World.wo_baBrushes.CacheAllShadowmaps();
   // flush stale caches
   FreeUnusedStock();
-  // mark that pretouching is required
-  _bNeedPretouch = TRUE;
 
   // run main loop to let session state process messages from server
   MainLoop();
@@ -1337,8 +1298,6 @@ void CNetworkLibrary::StartDemoPlay_t(const CTFileName &fnDemo)  // throw char *
   if( shd_bCacheAll) ga_World.wo_baBrushes.CacheAllShadowmaps();
   // flush stale caches
   FreeUnusedStock();
-  // mark that pretouching is required
-  _bNeedPretouch = TRUE;
 
   // remember the world pointer
   _pShell->SetINDEX("pwoCurrentWorld", (INDEX)&ga_World);
@@ -1742,8 +1701,6 @@ void CNetworkLibrary::ChangeLevel_internal(void)
 
   // flush stale caches
   FreeUnusedStock();
-  // mark that pretouching is required
-  _bNeedPretouch = TRUE;
 
   // start timer sync anew
   ga_ctTimersPending = 0;

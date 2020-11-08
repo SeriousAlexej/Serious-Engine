@@ -13,14 +13,14 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#include "stdh.h"
+
 
 #include <Engine/Entities/Entity.h>
 #include <Engine/Brushes/Brush.h>
 
-#include <Engine/Templates/DynamicArray.cpp>
-#include <Engine/Templates/StaticArray.cpp>
-#include <Engine/Templates/StaticStackArray.cpp>
+#include <Engine/Templates/DynamicArray.h>
+#include <Engine/Templates/StaticArray.h>
+#include <Engine/Templates/StaticStackArray.h>
 #include <Engine/Math/Geometry.inl>
 #include <Engine/Math/Clipping.inl>
 
@@ -134,7 +134,7 @@ void SearchThroughSectors(void)
     }}
 
     // for each entity in the sector
-    {FOREACHDSTOFSRC(pbsc->bsc_rsEntities, CEntity, en_rdSectors, pen)
+    {FOREACHDSTOFSRC(pbsc->bsc_rsEntities, CEntity, pen)
       // if it is a brush
       if (pen->en_RenderType == CEntity::RT_BRUSH) {
         // get its brush
@@ -162,7 +162,7 @@ CBrushPolygon *CEntity::GetNearestPolygon(
   _fNearDistance = UpperLimit(1.0f);
 
   // for each zoning sector that this entity is in
-  {FOREACHSRCOFDST(en_rdSectors, CBrushSector, bsc_rsEntities, pbsc)
+  {FOREACHSRCOFDST(en_rdSectors, CBrushSector, pbsc)
     // add the sector
     AddSector(pbsc);
   ENDFOR}

@@ -55,7 +55,7 @@ public:
 CListHead &CDS_GetModes(void);
 
 // set given display mode
-BOOL CDS_SetMode( PIX pixSizeI, PIX pixSizeJ, enum DisplayDepth dd);
+BOOL CDS_SetMode( PIX pixSizeI, PIX pixSizeJ);
 // reset windows to mode chosen by user within windows diplay properties
 void CDS_ResetMode(void);
 

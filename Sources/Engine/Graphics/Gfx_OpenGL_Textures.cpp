@@ -13,15 +13,14 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#include "stdh.h"
+
 
 #include <Engine/Graphics/GfxLibrary.h>
 
-#include <Engine/Base/Statistics_internal.h>
+#include <Engine/Base/Statistics_Internal.h>
 #include <Engine/Math/Functions.h>
 #include <Engine/Graphics/Color.h>
 #include <Engine/Graphics/Texture.h>
-#include <Engine/Graphics/GfxProfile.h>
 
 #include <Engine/Base/ListIterator.inl>
 
@@ -63,7 +62,6 @@ static void UnpackFilter_OGL( INDEX iFilter, GLenum &eMagFilter, GLenum &eMinFil
 extern void MimicTexParams_OGL( CTexParams &tpLocal)
 {
   ASSERT( &tpLocal!=NULL);
-  _pfGfxProfile.StartTimer( CGfxProfile::PTI_TEXTUREPARAMS);
 
   // set texture filtering mode if required
   if( tpLocal.tp_iFilter != _tpGlobal[0].tp_iFilter)
@@ -94,13 +92,8 @@ extern void MimicTexParams_OGL( CTexParams &tpLocal)
   if( tpLocal.tp_eWrapU!=_tpGlobal[GFX_iActiveTexUnit].tp_eWrapU
    || tpLocal.tp_eWrapV!=_tpGlobal[GFX_iActiveTexUnit].tp_eWrapV)
   { // prepare temp vars
-    GLuint eWrapU = _tpGlobal[GFX_iActiveTexUnit].tp_eWrapU==GFX_REPEAT ? GL_REPEAT : GL_CLAMP;
-    GLuint eWrapV = _tpGlobal[GFX_iActiveTexUnit].tp_eWrapV==GFX_REPEAT ? GL_REPEAT : GL_CLAMP;
-    // eventually re-adjust clamping params in case of clamp_to_edge extension
-    if( _pGfx->gl_ulFlags&GLF_EXT_EDGECLAMP) {
-      if( eWrapU == GL_CLAMP) eWrapU = GL_CLAMP_TO_EDGE;
-      if( eWrapV == GL_CLAMP) eWrapV = GL_CLAMP_TO_EDGE;
-    } 
+    GLuint eWrapU = _tpGlobal[GFX_iActiveTexUnit].tp_eWrapU==GFX_REPEAT ? GL_REPEAT : GL_CLAMP_TO_EDGE;
+    GLuint eWrapV = _tpGlobal[GFX_iActiveTexUnit].tp_eWrapV==GFX_REPEAT ? GL_REPEAT : GL_CLAMP_TO_EDGE;
     // set clamping params and update local texture clamping modes
     pglTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, eWrapU);
     pglTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, eWrapV);
@@ -111,7 +104,6 @@ extern void MimicTexParams_OGL( CTexParams &tpLocal)
 
   // keep last texture params (for tex upload and stuff)
   _tpCurrent = &tpLocal;
-  _pfGfxProfile.StopTimer( CGfxProfile::PTI_TEXTUREPARAMS);
 }
 
 
@@ -125,15 +117,12 @@ extern void UploadTexture_OGL( ULONG *pulTexture, PIX pixSizeU, PIX pixSizeV,
   ASSERT( pulTexture!=NULL);
   ASSERT( pixSizeU>0 && pixSizeV>0);
   _sfStats.StartTimer( CStatForm::STI_BINDTEXTURE);
-  _pfGfxProfile.StartTimer( CGfxProfile::PTI_TEXTUREUPLOADING);
 
   // upload each original mip-map
   INDEX iMip=0;
   PIX pixOffset=0;
   while( pixSizeU>0 && pixSizeV>0)
-  { 
-    // check that memory is readable
-    ASSERT( pulTexture[pixOffset +pixSizeU*pixSizeV -1] != 0xDEADBEEF);
+  {
     // upload mipmap as fast as possible
     if( bUseSubImage) {
       pglTexSubImage2D( GL_TEXTURE_2D, iMip, 0, 0, pixSizeU, pixSizeV,
@@ -164,25 +153,17 @@ extern void UploadTexture_OGL( ULONG *pulTexture, PIX pixSizeU, PIX pixSizeV,
       if( pixSizeU==0) pixSizeU=1;
       if( pixSizeV==0) pixSizeV=1;
       pixSize = pixSizeU*pixSizeV;
-      __asm {   
-        pxor    mm0,mm0
-        mov     esi,D [pulSrc]
-        mov     edi,D [pulDst]
-        mov     ecx,D [pixSize]
-  pixLoop:
-        movd    mm1,D [esi+0]
-        movd    mm2,D [esi+4]
-        punpcklbw mm1,mm0
-        punpcklbw mm2,mm0
-        paddw   mm1,mm2
-        psrlw   mm1,1
-        packuswb mm1,mm0
-        movd    D [edi],mm1
-        add     esi,4*2
-        add     edi,4
-        dec     ecx
-        jnz     pixLoop
-        emms
+      UBYTE* dst = reinterpret_cast<UBYTE*>(pulDst);
+      UBYTE* src = reinterpret_cast<UBYTE*>(pulSrc);
+      for (PIX i = 0; i < pixSize; ++i)
+      {
+        for (PIX j = 0; j < 4; ++j)
+        {
+          *dst = (UBYTE) ( (((UWORD)src[0]) + ((UWORD)src[4])) >> 1);
+          dst++;
+          src++;
+        }
+        src += sizeof(ULONG);
       }
       // upload mipmap
       if( bUseSubImage) {
@@ -203,11 +184,8 @@ extern void UploadTexture_OGL( ULONG *pulTexture, PIX pixSizeU, PIX pixSizeV,
   }
 
   // all done
-  _pfGfxProfile.IncrementCounter( CGfxProfile::PCI_TEXTUREUPLOADS, 1);
-  _pfGfxProfile.IncrementCounter( CGfxProfile::PCI_TEXTUREUPLOADBYTES, pixOffset*4);
   _sfStats.IncrementCounter( CStatForm::SCI_TEXTUREUPLOADS, 1);
   _sfStats.IncrementCounter( CStatForm::SCI_TEXTUREUPLOADBYTES, pixOffset*4);
-  _pfGfxProfile.StopTimer( CGfxProfile::PTI_TEXTUREUPLOADING);
   _sfStats.StopTimer( CStatForm::STI_BINDTEXTURE);
 }
 

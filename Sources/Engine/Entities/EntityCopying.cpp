@@ -13,7 +13,7 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#include "stdh.h"
+
 
 #include <Engine/Entities/Entity.h>
 #include <Engine/Entities/LastPositions.h>
@@ -35,9 +35,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <Engine/Models/ModelObject.h>
 #include <Engine/Sound/SoundObject.h>
 
-#include <Engine/Templates/DynamicContainer.cpp>
-#include <Engine/Templates/StaticArray.cpp>
-#include <Engine/Templates/Selection.cpp>
+#include <Engine/Templates/DynamicContainer.h>
+#include <Engine/Templates/StaticArray.h>
+#include <Engine/Templates/Selection.h>
 
 class CPointerRemapping {
 public:
@@ -49,7 +49,7 @@ public:
 
 static CStaticArray<CPointerRemapping> _aprRemaps;
 static BOOL _bRemapPointersToNULLs = TRUE;
-extern BOOL _bReinitEntitiesWhileCopying = TRUE;
+BOOL _bReinitEntitiesWhileCopying = TRUE;
 static BOOL _bMirrorAndStretch = FALSE;
 static FLOAT _fStretch = 1.0f;
 static enum WorldMirrorType _wmtMirror = WMT_NONE;
@@ -159,7 +159,6 @@ void CEntity::Copy(CEntity &enOther, ULONG ulFlags)
     }
   // if this is a terrain
   } else if( enOther.en_RenderType == RT_TERRAIN) {
-    #pragma message(">> CEntity::Copy")
     ASSERT(FALSE);
   // if this is a model
   } if ( enOther.en_RenderType == RT_MODEL || en_RenderType == RT_EDITORMODEL) {
@@ -580,7 +579,7 @@ CEntity *CWorld::CopyEntityInWorld(CEntity &enOriginal, const CPlacement3D &plOt
   // if descendants should be copied too
   if (bWithDescendants) {
     // for each child of this entity
-    {FOREACHINLIST(CEntity, en_lnInParent, enOriginal.en_lhChildren, itenChild) {
+    {FOREACHINLIST(CEntity, enOriginal.en_lhChildren, itenChild) {
       // copy it relatively to the new entity
       CPlacement3D plChild = itenChild->en_plRelativeToParent;
       plChild.RelativeToAbsoluteSmooth(penNew->en_plPlacement);
@@ -702,7 +701,7 @@ void CWorld::CopyEntitiesToPredictors(CDynamicContainer<CEntity> &cenToCopy)
     // copy collision info
     penCopy->CopyCollisionInfo(*penOriginal);
     // for each sector around the original
-    {FOREACHSRCOFDST(penOriginal->en_rdSectors, CBrushSector, bsc_rsEntities, pbsc)
+    {FOREACHSRCOFDST(penOriginal->en_rdSectors, CBrushSector, pbsc)
       // copy the link
       if (penOriginal->en_RenderType==CEntity::RT_BRUSH
         ||penOriginal->en_RenderType==CEntity::RT_FIELDBRUSH

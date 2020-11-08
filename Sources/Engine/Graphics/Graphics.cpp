@@ -13,7 +13,7 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#include "stdh.h"
+
 
 #include <Engine/Base/Statistics_internal.h>
 #include <Engine/Graphics/GfxLibrary.h>
@@ -35,7 +35,7 @@ extern INDEX tex_bProgressiveFilter; // filter mipmaps in creation time (not aft
 // returns number of mip-maps to skip from original texture
 INDEX ClampTextureSize( PIX pixClampSize, PIX pixClampDimension, PIX pixSizeU, PIX pixSizeV)
 {
-  __int64 pixMaxSize  = (__int64)pixSizeU * (__int64)pixSizeV;
+  std::int64_t pixMaxSize  = (std::int64_t)pixSizeU * (std::int64_t)pixSizeV;
   PIX pixMaxDimension = Max( pixSizeU, pixSizeV);
   INDEX ctSkipMips    = 0;
   while( (pixMaxSize>pixClampSize || pixMaxDimension>pixClampDimension) && pixMaxDimension>1) {
@@ -187,7 +187,7 @@ void FlipBitmap( UBYTE *pubSrc, UBYTE *pubDst, PIX pixWidth, PIX pixHeight, INDE
 
 
 // makes one level lower mipmap (bilinear or nearest-neighbour with border preservance)
-static __int64 mmRounder = 0x0002000200020002;
+static std::int64_t mmRounder = 0x0002000200020002;
 static void MakeOneMipmap( ULONG *pulSrcMipmap, ULONG *pulDstMipmap, PIX pixWidth, PIX pixHeight, BOOL bBilinear)
 {
   // some safety checks
@@ -372,7 +372,7 @@ DOUBLE CalcBitmapDeviation( ULONG *pulBitmap, PIX pixSize)
 {
   UBYTE ubR,ubG,ubB;
   ULONG ulSumR =0, ulSumG =0, ulSumB =0;
-__int64 mmSumR2=0, mmSumG2=0, mmSumB2=0;
+std::int64_t mmSumR2=0, mmSumG2=0, mmSumB2=0;
 
   // calculate sum and sum^2
   for( INDEX iPix=0; iPix<pixSize; iPix++) {
@@ -422,12 +422,12 @@ static ULONG ulDither2[4][4] = {
 };
 
 
-static __int64 mmErrDiffMask=0;
-static __int64 mmW3 = 0x0003000300030003;
-static __int64 mmW5 = 0x0005000500050005;
-static __int64 mmW7 = 0x0007000700070007;
-static __int64 mmShift = 0;
-static __int64 mmMask  = 0;
+static std::int64_t mmErrDiffMask=0;
+static std::int64_t mmW3 = 0x0003000300030003;
+static std::int64_t mmW5 = 0x0005000500050005;
+static std::int64_t mmW7 = 0x0007000700070007;
+static std::int64_t mmShift = 0;
+static std::int64_t mmMask  = 0;
 static ULONG *pulDitherTable;
 
 // performs dithering of a 32-bit bipmap (can be in-place)
@@ -696,15 +696,15 @@ static INDEX aiFilters[6][3] = {
   {  1,  1,  1 }}; // 
 
 // temp for middle pixels, vertical/horizontal edges, and corners
-static __int64 mmMc,  mmMe,  mmMm;  // corner, edge, middle
-static __int64 mmEch, mmEm;  // corner-high, middle
+static std::int64_t mmMc,  mmMe,  mmMm;  // corner, edge, middle
+static std::int64_t mmEch, mmEm;  // corner-high, middle
 #define mmEcl mmMc  // corner-low
 #define mmEe  mmMe  // edge
-static __int64 mmCm;  // middle
+static std::int64_t mmCm;  // middle
 #define mmCc mmMc  // corner
 #define mmCe mmEch // edge
-static __int64 mmInvDiv;
-static __int64 mmAdd = 0x0007000700070007;
+static std::int64_t mmInvDiv;
+static std::int64_t mmAdd = 0x0007000700070007;
 
 // temp rows for in-place filtering support
 static ULONG aulRows[2048];
@@ -734,7 +734,7 @@ static void GenerateConvolutionMatrix( INDEX iFilter)
   INDEX iEm  = iMm  + iMe;
   INDEX iCm  = iEch + iEm;
   // prepare divider
-  __int64 mm = ((__int64)ceil(65536.0f/(iMc*4+iMe*4+iMm))) & 0xFFFF;
+  std::int64_t mm = ((std::int64_t)ceil(65536.0f/(iMc*4+iMe*4+iMm))) & 0xFFFF;
   mmInvDiv   = (mm<<48) | (mm<<32) | (mm<<16) | mm;
   // prepare filter values
   mm = iMc  & 0xFFFF;  mmMc = (mm<<48) | (mm<<32) | (mm<<16) | mm;

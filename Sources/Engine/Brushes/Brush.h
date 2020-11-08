@@ -207,6 +207,7 @@ public:
 
   CListHead bsm_lhLayers;     // list of all layers of this shadow map
   UBYTE *bsm_pubPolygonMask;  // bit packed polygon mask
+  CBrushPolygon& bsm_myPolygon;
 
   // get pointer to embedding brush polygon
   inline CBrushPolygon *GetBrushPolygon(void);
@@ -231,7 +232,7 @@ public:
   void QueueForCalculation(void);
 // interface:
   // constructor
-  CBrushShadowMap(void);
+  CBrushShadowMap(CBrushPolygon& polygon);
   // destructor
   ~CBrushShadowMap(void);
   // discard all layers on this shadow map
@@ -408,7 +409,7 @@ public:
   INDEX bpo_iInWorld;   // index of the polygon in entire world
 
   /* Default constructor. */
-  inline CBrushPolygon(void) : bpo_ulFlags(0) {};
+  inline CBrushPolygon(void) : bpo_ulFlags(0), bpo_smShadowMap(*this), bpo_rsOtherSideSectors(this) {};
   /* Clear the object. */
   void Clear(void);
   /* Destructor. */
@@ -449,7 +450,7 @@ public:
 
 // get pointer to embedding brush polygon
 inline CBrushPolygon *CBrushShadowMap::GetBrushPolygon(void) {
-  return (CBrushPolygon *) ((UBYTE*)this-offsetof(CBrushPolygon, bpo_smShadowMap));
+  return &bsm_myPolygon;
 }
 
 

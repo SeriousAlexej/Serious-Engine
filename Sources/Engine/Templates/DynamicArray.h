@@ -19,7 +19,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
+#include <Engine/Base/Memory.h>
 #include <Engine/Base/Lists.h>
+#include <Engine/Base/ListIterator.inl>
 
 /*
  * Template class for array with dynamic allocation of objects.
@@ -78,6 +80,7 @@ public:
   INDEX Count(void) const;
 };
 
+#include "DynamicArray.inl"
 
 #endif  /* include-once check. */
 

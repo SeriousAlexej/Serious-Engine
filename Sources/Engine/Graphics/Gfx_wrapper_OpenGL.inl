@@ -513,62 +513,6 @@ static void ogl_DisableColorArray(void)
 
 
 
-// enable truform rendering
-static void ogl_EnableTruform(void)
-{
-  // skip if Truform isn't set
-  if( truform_iLevel<1) return;
-
-  // check consistency
-  ASSERT( _pGfx->gl_eCurrentAPI==GAT_OGL);
-#ifndef NDEBUG
-  BOOL bRes; 
-  bRes = pglIsEnabled(GL_PN_TRIANGLES_ATI);
-  OGL_CHECKERROR;
-  ASSERT( !bRes == !GFX_bTruform);
-#endif
-
-  if( GFX_bTruform && gap_bOptimizeStateChanges) return;
-  GFX_bTruform = TRUE;
-
-  _sfStats.StartTimer(CStatForm::STI_GFXAPI);
-
-  pglEnable( GL_PN_TRIANGLES_ATI); 
-  OGL_CHECKERROR;
-
-  _sfStats.StopTimer(CStatForm::STI_GFXAPI);
-}
-
-
-
-// disable truform rendering
-static void ogl_DisableTruform(void)
-{
-  // skip if Truform isn't set
-  if( truform_iLevel<1) return;
-
-  // check consistency
-  ASSERT( _pGfx->gl_eCurrentAPI==GAT_OGL);
-#ifndef NDEBUG
-  BOOL bRes; 
-  bRes = pglIsEnabled(GL_PN_TRIANGLES_ATI);
-  OGL_CHECKERROR;
-  ASSERT( !bRes == !GFX_bTruform);
-#endif
-
-  if( !GFX_bTruform && gap_bOptimizeStateChanges) return;
-  GFX_bTruform = FALSE;
-
-  _sfStats.StartTimer(CStatForm::STI_GFXAPI);
-
-  pglDisable( GL_PN_TRIANGLES_ATI); 
-  OGL_CHECKERROR;
-
-  _sfStats.StopTimer(CStatForm::STI_GFXAPI);
-}
-
-
-
 // helper for blending operation function
 __forceinline GLenum BlendToOGL( GfxBlend eFunc) {
   switch( eFunc) {

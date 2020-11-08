@@ -13,7 +13,7 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#include "stdh.h"
+
 #include <Engine/Terrain/ArrayHolder.h>
 #include <Engine/Terrain/Terrain.h>
 #include <Engine/Terrain/TerrainMisc.h>
@@ -68,7 +68,7 @@ INDEX CArrayHolder::GetNewArrays()
 }
 
 // Mark tile arrays as unused
-void CArrayHolder::FreeArrays(INT iOldArraysIndex)
+void CArrayHolder::FreeArrays(INDEX iOldArraysIndex)
 {
   // if arrays are valid
   if(iOldArraysIndex!=-1) {

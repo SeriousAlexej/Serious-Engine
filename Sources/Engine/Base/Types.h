@@ -19,34 +19,33 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
+#include <cstdint>
 #include <Engine/Base/Base.h>
 #include <Engine/Graphics/gl_types.h>
 
-typedef signed long  int    SLONG;
-typedef signed short int    SWORD;
-typedef signed char	        SBYTE;
-typedef signed int          SINT;
+typedef std::int32_t  SLONG;
+typedef std::int16_t  SWORD;
+typedef std::int8_t   SBYTE;
+typedef std::int32_t  SINT;
 
-typedef unsigned long  int  ULONG;
-typedef unsigned short int  UWORD;
-typedef unsigned char       UBYTE;
-typedef unsigned int        UINT;
+typedef std::uint32_t ULONG;
+typedef std::uint16_t UWORD;
+typedef std::uint8_t  UBYTE;
+typedef std::uint32_t UINT;
 
-
-#ifdef PLATFORM_UNIX  /* rcg10042001 */
+#ifndef WIN32
     #define __forceinline inline
 
     #if (!defined MAX_PATH)
       #define MAX_PATH 256
     #endif
 
-    typedef long long  __int64;
-    typedef unsigned long  int  DWORD;
-    typedef signed long  int    LONG;
+    typedef std::uint32_t  DWORD;
+    typedef std::int32_t    LONG;
 
-    typedef void *HWND;  /* !!! FIXME this sucks. */
-    typedef void *HINSTANCE;  /* !!! FIXME this sucks. */
-    typedef void *HGLRC;  /* !!! FIXME this sucks. */
+    typedef void* HWND;  /* !!! FIXME this sucks. */
+    typedef void* HINSTANCE;  /* !!! FIXME this sucks. */
+    typedef void* HGLRC;  /* !!! FIXME this sucks. */
     typedef ULONG COLORREF;  /* !!! FIXME this sucks. */
 
     typedef struct
@@ -81,9 +80,9 @@ typedef unsigned int        UINT;
 #define MAX_UWORD ((UWORD)0xFFFF)
 #define MAX_UBYTE ((UBYTE)0xFF)
 
-typedef int BOOL;		        // this is for TRUE/FALSE
-typedef long int RESULT;		// for error codes
-typedef long int INDEX;     // for indexed values and quantities
+typedef std::int32_t BOOL;		  // this is for TRUE/FALSE
+typedef std::int32_t RESULT;		// for error codes
+typedef std::int32_t INDEX;     // for indexed values and quantities
 
 #define FALSE 0
 #define TRUE  1
@@ -92,12 +91,12 @@ typedef long int INDEX;     // for indexed values and quantities
 #define NOTHING ((void) 0)
 #define FOREVER for(;;)
 
-#define DECLARE_NOCOPYING(classname)        \
-  classname(const classname &c);            \
-  classname &operator=(const classname &c); 
-#define IMPLEMENT_NOCOPYING(classname)      \
-  classname::classname(const classname &c) { ASSERT(FALSE); };            \
-  classname &classname::operator=(const classname &c){ ASSERT(FALSE); return *this; }; 
+#define DECLARE_NOCOPYING(classname)               \
+  classname(const classname &c) = delete;          \
+  classname(classname&&) = delete;                 \
+  classname& operator=(classname&&) = delete;      \
+  classname& operator=(const classname&) = delete;
+
 
 // standard angles
 #define ANGLE_0    (  0.0f)
@@ -322,7 +321,7 @@ class CWorkingEdge;
 class CWorld;
 
 // template class predeclarations
-template<class Type, int iOffset> class CListIter;
+template<class Type> class CListIter;
 template<class Type> class CDynamicArray;
 template<class Type> class CDynamicStackArray;
 template<class Type> class CDynamicArrayIterator;
@@ -331,21 +330,21 @@ template<class Type> class CStaticStackArray;
 template<class Type> class CStaticArrayIterator;
 template<class Type> class CLinearAllocator;
 template<class Type> class CDynamicContainer;
-template<class Type, int iRows, int iColumns> class Matrix;
-template<class Type, int iDimensions> class AABBox;
-template<class Type, int iDimensions> class Vector;
-template<class Type, int iDimensions> class Plane;
+template<class Type, std::int32_t iRows, std::int32_t iColumns> class Matrix;
+template<class Type, std::int32_t iDimensions> class AABBox;
+template<class Type, std::int32_t iDimensions> class Vector;
+template<class Type, std::int32_t iDimensions> class Plane;
 template<class Type> class OBBox;
 template<class Type> class Quaternion;
-template<int iInt, int iFrac> class FixInt;
+template<std::int32_t iInt, std::int32_t iFrac> class FixInt;
 
-template<class Type, int iDimensions> class BSPVertex;
-template<class Type, int iDimensions> class BSPVertexContainer;
-template<class Type, int iDimensions> class BSPEdge;
-template<class Type, int iDimensions> class BSPNode;
-template<class Type, int iDimensions> class BSPPolygon;
-template<class Type, int iDimensions> class BSPTree;
-template<class Type, int iDimensions> class BSPCutter;
+template<class Type, std::int32_t iDimensions> class BSPVertex;
+template<class Type, std::int32_t iDimensions> class BSPVertexContainer;
+template<class Type, std::int32_t iDimensions> class BSPEdge;
+template<class Type, std::int32_t iDimensions> class BSPNode;
+template<class Type, std::int32_t iDimensions> class BSPPolygon;
+template<class Type, std::int32_t iDimensions> class BSPTree;
+template<class Type, std::int32_t iDimensions> class BSPCutter;
 
 typedef FixInt<16,16>           FIX16_16;
 
@@ -410,9 +409,8 @@ template<class cType>
 inline void Clear(cType &t) { t.cType::Clear(); };
 
 // specific clearing functions for built-in types
-inline void Clear(signed long int sli) {};
-inline void Clear(unsigned long int uli) {};
-inline void Clear(int i) {};
+inline void Clear(std::uint32_t uli) {};
+inline void Clear(std::int32_t i) {};
 inline void Clear(float i) {};
 inline void Clear(double i) {};
 inline void Clear(void *pv) {};
@@ -420,4 +418,3 @@ inline void Clear(void *pv) {};
 #define SYMBOLLOCATOR(symbol)
 
 #endif  /* include-once check. */
-

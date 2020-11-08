@@ -13,11 +13,10 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#include "stdh.h"
+
 
 #include <Engine/Brushes/Brush.h>
 #include <Engine/Brushes/BrushArchive.h>
-#include <Engine/World/WorldEditingProfile.h>
 #include <Engine/World/World.h>
 #include <Engine/Math/Float.h>
 #include <Engine/Base/ProgressHook.h>
@@ -27,20 +26,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <Engine/Templates/BSP.h>
 #include <Engine/Templates/BSP_internal.h>
-#include <Engine/Templates/DynamicArray.cpp>
-#include <Engine/Templates/StaticArray.cpp>
+#include <Engine/Templates/DynamicArray.h>
+#include <Engine/Templates/StaticArray.h>
 
-template CDynamicArray<CBrush3D>;
+template class CDynamicArray<CBrush3D>;
 
-extern BOOL _bPortalSectorLinksPreLoaded = FALSE;
-extern BOOL _bEntitySectorLinksPreLoaded = FALSE;
+BOOL _bPortalSectorLinksPreLoaded = FALSE;
+BOOL _bEntitySectorLinksPreLoaded = FALSE;
 
 /*
  * Calculate bounding boxes in all brushes.
  */
 void CBrushArchive::CalculateBoundingBoxes(void)
 {
-  _pfWorldEditingProfile.StartTimer(CWorldEditingProfile::PTI_CALCULATEBOUNDINGBOXES);
   // for each of the brushes
   FOREACHINDYNAMICARRAY(ba_abrBrushes, CBrush3D, itbr) {
     // if the brush has no entity
@@ -51,7 +49,6 @@ void CBrushArchive::CalculateBoundingBoxes(void)
     // calculate its boxes
     itbr->CalculateBoundingBoxes();
   }
-  _pfWorldEditingProfile.StopTimer(CWorldEditingProfile::PTI_CALCULATEBOUNDINGBOXES);
 }
 
 /* Make indices for all brush elements. */
@@ -67,7 +64,7 @@ void CBrushArchive::MakeIndices(void)
   // for each brush
   FOREACHINDYNAMICARRAY(ba_abrBrushes, CBrush3D, itbr) {
     // for each mip in the brush
-    FOREACHINLIST(CBrushMip, bm_lnInBrush, itbr->br_lhBrushMips, itbm) {
+    FOREACHINLIST(CBrushMip, itbr->br_lhBrushMips, itbm) {
       // for each sector in the brush mip
       FOREACHINDYNAMICARRAY(itbm->bm_abscSectors, CBrushSector, itbsc) {
         // for each polygon in the sector
@@ -89,7 +86,7 @@ void CBrushArchive::MakeIndices(void)
   ba_apbsc.Clear();
   ba_apbsc.New(ctSectors);
   {FOREACHINDYNAMICARRAY(ba_abrBrushes, CBrush3D, itbr) {
-    FOREACHINLIST(CBrushMip, bm_lnInBrush, itbr->br_lhBrushMips, itbm) {
+    FOREACHINLIST(CBrushMip, itbr->br_lhBrushMips, itbm) {
       FOREACHINDYNAMICARRAY(itbm->bm_abscSectors, CBrushSector, itbsc) {
         ba_apbsc[itbsc->bsc_iInWorld] = itbsc;
         FOREACHINSTATICARRAY(itbsc->bsc_abpoPolygons, CBrushPolygon, itbpo) {
@@ -104,7 +101,6 @@ void CBrushArchive::MakeIndices(void)
 /* Create links between portals and sectors on their other side. */
 void CBrushArchive::LinkPortalsAndSectors(void)
 {
-  _pfWorldEditingProfile.StartTimer(CWorldEditingProfile::PTI_LINKPORTALSANDSECTORS);
   ASSERT(GetFPUPrecision()==FPT_53BIT);
 
   // for each of the zoning brushes
@@ -113,7 +109,7 @@ void CBrushArchive::LinkPortalsAndSectors(void)
       continue;
     }
     // for each mip
-    FOREACHINLIST(CBrushMip, bm_lnInBrush, itbr1->br_lhBrushMips, itbm1) {
+    FOREACHINLIST(CBrushMip, itbr1->br_lhBrushMips, itbm1) {
       // for each sector in the brush mip
       FOREACHINDYNAMICARRAY(itbm1->bm_abscSectors, CBrushSector, itbsc1) {
 
@@ -123,7 +119,7 @@ void CBrushArchive::LinkPortalsAndSectors(void)
             continue;
           }
           // for each mip that might have contact with the sector
-          FOREACHINLIST(CBrushMip, bm_lnInBrush, itbr2->br_lhBrushMips, itbm2) {
+          FOREACHINLIST(CBrushMip, itbr2->br_lhBrushMips, itbm2) {
             if (!itbm2->bm_boxBoundingBox.HasContactWith(itbsc1->bsc_boxBoundingBox, DISTANCE_EPSILON)) {
               continue;
             }
@@ -165,7 +161,6 @@ void CBrushArchive::LinkPortalsAndSectors(void)
       }
     }
   }
-  _pfWorldEditingProfile.StopTimer(CWorldEditingProfile::PTI_LINKPORTALSANDSECTORS);
 }
 
 
@@ -175,7 +170,7 @@ void CBrushArchive::RemoveDummyLayers(void)
   // for each brush
   FOREACHINDYNAMICARRAY(ba_abrBrushes, CBrush3D, itbr) { // for each mip
     if( itbr->br_penEntity==NULL) continue; // skip brush without entity
-    FOREACHINLIST(CBrushMip, bm_lnInBrush, itbr->br_lhBrushMips, itbm) { // for each sector in the brush mip
+    FOREACHINLIST(CBrushMip, itbr->br_lhBrushMips, itbm) { // for each sector in the brush mip
       FOREACHINDYNAMICARRAY(itbm->bm_abscSectors, CBrushSector, itbsc) { // for each polygon in the sector
         FOREACHINSTATICARRAY(itbsc->bsc_abpoPolygons, CBrushPolygon, itbpo) {
           CBrushPolygon &bpo = *itbpo;
@@ -194,7 +189,7 @@ void CBrushArchive::CacheAllShadowmaps(void)
   INDEX ctShadowMaps=0;
   {FOREACHINDYNAMICARRAY( ba_abrBrushes, CBrush3D, itbr) { // for each mip
     if( itbr->br_penEntity==NULL) continue; // skip brush without entity
-    FOREACHINLIST( CBrushMip, bm_lnInBrush, itbr->br_lhBrushMips, itbm) { // for each sector in the brush mip
+    FOREACHINLIST( CBrushMip, itbr->br_lhBrushMips, itbm) { // for each sector in the brush mip
       FOREACHINDYNAMICARRAY( itbm->bm_abscSectors, CBrushSector, itbsc) { // for each polygon in the sector
         FOREACHINSTATICARRAY( itbsc->bsc_abpoPolygons, CBrushPolygon, itbpo) {
           if( !itbpo->bpo_smShadowMap.bsm_lhLayers.IsEmpty()) ctShadowMaps++; // count shadowmap if the one exist
@@ -210,7 +205,7 @@ void CBrushArchive::CacheAllShadowmaps(void)
     INDEX iCurrentShadowMap=0;
     {FOREACHINDYNAMICARRAY( ba_abrBrushes, CBrush3D, itbr) { // for each mip
       if( itbr->br_penEntity==NULL) continue; // skip brush without entity
-      FOREACHINLIST( CBrushMip, bm_lnInBrush, itbr->br_lhBrushMips, itbm) { // for each sector in the brush mip
+      FOREACHINLIST( CBrushMip, itbr->br_lhBrushMips, itbm) { // for each sector in the brush mip
         FOREACHINDYNAMICARRAY( itbm->bm_abscSectors, CBrushSector, itbsc) { // for each polygon in the sector
           FOREACHINSTATICARRAY( itbsc->bsc_abpoPolygons, CBrushPolygon, itbpo) {
             // cache shadowmap if the one exist
@@ -237,14 +232,12 @@ void CBrushArchive::ReadPortalSectorLinks_t( CTStream &strm)  // throw char *
   // links are not ok if they fail loading
   _bPortalSectorLinksPreLoaded = FALSE;
 
-  _pfWorldEditingProfile.StartTimer(CWorldEditingProfile::PTI_READPORTALSECTORLINKS);
   // first make indices for all sectors and polygons
   MakeIndices();
 
   // if the chunk is not there
   if (!(strm.PeekID_t()==CChunkID("PSLS"))) {   // portal-sector links
     // do nothing;
-    _pfWorldEditingProfile.StopTimer(CWorldEditingProfile::PTI_READPORTALSECTORLINKS);
     return;
   }
 
@@ -295,7 +288,6 @@ void CBrushArchive::ReadPortalSectorLinks_t( CTStream &strm)  // throw char *
   strm.ExpectID_t("PSLE");   // portal-sector links end
   // mark that links are ok
   _bPortalSectorLinksPreLoaded = TRUE;
-  _pfWorldEditingProfile.StopTimer(CWorldEditingProfile::PTI_READPORTALSECTORLINKS);
 }
 
 void CBrushArchive::ReadEntitySectorLinks_t( CTStream &strm)  // throw char *
@@ -303,14 +295,12 @@ void CBrushArchive::ReadEntitySectorLinks_t( CTStream &strm)  // throw char *
   // links are not ok if they fail loading
   _bEntitySectorLinksPreLoaded = FALSE;
 
-  _pfWorldEditingProfile.StartTimer(CWorldEditingProfile::PTI_READPORTALSECTORLINKS);
   // first make indices for all sectors and polygons
   MakeIndices();
 
   // if the chunk is not there
   if (!(strm.PeekID_t()==CChunkID("ESL2"))) {   // entity-sector links v2
     // do nothing;
-    _pfWorldEditingProfile.StopTimer(CWorldEditingProfile::PTI_READPORTALSECTORLINKS);
     return;
   }
 
@@ -358,7 +348,6 @@ void CBrushArchive::ReadEntitySectorLinks_t( CTStream &strm)  // throw char *
 
   // mark that links are ok
   _bEntitySectorLinksPreLoaded = TRUE;
-  _pfWorldEditingProfile.StopTimer(CWorldEditingProfile::PTI_READPORTALSECTORLINKS);
 }
 
 void CBrushArchive::WritePortalSectorLinks_t( CTStream &strm) // throw char *
@@ -375,7 +364,7 @@ void CBrushArchive::WritePortalSectorLinks_t( CTStream &strm) // throw char *
 
   // for each sector
   {FOREACHINDYNAMICARRAY(ba_abrBrushes, CBrush3D, itbr) {
-    FOREACHINLIST(CBrushMip, bm_lnInBrush, itbr->br_lhBrushMips, itbm) {
+    FOREACHINLIST(CBrushMip, itbr->br_lhBrushMips, itbm) {
       FOREACHINDYNAMICARRAY(itbm->bm_abscSectors, CBrushSector, itbsc) {
         CBrushSector *pbsc = itbsc;
         // get number of portal links that it has
@@ -388,7 +377,7 @@ void CBrushArchive::WritePortalSectorLinks_t( CTStream &strm) // throw char *
         // write sector index and number of links
         strm<<pbsc->bsc_iInWorld<<ctLinks;
         // for each link
-        {FOREACHSRCOFDST(pbsc->bsc_rdOtherSidePortals, CBrushPolygon, bpo_rsOtherSideSectors, pbpo)
+        {FOREACHSRCOFDST(pbsc->bsc_rdOtherSidePortals, CBrushPolygon, pbpo)
           // write the polygon index
           strm<<pbpo->bpo_iInWorld;
         ENDFOR}
@@ -422,7 +411,7 @@ void CBrushArchive::WriteEntitySectorLinks_t( CTStream &strm) // throw char *
 
   // for each sector
   {FOREACHINDYNAMICARRAY(ba_abrBrushes, CBrush3D, itbr) {
-    FOREACHINLIST(CBrushMip, bm_lnInBrush, itbr->br_lhBrushMips, itbm) {
+    FOREACHINLIST(CBrushMip, itbr->br_lhBrushMips, itbm) {
       FOREACHINDYNAMICARRAY(itbm->bm_abscSectors, CBrushSector, itbsc) {
         CBrushSector *pbsc = itbsc;
         // get number of entity links that it has
@@ -435,7 +424,7 @@ void CBrushArchive::WriteEntitySectorLinks_t( CTStream &strm) // throw char *
         // write sector index and number of links
         strm<<pbsc->bsc_iInWorld<<ctLinks;
         // for each link
-        {FOREACHDSTOFSRC(pbsc->bsc_rsEntities, CEntity, en_rdSectors, pen)
+        {FOREACHDSTOFSRC(pbsc->bsc_rsEntities, CEntity, pen)
           // write the entity index
           strm<<pen->en_ulID;
         ENDFOR}

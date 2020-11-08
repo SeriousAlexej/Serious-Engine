@@ -13,7 +13,7 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#include "StdH.h"
+
 
 #include <Engine/Engine.h>
 #include <Engine/CurrentVersion.h>
@@ -28,6 +28,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <Engine/GameAgent/GameAgent.h>
 
 #include <Engine/GameAgent/MSLegacy.h>
+
+#include <SDL2/SDL_stdinc.h>
+
+#include <thread>
+
+#ifndef WIN32
+#include <sys/types.h>
+#include <sys/ioctl.h>
+#include <unistd.h>
+#endif
 
 #define MSPORT      28900
 #define BUFFSZ      8192
@@ -83,40 +93,58 @@ with this program; if not, write to the Free Software Foundation, Inc.,
                     "\\final\\" \
                     "\\queryid\\1.1"
 
+#ifdef WIN32
+#define socklen_type int
+#define ioctl_func ioctlsocket
+#define closesocket_func closesocket
+#define WSA_CLEANUP WSACleanup();
+#else
+#define socklen_type socklen_t
+#define ioctl_func ioctl
+#define closesocket_func close
+#define WSA_CLEANUP
+#define INVALID_SOCKET -1
+#define SOCKET_ERROR -1
+#endif
 
 #define CHK_BUFFSTRLEN if((iLen < 0) || (iLen > BUFFSZSTR)) { \
                         CPrintF("\n" \
                             "Error: the used buffer is smaller than how much needed (%d < %d)\n" \
                             "\n", iLen, BUFFSZSTR); \
                             if(cMsstring) free (cMsstring); \
-                            closesocket(_sock); \
-                            WSACleanup(); \
+                            closesocket_func(_sock); \
+                            WSA_CLEANUP \
                         }
 
-#define CLEANMSSRUFF1       closesocket(_sock); \
-                            WSACleanup();
+
+#define CLEANMSSRUFF1       closesocket_func(_sock); \
+                            WSA_CLEANUP
 
 #define CLEANMSSRUFF2       if(cResponse) free (cResponse); \
-                            closesocket(_sock); \
-                            WSACleanup();
+                            closesocket_func(_sock); \
+                            WSA_CLEANUP
 
 #define SERIOUSSAMKEY       "AKbna4\0"
 #define SERIOUSSAMSTR       "serioussamse"
 
-#pragma comment(lib, "wsock32.lib")
 
+#ifdef WIN32
 WSADATA* _wsaData = NULL;
 SOCKET _socket = NULL;
+#else
+BOOL _wsaData = FALSE;
+int _socket = 0;
+#endif
 
 sockaddr_in* _sin = NULL;
 sockaddr_in* _sinLocal = NULL;
 sockaddr_in _sinFrom;
 
-CHAR* _szBuffer = NULL;
-CHAR* _szIPPortBuffer = NULL;
-INT   _iIPPortBufferLen = 0;
-CHAR* _szIPPortBufferLocal = NULL;
-INT   _iIPPortBufferLocalLen = 0;
+char* _szBuffer = NULL;
+char* _szIPPortBuffer = NULL;
+std::int32_t _iIPPortBufferLen = 0;
+char* _szIPPortBufferLocal = NULL;
+std::int32_t _iIPPortBufferLocalLen = 0;
 
 BOOL _bServer = FALSE;
 BOOL _bInitialized = FALSE;
@@ -128,22 +156,19 @@ TIME _tmLastHeartbeat = 0;
 CDynamicStackArray<CServerRequest> ga_asrRequests;
 
 //extern CTString ga_strServer = "master1.croteam.org";
-extern CTString ga_strServer = "master1.42amsterdam.net";
+CTString ga_strServer = "master1.42amsterdam.net";
 //extern CTString ga_strMSLegacy = "master1.croteam.org";
-extern CTString ga_strMSLegacy = "42amsterdam.net";
+CTString ga_strMSLegacy = "42amsterdam.net";
 
-extern BOOL ga_bMSLegacy = TRUE;
-//BOOL ga_bMSLegacy = FALSE;
+BOOL ga_bMSLegacy = TRUE;
 
 void _uninitWinsock();
 void _initializeWinsock(void)
 {
-  if(_wsaData != NULL && _socket != NULL) {
+  if(_wsaData && _socket) {
     return;
   }
 
-  _wsaData = new WSADATA;
-  _socket = NULL;
 
   // make the buffer that we'll use for packet reading
   if(_szBuffer != NULL) {
@@ -151,12 +176,19 @@ void _initializeWinsock(void)
   }
   _szBuffer = new char[2050];
 
+#ifdef WIN32
+  _wsaData = new WSADATA;
+  _socket = NULL;
   // start WSA
   if(WSAStartup(MAKEWORD(2, 2), _wsaData) != 0) {
     CPrintF("Error initializing winsock!\n");
     _uninitWinsock();
     return;
   }
+#else
+  _wsaData = TRUE;
+  _socket = 0;
+#endif
 
   // get the host IP
   hostent* phe;
@@ -195,12 +227,12 @@ void _initializeWinsock(void)
     _sinLocal->sin_port = htons(_pShell->GetINDEX("net_iPort") + 1);
 
     // bind the socket
-    bind(_socket, (sockaddr*)_sinLocal, sizeof(*_sinLocal));
+    bind(_socket, (sockaddr*)_sinLocal, sizeof(sockaddr_in));
   }
 
   // set the socket to be nonblocking
   DWORD dwNonBlocking = 1;
-  if(ioctlsocket(_socket, FIONBIO, &dwNonBlocking) != 0) {
+  if(ioctl_func(_socket, FIONBIO, &dwNonBlocking) != 0) {
     CPrintF("Error setting socket to nonblocking!\n");
     _uninitWinsock();
     return;
@@ -209,12 +241,20 @@ void _initializeWinsock(void)
 
 void _uninitWinsock()
 {
-  if(_wsaData != NULL) {
-    closesocket(_socket);
+  if(_wsaData) {
+    closesocket_func(_socket);
+#ifdef WIN32
     delete _wsaData;
     _wsaData = NULL;
+#else
+    _wsaData = FALSE;
+#endif
   }
+#ifdef WIN32
   _socket = NULL;
+#else
+  _socket = 0;
+#endif
 }
 
 void _sendPacketTo(const char* pubBuffer, INDEX iLen, sockaddr_in* sin)
@@ -239,7 +279,7 @@ void _sendPacket(const char* szBuffer)
 
 int _recvPacket()
 {
-  int fromLength = sizeof(_sinFrom);
+  socklen_type fromLength = sizeof(_sinFrom);
   return recvfrom(_socket, _szBuffer, 2048, 0, (sockaddr*)&_sinFrom, &fromLength);
 }
 
@@ -334,7 +374,7 @@ extern void GameAgent_ServerEnd(void)
 /// GameAgent server update call which responds to enumeration pings and sends pings to masterserver.
 extern void GameAgent_ServerUpdate(void)
 {
-  if((_socket == NULL) || (!_bInitialized)) {
+  if(!_socket || !_bInitialized) {
     return;
   }
 
@@ -480,10 +520,10 @@ extern void GameAgent_ServerUpdate(void)
           strLocation = "Heartland";
         }
         strPacket.PrintF( PCKBASIC,
-          _pShell->GetString("sam_strGameName"),
+          _pShell->GetString("sam_strGameName").str_String,
           _SE_VER_STRING,
           //_pShell->GetString("net_strLocalHost"));
-          strLocation);
+          strLocation.str_String);
         _sendPacketTo(strPacket, &_sinFrom);
 
       } else if (sPch4){
@@ -554,13 +594,11 @@ extern void GameAgent_EnumTrigger(BOOL bInternet)
     // we're not a server
     _bServer = FALSE;
     _pNetwork->ga_strEnumerationStatus = ".";
-	
-	WORD     _wsaRequested;
-	WSADATA  wsaData;
-	PHOSTENT _phHostinfo;
+
+  struct hostent* _phHostinfo;
 	ULONG    _uIP,*_pchIP = &_uIP;
-	USHORT   _uPort,*_pchPort = &_uPort;
-	INT      _iLen;
+  std::uint16_t   _uPort,*_pchPort = &_uPort;
+  std::int32_t      _iLen;
 	char     _cName[256],*_pch,_strFinal[8] = {0};
 
 	struct in_addr addr;
@@ -571,8 +609,10 @@ extern void GameAgent_EnumTrigger(BOOL bInternet)
     }
     _szIPPortBufferLocal = new char[1024];
 	
+#ifdef WIN32
 	// start WSA
-	_wsaRequested = MAKEWORD( 2, 2 );
+  WORD _wsaRequested = MAKEWORD( 2, 2 );
+  WSADATA  wsaData;
     if( WSAStartup(_wsaRequested, &wsaData) != 0) {
 		CPrintF("Error initializing winsock!\n");
 		if(_szIPPortBufferLocal != NULL) {
@@ -586,8 +626,9 @@ extern void GameAgent_EnumTrigger(BOOL bInternet)
 		WSACleanup();
         return;
     }
+#endif
 
-    _pch = _szIPPortBufferLocal;
+  _pch = _szIPPortBufferLocal;
 	_iLen = 0;
 	strcpy(_strFinal,"\\final\\");
 	
@@ -647,8 +688,11 @@ extern void GameAgent_EnumTrigger(BOOL bInternet)
     _pNetwork->ga_strEnumerationStatus = ".";
 
     struct  sockaddr_in peer;
-
+#ifdef WIN32
     SOCKET  _sock               = NULL;
+#else
+    int     _sock               = 0;
+#endif
     u_int   uiMSIP;
     int     iErr,
             iLen,
@@ -661,9 +705,9 @@ extern void GameAgent_EnumTrigger(BOOL bInternet)
             *ucSec               = NULL,
             *ucKey               = NULL;
 
-    char    *cFilter             = "",
-            *cWhere              = "",
-            cMS[128]             = {0},
+ const char *cFilter             = "",
+            *cWhere              = "";
+       char cMS[128]             = {0},
             *cResponse           = NULL,
             *cMsstring           = NULL,
             *cSec                = NULL;
@@ -671,11 +715,13 @@ extern void GameAgent_EnumTrigger(BOOL bInternet)
 
     strcpy(cMS,ga_strMSLegacy);
 
+#ifdef WIN32
     WSADATA wsadata;
     if(WSAStartup(MAKEWORD(2,2), &wsadata) != 0) {
         CPrintF("Error initializing winsock!\n");
         return;
     }
+#endif
 
 /* Open a socket and connect to the Master server */
 
@@ -686,10 +732,10 @@ extern void GameAgent_EnumTrigger(BOOL bInternet)
     _sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if(_sock < 0) {
         CPrintF("Error creating TCP socket!\n");
-        WSACleanup();
+        WSA_CLEANUP
         return;
     }
-    if(connect(_sock, (struct sockaddr *)&peer, sizeof(peer)) < 0) {
+    if(connect(_sock, (struct sockaddr *)&peer, sizeof(sockaddr_in)) < 0) {
         CPrintF("Error connecting to TCP socket!\n");
         CLEANMSSRUFF1;
         return;
@@ -755,7 +801,7 @@ extern void GameAgent_EnumTrigger(BOOL bInternet)
         return;
     }
 
-    iLen = _snprintf(
+    iLen = SDL_snprintf(
         cMsstring,
         BUFFSZSTR,
         PCK,
@@ -823,11 +869,14 @@ extern void GameAgent_EnumTrigger(BOOL bInternet)
   }
 }
 
+void _MS_Thread();
+void _LocalNet_Thread();
+
 /// GameAgent client update for enumerations.
 extern void GameAgent_EnumUpdate(void)
 {
 
-  if((_socket == NULL) || (!_bInitialized)) {
+  if(!_socket || !_bInitialized) {
     return;
   }
 
@@ -844,12 +893,12 @@ extern void GameAgent_EnumUpdate(void)
           UBYTE bSecond;
           UBYTE bThird;
           UBYTE bFourth;
-          USHORT iPort;
+          UWORD iPort;
         };
         _pNetwork->ga_strEnumerationStatus = "";
 
         sIPPort* pServers = (sIPPort*)(_szBuffer + 1);
-        while(iLen - ((CHAR*)pServers - _szBuffer) >= sizeof(sIPPort)) {
+        while(iLen - ((char*)pServers - _szBuffer) >= sizeof(sIPPort)) {
           sIPPort ip = *pServers;
 
           CTString strIP;
@@ -884,7 +933,7 @@ extern void GameAgent_EnumUpdate(void)
         CTString strGameName;
         CTString strSessionName;
 
-        CHAR* pszPacket = _szBuffer + 2; // we do +2 because the first character is always ';', which we don't care about.
+        char* pszPacket = _szBuffer + 2; // we do +2 because the first character is always ';', which we don't care about.
 
         BOOL bReadValue = FALSE;
         CTString strKey;
@@ -909,7 +958,7 @@ extern void GameAgent_EnumUpdate(void)
                 } else if(strKey == "gamename") {
                   strGameName = strValue;
                 } else {
-                  CPrintF("Unknown GameAgent parameter key '%s'!", strKey);
+                  CPrintF("Unknown GameAgent parameter key '%s'!", strKey.str_String);
                 }
 
                 // reset temporary holders
@@ -980,24 +1029,14 @@ extern void GameAgent_EnumUpdate(void)
  } else {
  /* MSLegacy */
     if(_bActivated) {
-        HANDLE  _hThread;
-        DWORD   _dwThreadId;
-
-        _hThread = CreateThread(NULL, 0, _MS_Thread, 0, 0, &_dwThreadId);
-        if (_hThread != NULL) {
-            CloseHandle(_hThread);
-        }
-        _bActivated = FALSE;		
+      std::thread thread(_MS_Thread);
+      thread.detach();
+      _bActivated = FALSE;
     }
     if(_bActivatedLocal) {
-        HANDLE  _hThread;
-        DWORD   _dwThreadId;
-
-        _hThread = CreateThread(NULL, 0, _LocalNet_Thread, 0, 0, &_dwThreadId);
-        if (_hThread != NULL) {
-            CloseHandle(_hThread);
-        }
-        _bActivatedLocal = FALSE;		
+      std::thread thread(_LocalNet_Thread);
+      thread.detach();
+      _bActivatedLocal = FALSE;
     }	
   }
 }
@@ -1012,21 +1051,27 @@ extern void GameAgent_EnumCancel(void)
   }
 }
 
-DWORD WINAPI _MS_Thread(LPVOID lpParam) {
-    SOCKET _sockudp = NULL;
+void _MS_Thread()
+{
+
+#ifdef WIN32
+    SOCKET  _sockudp               = NULL;
+#else
+    int     _sockudp               = 0;
+#endif
     struct _sIPPort {
         UBYTE bFirst;
         UBYTE bSecond;
         UBYTE bThird;
         UBYTE bFourth;
-        USHORT iPort;
+        UWORD iPort;
       };
 
     _setStatus("");
     _sockudp = socket(AF_INET, SOCK_DGRAM, 0);
     if (_sockudp == INVALID_SOCKET){
-        WSACleanup();
-        return -1;
+        WSA_CLEANUP
+        return;
     }
 
     _sIPPort* pServerIP = (_sIPPort*)(_szIPPortBuffer);
@@ -1053,10 +1098,10 @@ DWORD WINAPI _MS_Thread(LPVOID lpParam) {
 
         // send packet to server
         sendto(_sockudp,"\\status\\",8,0,
-            (sockaddr *) &sinServer, sizeof(sinServer));
+            (sockaddr *) &sinServer, sizeof(sockaddr_in));
 
         sockaddr_in _sinClient;
-        int _iClientLength = sizeof(_sinClient);
+        socklen_type _iClientLength = sizeof(sockaddr_in);
 
         fd_set readfds_udp;                         // declare a read set
         struct timeval timeout_udp;                 // declare a timeval for our timer
@@ -1078,7 +1123,7 @@ DWORD WINAPI _MS_Thread(LPVOID lpParam) {
             sPch = strstr(_szBuffer, "\\gamename\\serioussamse\\");
             if(!sPch) {
                 CPrintF("Unknown query server response!\n");
-                return -1;
+                return;
             } else {
 
                 CTString strPlayers;
@@ -1094,7 +1139,7 @@ DWORD WINAPI _MS_Thread(LPVOID lpParam) {
                 CTString strGameMode;
                 CTString strActiveMod;
 
-                CHAR* pszPacket = _szBuffer + 1; // we do +1 because the first character is always '\', which we don't care about.
+                char* pszPacket = _szBuffer + 1; // we do +1 because the first character is always '\', which we don't care about.
 
                 BOOL bReadValue = FALSE;
                 CTString strKey;
@@ -1203,33 +1248,37 @@ DWORD WINAPI _MS_Thread(LPVOID lpParam) {
     if(_szIPPortBuffer) free (_szIPPortBuffer);
     _szIPPortBuffer = NULL;
 
-    closesocket(_sockudp);
+    closesocket_func(_sockudp);
     _uninitWinsock();
     _bInitialized = FALSE;
     _pNetwork->ga_bEnumerationChange = FALSE;
-    WSACleanup();
-    return 0;
+    WSA_CLEANUP
 }
 
-DWORD WINAPI _LocalNet_Thread(LPVOID lpParam) {
+void _LocalNet_Thread()
+{
+#ifdef WIN32
     SOCKET _sockudp = NULL;
+#else
+    int    _sockudp = 0;
+#endif
     struct _sIPPort {
         UBYTE bFirst;
         UBYTE bSecond;
         UBYTE bThird;
         UBYTE bFourth;
-        USHORT iPort;
+        UWORD iPort;
       };
 
     _sockudp = socket(AF_INET, SOCK_DGRAM, 0);
     if (_sockudp == INVALID_SOCKET){
-        WSACleanup();
+        WSA_CLEANUP
         _pNetwork->ga_strEnumerationStatus = "";
 		if(_szIPPortBufferLocal != NULL) {
 			delete[] _szIPPortBufferLocal;
 		}
 		_szIPPortBufferLocal = NULL;		
-		return -1;
+    return;
     }
 
     _sIPPort* pServerIP = (_sIPPort*)(_szIPPortBufferLocal);
@@ -1256,10 +1305,10 @@ DWORD WINAPI _LocalNet_Thread(LPVOID lpParam) {
 
         // send packet to server
         sendto(_sockudp,"\\status\\",8,0,
-            (sockaddr *) &sinServer, sizeof(sinServer));
+            (sockaddr *) &sinServer, sizeof(sockaddr_in));
 
         sockaddr_in _sinClient;
-        int _iClientLength = sizeof(_sinClient);
+        socklen_type _iClientLength = sizeof(sockaddr_in);
 
         fd_set readfds_udp;                         // declare a read set
         struct timeval timeout_udp;                 // declare a timeval for our timer
@@ -1285,8 +1334,8 @@ DWORD WINAPI _LocalNet_Thread(LPVOID lpParam) {
 					delete[] _szIPPortBufferLocal;
 				}
 				_szIPPortBufferLocal = NULL;               
-				WSACleanup();
-				return -1;
+        WSA_CLEANUP
+        return;
             } else {
 
                 CTString strPlayers;
@@ -1302,7 +1351,7 @@ DWORD WINAPI _LocalNet_Thread(LPVOID lpParam) {
                 CTString strGameMode;
                 CTString strActiveMod;
 
-                CHAR* pszPacket = _szBuffer + 1; // we do +1 because the first character is always '\', which we don't care about.
+                char* pszPacket = _szBuffer + 1; // we do +1 because the first character is always '\', which we don't care about.
 
                 BOOL bReadValue = FALSE;
                 CTString strKey;
@@ -1414,11 +1463,10 @@ DWORD WINAPI _LocalNet_Thread(LPVOID lpParam) {
     }
 	_szIPPortBufferLocal = NULL;
 	
-    closesocket(_sockudp);
+    closesocket_func(_sockudp);
     _uninitWinsock();
     _bInitialized = FALSE;
     _pNetwork->ga_bEnumerationChange = FALSE;
-	_pNetwork->ga_strEnumerationStatus = "";
-    WSACleanup();
-    return 0;
+    _pNetwork->ga_strEnumerationStatus = "";
+    WSA_CLEANUP
 }

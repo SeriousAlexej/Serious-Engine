@@ -13,31 +13,34 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#include "stdh.h"
+
 
 #include <Engine/Base/Shell.h>
 #include <Engine/Base/Shell_internal.h>
-#include "ParsingSymbols.h"
+#include <Engine/Base/ParsingSymbols.h>
+#include <Engine/Base/Parser.h>
 
 #include <Engine/Templates/DynamicStackArray.h>
 #include <Engine/Base/Console.h>
 #include <Engine/Base/Stream.h>
 
-#include <Engine/Templates/AllocationArray.cpp>
-#include <Engine/Templates/DynamicArray.cpp>
-#include <Engine/Templates/DynamicStackArray.cpp>
+#include <Engine/Templates/AllocationArray.h>
+#include <Engine/Templates/DynamicArray.h>
+#include <Engine/Templates/DynamicStackArray.h>
 
-template CDynamicArray<CShellSymbol>;
+#include <SDL2/SDL_stdinc.h>
+
+template class CDynamicArray<CShellSymbol>;
 
 // shell type used for undeclared symbols
-extern INDEX _shell_istUndeclared = -1;
+INDEX _shell_istUndeclared = -1;
 
 // pointer to global shell object
 CShell *_pShell = NULL;
 void *_pvNextToDeclare=NULL; // != NULL if declaring external symbol defined in exe code
 
 // define console variable for number of last console lines
-extern INDEX con_iLastLines    = 5;
+INDEX con_iLastLines    = 5;
 
 extern void yy_switch_to_buffer(YY_BUFFER_STATE);
 
@@ -112,10 +115,10 @@ CDynamicStackArray<FLOAT> _shell_afExtFloats;
 
 static const char *strCommandLine = "";
 
-ENGINE_API extern FLOAT tmp_af[10] = { 0 };
-ENGINE_API extern INDEX tmp_ai[10] = { 0 };
-ENGINE_API extern INDEX tmp_fAdd   = 0.0f;
-ENGINE_API extern INDEX tmp_i      = 0;
+ENGINE_API FLOAT tmp_af[10] = { 0 };
+ENGINE_API INDEX tmp_ai[10] = { 0 };
+ENGINE_API INDEX tmp_fAdd   = 0.0f;
+ENGINE_API INDEX tmp_i      = 0;
 
 void CShellSymbol::Clear(void)
 {
@@ -188,7 +191,7 @@ void MakeAccessViolation(void* pArgs)
   *p=1;
 }
 
-extern int _a=123;
+int _a=123;
 void MakeStackOverflow(void* pArgs)
 {
   INDEX bDont = NEXTARGUMENT(INDEX);
@@ -204,60 +207,6 @@ void MakeFatalError(void* pArgs)
   INDEX bDont = NEXTARGUMENT(INDEX);
   if( bDont) return;
   FatalError( "MakeFatalError()");
-}
-
-
-extern void ReportGlobalMemoryStatus(void)
-{
-   CPrintF(TRANS("Global memory status...\n"));
-
-   MEMORYSTATUS ms;
-   GlobalMemoryStatus(&ms);
-
-#define MB (1024*1024)
-   CPrintF(TRANS("  Physical memory used: %4d/%4dMB\n"), (ms.dwTotalPhys    -ms.dwAvailPhys    )/MB, ms.dwTotalPhys    /MB);
-   CPrintF(TRANS("  Page file used:       %4d/%4dMB\n"), (ms.dwTotalPageFile-ms.dwAvailPageFile)/MB, ms.dwTotalPageFile/MB);
-   CPrintF(TRANS("  Virtual memory used:  %4d/%4dMB\n"), (ms.dwTotalVirtual -ms.dwAvailVirtual )/MB, ms.dwTotalVirtual /MB);
-   CPrintF(TRANS("  Memory load: %3d%%\n"), ms.dwMemoryLoad);
-
-   DWORD dwMin;
-   DWORD dwMax;
-   GetProcessWorkingSetSize(GetCurrentProcess(), &dwMin, &dwMax);
-   CPrintF(TRANS("  Process working set: %dMB-%dMB\n\n"), dwMin/(1024*1024), dwMax/(1024*1024));
-}
-
-static void MemoryInfo(void)
-{
-  ReportGlobalMemoryStatus();
-
-  _HEAPINFO hinfo;
-   int heapstatus;
-   hinfo._pentry = NULL;
-   SLONG slTotalUsed = 0;
-   SLONG slTotalFree = 0;
-   INDEX ctUsed = 0;
-   INDEX ctFree = 0;
-
-   CPrintF( "Walking heap...\n");
-   while( ( heapstatus = _heapwalk( &hinfo ) ) == _HEAPOK )
-   {
-     if (hinfo._useflag == _USEDENTRY ) {
-       slTotalUsed+=hinfo._size;
-       ctUsed++;
-     } else {
-       slTotalFree+=hinfo._size;
-       ctFree++;
-     }
-   }
-   switch( heapstatus )   {
-     case _HEAPEMPTY:     CPrintF( "Heap empty?!?\n" );                break;
-     case _HEAPEND:       CPrintF( "Heap ok.\n" );                     break;
-     case _HEAPBADPTR:    CPrintF( "ERROR - bad pointer to heap\n" );  break;
-     case _HEAPBADBEGIN:  CPrintF( "ERROR - bad start of heap\n" );    break;
-     case _HEAPBADNODE:   CPrintF( "ERROR - bad node in heap\n" );     break;
-   }
-   CPrintF( "Total used: %d bytes (%.2f MB) in %d blocks\n", slTotalUsed, slTotalUsed/1024.0f/1024.0f, ctUsed);
-   CPrintF( "Total free: %d bytes (%.2f MB) in %d blocks\n", slTotalFree, slTotalFree/1024.0f/1024.0f, ctFree);
 }
 
 // get help for a shell symbol
@@ -474,7 +423,7 @@ CTString ToUpper(const CTString &strResult)
 {
   char *pch = (char*)(const char *)strResult;
   for(INDEX i=0; i<strlen(pch); i++) {
-    pch[i]=toupper(pch[i]);
+    pch[i]= SDL_toupper(pch[i]);
   }
   return strResult;
 }
@@ -540,26 +489,25 @@ void CShell::Initialize(void)
   DeclareSymbol("const INDEX YES;",   (void*)&_bTRUE);
   DeclareSymbol("const INDEX NO;",    (void*)&_bFALSE);
 
-  DeclareSymbol("user void LoadCommands(void);", &LoadCommands);
-  DeclareSymbol("user void ListSymbols(void);", &ListSymbols);
-  DeclareSymbol("user void MemoryInfo(void);",  &MemoryInfo);
-  DeclareSymbol("user void MakeAccessViolation(INDEX);", &MakeAccessViolation);
-  DeclareSymbol("user void MakeStackOverflow(INDEX);",   &MakeStackOverflow);
-  DeclareSymbol("user void MakeFatalError(INDEX);",      &MakeFatalError);
+  DeclareSymbol("user void LoadCommands(void);", reinterpret_cast<void*>(&LoadCommands));
+  DeclareSymbol("user void ListSymbols(void);", reinterpret_cast<void*>(&ListSymbols));
+  DeclareSymbol("user void MakeAccessViolation(INDEX);", reinterpret_cast<void*>(&MakeAccessViolation));
+  DeclareSymbol("user void MakeStackOverflow(INDEX);",   reinterpret_cast<void*>(&MakeStackOverflow));
+  DeclareSymbol("user void MakeFatalError(INDEX);",      reinterpret_cast<void*>(&MakeFatalError));
   DeclareSymbol("persistent user INDEX con_iLastLines;", &con_iLastLines);
   DeclareSymbol("persistent user FLOAT tmp_af[10];", &tmp_af);
   DeclareSymbol("persistent user INDEX tmp_ai[10];", &tmp_ai);
   DeclareSymbol("persistent user INDEX tmp_i;", &tmp_i);
   DeclareSymbol("persistent user FLOAT tmp_fAdd;", &tmp_fAdd);
 
-  DeclareSymbol("user void Echo(CTString);", &Echo);
-  DeclareSymbol("user CTString UndecorateString(CTString);", &UndecorateString);
-  DeclareSymbol("user INDEX Matches(CTString, CTString);", &MatchStrings);
-  DeclareSymbol("user CTString LoadString(CTString);", &MyLoadString);
-  DeclareSymbol("user void SaveString(CTString, CTString);", &MySaveString);
-  DeclareSymbol("user CTString RemoveSubstring(CTString, CTString);", &RemoveSubstringCfunc);
-  DeclareSymbol("user CTString ToUpper(CTString);", &ToUpperCfunc);
-  DeclareSymbol("user CTString ToLower(CTString);", &ToLowerCfunc);
+  DeclareSymbol("user void Echo(CTString);", reinterpret_cast<void*>(&Echo));
+  DeclareSymbol("user CTString UndecorateString(CTString);", reinterpret_cast<void*>(&UndecorateString));
+  DeclareSymbol("user INDEX Matches(CTString, CTString);", reinterpret_cast<void*>(&MatchStrings));
+  DeclareSymbol("user CTString LoadString(CTString);", reinterpret_cast<void*>(&MyLoadString));
+  DeclareSymbol("user void SaveString(CTString, CTString);", reinterpret_cast<void*>(&MySaveString));
+  DeclareSymbol("user CTString RemoveSubstring(CTString, CTString);", reinterpret_cast<void*>(&RemoveSubstringCfunc));
+  DeclareSymbol("user CTString ToUpper(CTString);", reinterpret_cast<void*>(&ToUpperCfunc));
+  DeclareSymbol("user CTString ToLower(CTString);", reinterpret_cast<void*>(&ToLowerCfunc));
 }
 
 static BOOL _iParsing = 0;
@@ -579,7 +527,7 @@ void CShell::DeclareSymbol(const CTString &strDeclaration, void *pvValue)
   _bExecNextBlock = 1;
 
   ShellPushBuffer("<declaration>", strDeclaration, TRUE);
-  yyparse();
+  Parser_parse();
 //  ShellPopBuffer();
 
   _bExecNextBlock = old_bExecNextBlock;
@@ -607,7 +555,7 @@ void CShell::Execute(const CTString &strCommands)
   _bExecNextBlock = 1;
 
   ShellPushBuffer("<command>", strCommands, TRUE);
-  yyparse();
+  Parser_parse();
   //ShellPopBuffer();
 
   _bExecNextBlock = old_bExecNextBlock;
@@ -856,7 +804,7 @@ void CShell::StorePersistentSymbols(const CTFileName &fnScript)
         continue;
       }
 
-      char *strUser = (ss.ss_ulFlags & SSF_USER)?"user ":"";
+      const char *strUser = (ss.ss_ulFlags & SSF_USER)?"user ":"";
 
       // get its type
       ShellType &st = _shell_ast[ss.ss_istType];
@@ -881,7 +829,7 @@ void CShell::StorePersistentSymbols(const CTFileName &fnScript)
         } else if (stBase.st_sttType==STT_STRING) {
           // dump all members
           for(INDEX i=0; i<st.st_ctArraySize; i++) {
-            fScript.FPrintF_t("%s[%d]=\"%s\";\n", ss.ss_strName, i, (const char*)(ScriptEsc(*(CTString*)ss.ss_pvValue)[i]) );
+            fScript.FPrintF_t("%s[%d]=\"%s\";\n", ss.ss_strName, i, (const char*)(ScriptEsc(((CTString*)ss.ss_pvValue)[i])) );
           }
         // otherwise
         } else {

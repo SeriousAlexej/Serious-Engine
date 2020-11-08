@@ -13,17 +13,16 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#include "StdH.h"
+
 
 #include <Engine/Base/Memory.h>
-#include <Engine/Base/Filename.h>
-#include <Engine/Base/Statistics_internal.h>
+#include <Engine/Base/FileName.h>
+#include <Engine/Base/Statistics_Internal.h>
 #include <Engine/Math/Matrix.h>
 #include <Engine/Math/Functions.h>
 #include <Engine/Graphics/Color.h>
 #include <Engine/Graphics/GfxLibrary.h>
 #include <Engine/Graphics/Fog_internal.h>
-#include <Engine/Graphics/GfxProfile.h>
 #include <Engine/Graphics/ImageInfo.h>
 
 
@@ -67,21 +66,15 @@ ULONG PrepareTexture( UBYTE *pubTexture, PIX pixSizeI, PIX pixSizeJ)
 {
   // need to upload from RGBA format
   const PIX pixTextureSize = pixSizeI*pixSizeJ;
-  __asm {
-    mov     esi,D [pubTexture]
-    mov     edi,D [pubTexture]
-    mov     ecx,D [pixTextureSize]
-    lea     edi,[esi+ecx]
-pixLoop:
-    movzx   eax,B [esi]
-    or      eax,0xFFFFFF00
-    bswap   eax
-    mov     D [edi],eax
-    add     esi,1
-    add     edi,4
-    dec     ecx
-    jnz     pixLoop
+  const UBYTE* src = pubTexture;
+  ULONG* dst = reinterpret_cast<ULONG*>(&pubTexture[pixTextureSize]);
+  for (PIX i = 0; i < pixTextureSize; ++i)
+  {
+    *dst = (static_cast<ULONG>(*src) << 24) | 0x00FFFFFF;
+    src++;
+    dst++;
   }
+
   // determine internal format
   extern INDEX gap_bAllowGrayTextures;
   extern INDEX tex_bFineFog;
@@ -115,9 +108,9 @@ void StartFog( CFogParameters &fp, const FLOAT3D &vViewPosAbs, const FLOATmatrix
 
   // calculate fog table size wanted
   extern INDEX tex_iFogSize;
-  tex_iFogSize = Clamp( tex_iFogSize, 4L, 8L); 
-  PIX pixSizeH = ClampUp( _fog_fp.fp_iSizeH, 1L<<tex_iFogSize);
-  PIX pixSizeL = ClampUp( _fog_fp.fp_iSizeL, 1L<<tex_iFogSize);
+  tex_iFogSize = Clamp( tex_iFogSize, 4, 8);
+  PIX pixSizeH = ClampUp( _fog_fp.fp_iSizeH, 1<<tex_iFogSize);
+  PIX pixSizeL = ClampUp( _fog_fp.fp_iSizeL, 1<<tex_iFogSize);
   BOOL bNoDiscard = TRUE;
 
   // if fog table is not allocated in right size
@@ -233,7 +226,7 @@ void StartFog( CFogParameters &fp, const FLOAT3D &vViewPosAbs, const FLOATmatrix
       FLOAT fTStep = 1.0f/pixSizeL *fFar*fDensity*fA *255;
       // fog is just clamped fog parameter in each pixel
       for( INDEX pixL=0; pixL<pixSizeL; pixL++) {
-        _fog_pubTable[pixH*pixSizeL+pixL] = Clamp( FloatToInt(fT), 0L, 255L);
+        _fog_pubTable[pixH*pixSizeL+pixL] = Clamp( FloatToInt(fT), 0, 255);
         fT += fTStep;
       } 
     } break;

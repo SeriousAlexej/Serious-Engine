@@ -13,7 +13,7 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#include "stdh.h"
+
 
 #include <Engine/Graphics/Texture.h>
 #include <Engine/Graphics/TextureEffects.h>
@@ -35,13 +35,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define ASMOPT 1
 
 
-static const __int64 mm1LO   = 0x0000000000000001;
-static const __int64 mm1HI   = 0x0000000100000000;
-static const __int64 mm1HILO = 0x0000000100000001;
-static const __int64 mm0001  = 0x0000000000000001;
-static const __int64 mm0010  = 0x0000000000010000;
-static const __int64 mm00M0  = 0x00000000FFFF0000;
-static __int64 mmBaseWidthShift=0, mmBaseWidth=0, mmBaseWidthMask=0, mmBaseHeightMask=0, mmBaseMasks=0, mmShift=0;
+static const std::int64_t mm1LO   = 0x0000000000000001;
+static const std::int64_t mm1HI   = 0x0000000100000000;
+static const std::int64_t mm1HILO = 0x0000000100000001;
+static const std::int64_t mm0001  = 0x0000000000000001;
+static const std::int64_t mm0010  = 0x0000000000010000;
+static const std::int64_t mm00M0  = 0x00000000FFFF0000;
+static std::int64_t mmBaseWidthShift=0, mmBaseWidth=0, mmBaseWidthMask=0, mmBaseHeightMask=0, mmBaseMasks=0, mmShift=0;
 
 
 // speed table

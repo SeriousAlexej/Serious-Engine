@@ -13,7 +13,7 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#include "stdh.h"
+
 
 #include <Engine/Base/Stream.h>
 #include <Engine/Base/ReplaceFile.h>
@@ -21,10 +21,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <Engine/Brushes/Brush.h>
 #include <Engine/Math/Object3D.h>
 #include <Engine/Math/Float.h>
-#include <Engine/World/WorldEditingProfile.h>
 #include <Engine/Graphics/Color.h>
-#include <Engine/Templates/StaticArray.cpp>
-#include <Engine/Templates/DynamicArray.cpp>
+#include <Engine/Templates/StaticArray.h>
+#include <Engine/Templates/DynamicArray.h>
 
 static const INDEX _iSupportedVersion = 14;
 
@@ -56,7 +55,7 @@ void CBrush3D::Write_t( CTStream *postrm) // throw char *
   // write number of brush mips
   (*postrm)<<br_lhBrushMips.Count();
   // for each mip
-  FOREACHINLIST(CBrushMip, bm_lnInBrush, br_lhBrushMips, itbm) {
+  FOREACHINLIST(CBrushMip, br_lhBrushMips, itbm) {
     // write the brush mip itself
     itbm->Write_t(postrm);
   }
@@ -122,7 +121,6 @@ void CBrush3D::Read_old_t( CTStream *pistrm) // throw char *
     pbmMip->bm_pbrBrush = this;
   }
  (*pistrm).ExpectID_t("BREN");  // 'brush 3D end'
-  _RPT1(_CRT_WARN, "Polygons in brush: %d\n", _ctPolygonsLoaded);
 }
 
 /*
@@ -146,7 +144,6 @@ void CBrush3D::Read_new_t( CTStream *pistrm) // throw char *
     pbmMip->Read_new_t(pistrm);
   }
  (*pistrm).ExpectID_t("BREN");  // 'brush 3D end'
-  _RPT1(_CRT_WARN, "Polygons in brush: %d\n", _ctPolygonsLoaded);
 }
 
 /*
@@ -618,7 +615,6 @@ void CBrushSector::Read_t( CTStream *pistrm) // throw char *
   bsc_ulTempFlags&=~BSCTF_PRELOADEDBSP;
   // if there is current version of bsp saved
   if ((*pistrm).PeekID_t()==CChunkID("BSP0")) {
-    _pfWorldEditingProfile.StartTimer(CWorldEditingProfile::PTI_READBSP);
     (*pistrm).ExpectID_t("BSP0");
     // read it
     bsc_bspBSPTree.Read_t(*pistrm);
@@ -627,6 +623,5 @@ void CBrushSector::Read_t( CTStream *pistrm) // throw char *
       // mark that tree doesn't have to be recalculated
       bsc_ulTempFlags|=BSCTF_PRELOADEDBSP;
     }
-    _pfWorldEditingProfile.StopTimer(CWorldEditingProfile::PTI_READBSP);
   }
 }

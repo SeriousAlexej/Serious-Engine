@@ -13,7 +13,7 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#include "stdh.h"
+
 
 #include <Engine/Entities/Entity.h>
 #include <Engine/Entities/EntityCollision.h>
@@ -21,8 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <Engine/Math/Geometry.inl>
 #include <Engine/Math/Clipping.inl>
 #include <Engine/Brushes/Brush.h>
-#include <Engine/Templates/DynamicArray.cpp>
-#include <Engine/Templates/StaticArray.cpp>
+#include <Engine/Templates/DynamicArray.h>
+#include <Engine/Templates/StaticArray.h>
 #include <Engine/Network/Network.h>
 #include <Engine/Network/SessionState.h>
 
@@ -243,15 +243,15 @@ BOOL CClipTest::CanChange(CEntity *pen, INDEX iNewCollisionBox)
   ct_boxTotal |= boxNew;
 
   // for each zoning sector that this entity is in
-  {FOREACHSRCOFDST(ct_penEntity->en_rdSectors, CBrushSector, bsc_rsEntities, pbsc)
+  {FOREACHSRCOFDST(ct_penEntity->en_rdSectors, CBrushSector, pbsc)
     // add it to list of active sectors
     ct_lhActiveSectors.AddTail(pbsc->bsc_lnInActiveSectors);
   ENDFOR}
 
   // for each active sector
-  FOREACHINLIST(CBrushSector, bsc_lnInActiveSectors, ct_lhActiveSectors, itbsc) {
+  FOREACHINLIST(CBrushSector, ct_lhActiveSectors, itbsc) {
     // for non-zoning brush entities in the sector
-    {FOREACHDSTOFSRC(itbsc->bsc_rsEntities, CEntity, en_rdSectors, pen)
+    {FOREACHDSTOFSRC(itbsc->bsc_rsEntities, CEntity, pen)
       if (pen->en_RenderType!=CEntity::RT_BRUSH&&
           (_pNetwork->ga_ulDemoMinorVersion<=4 || pen->en_RenderType!=CEntity::RT_FIELDBRUSH)) {
         break;  // brushes are sorted first in list
@@ -292,7 +292,7 @@ BOOL CClipTest::CanChange(CEntity *pen, INDEX iNewCollisionBox)
       // if it is passable
       if (pbpo->bpo_ulFlags&BPOF_PASSABLE) {
         // for each sector related to the portal
-        {FOREACHDSTOFSRC(pbpo->bpo_rsOtherSideSectors, CBrushSector, bsc_rdOtherSidePortals, pbscRelated)
+        {FOREACHDSTOFSRC(pbpo->bpo_rsOtherSideSectors, CBrushSector, pbscRelated)
           // if the sector is not active
           if (!pbscRelated->bsc_lnInActiveSectors.IsLinked()) {
             // add it to active list
@@ -317,7 +317,7 @@ BOOL CClipTest::CanChange(CEntity *pen, INDEX iNewCollisionBox)
 CClipTest::~CClipTest(void)
 {
   // clear list of active sectors
-  {FORDELETELIST(CBrushSector, bsc_lnInActiveSectors, ct_lhActiveSectors, itbsc) {
+  {FORDELETELIST(CBrushSector, ct_lhActiveSectors, itbsc) {
     itbsc->bsc_lnInActiveSectors.Remove();
   }}
 }

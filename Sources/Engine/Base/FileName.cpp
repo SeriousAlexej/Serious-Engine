@@ -13,19 +13,19 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#include "stdh.h"
+
 
 #include <Engine/Base/FileName.h>
 
 #include <Engine/Base/ErrorReporting.h>
 #include <Engine/Base/Stream.h>
 #include <Engine/Templates/NameTable_CTFileName.h>
-#include <Engine/Templates/DynamicStackArray.cpp>
+#include <Engine/Templates/DynamicStackArray.h>
 
-template CDynamicArray<CTFileName>;
-template CDynamicStackArray<CTFileName>;
-#include <Engine/Templates/StaticStackArray.cpp>
-template CStaticStackArray<long>;
+template class CDynamicArray<CTFileName>;
+template class CDynamicStackArray<CTFileName>;
+#include <Engine/Templates/StaticStackArray.h>
+template class CStaticStackArray<INDEX>;
 
 /*
  * Get directory part of a filename.
@@ -106,7 +106,7 @@ CTFileName CTFileName::NoExt() const
   return FileDir()+FileName();
 }
 
-static INDEX GetSlashPosition(const CHAR* pszString)
+static INDEX GetSlashPosition(const char* pszString)
 {
   for (INDEX iPos = 0; '\0' != *pszString; ++iPos, ++pszString) {
     if (('\\' == *pszString) || ('/' == *pszString)) {
@@ -165,7 +165,7 @@ void CTFileName::SetAbsolutePath(void)
   for (INDEX iPart = 0; iPart < astrParts.Count(); ++iPart) {
     strRemaining += astrParts[iPart];
     if (iPart < astrParts.Count() - 1) {
-#ifdef PLATFORM_WIN32
+#ifdef WIN32
       strRemaining += CTString("\\");
 #else
       strRemaining += CTString("/");

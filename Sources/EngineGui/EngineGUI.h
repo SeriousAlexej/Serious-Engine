@@ -23,12 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
   #define ENGINEGUI_API __declspec(dllimport)
 
-  #ifdef NDEBUG
-    #pragma comment(lib, "EngineGUI.lib")
-  #else
-    #pragma comment(lib, "EngineGUID.lib")
-  #endif
-
 #endif
 
 class CEngineGUI

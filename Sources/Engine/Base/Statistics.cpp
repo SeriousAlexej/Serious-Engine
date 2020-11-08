@@ -13,17 +13,17 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#include "stdh.h"
+
 
 #include <Engine/Base/Statistics.h>
 #include <Engine/Base/Statistics_Internal.h>
 
-#include <Engine/Templates/DynamicContainer.cpp>
-#include <Engine/Templates/StaticArray.cpp>
+#include <Engine/Templates/DynamicContainer.h>
+#include <Engine/Templates/StaticArray.h>
 
-template CStaticArray<CStatCounter>;
-template CStaticArray<CStatTimer>;
-template CStaticArray<CStatLabel>;
+template class CStaticArray<CStatCounter>;
+template class CStaticArray<CStatTimer>;
+template class CStaticArray<CStatLabel>;
 
 // one globaly used stats report
 CStatForm _sfStats;

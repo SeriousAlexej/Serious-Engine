@@ -13,22 +13,12 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-
-/*
- * rcg10042001 In case these don't get defined in the project file, try to
- *   catch them here...
- */
 #ifdef _MSC_VER
-  #ifndef PLATFORM_WIN32
-    #define PLATFORM_WIN32
-  #endif
-
   #ifndef PRAGMA_ONCE
     #define PRAGMA_ONCE
   #endif
 
   // disable problematic warnings
-
   #pragma warning(disable: 4251)  // dll interfacing problems
   #pragma warning(disable: 4275)  // dll interfacing problems
   #pragma warning(disable: 4018)  // signed/unsigned mismatch
@@ -38,23 +28,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma warning(disable: 4660)  // template-class specialization is already instantiated
   #pragma warning(disable: 4723)  // potential divide by 0
 
-  // define engine api exporting declaration specifiers
-  #ifdef ENGINE_EXPORTS
-    #define ENGINE_API __declspec(dllexport)
-  #else
-    #define ENGINE_API __declspec(dllimport)
+  #define EXPORT_MACRO __declspec(dllexport)
+  #define IMPORT_MACRO __declspec(dllimport)
+#else
+  #define EXPORT_MACRO __attribute__((visibility("default")))
+  #define IMPORT_MACRO
+#endif
 
-    #ifdef NDEBUG
-      #pragma comment(lib, "Engine.lib")
-    #else
-      #pragma comment(lib, "EngineD.lib")
-    #endif
-  #endif
-
-#endif  // defined _MSC_VER
-
-
-#ifdef PLATFORM_UNIX  /* rcg10042001 */
-  #define ENGINE_API
+#ifdef ENGINE_EXPORTS
+  #define ENGINE_API EXPORT_MACRO
+#else
+  #define ENGINE_API IMPORT_MACRO
 #endif
 

@@ -13,14 +13,6 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#ifndef SE_INCL_DYNAMICSTACKARRAY_CPP
-#define SE_INCL_DYNAMICSTACKARRAY_CPP
-#ifdef PRAGMA_ONCE
-  #pragma once
-#endif
-
-#include <Engine/Templates/DynamicStackArray.h>
-#include <Engine/Templates/DynamicArray.cpp>
 
 /*
  * Default constructor.
@@ -92,8 +84,8 @@ inline Type *CDynamicStackArray<Type>::Push(INDEX ct) {
 template<class Type>
 inline void CDynamicStackArray<Type>::PopAll(void) {
   // if there is only one block allocated
-  if ( da_BlocksList.IsEmpty() 
-    || &da_BlocksList.Head()==&da_BlocksList.Tail()) {
+  if ( this->da_BlocksList.IsEmpty()
+    || &(this->da_BlocksList.Head())==&(this->da_BlocksList.Tail())) {
     // just clear the counter
     da_ctUsed = 0;
 
@@ -151,7 +143,7 @@ INDEX CDynamicStackArray<Type>::Index(Type *ptMember) {
 template<class Type>
 Type **CDynamicStackArray<Type>::GetArrayOfPointers(void)
 {
-  return da_Pointers;
+  return this->da_Pointers;
 }
 
 /*
@@ -171,7 +163,3 @@ CDynamicStackArray<Type> &CDynamicStackArray<Type>::operator=(CDynamicStackArray
 
   return *this;
 }
-
-
-#endif  /* include-once check. */
-

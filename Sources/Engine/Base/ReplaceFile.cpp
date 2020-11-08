@@ -13,7 +13,7 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#include "stdh.h"
+
 
 #include <Engine/Base/ReplaceFile.h>
 #include <Engine/Base/Stream.h>
@@ -32,7 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <Engine/Templates/Stock_CSkeleton.h>
 #include <Engine/Templates/Stock_CAnimSet.h>
 #include <Engine/Templates/Stock_CTextureData.h>
-#include <Engine/Templates/DynamicContainer.cpp>
+#include <Engine/Templates/DynamicContainer.h>
 //#include <Engine/Templates/Stock_CShader.h>
 
 #include <Engine/Base/ListIterator.inl>
@@ -44,41 +44,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 BOOL _bFileReplacingApplied;
 
-#ifndef NDEBUG
-  #define ENGINEGUI_DLL_NAME "EngineGUID.dll"
-#else
-  #define ENGINEGUI_DLL_NAME "EngineGUI.dll"
-#endif
-
 extern INDEX wed_bUseBaseForReplacement;
 
-static CTFileName CallFileRequester(char *achrTitle, char *achrSelectedFile, char *pFilter)
-{
-  typedef CTFileName FileRequester_t(
-    char *pchrTitle, 
-    char *pchrFilters,
-    char *pchrRegistry,
-    char *pchrDefaultFileSelected);
-
-  HMODULE hGUI = GetModuleHandleA(ENGINEGUI_DLL_NAME);
-  if (hGUI==NULL) {
-    WarningMessage(TRANS("Cannot load %s:\n%s\nCannot replace files!"), 
-      ENGINEGUI_DLL_NAME, GetWindowsError(GetLastError()));
-    return CTString("");
-  }
-  FileRequester_t *pFileRequester = (FileRequester_t*)GetProcAddress(hGUI, 
-    "?FileRequester@@YA?AVCTFileName@@PAD000@Z");
-  if (pFileRequester==NULL) {
-    WarningMessage(TRANS("Error in %s:\nFileRequester() function not found\nCannot replace files!"),
-      ENGINEGUI_DLL_NAME);
-    return CTString("");
-  }
-
-  return pFileRequester( achrTitle, pFilter, "Replace file directory", achrSelectedFile);
-}
-
-BOOL GetReplacingFile(CTFileName fnSourceFile, CTFileName &fnReplacingFile,
-                      char *pFilter)
+BOOL GetReplacingFile(CTFileName fnSourceFile, CTFileName &fnReplacingFile)
 {
   // don't replace files if this console variable is set
   if (!wed_bUseBaseForReplacement) {
@@ -117,34 +85,7 @@ BOOL GetReplacingFile(CTFileName fnSourceFile, CTFileName &fnReplacingFile,
   {
     (void) strError;
   }
-  CTString strTitle;
-  strTitle.PrintF(TRANS("For:\"%s\""), (CTString&)fnSourceFile);
-  // call file requester for substituting file
-  CTString strDefaultFile;
-  strDefaultFile = fnSourceFile.FileName() + fnSourceFile.FileExt();
-  fnReplacingFile = CallFileRequester((char*)(const char*)strTitle, (char*)(const char*)strDefaultFile, pFilter);
-  if( fnReplacingFile == "") return FALSE;
-
-  try
-  {
-    // add new remap to end of remapping base file
-    CTFileName fnBaseName = CTString("Data\\BaseForReplacingFiles.txt");
-    CTString strBase;
-    if( FileExists( fnBaseName))
-    {
-      strBase.Load_t( fnBaseName);
-    }
-    CTString strNewRemap;
-    strNewRemap.PrintF( "\"%s\" \"%s\"\n", (CTString&)fnSourceFile, (CTString&)fnReplacingFile);
-    strBase += strNewRemap;
-    strBase.Save_t( fnBaseName);
-  }
-  catch( char *strError)
-  {
-    WarningMessage( strError);
-    return FALSE;
-  }
-  return TRUE;
+  return FALSE;
 }
 
 
@@ -163,7 +104,7 @@ void SetTextureWithPossibleReplacing_t(CTextureObject &to, CTFileName &fnmTextur
       (void) strError;
       // if texture was not found, ask for replacing texture
       CTFileName fnReplacingTexture;
-      if( GetReplacingFile( fnmTexture, fnReplacingTexture, FILTER_TEX FILTER_END))
+      if( GetReplacingFile( fnmTexture, fnReplacingTexture))
       {
         // if replacing texture was provided, repeat reading of polygon's textures
         fnmTexture = fnReplacingTexture;
@@ -198,7 +139,7 @@ void ReadTextureObject_t(CTStream &strm, CTextureObject &to)
       (void) strError;
       // if texture was not found, ask for replacing texture
       CTFileName fnReplacingTexture;
-      if( GetReplacingFile( fnTexture, fnReplacingTexture, FILTER_TEX FILTER_END)) {
+      if( GetReplacingFile( fnTexture, fnReplacingTexture)) {
         // replacing texture was provided
         fnTexture = fnReplacingTexture;
       } else {
@@ -247,7 +188,7 @@ void ReadModelObject_t(CTStream &strm, CModelObject &mo)
       (void) strError;
       // if model was not found, ask for replacing model
       CTFileName fnReplacingModel;
-      if( GetReplacingFile( fnModel, fnReplacingModel, FILTER_MDL FILTER_END)) {
+      if( GetReplacingFile( fnModel, fnReplacingModel)) {
         // replacing model was provided
         fnModel = fnReplacingModel;
       } else {
@@ -366,7 +307,7 @@ void WriteModelObject_t(CTStream &strm, CModelObject &mo)
     strm.WriteID_t("ATCH");  // 'attachments'
     strm<<mo.mo_lhAttachments.Count();
     // for each attachment
-    FOREACHINLIST( CAttachmentModelObject, amo_lnInMain, mo.mo_lhAttachments, itamo) {
+    FOREACHINLIST( CAttachmentModelObject, mo.mo_lhAttachments, itamo) {
       CAttachmentModelObject *pamo = itamo;
       // write its position, placement and model
       strm<<pamo->amo_iAttachedPosition;
@@ -882,7 +823,7 @@ void ReadAnimObject_t(CTStream &strm, CAnimObject &ao)
       (void) strError;
       // if anim was not found, ask for replacing anim
       CTFileName fnReplacingAnim;
-      if( GetReplacingFile( fnAnim, fnReplacingAnim, FILTER_ANI FILTER_END)) {
+      if( GetReplacingFile( fnAnim, fnReplacingAnim)) {
         // replacing anim was provided
         fnAnim = fnReplacingAnim;
       } else {

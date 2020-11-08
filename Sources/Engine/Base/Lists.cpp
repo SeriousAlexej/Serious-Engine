@@ -13,11 +13,14 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#include "stdh.h"
+
 
 #include <Engine/Base/Lists.h>
 
 #include <Engine/Base/ListIterator.inl>
+
+#include <algorithm>
+#include <vector>
 
 /////////////////////////////////////////////////////////////////////
 // CListHead implementation
@@ -105,7 +108,7 @@ void CListHead::RemTail(void)
 void CListHead::RemAll(void)
 {
   // for each element
-  for ( CListIter<CListNode, 0> iter(*this), iternext;
+  for ( CListIter<CListNode> iter(*this), iternext;
     iternext=iter, iternext.IsPastEnd() || (iternext.MoveToNext(),1), !iter.IsPastEnd();
     iter = iternext) {
     // remove it
@@ -151,14 +154,14 @@ INDEX CListHead::Count(void) const
 {
   INDEX slCount = 0;
   // walk the list -- modification of FOREACHINLIST that works with base CListNode class
-  for ( CListIter<CListNode, 0> iter(*this); !iter.IsPastEnd(); iter.MoveToNext() ) {
+  for ( CListIter<CListNode> iter(*this); !iter.IsPastEnd(); iter.MoveToNext() ) {
     slCount++;
   }
   return slCount;
 }
 
   /* Sort the list. */
-void CListHead::Sort(int (*pCompare)(const void *p0, const void *p1), int iNodeOffset)
+void CListHead::Sort(int (*pCompare)(const void *p0, const void *p1))
 {
   // get number of elements
   INDEX ctCount = Count();
@@ -168,32 +171,28 @@ void CListHead::Sort(int (*pCompare)(const void *p0, const void *p1), int iNodeO
   }
 
   // create array of that much integers (the array will hold pointers to the list)
-  ULONG *aulPointers = new ULONG[ctCount];
+  std::vector<CListNode*> aulPointers;
+  aulPointers.reserve(ctCount);
   // fill it
-  INDEX i=0;
-  for ( CListIter<int, 0> iter(*this); !iter.IsPastEnd(); iter.MoveToNext() ) {
-    aulPointers[i] = ((ULONG)&*iter)-iNodeOffset;
-    i++;
-  }
+  for (CListIter<UBYTE> iter(*this); !iter.IsPastEnd(); iter.MoveToNext() )
+    aulPointers.push_back(iter.li_CurrentNode);
 
   // sort it
-  qsort(aulPointers, ctCount, sizeof(SLONG), pCompare);
+  std::stable_sort(aulPointers.begin(), aulPointers.end(), [pCompare](const CListNode* lhs, const CListNode* rhs)
+  {
+    return pCompare(lhs->p_data, rhs->p_data) < 0;
+  });
 
   // make temporary list
   CListHead lhTmp;
   // for each pointer
-  {for(INDEX i=0; i<ctCount; i++) {
-    ULONG ul = aulPointers[i];
-    // get the node
-    CListNode *pln = (CListNode*)(ul+iNodeOffset);
+  for(auto* pln : aulPointers)
+  {
     // remove it from original list
     pln->Remove();
     // add it to the end of new list
     lhTmp.AddTail(*pln);
-  }}
-
-  // free the pointer array
-  delete[] aulPointers;
+  }
 
   // move the sorted list here
   MoveList(lhTmp);

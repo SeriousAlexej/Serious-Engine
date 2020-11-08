@@ -37,7 +37,8 @@ public:
   // convert value of an enum to its name
   ENGINE_API const char *NameForValue(INDEX iValue);
 };
-#define EP_ENUMBEG(typename) extern _declspec (dllexport) CEntityPropertyEnumValue typename##_values[] = {
+
+#define EP_ENUMBEG(typename) extern EXPORT_MACRO CEntityPropertyEnumValue typename##_values[] = {
 #define EP_ENUMVALUE(value, name) {value, name}
 #define EP_ENUMEND(typename) }; CEntityPropertyEnumType typename##_enum = { \
   typename##_values, sizeof(typename##_values)/sizeof(CEntityPropertyEnumValue ) }
@@ -192,8 +193,8 @@ public:
   CEntityComponent *dec_aecComponents;// array of components
   INDEX dec_ctComponents;             // number of components
 
-  char *dec_strName;                  // descriptive name of the class
-  char *dec_strIconFileName;          // filename of texture or thumbnail
+  const char *dec_strName;                  // descriptive name of the class
+  const char *dec_strIconFileName;          // filename of texture or thumbnail
   INDEX dec_iID;                      // class ID
 
   CDLLEntityClass *dec_pdecBase;      // pointer to the base class
@@ -229,16 +230,9 @@ public:
   void PrecacheClass(SLONG slID, INDEX iUser = -1);
 };
 
-/* rcg10062001 */
-#if (defined _MSC_VER)
- #define DECLSPEC_DLLEXPORT _declspec (dllexport)
-#else
- #define DECLSPEC_DLLEXPORT
-#endif
-
 // macro for defining entity class DLL structures
 #define ENTITY_CLASSDEFINITION(classname, basename, descriptivename, iconfilename, id)\
-  extern "C" DECLSPEC_DLLEXPORT CDLLEntityClass classname##_DLLClass; \
+  extern "C" EXPORT_MACRO CDLLEntityClass classname##_DLLClass; \
   CDLLEntityClass classname##_DLLClass = {                            \
     classname##_properties,                                           \
     classname##_propertiesct,                                         \
@@ -262,7 +256,7 @@ public:
   SYMBOLLOCATOR(classname##_DLLClass)
 
 #define ENTITY_CLASSDEFINITION_BASE(classname, id)                    \
-  extern "C" DECLSPEC_DLLEXPORT CDLLEntityClass classname##_DLLClass; \
+  extern "C" EXPORT_MACRO CDLLEntityClass classname##_DLLClass; \
   CDLLEntityClass classname##_DLLClass = {                            \
     NULL,0, NULL,0, NULL,0, "", "", id,                               \
     NULL, NULL,NULL,NULL,NULL, NULL,NULL,NULL,NULL                    \
@@ -270,7 +264,7 @@ public:
 
 inline ENGINE_API void ClearToDefault(FLOAT &f) { f = 0.0f; };
 inline ENGINE_API void ClearToDefault(INDEX &i) { i = 0; };
-inline ENGINE_API void ClearToDefault(BOOL &b) { b = FALSE; };
+//inline ENGINE_API void ClearToDefault(BOOL &b) { b = FALSE; };
 inline ENGINE_API void ClearToDefault(CEntityPointer &pen) { pen = NULL; };
 inline ENGINE_API void ClearToDefault(CTString &str) { str = ""; };
 inline ENGINE_API void ClearToDefault(FLOATplane3D &pl) { pl = FLOATplane3D(FLOAT3D(0,1,0), 0); };

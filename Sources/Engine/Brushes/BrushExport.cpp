@@ -13,15 +13,14 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#include "stdh.h"
+
 
 #include <Engine/Brushes/Brush.h>
-#include <Engine/World/WorldEditingProfile.h>
 #include <Engine/Math/Float.h>
 #include <Engine/Math/Object3D.h>
-#include <Engine/Templates/StaticArray.cpp>
-#include <Engine/Templates/DynamicContainer.cpp>
-#include <Engine/Templates/DynamicArray.cpp>
+#include <Engine/Templates/StaticArray.h>
+#include <Engine/Templates/DynamicContainer.h>
+#include <Engine/Templates/DynamicArray.h>
 
 /*
  * Fill a 3d object from a selection in a brush mip.

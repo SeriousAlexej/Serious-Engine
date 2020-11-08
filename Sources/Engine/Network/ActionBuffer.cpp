@@ -13,7 +13,7 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#include "stdh.h"
+
 
 #include <Engine/Base/Console.h>
 #include <Engine/Network/PlayerTarget.h>
@@ -21,6 +21,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class CActionEntry {
 public:
+  CActionEntry()
+    : ae_ln(this)
+  {
+  }
   CListNode ae_ln;
   CPlayerAction ae_pa;
 };
@@ -35,7 +39,7 @@ CActionBuffer::~CActionBuffer(void)
 void CActionBuffer::Clear(void)
 {
   // for each buffered action
-  FORDELETELIST(CActionEntry, ae_ln, ab_lhActions, itae) {
+  FORDELETELIST(CActionEntry, ab_lhActions, itae) {
     // delete it
     delete &*itae;
   }
@@ -43,9 +47,9 @@ void CActionBuffer::Clear(void)
 
 int qsort_CompareActions(const void *elem1, const void *elem2 )
 {
-  const CActionEntry &ae1 = **(CActionEntry **)elem1;
-  const CActionEntry &ae2 = **(CActionEntry **)elem2;
-  return ae1.ae_pa.pa_llCreated-ae2.ae_pa.pa_llCreated;
+  const CActionEntry &ae1 = *(CActionEntry *)elem1;
+  const CActionEntry &ae2 = *(CActionEntry *)elem2;
+  return ae1.ae_pa.pa_llCreated - ae2.ae_pa.pa_llCreated;
 }
 
 // add a new action to the buffer
@@ -67,13 +71,13 @@ void CActionBuffer::AddAction(const CPlayerAction &pa)
   ab_lhActions.AddTail(pae->ae_ln);
 
   // sort the list
-  ab_lhActions.Sort(&qsort_CompareActions, offsetof(CActionEntry, ae_ln));
+  ab_lhActions.Sort(&qsort_CompareActions);
 
   //CPrintF("Buffered: %d (after add)\n", ab_lhActions.Count());
 }
 
 // flush all actions up to given time tag
-void CActionBuffer::FlushUntilTime(__int64 llNewest)
+void CActionBuffer::FlushUntilTime(std::int64_t llNewest)
 {
   // for each buffered action
   FORDELETELIST(CActionEntry, ae_ln, ab_lhActions, itae) {
@@ -123,7 +127,7 @@ void CActionBuffer::GetActionByIndex(INDEX i, CPlayerAction &pa)
 }
 
 // get last action older than given timetag
-CPlayerAction *CActionBuffer::GetLastOlderThan(__int64 llTime)
+CPlayerAction *CActionBuffer::GetLastOlderThan(std::int64_t llTime)
 {
   CPlayerAction *ppa = NULL;
   FOREACHINLIST(CActionEntry, ae_ln, ab_lhActions, itae) {

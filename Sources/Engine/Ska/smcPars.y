@@ -1,4 +1,5 @@
 %{
+#define YYINITDEPTH 3000
 #include <Engine/StdH.h>
 #include <Engine/Ska/ModelInstance.h>
 #include <Engine/Ska/AnimSet.h>

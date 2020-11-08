@@ -19,6 +19,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
+#include <Engine/Base/Console.h>
+
 /*
  * Template class for array with static allocation of objects.
  */
@@ -57,6 +59,7 @@ public:
   void MoveArray(CStaticArray<Type> &arOther);
 };
 
+#include "StaticArray.inl"
 
 #endif  /* include-once check. */
 

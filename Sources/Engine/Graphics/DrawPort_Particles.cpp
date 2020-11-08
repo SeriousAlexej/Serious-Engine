@@ -13,7 +13,7 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#include "stdh.h"
+
 
 #include <Engine/Graphics/DrawPort.h>
 
@@ -22,20 +22,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <Engine/Graphics/Vertex.h>
 #include <Engine/Graphics/Texture.h>
 #include <Engine/Graphics/Fog_internal.h>
-#include <Engine/Base/Statistics_internal.h>
 
-#include <Engine/Templates/StaticArray.cpp>
-#include <Engine/Templates/StaticStackArray.cpp>
+#include <Engine/Templates/StaticArray.h>
+#include <Engine/Templates/StaticStackArray.h>
 
 
 extern const FLOAT *pfSinTable;
 extern const FLOAT *pfCosTable;
 
-extern CEntity *_Particle_penCurrentViewer = NULL;
-extern INDEX _Particle_iCurrentDrawPort = 0;
-extern FLOAT _Particle_fCurrentMip = 0.0f;
-extern BOOL  _Particle_bHasFog  = FALSE;
-extern BOOL  _Particle_bHasHaze = FALSE;
+CEntity *_Particle_penCurrentViewer = NULL;
+INDEX _Particle_iCurrentDrawPort = 0;
+FLOAT _Particle_fCurrentMip = 0.0f;
+BOOL  _Particle_bHasFog  = FALSE;
+BOOL  _Particle_bHasHaze = FALSE;
 
 // variables used for rendering particles
 static CProjection3D *_pprProjection;
@@ -508,7 +507,6 @@ void Particle_Flush(void)
 {
   // update stats
   const INDEX ctParticles = _avtxCommon.Count()/4;
-  _sfStats.IncrementCounter( CStatForm::SCI_PARTICLES, ctParticles);
   _pGfx->gl_ctParticleTriangles += ctParticles*2;
 
   // determine need for clipping

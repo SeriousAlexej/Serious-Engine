@@ -9,8 +9,13 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/RuntimeOutput")
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+include(GenerateExportHeader)
 include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeConfigs/BisonFlex.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeConfigs/Ecc.cmake)
+
+include_directories(${CMAKE_SOURCE_DIR})
+
+find_package(SDL2 REQUIRED)
 
 add_subdirectory(Ecc)
 add_subdirectory(Engine)

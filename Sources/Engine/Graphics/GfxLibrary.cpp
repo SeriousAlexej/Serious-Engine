@@ -13,7 +13,7 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#include "stdh.h"
+
 
 #include <Engine/Graphics/GfxLibrary.h>
 
@@ -100,8 +100,6 @@ static ULONG GFX_ulLastDrawPortID = 0;
 
 // last size of vertex buffers
 extern INDEX _iLastVertexBufferSize = 0;
-// pretouch flag
-extern BOOL _bNeedPretouch;
 
 // flat texture
 CTextureData *_ptdFlat = NULL;
@@ -150,14 +148,11 @@ extern INDEX shd_bColorize   = FALSE;  // colorize shadows by size (gradieng fro
 extern INDEX ogl_iTextureCompressionType  = 1;    // 0=none, 1=default (ARB), 2=S3TC, 3=FXT1, 4=old S3TC
 extern INDEX ogl_bUseCompiledVertexArrays = 101;  // =XYZ; X=2D, Y=world, Z=models
 extern INDEX ogl_bAllowQuadArrays = FALSE;
-extern INDEX ogl_bExclusive = TRUE;
 extern INDEX ogl_bGrabDepthBuffer = FALSE;
 extern INDEX ogl_iMaxBurstSize = 0;        // unlimited
 extern INDEX ogl_bTruformLinearNormals = TRUE;
 extern INDEX ogl_bAlternateClipPlane = FALSE; // signal when user clip plane requires a texture unit
 
-extern INDEX ogl_iTBufferEffect  = 0;      // 0=none, 1=partial FSAA, 2=Motion Blur
-extern INDEX ogl_iTBufferSamples = 2;      // 2, 4 or 8 (for now)
 extern INDEX ogl_iFinish = 1;              // 0=never, 1=before rendering of next frame, 2=at the end of this frame, 3=at projection change
 
 // Direct3D control
@@ -579,18 +574,6 @@ static void GAPInfo(void)
         } else CPrintF( "not readable\n");
       } else CPrintF( "not adjustable\n");
     }
-    // report T-Buffer support
-    if( _pGfx->gl_ulFlags & GLF_EXT_TBUFFER) {
-      CPrintF( "- T-Buffer effect: ");
-      if( _pGfx->go_ctSampleBuffers==0) CPrintF( "disabled\n");
-      else {
-        ogl_iTBufferEffect = Clamp( ogl_iTBufferEffect, 0L, 2L);
-        CTString strEffect = "Partial anti-aliasing";
-        if( ogl_iTBufferEffect<1) strEffect = "none";
-        if( ogl_iTBufferEffect>1) strEffect = "Motion blur";
-        CPrintF( "%s (%d buffers used)\n", strEffect, _pGfx->go_ctSampleBuffers);
-      }
-    }
 
     // compiled vertex arrays support
     CPrintF( "- Compiled Vertex Arrays: ");
@@ -785,8 +768,6 @@ extern void UncacheShadows(void)
     CShadowMap &sm = *LIST_HEAD( lhOriginal, CShadowMap, sm_lnInGfx);
     sm.Uncache();
   }
-  // mark that we need pretouching
-  _bNeedPretouch = TRUE;
 }
 
 
@@ -855,8 +836,6 @@ extern void ReloadTextures(void)
   }
   */
 
-  // mark that we need pretouching
-  _bNeedPretouch = TRUE;
   CPrintF( TRANS("All textures reloaded.\n"));
 }
 
@@ -882,8 +861,6 @@ static void ReloadModels(void)
     CModelData &md = *itmd;
     md.Reload();
   }}
-  // mark that we need pretouching
-  _bNeedPretouch = TRUE;
   // all done
   CPrintF( TRANS("All models reloaded.\n"));
 }
@@ -1068,15 +1045,12 @@ void CGfxLibrary::Init(void)
   _pShell->DeclareSymbol("user void ReloadModels(void);",    &ReloadModels);
 
   _pShell->DeclareSymbol("persistent user INDEX ogl_bUseCompiledVertexArrays;", &ogl_bUseCompiledVertexArrays);
-  _pShell->DeclareSymbol("persistent user INDEX ogl_bExclusive;", &ogl_bExclusive);
   _pShell->DeclareSymbol("persistent user INDEX ogl_bAllowQuadArrays;",   &ogl_bAllowQuadArrays);
   _pShell->DeclareSymbol("persistent user INDEX ogl_iTextureCompressionType;", &ogl_iTextureCompressionType);
   _pShell->DeclareSymbol("persistent user INDEX ogl_iMaxBurstSize;",    &ogl_iMaxBurstSize);
   _pShell->DeclareSymbol("persistent user INDEX ogl_bGrabDepthBuffer;", &ogl_bGrabDepthBuffer);
   _pShell->DeclareSymbol("persistent user INDEX ogl_iFinish;", &ogl_iFinish);
 
-  _pShell->DeclareSymbol("persistent user INDEX ogl_iTBufferEffect;",  &ogl_iTBufferEffect);
-  _pShell->DeclareSymbol("persistent user INDEX ogl_iTBufferSamples;", &ogl_iTBufferSamples);
   _pShell->DeclareSymbol("persistent user INDEX ogl_bTruformLinearNormals;", &ogl_bTruformLinearNormals);
   _pShell->DeclareSymbol("persistent user INDEX ogl_bAlternateClipPlane;",   &ogl_bAlternateClipPlane);
 
@@ -1352,20 +1326,6 @@ BOOL CGfxLibrary::StartDisplayMode( enum GfxAPIType eAPI, INDEX iAdapter, PIX pi
     gl_iSwapInterval = 1234; // need to reset
   }
 
-  // DirectX driver ?
-#ifdef SE1_D3D
-  else if( eAPI==GAT_D3D)
-  {
-    // startup D3D
-    bSuccess = InitDriver_D3D();
-    if( !bSuccess) return FALSE; // what, didn't make it?
-    bSuccess = InitDisplay_D3D( iAdapter, pixSizeI, pixSizeJ, eColorDepth);
-    if( !bSuccess) return FALSE;
-    // made it
-    gl_eCurrentAPI = GAT_D3D;
-  }
-#endif // SE1_D3D
-
   // no driver
   else
   {
@@ -1405,13 +1365,6 @@ void CGfxLibrary::StopDisplayMode(void)
     MonitorsOn();       // re-enable multimonitor support if disabled
     CDS_ResetMode();
   }
-#ifdef SE1_D3D
-  else if( gl_eCurrentAPI==GAT_D3D)
-  { // Direct3D
-    EndDriver_D3D();
-    MonitorsOn();
-  }
-#endif // SE1_D3D
   else
   { // none
     ASSERT( gl_eCurrentAPI==GAT_NONE);
@@ -1437,9 +1390,6 @@ void CGfxLibrary::StopDisplayMode(void)
 BOOL CGfxLibrary::SetCurrentViewport(CViewPort *pvp)
 {
   if( gl_eCurrentAPI==GAT_OGL)  return SetCurrentViewport_OGL(pvp);
-#ifdef SE1_D3D
-  if( gl_eCurrentAPI==GAT_D3D)  return SetCurrentViewport_D3D(pvp);
-#endif // SE1_D3D
   if( gl_eCurrentAPI==GAT_NONE) return TRUE;
   ASSERTALWAYS( "SetCurrenViewport: Wrong API!");
   return FALSE;
@@ -1450,11 +1400,7 @@ BOOL CGfxLibrary::SetCurrentViewport(CViewPort *pvp)
 BOOL CGfxLibrary::LockDrawPort( CDrawPort *pdpToLock)
 {
   // check API
-#ifdef SE1_D3D
-  ASSERT( gl_eCurrentAPI==GAT_OGL || gl_eCurrentAPI==GAT_D3D || gl_eCurrentAPI==GAT_NONE);
-#else // SE1_D3D
   ASSERT( gl_eCurrentAPI==GAT_OGL || gl_eCurrentAPI==GAT_NONE);
-#endif // SE1_D3D
 
   // don't allow locking if drawport is too small
   if( pdpToLock->dp_Width<1 || pdpToLock->dp_Height<1) return FALSE;
@@ -1519,7 +1465,7 @@ void CGfxLibrary::UnlockDrawPort( CDrawPort *pdpToUnlock)
 // Window canvas functions
 
 /* Create a new window canvas. */
-void CGfxLibrary::CreateWindowCanvas(void *hWnd, CViewPort **ppvpNew, CDrawPort **ppdpNew)
+void CGfxLibrary::CreateWindowCanvas(const SDL_Rect& windowRect, CViewPort **ppvpNew, CDrawPort **ppdpNew)
 {
   RECT rectWindow;	// rectangle for the client area of the window
 
@@ -1920,14 +1866,6 @@ BOOL CGfxLibrary::LockRaster( CRaster *praToLock)
   ASSERT( praToLock->ra_pvpViewPort!=NULL);
   BOOL bRes = SetCurrentViewport( praToLock->ra_pvpViewPort);
   if( bRes) {
-    // must signal to picky Direct3D
-#ifdef SE1_D3D
-    if( gl_eCurrentAPI==GAT_D3D && !GFX_bRenderingScene) {  
-      HRESULT hr = gl_pd3dDevice->BeginScene(); 
-      D3D_CHECKERROR(hr);
-      bRes = (hr==D3D_OK);
-    } // mark it
-#endif // SE1_D3D
     GFX_bRenderingScene = TRUE;
   } // done
   return bRes;

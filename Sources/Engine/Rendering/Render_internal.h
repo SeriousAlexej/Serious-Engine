@@ -81,7 +81,9 @@ public:
   PIX spo_pixTotalArea; // sum of all visible spans
 
   /* Default constructor. */
-  CScreenPolygon(void) {
+  CScreenPolygon(void)
+    : spo_lnInStack(this)
+  {
   #ifndef NDEBUG
     spo_iInStack = 0;
   #endif
@@ -127,7 +129,7 @@ public:
   PIX sed_pixTopJ;            // top and bottom J coordinates of the edge
   PIX sed_pixBottomJ;
 
-  ALIGNED_NEW_AND_DELETE(32);
+  ALIGNED_NEW_AND_DELETE(4);
   /* Clear the object. */
   inline void Clear(void) {};
 };
@@ -143,7 +145,7 @@ public:
   CScreenEdge *ace_psedEdge;  // the edge
   ULONG ace_ulDummy;  // alignment to 16 bytes
 
-  ALIGNED_NEW_AND_DELETE(32);
+  ALIGNED_NEW_AND_DELETE(4);
 
   inline CActiveEdge(void) {};
   inline CActiveEdge(CScreenEdge *psed)
@@ -163,11 +165,12 @@ public:
   CListNode ade_lnInAdd;        // node in add list
   CScreenEdge *ade_psedEdge;  // the edge
 
-  ALIGNED_NEW_AND_DELETE(32);
+  ALIGNED_NEW_AND_DELETE(4);
 
-  inline CAddEdge(void) {};
+  inline CAddEdge(void) : ade_lnInAdd(this) {};
   inline CAddEdge(CScreenEdge *psed)
     : ade_xI(psed->sed_xI)
+    , ade_lnInAdd(this)
     , ade_psedEdge(psed)
   {};
   inline void Clear(void) {
@@ -492,7 +495,7 @@ public:
   void RenderOneModel( CEntity &en, CModelObject &moModel, const CPlacement3D &plModel,
                        const FLOAT fDistanceFactor, BOOL bRenderShadow, ULONG ulDMFlags);
   /* Render a ska model. */
-  void CRenderer::RenderOneSkaModel( CEntity &en, const CPlacement3D &plModel,
+  void RenderOneSkaModel( CEntity &en, const CPlacement3D &plModel,
                                   const FLOAT fDistanceFactor, BOOL bRenderShadow, ULONG ulDMFlags);
   /* Render models that were kept for delayed rendering. */
   void RenderModels(BOOL bBackground);

@@ -59,6 +59,7 @@ public:
   inline void PopAll(void) { Reset(); };
 };
 
+#include "LinearAllocator.inl"
 
 #endif  /* include-once check. */
 

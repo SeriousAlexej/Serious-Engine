@@ -60,6 +60,7 @@ public:
   CDynamicStackArray<Type> &operator=(CDynamicStackArray<Type> &arOriginal);
 };
 
+#include "DynamicStackArray.inl"
 
 #endif  /* include-once check. */
 

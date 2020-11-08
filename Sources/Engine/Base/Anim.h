@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define NAME_SIZE 32
 typedef char NAME[NAME_SIZE];
+#undef PATH_MAX
 #define PATH_MAX 260
 typedef char FILE_NAME[PATH_MAX];
 

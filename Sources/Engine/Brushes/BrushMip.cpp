@@ -13,23 +13,18 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#include "stdh.h"
-
 #include <Engine/Brushes/Brush.h>
 #include <Engine/World/World.h>
-#include <Engine/World/WorldEditingProfile.h>
 #include <Engine/Math/Object3D.h>
 #include <Engine/Base/ListIterator.inl>
 #include <Engine/Math/Projection_DOUBLE.h>
 #include <Engine/Math/Float.h>
 #include <Engine/Entities/Entity.h>
 
-#include <Engine/Templates/DynamicArray.cpp>
-#include <Engine/Templates/DynamicContainer.cpp>
-#include <Engine/Templates/StaticArray.cpp>
-#include <Engine/Templates/Selection.cpp>
-
-template CDynamicArray<CBrushSector>;
+#include <Engine/Templates/DynamicArray.h>
+#include <Engine/Templates/DynamicContainer.h>
+#include <Engine/Templates/StaticArray.h>
+#include <Engine/Templates/Selection.h>
 
 // tolerance value for csg selection
 #define CSG_RANGE_EPSILON (0.25f)
@@ -140,7 +135,7 @@ void CBrushMip::DeleteSelectedSectors(CBrushSectorSelectionForCSG &selbscToDelet
 }
 
 /* Constructor. */
-CBrushMip::CBrushMip(void) : bm_fMaxDistance(1E6f)
+CBrushMip::CBrushMip(void) : bm_lnInBrush(this), bm_fMaxDistance(1E6f)
 {
 }
 
@@ -292,7 +287,7 @@ void CBrushMip::RemoveDummyPortals(BOOL bClearPortalFlags)
       // find if it has at least one link in this same mip
       BOOL bHasLink = FALSE;
       // for all entities in the sector
-      {FOREACHDSTOFSRC(bpo.bpo_rsOtherSideSectors, CBrushSector, bsc_rdOtherSidePortals, pbsc)
+      {FOREACHDSTOFSRC(bpo.bpo_rsOtherSideSectors, CBrushSector, pbsc)
         if (pbsc->bsc_pbmBrushMip==this) {
           bHasLink = TRUE;
           break;
@@ -330,7 +325,7 @@ void CBrushMip::SpreadFurtherMips(void)
   // initially skip
   BOOL bSkip = TRUE;
   // for each mip in the brush
-  FOREACHINLIST(CBrushMip, bm_lnInBrush, pbr->br_lhBrushMips, itbm) {
+  FOREACHINLIST(CBrushMip, pbr->br_lhBrushMips, itbm) {
     // if not skipping
     if (!bSkip) {
       // increase the mip factor double as far
@@ -368,7 +363,7 @@ INDEX CBrushMip::GetMipIndex(void)
   CBrush3D *pbr = bm_pbrBrush;
   // count each mip in the brush
   INDEX iIndex = 0;
-  FOREACHINLIST(CBrushMip, bm_lnInBrush, pbr->br_lhBrushMips, itbm) {
+  FOREACHINLIST(CBrushMip, pbr->br_lhBrushMips, itbm) {
     iIndex++;
     // until this one
     if (this==&*itbm) {

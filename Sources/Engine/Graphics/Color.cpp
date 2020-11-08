@@ -13,7 +13,7 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#include "stdh.h"
+
 
 #include <Engine/Graphics/Color.h>
 #include <Engine/Math/Functions.h>
@@ -203,9 +203,9 @@ COLOR AdjustGamma( COLOR const col, FLOAT const fGamma)
   const FLOAT f1o255   = 1.0f / 255.0f;
   UBYTE ubR,ubG,ubB,ubA;
   ColorToRGBA( col, ubR,ubG,ubB,ubA);
-  ubR = ClampUp( NormFloatToByte(pow(ubR*f1o255,f1oGamma)), 255UL);
-  ubG = ClampUp( NormFloatToByte(pow(ubG*f1o255,f1oGamma)), 255UL);
-  ubB = ClampUp( NormFloatToByte(pow(ubB*f1o255,f1oGamma)), 255UL);
+  ubR = ClampUp( NormFloatToByte(pow(ubR*f1o255,f1oGamma)), (ULONG)255);
+  ubG = ClampUp( NormFloatToByte(pow(ubG*f1o255,f1oGamma)), (ULONG)255);
+  ubB = ClampUp( NormFloatToByte(pow(ubB*f1o255,f1oGamma)), (ULONG)255);
   return RGBAToColor( ubR,ubG,ubB,ubA);
 }
 
@@ -246,80 +246,11 @@ COLOR MulColors( COLOR col1, COLOR col2)
   if( col1==0xFFFFFFFF)   return col2;
   if( col2==0xFFFFFFFF)   return col1;
   if( col1==0 || col2==0) return 0;
-  COLOR colRet;
-  __asm {
-    xor     ebx,ebx
-    // red 
-    mov     eax,D [col1]
-    and     eax,CT_RMASK
-    shr     eax,CT_RSHIFT
-    mov     ecx,eax
-    shl     ecx,8
-    or      eax,ecx
-    mov     edx,D [col2]
-    and     edx,CT_RMASK
-    shr     edx,CT_RSHIFT
-    mov     ecx,edx
-    shl     ecx,8
-    or      edx,ecx
-    imul    eax,edx
-    shr     eax,16+8
-    shl     eax,CT_RSHIFT
-    or      ebx,eax
-    // green
-    mov     eax,D [col1]
-    and     eax,CT_GMASK
-    shr     eax,CT_GSHIFT
-    mov     ecx,eax
-    shl     ecx,8
-    or      eax,ecx
-    mov     edx,D [col2]
-    and     edx,CT_GMASK
-    shr     edx,CT_GSHIFT
-    mov     ecx,edx
-    shl     ecx,8
-    or      edx,ecx
-    imul    eax,edx
-    shr     eax,16+8
-    shl     eax,CT_GSHIFT
-    or      ebx,eax
-    // blue
-    mov     eax,D [col1]
-    and     eax,CT_BMASK
-    shr     eax,CT_BSHIFT
-    mov     ecx,eax
-    shl     ecx,8
-    or      eax,ecx
-    mov     edx,D [col2]
-    and     edx,CT_BMASK
-    shr     edx,CT_BSHIFT
-    mov     ecx,edx
-    shl     ecx,8
-    or      edx,ecx
-    imul    eax,edx
-    shr     eax,16+8
-    shl     eax,CT_BSHIFT
-    or      ebx,eax
-    // alpha
-    mov     eax,D [col1]
-    and     eax,CT_AMASK
-    shr     eax,CT_ASHIFT
-    mov     ecx,eax
-    shl     ecx,8
-    or      eax,ecx
-    mov     edx,D [col2]
-    and     edx,CT_AMASK
-    shr     edx,CT_ASHIFT
-    mov     ecx,edx
-    shl     ecx,8
-    or      edx,ecx
-    imul    eax,edx
-    shr     eax,16+8
-    shl     eax,CT_ASHIFT
-    or      ebx,eax
-    // done
-    mov     D [colRet],ebx
-  }
+  COLOR colRet =
+    (( (((col1 >> 0)&0xFF)*((col2 >> 0)&0xFF))&0xFF ) << 0) |
+    (( (((col1 >> 8)&0xFF)*((col2 >> 8)&0xFF))&0xFF ) << 8) |
+    (( (((col1 >> 16)&0xFF)*((col2 >> 16)&0xFF))&0xFF ) << 16) |
+    (( (((col1 >> 24)&0xFF)*((col2 >> 24)&0xFF))&0xFF ) << 24);
   return colRet;
 }
 
@@ -330,126 +261,10 @@ COLOR AddColors( COLOR col1, COLOR col2)
   if( col1==0) return col2;
   if( col2==0) return col1;
   if( col1==0xFFFFFFFF || col2==0xFFFFFFFF) return 0xFFFFFFFF;
-  COLOR colRet;
-  __asm {
-    xor     ebx,ebx
-    mov     esi,255
-    // red 
-    mov     eax,D [col1]
-    and     eax,CT_RMASK
-    shr     eax,CT_RSHIFT
-    mov     edx,D [col2]
-    and     edx,CT_RMASK
-    shr     edx,CT_RSHIFT
-    add     eax,edx
-    cmp     esi,eax  // clamp
-    sbb     ecx,ecx
-    or      eax,ecx
-    shl     eax,CT_RSHIFT
-    and     eax,CT_RMASK
-    or      ebx,eax
-    // green
-    mov     eax,D [col1]
-    and     eax,CT_GMASK
-    shr     eax,CT_GSHIFT
-    mov     edx,D [col2]
-    and     edx,CT_GMASK
-    shr     edx,CT_GSHIFT
-    add     eax,edx
-    cmp     esi,eax  // clamp
-    sbb     ecx,ecx
-    or      eax,ecx
-    shl     eax,CT_GSHIFT
-    and     eax,CT_GMASK
-    or      ebx,eax
-    // blue
-    mov     eax,D [col1]
-    and     eax,CT_BMASK
-    shr     eax,CT_BSHIFT
-    mov     edx,D [col2]
-    and     edx,CT_BMASK
-    shr     edx,CT_BSHIFT
-    add     eax,edx
-    cmp     esi,eax  // clamp
-    sbb     ecx,ecx
-    or      eax,ecx
-    shl     eax,CT_BSHIFT
-    and     eax,CT_BMASK
-    or      ebx,eax
-    // alpha
-    mov     eax,D [col1]
-    and     eax,CT_AMASK
-    shr     eax,CT_ASHIFT
-    mov     edx,D [col2]
-    and     edx,CT_AMASK
-    shr     edx,CT_ASHIFT
-    add     eax,edx
-    cmp     esi,eax  // clamp
-    sbb     ecx,ecx
-    or      eax,ecx
-    shl     eax,CT_ASHIFT
-    and     eax,CT_AMASK
-    or      ebx,eax
-    // done
-    mov     D [colRet],ebx
-  }
+  COLOR colRet =
+      (( (((col1 >> 0)&0xFF)+((col2 >> 0)&0xFF))&0xFF ) << 0) |
+      (( (((col1 >> 8)&0xFF)+((col2 >> 8)&0xFF))&0xFF ) << 8) |
+      (( (((col1 >> 16)&0xFF)+((col2 >> 16)&0xFF))&0xFF ) << 16) |
+      (( (((col1 >> 24)&0xFF)+((col2 >> 24)&0xFF))&0xFF ) << 24);
   return colRet;
-}
-
-
-
-// multiple conversion from OpenGL color to DirectX color
-extern void abgr2argb( ULONG *pulSrc, ULONG *pulDst, INDEX ct)
-{
-  __asm {
-    mov   esi,dword ptr [pulSrc]
-    mov   edi,dword ptr [pulDst]
-    mov   ecx,dword ptr [ct]
-    shr   ecx,2
-    jz    colSkip4
-colLoop4:
-    push  ecx
-    mov   eax,dword ptr [esi+ 0]
-    mov   ebx,dword ptr [esi+ 4]
-    mov   ecx,dword ptr [esi+ 8]
-    mov   edx,dword ptr [esi+12]
-    bswap eax
-    bswap ebx
-    bswap ecx
-    bswap edx
-    ror   eax,8
-    ror   ebx,8
-    ror   ecx,8
-    ror   edx,8
-    mov   dword ptr [edi+ 0],eax
-    mov   dword ptr [edi+ 4],ebx
-    mov   dword ptr [edi+ 8],ecx
-    mov   dword ptr [edi+12],edx
-    add   esi,4*4
-    add   edi,4*4
-    pop   ecx
-    dec   ecx
-    jnz   colLoop4
-colSkip4:
-    test  dword ptr [ct],2
-    jz    colSkip2
-    mov   eax,dword ptr [esi+0]
-    mov   ebx,dword ptr [esi+4]
-    bswap eax
-    bswap ebx
-    ror   eax,8
-    ror   ebx,8
-    mov   dword ptr [edi+0],eax
-    mov   dword ptr [edi+4],ebx
-    add   esi,4*2
-    add   edi,4*2
-colSkip2:
-    test  dword ptr [ct],1
-    jz    colSkip1
-    mov   eax,dword ptr [esi]
-    bswap eax
-    ror   eax,8
-    mov   dword ptr [edi],eax
-colSkip1:
-  }
 }

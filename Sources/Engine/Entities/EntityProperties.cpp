@@ -13,7 +13,7 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#include "stdh.h"
+
 
 #include <Engine/Entities/EntityProperties.h>
 #include <Engine/Entities/Precaching.h>
@@ -30,10 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <Engine/Templates/Stock_CModelData.h>
 #include <Engine/Templates/Stock_CSoundData.h>
 #include <Engine/Templates/Stock_CEntityClass.h>
-#include <Engine/Templates/StaticArray.cpp>
-
-#define FILTER_ALL            "All files (*.*)\0*.*\0"
-#define FILTER_END            "\0"
+#include <Engine/Templates/StaticArray.h>
 
 #define PROPERTY(offset, type) ENTITYPROPERTY(this, offset, type)
 
@@ -317,7 +314,7 @@ void CEntity::ReadProperties_t(CTStream &istrm) // throw char *
             // if file was not found, ask for replacing file
             CTFileName fnReplacingFile;
             if( GetReplacingFile( PROPERTY(pepProperty->ep_slOffset, CTFileName),
-                                  fnReplacingFile, FILTER_ALL FILTER_END))
+                                  fnReplacingFile))
             {
               // replacing file was provided
               PROPERTY(pepProperty->ep_slOffset, CTFileName) = fnReplacingFile;

@@ -21,6 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <Engine/Base/CTString.h>
 
+#include <SDL2/SDL_events.h>
+
 // number of key ids reserved (in KeyNames.h)
 #define KID_TOTALCOUNT 256
 
@@ -83,25 +85,29 @@ public:
   POINT inp_ptOldMousePos;                          // old mouse position
   struct MouseSpeedControl inp_mscMouseSettings;    // system mouse settings
 
-  void SetKeyNames( void);                          // sets name for every key
+  void SetKeyNames(void);                          // sets name for every key
   // check if a joystick exists
-  BOOL CheckJoystick(INDEX iJoy);
+  //BOOL CheckJoystick(INDEX iJoy);
   // adds axis and buttons for given joystick
-  void AddJoystickAbbilities(INDEX iJoy);
-  BOOL ScanJoystick(INDEX iJoyNo, BOOL bPreScan);// scans axis and buttons for given joystick
+  //void AddJoystickAbbilities(INDEX iJoy);
+  //BOOL ScanJoystick(INDEX iJoyNo, BOOL bPreScan);// scans axis and buttons for given joystick
 public:
 // Operations
   CInput();
   ~CInput();
   // Initializes all available devices and enumerates available controls
   void Initialize(void);
-  // Enable input inside one viewport, or window
-  void EnableInput(CViewPort *pvp);
-  void EnableInput(HWND hWnd);
+  // Enable input inside application
+  void EnableInput(CViewPort* pvp);
+  // Handle various input events
+  void HandleInput(SDL_KeyboardEvent& event);
+  void HandleInput(SDL_MouseWheelEvent& event);
+  void HandleInput(SDL_MouseButtonEvent& event);
+  void HandleInput(SDL_MouseMotionEvent& event);
   // Disable input
   void DisableInput(void);
   // enable/disable joystick polling (it can be slow to poll if user doesn't realy use the joystick)
-  void SetJoyPolling(BOOL bPoll);
+  //void SetJoyPolling(BOOL bPoll);
   // Test input activity
   BOOL IsInputEnabled( void) const { return inp_bInputEnabled; };
   // Scan states of all available input sources

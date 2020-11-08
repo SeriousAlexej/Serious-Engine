@@ -13,22 +13,22 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#include "stdh.h"
+
 
 #include <Engine/Brushes/Brush.h>
 #include <Engine/World/World.h>
-#include <Engine/World/WorldEditingProfile.h>
 #include <Engine/Math/Object3D.h>
 #include <Engine/Base/ListIterator.inl>
 #include <Engine/Math/Projection_DOUBLE.h>
-#include <Engine/Templates/StaticArray.cpp>
-#include <Engine/Templates/DynamicArray.cpp>
+#include <Engine/Templates/StaticArray.h>
+#include <Engine/Templates/DynamicArray.h>
 #include <Engine/Math/Float.h>
 #include <Engine/Entities/Entity.h>
 
 
 // constructor
 CBrush3D::CBrush3D(void)
+  : br_lnInActiveBrushes(this)
 {
   br_penEntity = NULL;
   br_pfsFieldSettings = NULL;
@@ -107,7 +107,7 @@ CBrushMip *CBrush3D::NewBrushMipBefore(CBrushMip *pbmOld, BOOL bCopy)
 
 // make 'for' construct for walking a list reversely
 #define FOREACHINLIST_R(baseclass, member, head, iter) \
-  for ( LISTITER(baseclass, member) iter(head.IterationTail()); \
+  for ( LISTITER(baseclass) iter(head.IterationTail()); \
    !iter->member.IsHeadMarker(); iter.MoveToPrev() )
 
 /*
@@ -136,7 +136,7 @@ CBrushMip *CBrush3D::GetBrushMipByIndex(INDEX iMip)
 {
   INDEX iCurrentMip = 0;
   // for all brush mips in brush
-  FOREACHINLIST(CBrushMip, bm_lnInBrush, br_lhBrushMips, itbm) {
+  FOREACHINLIST(CBrushMip, br_lhBrushMips, itbm) {
     iCurrentMip++;
     // if this is the mip
     if (iCurrentMip == iMip) {
@@ -150,13 +150,13 @@ CBrushMip *CBrush3D::GetBrushMipByIndex(INDEX iMip)
 // get first brush mip
 CBrushMip *CBrush3D::GetFirstMip(void)
 {
-  return LIST_HEAD(br_lhBrushMips, CBrushMip, bm_lnInBrush);
+  return LIST_HEAD(br_lhBrushMips, CBrushMip);
 }
 
 // get last brush mip
 CBrushMip *CBrush3D::GetLastMip(void)
 {
-  return LIST_TAIL(br_lhBrushMips, CBrushMip, bm_lnInBrush);
+  return LIST_TAIL(br_lhBrushMips, CBrushMip);
 }
 
 /*
@@ -164,11 +164,7 @@ CBrushMip *CBrush3D::GetLastMip(void)
  */
 void CBrush3D::OptimizeObject3D(CObject3D &ob)
 {
-  _pfWorldEditingProfile.StartTimer(CWorldEditingProfile::PTI_OBJECTOPTIMIZE);
-  _pfWorldEditingProfile.IncrementCounter(CWorldEditingProfile::PCI_SECTORSOPTIMIZED,
-    ob.ob_aoscSectors.Count());
   ob.Optimize();
-  _pfWorldEditingProfile.StopTimer(CWorldEditingProfile::PTI_OBJECTOPTIMIZE);
 }
 
 /*
@@ -176,7 +172,7 @@ void CBrush3D::OptimizeObject3D(CObject3D &ob)
  */
 void CBrush3D::Clear(void) {
   // delete all brush mips
-  FORDELETELIST(CBrushMip, bm_lnInBrush, br_lhBrushMips, itbm) {
+  FORDELETELIST(CBrushMip, br_lhBrushMips, itbm) {
     delete &*itbm;
   }
 }
@@ -188,7 +184,7 @@ void CBrush3D::Copy(CBrush3D &brOther, FLOAT fStretch, BOOL bMirrorX)
   Clear();
 
   // for all brush mips in other brush
-  FOREACHINLIST(CBrushMip, bm_lnInBrush, brOther.br_lhBrushMips, itbmOther) {
+  FOREACHINLIST(CBrushMip, brOther.br_lhBrushMips, itbmOther) {
     // create one brush mip
     CBrushMip *pbmBrushMip = new CBrushMip;
     // add it to the brush
@@ -234,7 +230,7 @@ void CBrush3D::CalculateBoundingBoxesForOneMip(CBrushMip *pbmOnly)  // for only 
   CSimpleProjection3D_DOUBLE prBrushToAbsolute;
   PrepareRelativeToAbsoluteProjection(prBrushToAbsolute);
   // for all brush mips
-  FOREACHINLIST(CBrushMip, bm_lnInBrush, br_lhBrushMips, itbm) {
+  FOREACHINLIST(CBrushMip, br_lhBrushMips, itbm) {
     CBrushMip *pbm = itbm;
     if (pbmOnly==NULL || pbm==pbmOnly) {
       // calculate its boxes
@@ -258,7 +254,7 @@ void CBrush3D::SwitchToNonZoning(void)
   CalculateBoundingBoxes();
 
   // for all brush mips
-  FOREACHINLIST(CBrushMip, bm_lnInBrush, br_lhBrushMips, itbm) {
+  FOREACHINLIST(CBrushMip, br_lhBrushMips, itbm) {
     // for all sectors in the mip
     {FOREACHINDYNAMICARRAY(itbm->bm_abscSectors, CBrushSector, itbsc) {
       // unset spatial clasification
@@ -273,7 +269,7 @@ void CBrush3D::SwitchToZoning(void)
   CalculateBoundingBoxes();
 
   // for all brush mips
-  FOREACHINLIST(CBrushMip, bm_lnInBrush, br_lhBrushMips, itbm) {
+  FOREACHINLIST(CBrushMip, br_lhBrushMips, itbm) {
     // for all sectors in the mip
     {FOREACHINDYNAMICARRAY(itbm->bm_abscSectors, CBrushSector, itbsc) {
       // find entities in sector

@@ -323,7 +323,8 @@ void CRenderer::AddEdgeToAddAndRemoveLists(CScreenEdge &sed)
   SLONG slIInList;
   while(plnInList->ln_Succ!=NULL) {
     slIInList = 
-      ((CAddEdge*)((UBYTE*)plnInList-offsetof(CAddEdge, ade_lnInAdd))) -> ade_xI.slHolder;
+        plnInList->ade_xI.slHolder;
+      //((CAddEdge*)((UBYTE*)plnInList-offsetof(CAddEdge, ade_lnInAdd))) -> ade_xI.slHolder;
     // if the edge in list is right of the one to add
     if (slIInList>slIThis) {
       // stop searching

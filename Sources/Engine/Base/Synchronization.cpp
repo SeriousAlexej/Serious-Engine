@@ -13,215 +13,38 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#include "StdH.h"
-
 #include <Engine/Base/Synchronization.h>
 
- 
-/*
-This is implementation of OPTEX (optimized mutex), 
-originally from MSDN Periodicals 1996, by Jeffrey Richter.
-
-It is updated for clearer comments, shielded with tons of asserts,
-and modified to support TryToEnter() function. The original version
-had timeout parameter, bu it didn't work.
-
-NOTES: 
-- TryToEnter() was not tested with more than one thread, and perhaps
-  there might be some problems with the final decrementing and eventual event resetting
-  when lock fails. Dunno.
-
-- take care to center the lock tests around 0 (-1 means not locked). that is
-  neccessary because win95 returns only <0, ==0 and >0 results from interlocked 
-  functions, so testing against any other number than 0 doesn't work.
-*/
-
-// The opaque OPTEX data structure
-typedef struct {
-   LONG   lLockCount; // note: must center all tests around 0 for win95 compatibility!
-   DWORD  dwThreadId;
-   LONG   lRecurseCount;
-   HANDLE hEvent;
-} OPTEX, *POPTEX;
-
-_declspec(thread) INDEX _iLastLockedMutex = 0;
-
-BOOL OPTEX_Initialize (POPTEX poptex) {
-  
-  poptex->lLockCount = -1;   // No threads have enterred the OPTEX
-  poptex->dwThreadId = 0;    // The OPTEX is unowned
-  poptex->lRecurseCount = 0; // The OPTEX is unowned
-  poptex->hEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
-  return(poptex->hEvent != NULL);  // TRUE if the event is created
-}
-
-VOID OPTEX_Delete (POPTEX poptex) {
-
-   // No in-use check
-   CloseHandle(poptex->hEvent);  // Close the event
-}
-
-INDEX OPTEX_Enter (POPTEX poptex) 
-{
-  
-  DWORD dwThreadId = GetCurrentThreadId();  // The calling thread's ID
-  
-  // increment lock counter
-  INDEX ctLocked = InterlockedIncrement(&poptex->lLockCount);
-  ASSERT(poptex->lLockCount>=0);
-
-  // if this is first thread that entered
-  if (ctLocked == 0) {
-    
-    // mark that we own it, exactly once
-    ASSERT(poptex->dwThreadId==0);
-    ASSERT(poptex->lRecurseCount==0);
-    poptex->dwThreadId = dwThreadId;
-    poptex->lRecurseCount = 1;
-    
-  // if already owned
-  } else {
-    
-    // if owned by this thread
-    if (poptex->dwThreadId == dwThreadId) {
-      // just mark that we own it once more
-      poptex->lRecurseCount++;
-      ASSERT(poptex->lRecurseCount>1);
-      
-    // if owned by some other thread
-    } else {
-      
-      // wait for the owning thread to release the OPTEX
-      DWORD dwRet = WaitForSingleObject(poptex->hEvent, INFINITE);
-      ASSERT(dwRet == WAIT_OBJECT_0);
-  
-      // mark that we own it, exactly once
-      ASSERT(poptex->dwThreadId==0);
-      ASSERT(poptex->lRecurseCount==0);
-      poptex->dwThreadId = dwThreadId;
-      poptex->lRecurseCount = 1;
-    }
-  }
-  ASSERT(poptex->lRecurseCount>=1);
-  ASSERT(poptex->lLockCount>=0);
-  return poptex->lRecurseCount;
-}
-
-INDEX OPTEX_TryToEnter (POPTEX poptex) 
-{
-  ASSERT(poptex->lLockCount>=-1);
-  DWORD dwThreadId = GetCurrentThreadId();  // The calling thread's ID
-  
-  // increment lock counter
-  INDEX ctLocked = InterlockedIncrement(&poptex->lLockCount);
-  ASSERT(poptex->lLockCount>=0);
-
-  // if this is first thread that entered
-  if (ctLocked == 0) {
-    
-    // mark that we own it, exactly once
-    ASSERT(poptex->dwThreadId==0);
-    ASSERT(poptex->lRecurseCount==0);
-    poptex->dwThreadId = dwThreadId;
-    poptex->lRecurseCount = 1;
-    // lock succeeded
-    return poptex->lRecurseCount;
-    
-  // if already owned
-  } else {
-    
-    // if owned by this thread
-    if (poptex->dwThreadId == dwThreadId) {
-      
-      // just mark that we own it once more
-      poptex->lRecurseCount++;
-      ASSERT(poptex->lRecurseCount>=1);
-
-      // lock succeeded
-      return poptex->lRecurseCount;
-      
-    // if owned by some other thread
-    } else {
-
-      // give up taking it
-      INDEX ctLocked = InterlockedDecrement(&poptex->lLockCount);
-      ASSERT(poptex->lLockCount>=-1);
-
-      // if unlocked in the mean time
-      if (ctLocked<0) {
-        // NOTE: this has not been tested!
-        // ignore sent the signal
-        ResetEvent(poptex->hEvent);
-      }
-
-      // lock failed
-      return 0;
-    }
-  }
-}
-
-INDEX OPTEX_Leave (POPTEX poptex) 
-{
-
-  ASSERT(poptex->dwThreadId==GetCurrentThreadId());
-  
-  // we own in one time less
-  poptex->lRecurseCount--;
-  ASSERT(poptex->lRecurseCount>=0);
-  INDEX ctResult = poptex->lRecurseCount;
-
-  // if more multiple locks from this thread
-  if (poptex->lRecurseCount > 0) {
-    
-    // just decrement the lock count
-    InterlockedDecrement(&poptex->lLockCount);
-    ASSERT(poptex->lLockCount>=-1);
-    
-  // if no more multiple locks from this thread
-  } else {
-    
-    // mark that this thread doesn't own it
-    poptex->dwThreadId = 0;
-    // decrement the lock count
-    INDEX ctLocked = InterlockedDecrement(&poptex->lLockCount);
-    ASSERT(poptex->lLockCount>=-1);
-    // if some threads are waiting for it
-    if ( ctLocked >= 0) {
-      // wake one of them
-      SetEvent(poptex->hEvent);
-    }
-  }
-  
-  ASSERT(poptex->lRecurseCount>=0);
-  ASSERT(poptex->lLockCount>=-1);
-  return ctResult;
-}
-
-// these are just wrapper classes for locking/unlocking
+thread_local INDEX _iLastLockedMutex = 0;
 
 CTCriticalSection::CTCriticalSection(void)
+  : m_recurse_count(0)
+  , cs_iIndex(-2)
 {
-  // index must be set before using the mutex
-  cs_iIndex = -2;
-  cs_pvObject = new OPTEX;
-  OPTEX_Initialize((OPTEX*)cs_pvObject);
 }
 CTCriticalSection::~CTCriticalSection(void)
 {
-  OPTEX_Delete((OPTEX*)cs_pvObject);
-  delete (OPTEX*)cs_pvObject;
 }
 INDEX CTCriticalSection::Lock(void)
 {
-  return OPTEX_Enter((OPTEX*)cs_pvObject);
+  m_mutex.lock();
+  m_recurse_count++;
+  return m_recurse_count;
 }
 INDEX CTCriticalSection::TryToLock(void)
 {
-  return OPTEX_TryToEnter((OPTEX*)cs_pvObject);
+  if (m_mutex.try_lock())
+  {
+    m_recurse_count++;
+    return m_recurse_count;
+  }
+  return 0;
 }
 INDEX CTCriticalSection::Unlock(void)
 {
-  return OPTEX_Leave((OPTEX*)cs_pvObject);
+  m_recurse_count--;
+  m_mutex.unlock();
+  return m_recurse_count;
 }
 
 CTSingleLock::CTSingleLock(CTCriticalSection *pcs, BOOL bLock) : sl_cs(*pcs)

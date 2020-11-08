@@ -13,8 +13,6 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#include "stdh.h"
-
 #include <Engine/Base/ErrorReporting.h>
 #include <Engine/Base/ErrorTable.h>
 #include <Engine/Base/Translation.h>
@@ -25,6 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <Engine/Base/Console_internal.h>
 
 #include <Engine/Graphics/Adapter.h>
+
+#include <SDL2/SDL_stdinc.h>
 
 INDEX con_bNoWarnings = 0;
 
@@ -47,13 +47,6 @@ void FatalError(const char *strFormat, ...)
   // (this is a low overhead and shouldn't allocate memory)
   CDS_ResetMode();
 
-  // hide fullscreen window if any
-  if( _bFullScreen) {
-    // must do minimize first - don't know why :(
-    ShowWindow( _hwndMain, SW_MINIMIZE);
-    ShowWindow( _hwndMain, SW_HIDE);
-  }
-
   // format the message in buffer
   va_list arg;
   va_start(arg, strFormat);
@@ -68,14 +61,18 @@ void FatalError(const char *strFormat, ...)
     _pConsole->CloseLog();
   }
 
+  use sdl_showsimplemessagebox
+#ifdef WIN32
   // create message box with just OK button
   MessageBoxA(NULL, strBuffer, TRANS("Fatal Error"),
     MB_OK|MB_ICONHAND|MB_SETFOREGROUND|MB_TASKMODAL);
-
+#endif
   _bInFatalError = FALSE;
 
+#ifdef WIN32
   extern void EnableWindowsKeys(void);
   EnableWindowsKeys();
+#endif
   // exit program
   exit(EXIT_FAILURE);
 }
@@ -94,52 +91,27 @@ void WarningMessage(const char *strFormat, ...)
   // print it to console
   CPrintF("%s\n", strBuffer);
   // if warnings are enabled
+  use sdl_showsimplemessagebox
+#ifdef WIN32
   if( !con_bNoWarnings) {
     // create message box
     MessageBoxA(NULL, strBuffer, TRANS("Warning"), MB_OK|MB_ICONEXCLAMATION|MB_SETFOREGROUND|MB_TASKMODAL);
   }
+#endif
 }
 
-void InfoMessage(const char *strFormat, ...)
-{
-  // format the message in buffer
-  va_list arg;
-  va_start(arg, strFormat);
-  CTString strBuffer;
-  strBuffer.VPrintF(strFormat, arg);
-
-  // print it to console
-  CPrintF("%s\n", strBuffer);
-  // create message box
-  MessageBoxA(NULL, strBuffer, TRANS("Information"), MB_OK|MB_ICONINFORMATION|MB_SETFOREGROUND|MB_TASKMODAL);
-}
-
-/* Ask user for yes/no answer(stops program until user responds). */
-BOOL YesNoMessage(const char *strFormat, ...)
-{
-  // format the message in buffer
-  va_list arg;
-  va_start(arg, strFormat);
-  CTString strBuffer;
-  strBuffer.VPrintF(strFormat, arg);
-
-  // print it to console
-  CPrintF("%s\n", strBuffer);
-  // create message box
-  return MessageBoxA(NULL, strBuffer, TRANS("Question"), MB_YESNO|MB_ICONQUESTION|MB_SETFOREGROUND|MB_TASKMODAL)==IDYES;
-}
 
 /*
  * Throw an exception of formatted string.
  */
-void ThrowF_t(char *strFormat, ...)  // throws char *
+[[noreturn]] void ThrowF_t(const char *strFormat, ...)  // throws char *
 {
   const SLONG slBufferSize = 256;
   char strBuffer[slBufferSize+1];
   // format the message in buffer
   va_list arg;
   va_start(arg, strFormat); // variable arguments start after this argument
-  _vsnprintf(strBuffer, slBufferSize, strFormat, arg);
+  SDL_vsnprintf(strBuffer, slBufferSize, strFormat, arg);
   throw strBuffer;
 }
 
@@ -174,6 +146,8 @@ void ThrowF_t(char *strFormat, ...)  // throws char *
  */
  extern const CTString GetWindowsError(DWORD dwWindowsErrorCode)
 {
+   fix this shit and use sdl
+#ifdef WIN32
   // buffer to receive error description
   LPVOID lpMsgBuf;
   // call function that will prepare text abount given windows error code
@@ -185,10 +159,7 @@ void ThrowF_t(char *strFormat, ...)  // throws char *
   // Free the buffer.
   LocalFree( lpMsgBuf );
   return strResultMessage;
-}
-
-// must be in separate function to disable stupid optimizer
-extern void Breakpoint(void)
-{
-  __asm int 0x03;
+#elif unix
+   return "GetWindowsError: Not implemented on unix platform";
+#endif
 }

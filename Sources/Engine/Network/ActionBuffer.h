@@ -35,13 +35,13 @@ public:
   // remove oldest buffered action
   void RemoveOldest(void);
   // flush all actions up to given time tag
-  void FlushUntilTime(__int64 llNewest);
+  void FlushUntilTime(std::int64_t llNewest);
   // get number of actions buffered
   INDEX GetCount(void);
   // get an action by its index (0=oldest)
   void GetActionByIndex(INDEX i, CPlayerAction &pa);
   // get last action older than given timetag
-  CPlayerAction *GetLastOlderThan(__int64 llTime);
+  CPlayerAction *GetLastOlderThan(std::int64_t llTime);
 };
 
 

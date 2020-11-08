@@ -13,12 +13,18 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#include "stdh.h"
+class CBrushVertex;
+// this function is here to satisfy compiler's weird need when compiling
+// the template for CDynamicArray<CBrushVertex *>
+// place it on the top to make priority of picking it in template higher
+void Clear(CBrushVertex *pbvx) {
+  (void)pbvx;
+};
 
 #include <Engine/Brushes/Brush.h>
-#include <Engine/Templates/DynamicArray.cpp>
-#include <Engine/Templates/StaticArray.cpp>
-#include <Engine/Templates/StaticStackArray.cpp>
+#include <Engine/Templates/DynamicArray.h>
+#include <Engine/Templates/StaticArray.h>
+#include <Engine/Templates/StaticStackArray.h>
 #include <Engine/Math/Float.h>
 #include <Engine/Math/Geometry.inl>
 #include <Engine/Base/Stream.h>
@@ -47,12 +53,6 @@ static CTFileStream _strmDebugOutput;
 
 // minimum triangle quality that is trivially accepted
 #define QUALITY_ACCEPTTRIVIALLY DOUBLE(0.01)
-
-// this function is here to satisfy compiler's weird need when compiling 
-// the template for CDynamicArray<CBrushVertex *>
-inline void Clear(CBrushVertex *pbvx) {
-  (void)pbvx;
-};
 
 /*
 Algorithm used:
@@ -155,7 +155,7 @@ public:
   void AddBestTriangleToTriangles(void);
 
   /* Print a statement to debugging output file. */
-  void DPrintF(char *strFormat, ...);
+  void DPrintF(const char *strFormat, ...);
   /* Dump triangle edges to debug output. */
   void DumpEdges(void);
 
@@ -584,7 +584,7 @@ void EdgeDir(const DOUBLE3D &vPoint0, const DOUBLE3D &vPoint1,
 /*
  * Print a statement to debugging output file.
  */
-void CTriangularizer::DPrintF(char *strFormat, ...)
+void CTriangularizer::DPrintF(const char *strFormat, ...)
 {
   char strBuffer[256];
   // format the message in buffer
@@ -727,36 +727,6 @@ void CTriangularizer::FindBestTriangle(void)
     }
   }
   tr_abedEdges.Unlock();
-
-#if 0
-  // if no acceptable triangles have been found
-  if (tr_fQualityBest<???) {
-    /* dump all sector's vertices */
-    /*
-    FOREACHINSTATICARRAY(tr_bpoOriginalPolygon.bpo_pbscSector->bsc_abvxVertices,
-      CBrushVertex, itbvx) {
-      DPrintF("(0x%p, %f, %f, %f)\n", &(*itbvx),
-        (*itbvx)(1), (*itbvx)(2), (*itbvx)(3));
-    }
-    */
-
-    // dump remaining edges
-    DPrintF("Triangularization failed!\n");
-    DPrintF("best quality found: %f\n", tr_fQualityBest);
-    DPrintF("Remaining edges:\n");
-    DumpEdges();
-/*    // dump all edges
-    tr_abedEdges.Clear();
-    MakeEdgesForTriangularization();
-    DumpEdges();
-    */
-
-    // error!
-    ASSERTALWAYS("No acceptable triangles found for triangularization!");
-    FatalError("No acceptable triangles found for triangularization!\n"
-      "Debugging information written to file '%s'.", _fnmDebugOutput);
-  }
-#endif
 }
 
 

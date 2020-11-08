@@ -13,17 +13,8 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#ifndef SE_INCL_STATICARRAY_CPP
-#define SE_INCL_STATICARRAY_CPP
-#ifdef PRAGMA_ONCE
-  #pragma once
-#endif
-
 #define FOREACHINSTATICARRAY(array, type, iter) \
   for(CStaticArrayIterator<type> iter(array); !iter.IsPastEnd(); iter.MoveToNext() )
-
-#include <Engine/Base/Console.h>
-#include <Engine/Templates/StaticArray.h>
 
 /*
  * Default constructor.
@@ -267,7 +258,3 @@ inline BOOL CStaticArrayIterator<Type>::IsPastEnd(void) {
   ASSERT(this!=NULL);
   return sai_Index>=sai_Array.sa_Count;
 }
-
-
-#endif  /* include-once check. */
-

@@ -13,7 +13,7 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#include "stdh.h"
+
 
 #include <Engine/Base/Relations.h>
 
@@ -24,7 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // CRelationSrc
 
 // Construction/destruction.
-CRelationSrc::CRelationSrc(void)
+CRelationSrc::CRelationSrc(void* data)
+  : p_data(data)
 {
 }
 
@@ -36,7 +37,7 @@ CRelationSrc::~CRelationSrc(void)
 void CRelationSrc::Clear(void)
 {
   // just delete all links, they will unlink on destruction
-  FORDELETELIST(CRelationLnk, rl_lnSrc, *this, itlnk) {
+  FORDELETELIST(CRelationLnk, *this, itlnk) {
     delete &*itlnk;
   }
 }
@@ -45,7 +46,8 @@ void CRelationSrc::Clear(void)
 // CRelationDst
 
 // Construction/destruction.
-CRelationDst::CRelationDst(void)
+CRelationDst::CRelationDst(void* data)
+  : p_data(data)
 {
 }
 
@@ -57,7 +59,7 @@ CRelationDst::~CRelationDst(void)
 void CRelationDst::Clear(void)
 {
   // just delete all links, they will unlink on destruction
-  FORDELETELIST(CRelationLnk, rl_lnDst, *this, itlnk) {
+  FORDELETELIST(CRelationLnk, *this, itlnk) {
     delete &*itlnk;
   }
 }
@@ -67,6 +69,8 @@ void CRelationDst::Clear(void)
 
 // Construction/destruction.
 CRelationLnk::CRelationLnk(void)
+  : rl_lnSrc(this)
+  , rl_lnDst(this)
 {
 }
 

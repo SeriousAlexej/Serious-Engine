@@ -19,7 +19,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
-
+#ifdef WIN32
+#define SOCKET_TYPE SOCKET
+#else
+#define SOCKET_TYPE int
+#endif
 
 #define SERVER_CLIENTS 16
 
@@ -38,7 +42,7 @@ public:
   CPacketBuffer cci_pbMasterOutput;					// master output buffer				 
   CPacketBuffer cci_pbMasterInput;					// master input buffer
 
-  SOCKET cci_hSocket;						// the socket handle itself
+  SOCKET_TYPE cci_hSocket;						// the socket handle itself
 
 public:
   // client

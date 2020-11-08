@@ -5,7 +5,8 @@
 #endif
 
 /* Default constructor */
-inline CListNode::CListNode(void)
+inline CListNode::CListNode(void* data)
+  : p_data(data)
 {
   // make a non-linked node
   ln_Succ = NULL;
@@ -13,8 +14,8 @@ inline CListNode::CListNode(void)
 }
 /* Copy constructor */
 inline CListNode::CListNode(const CListNode &lnOriginal)
+  : p_data(lnOriginal.p_data)
 {
-  (void) lnOriginal;
   // make a non-linked node
   ln_Succ = NULL;
   ln_Pred = NULL;
@@ -31,7 +32,7 @@ inline CListNode::~CListNode(void)
 /* Assignment. */
 inline CListNode &CListNode::operator=(const CListNode &lnOriginal)
 {
-  (void) lnOriginal;
+  p_data = lnOriginal.p_data;
   // make a non-linked node
   ln_Succ = NULL;
   ln_Pred = NULL;

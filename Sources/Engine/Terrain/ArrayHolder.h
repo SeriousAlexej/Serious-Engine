@@ -20,9 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 #include <Engine/Graphics/Vertex.h>
-#include <Engine/Templates/StaticStackArray.cpp>
+#include <Engine/Templates/StaticStackArray.h>
 #include <Engine/Templates/DynamicContainer.h>
-#include <Engine/Templates/DynamicContainer.cpp>
 #include <Engine/Graphics/Texture.h>
 
 struct TileLayer
@@ -63,7 +62,7 @@ public:
   // Returns index of new tile arrays
   INDEX GetNewArrays();
   // Mark tile arrays as unused
-  void FreeArrays(INT iOldArraysIndex);
+  void FreeArrays(INDEX iOldArraysIndex);
   // Just do popall on all arrays
   void EmptyArrays(INDEX iArrayIndex);
   // Release array holder

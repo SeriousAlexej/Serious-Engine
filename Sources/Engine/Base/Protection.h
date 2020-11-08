@@ -18,14 +18,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifdef PRAGMA_ONCE
   #pragma once
 #endif
+#include <Engine/Base/Types.h>
 
 typedef struct {
-  unsigned long P[16 + 2];
-  unsigned long S[4][256];
+  ULONG P[16 + 2];
+  ULONG S[4][256];
 } BLOWFISH_CTX;
 
-extern void Blowfish_Init(BLOWFISH_CTX *ctx, unsigned char *key, int keyLen);
-extern void Blowfish_Decrypt(BLOWFISH_CTX *ctx, unsigned long *xl, unsigned long *xr);
+extern void Blowfish_Init(BLOWFISH_CTX *ctx, UBYTE *key, INDEX keyLen);
+extern void Blowfish_Decrypt(BLOWFISH_CTX *ctx, ULONG *xl, ULONG *xr);
 
 
 #endif  /* include-once check. */

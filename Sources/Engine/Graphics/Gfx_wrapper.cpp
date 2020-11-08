@@ -13,24 +13,13 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#include "stdh.h"
+
 
 #include <Engine/Graphics/GfxLibrary.h>
 #include <Engine/Graphics/ViewPort.h>
 
 #include <Engine/Graphics/GfxProfile.h>
-#include <Engine/Base/Statistics_internal.h>
-
-//#include <d3dx8math.h>
-//#pragma comment(lib, "d3dx8.lib")
-
-
-//#include <d3dx8tex.h>
-//#pragma comment(lib, "d3dx8.lib")
-//extern "C" HRESULT WINAPI D3DXGetErrorStringA( HRESULT hr, LPSTR pBuffer, UINT BufferLen);
-//char acErrorString[256];
-//D3DXGetErrorString( hr, acErrorString, 255);
-//ASSERTALWAYS( acErrorString);
+#include <Engine/Base/Statistics_Internal.h>
 
 extern INDEX gap_bOptimizeStateChanges;
 extern INDEX gap_iOptimizeClipping;
@@ -46,7 +35,6 @@ extern BOOL GFX_bBlending   = TRUE;
 extern BOOL GFX_bClipping   = TRUE;
 extern BOOL GFX_bClipPlane  = FALSE;
 extern BOOL GFX_bColorArray = FALSE;
-extern BOOL GFX_bTruform    = FALSE;
 extern BOOL GFX_bFrontFace  = TRUE;
 extern BOOL GFX_bViewMatrix = TRUE;
 extern INDEX GFX_iActiveTexUnit = 0;
@@ -641,68 +629,13 @@ extern void gfxFlushElements(void)
 }
 
 
-
-
-// set truform parameters
-extern void gfxSetTruform( INDEX iLevel, BOOL bLinearNormals)
-{
-  // skip if Truform isn't supported
-  if( _pGfx->gl_iMaxTessellationLevel<1) {
-    truform_iLevel  = 0;
-    truform_bLinear = FALSE;
-    return;
-  }
-  // skip if same as last time
-  iLevel = Clamp( iLevel, 0L, _pGfx->gl_iMaxTessellationLevel);
-  if( truform_iLevel==iLevel && !truform_bLinear==!bLinearNormals) return;
-
-  // determine API
-  const GfxAPIType eAPI = _pGfx->gl_eCurrentAPI;
-#ifdef SE1_D3D
-  ASSERT(eAPI == GAT_OGL || eAPI == GAT_D3D || eAPI == GAT_NONE);
-#else // SE1_D3D
-  ASSERT(eAPI == GAT_OGL || eAPI == GAT_NONE);
-#endif // SE1_D3D
-
-  _sfStats.StartTimer(CStatForm::STI_GFXAPI);
-
-  // OpenGL needs truform set here
-  if( eAPI==GAT_OGL) {
-    GLenum eTriMode = bLinearNormals ? GL_PN_TRIANGLES_NORMAL_MODE_LINEAR_ATI : GL_PN_TRIANGLES_NORMAL_MODE_QUADRATIC_ATI;
-    pglPNTrianglesiATI( GL_PN_TRIANGLES_TESSELATION_LEVEL_ATI, iLevel);
-    pglPNTrianglesiATI( GL_PN_TRIANGLES_NORMAL_MODE_ATI, eTriMode);
-    OGL_CHECKERROR;
-  }
-  // if disabled, Direct3D will set tessellation level at "enable" call
-#ifdef SE1_D3D
-  else if( eAPI==GAT_D3D && GFX_bTruform) { 
-    FLOAT fSegments = iLevel+1;
-    HRESULT hr = _pGfx->gl_pd3dDevice->SetRenderState( D3DRS_PATCHSEGMENTS, *((DWORD*)&fSegments));
-    D3D_CHECKERROR(hr);
-  }
-#endif // SE1_D3D
-
-  // keep current truform params
-  truform_iLevel  = iLevel;
-  truform_bLinear = bLinearNormals;
-
-  _sfStats.StopTimer(CStatForm::STI_GFXAPI);
-}
-
-
-
 // readout current colormask
 extern ULONG gfxGetColorMask(void)
 {
   return _ulCurrentColorMask;
 }
 
-
-
-#include "GFX_wrapper_OpenGL.cpp"
-#include "GFX_wrapper_Direct3D.cpp"
-
-
+#include "Gfx_wrapper_OpenGL.inl"
 
 // DUMMY FUNCTIONS FOR NONE API
 static void none_BlendFunc( GfxBlend eSrc, GfxBlend eDst) { NOTHING; }

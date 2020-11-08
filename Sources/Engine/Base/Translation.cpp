@@ -13,7 +13,7 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#include "stdh.h"
+
 
 #include <Engine/Base/CTString.h>
 #include <Engine/Base/Translation.h>
@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <Engine/Base/Stream.h>
 #include <Engine/Base/Console.h>
 
-#include <Engine/Templates/DynamicArray.cpp>
+#include <Engine/Templates/DynamicArray.h>
 
 // table of translations
 static CNameTable_CTranslationPair _nttpPairs;
@@ -191,11 +191,6 @@ ENGINE_API void AddTranslationTablesDir_t(const CTFileName &fnmDir, const CTFile
 }
 
 // translate a string
-ENGINE_API char *Translate(char *str, INDEX iOffset)
-{
-  return (char*)TranslateConst((const char*)str, iOffset);
-}
-
 ENGINE_API const char *TranslateConst(const char *str, INDEX iOffset)
 {
   // skip first bytes

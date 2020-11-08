@@ -13,7 +13,7 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#include "stdh.h"
+
 
 #include <Engine/Entities/Entity.h>
 #include <Engine/Entities/EntityCollision.h>
@@ -24,8 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <Engine/Math/OBBox.h>
 #include <Engine/Brushes/Brush.h>
 #include <Engine/Templates/BSP.h>
-#include <Engine/Templates/DynamicArray.cpp>
-#include <Engine/Templates/StaticArray.cpp>
+#include <Engine/Templates/DynamicArray.h>
+#include <Engine/Templates/StaticArray.h>
 
 static CEntity *penField;
 static CBrushSector *_pbsc;
@@ -105,9 +105,9 @@ CEntity *CEntity::TouchingEntity(BOOL (*ConsiderEntity)(CEntity *), CEntity *pen
   // no entities active initially
   _apenActive.PopAll();
   // for each zoning sector that this entity is in
-  {FOREACHSRCOFDST(en_rdSectors, CBrushSector, bsc_rsEntities, pbsc)
+  {FOREACHSRCOFDST(en_rdSectors, CBrushSector, pbsc)
     // for all movable model entities that should be considered in the sector
-    {FOREACHDSTOFSRC(pbsc->bsc_rsEntities, CEntity, en_rdSectors, pen)
+    {FOREACHDSTOFSRC(pbsc->bsc_rsEntities, CEntity, pen)
       if (!(pen->en_ulPhysicsFlags&EPF_MOVABLE)
         || (pen->en_RenderType!=RT_MODEL&&pen->en_RenderType!=RT_EDITORMODEL)
         || (!ConsiderEntity(pen))) {

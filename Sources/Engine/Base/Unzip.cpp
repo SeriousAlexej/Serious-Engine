@@ -16,7 +16,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // unzip.cpp : Defines the entry point for the console application.
 //
 
-#include "stdh.h"
+
 #include <Engine/Base/Stream.h>
 #include <Engine/Base/FileName.h>
 #include <Engine/Base/Translation.h>
@@ -25,10 +25,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <Engine/Base/Synchronization.h>
 #include <Engine/Math/Functions.h>
 
-#include <Engine/Templates/StaticArray.cpp>
-#include <Engine/Templates/StaticStackArray.cpp>
+#include <Engine/Templates/StaticArray.h>
+#include <Engine/Templates/StaticStackArray.h>
 
-#include <Engine/zlib/zlib.h>
+#include <SDL2/SDL_stdinc.h>
+
+#include <zlib.h>
+
 extern CTCriticalSection zip_csLock; // critical section for access to zlib functions
 
 #pragma pack(1)
@@ -269,8 +272,7 @@ void ReadZIPDirectory_t(CTFileName *pfnmZip)
 
   // check if the zip is from a mod
   BOOL bMod = 
-    pfnmZip->HasPrefix(_fnmApplicationPath+"Mods\\") || 
-    pfnmZip->HasPrefix(_fnmCDPath+"Mods\\");
+    pfnmZip->HasPrefix(_fnmApplicationPath+"Mods\\");
 
   // go to the beginning of the central dir
   fseek(f, eod.eod_slDirOffsetInFile, SEEK_SET);
@@ -393,20 +395,12 @@ int qsort_ArchiveCTFileName_reverse(const void *elem1, const void *elem2 )
   const CTFileName &fnm2 = *(CTFileName *)elem2;
   // find if any is in a mod or on CD
   BOOL bMod1 = fnm1.HasPrefix(_fnmApplicationPath+"Mods\\");
-  BOOL bCD1 = fnm1.HasPrefix(_fnmCDPath);
-  BOOL bModCD1 = fnm1.HasPrefix(_fnmCDPath+"Mods\\");
   BOOL bMod2 = fnm2.HasPrefix(_fnmApplicationPath+"Mods\\");
-  BOOL bCD2 = fnm2.HasPrefix(_fnmCDPath);
-  BOOL bModCD2 = fnm2.HasPrefix(_fnmCDPath+"Mods\\");
 
   // calculate priorities based on location of gro file
   INDEX iPriority1 = 0;
   if (bMod1) {
     iPriority1 = 3;
-  } else if (bModCD1) {
-    iPriority1 = 2;
-  } else if (bCD1) {
-    iPriority1 = 0;
   } else {
     iPriority1 = 1;
   }
@@ -414,10 +408,6 @@ int qsort_ArchiveCTFileName_reverse(const void *elem1, const void *elem2 )
   INDEX iPriority2 = 0;
   if (bMod2) {
     iPriority2 = 3;
-  } else if (bModCD2) {
-    iPriority2 = 2;
-  } else if (bCD2) {
-    iPriority2 = 0;
   } else {
     iPriority2 = 1;
   }
@@ -428,7 +418,7 @@ int qsort_ArchiveCTFileName_reverse(const void *elem1, const void *elem2 )
   } else if (iPriority1>iPriority2) {
     return -1;
   } else {
-    return -stricmp(fnm1, fnm2);
+    return -SDL_strcasecmp(fnm1, fnm2);
   }
 }
 // read directories of all currently added archives, in reverse alphabetical order

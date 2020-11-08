@@ -13,16 +13,9 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#ifndef SE_INCL_LINEARALLOCATOR_CPP
-#define SE_INCL_LINEARALLOCATOR_CPP
-#ifdef PRAGMA_ONCE
-  #pragma once
-#endif
-
-#include <Engine/Templates/LinearAllocator.h>
-
 class CLABlockInfo {
 public:
+  CLABlockInfo() : bi_lnNode(this) {}
   CListNode bi_lnNode;
   INDEX bi_ctObjects;   // number of objects in this block
   void *bi_pvMemory;    // start of block memory
@@ -57,7 +50,7 @@ CLinearAllocator<Type>::~CLinearAllocator(void)
 template <class Type>
 void CLinearAllocator<Type>::Clear(void)
 {
-  FORDELETELIST(CLABlockInfo, bi_lnNode, la_lhBlocks, itBlock) {
+  FORDELETELIST(CLABlockInfo, la_lhBlocks, itBlock) {
   // for all memory blocks
     // free memory used by block (this doesn't call destructors - see note above!)
     delete[] (Type *)itBlock->bi_pvMemory;
@@ -152,7 +145,7 @@ inline void CLinearAllocator<Type>::Reset(void)
   } else if (&la_lhBlocks.Head()==&la_lhBlocks.Tail()) {
     // just restart at the beginning
     la_ctFree = la_ctObjects;
-    la_ptNextFree = (Type*) (LIST_HEAD(la_lhBlocks, CLABlockInfo, bi_lnNode)->bi_pvMemory);
+    la_ptNextFree = (Type*) (LIST_HEAD(la_lhBlocks, CLABlockInfo)->bi_pvMemory);
 
   // if there is more than one block allocated
   } else {
@@ -172,7 +165,4 @@ inline void CLinearAllocator<Type>::Reset(void)
 #define FOREACHINLINEARALLOCATOR(allocator, type, pt) \
 FOREACHINLIST(CLABlockInfo, bi_lnNode, allocator.la_lhBlocks, pt##itBlock) { \
     for(type *pt = (type *)pt##itBlock->bi_pvMemory; pt<(type *)pt##itBlock->bi_pvEnd; pt++)
-
-
-#endif  /* include-once check. */
 

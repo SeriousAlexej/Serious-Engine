@@ -19,20 +19,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
-#ifdef SE1_D3D
-#include <d3d8.h>
-#endif // SE1_D3D
 #include <Engine/Base/Timer.h>
 #include <Engine/Base/CTString.h>
 #include <Engine/Base/Lists.h>
 #include <Engine/Math/Functions.h>
 #include <Engine/Graphics/Adapter.h>
-
-#include <Engine/Graphics/OpenGL.h>
+#include <Engine/Graphics/Gfx_OpenGL.h>
 
 #include <Engine/Graphics/Color.h>
 #include <Engine/Graphics/Vertex.h>
-#include <Engine/Templates/StaticStackArray.cpp>
+#include <Engine/Templates/StaticStackArray.h>
 
 // common element arrays
 extern CStaticStackArray<GFXVertex>   _avtxCommon;
@@ -42,7 +38,7 @@ extern CStaticStackArray<INDEX>       _aiCommonElements;
 extern CStaticStackArray<INDEX>       _aiCommonQuads;
 
 
-#include <Engine/Graphics/GFX_wrapper.h>
+#include <Engine/Graphics/Gfx_wrapper.h>
 
 
 #define SQRTTABLESIZE   8192
@@ -52,23 +48,17 @@ extern CStaticStackArray<INDEX>       _aiCommonQuads;
 #define GFX_MINSTREAMS  (3L) // minimum number of D3D streams in order to support HW T&L
 #define GFX_MAXLAYERS   (5L) // suggested maximum number of multi-passes per one polygon
 
-// D3D vertex for simple draw functions
 struct CTVERTEX {
   FLOAT fX,fY,fZ;  // position
   ULONG ulColor;   // color
   FLOAT fU,fV;     // texture coordinates
 };
-#define D3DFVF_CTVERTEX (D3DFVF_XYZ|D3DFVF_DIFFUSE|D3DFVF_TEX1)
-
 
 // Gfx API type 
 enum GfxAPIType
 {
   GAT_NONE = -1,     // no gfx API (gfx functions are disabled)
   GAT_OGL  =  0,     // OpenGL
-#ifdef SE1_D3D
-  GAT_D3D  =  1,     // Direct3D
-#endif // SE1_D3D
   GAT_CURRENT = 9,   // current API
 };
 
@@ -82,36 +72,17 @@ enum VtxType
   VXT_COL = 4,  // color
 };
 
-
 // common flags
-#define GLF_HASACCELERATION    (1UL<<0)   // set if current mode supports hardware acceleration
 #define GLF_INITONNEXTWINDOW   (1UL<<1)   // initialize rendering context on next window
-#define GLF_ADJUSTABLEGAMMA    (1UL<<2)   // set if display allows gamma adjustment
 #define GLF_TEXTURECOMPRESSION (1UL<<3)   // set if texture compression is supported
 #define GLF_32BITTEXTURES      (1UL<<4)   // 32-bit textures
 #define GLF_VSYNC              (1UL<<5)   // supports wait for VSYNC
 #define GLF_FULLSCREEN         (1UL<<9)   // currently in full-screen mode
 
-// Direct3D specific
-#define GLF_D3D_HASHWTNL    (1UL<<10)   // supports hardware T&L
-#define GLF_D3D_USINGHWTNL  (1UL<<11)   // using hardware T&L
-#define GLF_D3D_CLIPPLANE   (1UL<<12)   // supports at least one custom clip plane
-#define GLF_D3D_COLORWRITES (1UL<<13)   // supports enable/disable writes to color buffer
-#define GLF_D3D_ZBIAS       (1UL<<14)   // supports z-biasing
-
 // OpenGL extensions (part of flags!)
-#define GLF_EXT_TBUFFER             (1UL<<19)   // 3DFX's T-Buffer (for partial FSAA & Motion-blur effects)
-#define GLF_EXT_EDGECLAMP           (1UL<<20)   // GL_EXT_texture_edge_clamp
 #define GLF_EXT_COMPILEDVERTEXARRAY (1UL<<21)   // GL_EXT_compiled_vertex_array
 #define GLF_EXT_CLIPHINT            (1UL<<22)   // GL_EXT_clip_volume_hint
-#define GLF_EXT_OCCLUSIONTEST       (1UL<<23)   // GL_HP_occlusion_test
-#define GLF_EXT_OCCLUSIONQUERY      (1UL<<24)   // GL_NV_occlusion_query
-	
-#define GLF_EXTC_ARB    (1UL<<27)   // GL_ARB_texture_compression
-#define GLF_EXTC_S3TC   (1UL<<28)   // GL_EXT_texture_compression_s3tc
-#define GLF_EXTC_FXT1   (1UL<<29)   // GL_3DFX_texture_compression_FXT1
-#define GLF_EXTC_LEGACY (1UL<<30)   // GL_S3_s3tc
-
+#define GLF_EXTC_ARB                (1UL<<27)   // GL_ARB_texture_compression
 
 /*
  *  Graphics library object.
@@ -123,26 +94,13 @@ public:
   CViewPort *gl_pvpActive;   // active viewport
   HINSTANCE  gl_hiDriver;    // DLL handle
 
-  GfxAPIType   gl_eCurrentAPI;  // (0=none, 1=OpenGL, 2=DirectX8) 
+  GfxAPIType   gl_eCurrentAPI;  // (0=none, 1=OpenGL)
   CDisplayMode gl_dmCurrentDisplayMode;
   INDEX gl_iCurrentAdapter;
   INDEX gl_iCurrentDepth; 
   INDEX gl_ctDriverChanges;        // count of driver changes
   ULONG gl_ulFlags;
 
-#ifdef SE1_D3D
-  // DirectX info
-  LPDIRECT3D8       gl_pD3D;       // used to create the D3DDevice
-  LPDIRECT3DDEVICE8 gl_pd3dDevice; // rendering device
-  D3DFORMAT gl_d3dColorFormat;     // current color format
-  D3DFORMAT gl_d3dDepthFormat;     // z-buffer depth format
-  // DirectX vertex/index buffers
-  LPDIRECT3DVERTEXBUFFER8 gl_pd3dVtx;
-  LPDIRECT3DVERTEXBUFFER8 gl_pd3dNor;
-  LPDIRECT3DVERTEXBUFFER8 gl_pd3dCol[GFX_MAXLAYERS];
-  LPDIRECT3DVERTEXBUFFER8 gl_pd3dTex[GFX_MAXLAYERS];
-  LPDIRECT3DINDEXBUFFER8  gl_pd3dIdx;
-#endif // SE1_D3D
   INDEX gl_ctVertices, gl_ctIndices;  // size of buffers
   INDEX gl_ctColBuffers, gl_ctTexBuffers; // number of color and texture buffers (for multi-pass rendering)
   INDEX gl_ctMaxStreams;              // maximum number of streams
@@ -194,23 +152,12 @@ private:
   void EndDriver_OGL(void);
   void TestExtension_OGL( ULONG ulFlag, const char *strName); // if exist, add OpenGL extension to flag and list
   void AddExtension_OGL(  ULONG ulFlag, const char *strName); // unconditionally add OpenGL extension to flag and list
-#ifdef PLATFORM_WIN32
-  BOOL CreateContext_OGL( HDC hdc);
-  BOOL SetupPixelFormat_OGL( HDC hdc, BOOL bReport=FALSE);
-#endif
+  BOOL CreateContext_OGL();
+  BOOL SetupPixelFormat_OGL(BOOL bReport=FALSE);
   void InitContext_OGL(void);
   BOOL SetCurrentViewport_OGL( CViewPort *pvp);
   void UploadPattern_OGL( ULONG ulPatternEven); 
   void SwapBuffers_OGL( CViewPort *pvpToSwap);
-
-  // Direct3D specific
-  BOOL InitDriver_D3D(void);
-  void EndDriver_D3D(void);
-  BOOL InitDisplay_D3D( INDEX iAdapter, PIX pixSizeI, PIX pixSizeJ, enum DisplayDepth eColorDepth);
-  void InitContext_D3D(void);
-  BOOL SetCurrentViewport_D3D( CViewPort *pvp);
-  void UploadPattern_D3D( ULONG ulPatternEven);
-  void SwapBuffers_D3D( CViewPort *pvpToSwap);
 
 public:
 
@@ -255,8 +202,6 @@ public:
   inline INDEX GetCurrentAdapter(void) { return gl_iCurrentAdapter; };
   inline void  GetCurrentDisplayMode( CDisplayMode &dmCurrent) { dmCurrent = gl_dmCurrentDisplayMode; };
 
-  // check if 3D acceleration is on
-  inline BOOL IsCurrentModeAccelerated(void) { return (gl_ulFlags&GLF_HASACCELERATION); };
   // check if DualHead is on
   inline BOOL IsCurrentModeDH(void) { return gl_dmCurrentDisplayMode.IsDualHead(); };
 
@@ -264,20 +209,17 @@ public:
   inline BOOL HasAPI( enum GfxAPIType eAPI) {
     if( eAPI==GAT_CURRENT) return TRUE;
     if( eAPI==GAT_OGL) return (gl_gaAPI[0].ga_ctAdapters>0);
-#ifdef SE1_D3D
-    if( eAPI==GAT_D3D) return (gl_gaAPI[1].ga_ctAdapters>0);
-#endif // SE1_D3D
     return FALSE;
   };
 
+  float* GetProjMat() const;
+  float* GetModelViewMat() const;
+
   // canvas functions
-  void CreateWindowCanvas( void *hWnd, CViewPort **ppvpNew, CDrawPort **ppdpNew);   // Create a new window canvas
+  void CreateWindowCanvas(PIX pixWidth, PIX pixHeight, CViewPort **ppvpNew, CDrawPort **ppdpNew);   // Create a new window canvas
   void DestroyWindowCanvas( CViewPort *pvpOld);                                     // Destroy a window canvas
   void CreateWorkCanvas( PIX pixWidth, PIX pixHeight, CDrawPort **ppdpNew);         // Create a work canvas
   void DestroyWorkCanvas( CDrawPort *pdpOld);                                       // Destroy a work canvas
-
-  // simple benchmark routine
-  void Benchmark( CViewPort *pvp, CDrawPort *pdp);
 };
 
 
