@@ -15,6 +15,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "StdH.h"
 #include <Engine/Templates/Stock_CTextureData.h>
+#include <Engine/Math/Object3D.h>
 
 // global engine gui handling object
 CEngineGUI _EngineGUI;
@@ -40,6 +41,42 @@ BOOL APIENTRY DllMain( HANDLE hModule,
 }
 */
 
+std::vector<char> CEngineGUI::GetListOf3DFormats(bool include_scr)
+{
+  std::vector<char> result;
+  auto add_filter = [&result](const CObject3D::TFormatDescr& descr)
+  {
+    for (char c : descr.first)
+      result.push_back(c);
+    result.push_back('\0');
+    for (char c : descr.second)
+      result.push_back(c);
+    result.push_back('\0');
+  };
+
+  const auto& formats = CObject3D::GetSupportedFormats();
+  CObject3D::TFormatDescr all_supported_formats;
+  all_supported_formats.first = "All supported formats";
+  for (const auto& format : formats)
+  {
+    if (!all_supported_formats.second.empty())
+      all_supported_formats.second += ';';
+    all_supported_formats.second += format.second;
+  }
+
+  add_filter(all_supported_formats);
+
+  for (const auto& format : formats)
+    add_filter(format);
+
+  if (include_scr)
+    add_filter({ "SeriousModeler script (*.scr)", "*.scr" });
+
+  add_filter({ "All files (*.*)", "*.*" });
+
+  result.push_back('\0');
+  return result;
+}
 
 
 void CEngineGUI::SelectMode( CDisplayMode &dm, GfxAPIType &gat)

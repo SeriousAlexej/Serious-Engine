@@ -54,6 +54,7 @@ Debug/
 *.vcxproj.FileListAbsolute.txt
 *.bsc
 *.cnt
+*.recipe
 
 # Generated configuration files
 *.txt.user

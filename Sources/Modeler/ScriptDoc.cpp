@@ -72,7 +72,7 @@ void CScriptDoc::Dump(CDumpContext& dc) const
 
 void CScriptDoc::Serialize(CArchive& ar)
 {
-	((CEditView*)m_viewList.GetHead())->SerializeRaw(ar);
+	((CEditView*)m_viewList.GetHead())->Serialize(ar);
 }
 
 /////////////////////////////////////////////////////////////////////////////

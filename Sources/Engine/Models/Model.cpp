@@ -619,10 +619,13 @@ void MappingSurface::SetRenderingParameters(ULONG ulOldFlags)
 //------------------------------------------ WRITE
 void MappingSurface::Write_t( CTStream *pFile)  // throw char *
 {
+  FLOAT3D dummy_f3d;
+  FLOAT   dummy_f;
+
   (*pFile) << ms_Name;
-  pFile->Write_t( &ms_vSurface2DOffset, sizeof(FLOAT3D));
-  pFile->Write_t( &ms_HPB, sizeof(FLOAT3D));
-  pFile->Write_t( &ms_Zoom, sizeof(float));
+  pFile->Write_t( &dummy_f3d, sizeof(FLOAT3D));
+  pFile->Write_t( &dummy_f3d, sizeof(FLOAT3D));
+  pFile->Write_t( &dummy_f, sizeof(float));
 
   pFile->Write_t( &ms_sstShadingType, sizeof(SurfaceShadingType));
   pFile->Write_t( &ms_sttTranslucencyType, sizeof(SurfaceTranslucencyType));
@@ -685,10 +688,12 @@ void MappingSurface::ReadSettings_t( CTStream *pFile)  // throw char *
 void MappingSurface::Read_t( CTStream *pFile, BOOL bReadPolygonsPerSurface,
                             BOOL bReadSurfaceColors) // throw char *
 {
+  FLOAT3D dummy_f3d;
+  FLOAT   dummy_f;
   (*pFile) >> ms_Name;
-  pFile->Read_t( &ms_vSurface2DOffset, sizeof(FLOAT3D));
-  pFile->Read_t( &ms_HPB, sizeof(FLOAT3D));
-  pFile->Read_t( &ms_Zoom, sizeof(float));
+  pFile->Read_t( &dummy_f3d, sizeof(FLOAT3D));
+  pFile->Read_t( &dummy_f3d, sizeof(FLOAT3D));
+  pFile->Read_t( &dummy_f, sizeof(float));
 
   if( bReadPolygonsPerSurface)
   {

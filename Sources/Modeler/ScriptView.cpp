@@ -17,6 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 //
 
 #include "stdafx.h"
+#include <vector>
 
 #ifdef _DEBUG
 #undef new
@@ -46,6 +47,114 @@ BEGIN_MESSAGE_MAP(CScriptView, CEditView)
 	ON_COMMAND(ID_SCRIPT_UPDATE_MIPMODELS, OnScriptUpdateMipmodels)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
+
+/////////////////////////////////////////////////////////////////////////////
+void CScriptView::Serialize(CArchive& ar)
+{
+  ASSERT_VALID(this);
+  if (ar.IsStoring())
+  {
+    WriteToFile(ar);
+  }
+  else
+  {
+    CFile* pFile = ar.GetFile();
+    ASSERT(pFile->GetPosition() == 0);
+    if (pFile->GetLength() > GetEditCtrl().GetLimitText())
+    {
+      // Larger than edit control limit. Call SetLimitText() to set your own max size.
+      // Refer to documentation for EM_LIMITTEXT for max sizes for your target OS.
+      AfxMessageBox(AFX_IDP_FILE_TOO_LARGE);
+      AfxThrowUserException();
+    }
+    // ReadFromArchive takes the number of characters as argument
+    ReadFromFile(ar);
+  }
+  ASSERT_VALID(this);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+void CScriptView::WriteToFile(CArchive& ar)
+{
+  ASSERT_VALID(this);
+  LPCTSTR lpszText = LockBuffer();
+  ASSERT(lpszText != NULL);
+  UINT nLen = GetBufferLength();
+  TRY
+  {
+    CW2A textA(lpszText);
+    ar.Write(textA.m_psz, nLen);
+  }
+    CATCH_ALL(e)
+  {
+    UnlockBuffer();
+    THROW_LAST();
+  }
+  END_CATCH_ALL
+    UnlockBuffer();
+  ASSERT_VALID(this);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+void CScriptView::ReadFromFile(CArchive& ar)
+{
+  ASSERT_VALID(this);
+
+  UINT nLen = ar.GetFile()->GetLength();
+  std::vector<char> content(nLen + 1, '\0');
+  ar.Read(content.data(), nLen);
+
+  for (size_t i = 0; i < content.size(); ++i)
+    if (content[i] == '\n' && (i == 0 || content[i - 1] != '\r'))
+    {
+      content.insert(content.begin() + i++, '\r');
+      nLen++;
+    }
+
+  LPVOID hText = LocalAlloc(LMEM_MOVEABLE, static_cast<UINT>(::ATL::AtlMultiplyThrow(static_cast<UINT>(nLen + 1), static_cast<UINT>(sizeof(TCHAR)))));
+  if (hText == NULL)
+    AfxThrowMemoryException();
+
+  LPTSTR lpszText = (LPTSTR)LocalLock(hText);
+  ASSERT(lpszText != NULL);
+  CA2W contentW(content.data());
+  if (lstrcpynW(lpszText, contentW.m_psz, nLen + 1) == NULL)
+  {
+    LocalUnlock(hText);
+    LocalFree(hText);
+    AfxThrowArchiveException(CArchiveException::endOfFile);
+  }
+
+#ifndef _UNICODE
+  if (_AfxGetComCtlVersion() >= VERSION_6)
+  {
+    // set the text with SetWindowText, then free
+    BOOL bResult = ::SetWindowText(m_hWnd, lpszText);
+    LocalUnlock(hText);
+    LocalFree(hText);
+
+    // make sure that SetWindowText was successful
+    if (!bResult || ::GetWindowTextLength(m_hWnd) < (int)nLen)
+      AfxThrowMemoryException();
+
+    // remove old shadow buffer
+    delete[] m_pShadowBuffer;
+    m_pShadowBuffer = NULL;
+    m_nShadowSize = 0;
+
+    ASSERT_VALID(this);
+    return;
+  }
+#endif
+
+  LocalUnlock(hText);
+  HLOCAL hOldText = GetEditCtrl().GetHandle();
+  ASSERT(hOldText != NULL);
+  LocalFree(hOldText);
+  GetEditCtrl().SetHandle((HLOCAL)hText);
+  Invalidate();
+  ASSERT_VALID(this);
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // CScriptView drawing

@@ -25,6 +25,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <Engine/Terrain/TerrainMisc.h>
 #include <Engine/Math/TextureMapping_Utils.h>
 
+#include <cmath>
+
 #ifdef _DEBUG
 #undef new
 #define new DEBUG_NEW

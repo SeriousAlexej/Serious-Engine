@@ -104,6 +104,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "assimp", "assimpBuild\code\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlibstatic", "assimpBuild\contrib\zlib\zlibstatic.vcxproj", "{1C5F3422-1673-307C-9612-A7F5E93898B4}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IrrXML", "assimpBuild\contrib\irrXML\IrrXML.vcxproj", "{01F46A5C-9E86-3BEC-B0F2-9CAF1F64222D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -333,6 +335,16 @@ Global
 		{1C5F3422-1673-307C-9612-A7F5E93898B4}.RelWithDebInfo|Win32.Build.0 = Release|Win32
 		{1C5F3422-1673-307C-9612-A7F5E93898B4}.Template|Win32.ActiveCfg = Release|Win32
 		{1C5F3422-1673-307C-9612-A7F5E93898B4}.Template|Win32.Build.0 = Release|Win32
+		{01F46A5C-9E86-3BEC-B0F2-9CAF1F64222D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{01F46A5C-9E86-3BEC-B0F2-9CAF1F64222D}.Debug|Win32.Build.0 = Debug|Win32
+		{01F46A5C-9E86-3BEC-B0F2-9CAF1F64222D}.MinSizeRel|Win32.ActiveCfg = MinSizeRel|Win32
+		{01F46A5C-9E86-3BEC-B0F2-9CAF1F64222D}.MinSizeRel|Win32.Build.0 = MinSizeRel|Win32
+		{01F46A5C-9E86-3BEC-B0F2-9CAF1F64222D}.Release|Win32.ActiveCfg = Release|Win32
+		{01F46A5C-9E86-3BEC-B0F2-9CAF1F64222D}.Release|Win32.Build.0 = Release|Win32
+		{01F46A5C-9E86-3BEC-B0F2-9CAF1F64222D}.RelWithDebInfo|Win32.ActiveCfg = Release|Win32
+		{01F46A5C-9E86-3BEC-B0F2-9CAF1F64222D}.RelWithDebInfo|Win32.Build.0 = Release|Win32
+		{01F46A5C-9E86-3BEC-B0F2-9CAF1F64222D}.Template|Win32.ActiveCfg = Debug|Win32
+		{01F46A5C-9E86-3BEC-B0F2-9CAF1F64222D}.Template|Win32.Build.0 = Debug|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

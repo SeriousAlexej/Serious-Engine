@@ -2552,8 +2552,9 @@ INDEX CWorldEditorApp::Insert3DObjects(CWorldEditorDoc *pDoc)
 {
   INDEX ctInserted=0;
   CDynamicArray<CTFileName> afnFiles;
+  auto file_filter = _EngineGUI.GetListOf3DFormats();
   CTFileName fn3D = _EngineGUI.FileRequester( "Import 3D object series",
-    FILTER_3DOBJ FILTER_LWO FILTER_OBJ FILTER_3DS FILTER_ALL FILTER_END,
+    file_filter.data(),
     "Import 3D object directory", "", "", &afnFiles);
 
   if( afnFiles.Count() == 0) return 0;

@@ -34,6 +34,7 @@ public:
 public:
 
 // Overrides
+	virtual void Serialize(CArchive& ar) override;
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CScriptView)
 	protected:
@@ -56,6 +57,10 @@ protected:
 	afx_msg void OnScriptUpdateAnimations();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
+
+private:
+	void WriteToFile(CArchive& ar);
+	void ReadFromFile(CArchive& ar);
 };
 
 /////////////////////////////////////////////////////////////////////////////

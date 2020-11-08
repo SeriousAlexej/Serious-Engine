@@ -21,7 +21,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <Engine/Base/Assert.h>
 #include <Engine/Math/Matrix.h>
-           
+
+#include <functional>
+
+
 /*
  * Template class for vector of arbitrary dimensions and arbitrary type of members
  */
@@ -92,6 +95,17 @@ public:
     strm.Write_t(&vector, sizeof(vector));
     return strm;
   }
+
+  struct Hasher
+  {
+    size_t operator()(const Vector<Type, iDimensions>& v) const
+    {
+      size_t result = 0;
+      for (size_t i = 0; i < iDimensions; ++i)
+        HashCombine<Type>(result, v.vector[i]);
+      return result;
+    }
+  };
 };
 
 

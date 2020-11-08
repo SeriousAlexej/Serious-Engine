@@ -30,6 +30,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <Engine/Templates/DynamicArray.cpp>
 #include <Engine/Templates/Stock_CTextureData.h>
 
+#include <unordered_map>
+#include <vector>
+
 // Globally instanciated object containing routines for dealing with progres messages
 CProgressRoutines ProgresRoutines;
 
@@ -42,14 +45,6 @@ CProgressRoutines ProgresRoutines;
 
 // origin triangle for transforming object
 INDEX aiTransVtx[3] = {-1,-1,-1};
-
-class CExtractSurfaceVertex
-{
-public:
-	INDEX esv_Surface;
-	SLONG esv_TextureVertexRemap;
-	INDEX esv_MipGlobalIndex;
-};
 
 CThumbnailSettings::CThumbnailSettings( void)
 {
@@ -942,7 +937,6 @@ void CEditModel::LoadFromScript_t(CTFileName &fnScriptName) // throw char *
   INDEX i;
   CTFileStream File;
 	CObject3D O3D;
-  CTFileName fnOpened, fnClosed, fnUnwrapped, fnImportMapping;
 	char ld_line[ 128];
 	char flag_str[ 128];
 	char base_path[ PATH_MAX] = "";
@@ -1076,14 +1070,10 @@ void CEditModel::LoadFromScript_t(CTFileName &fnScriptName) // throw char *
 			  _strupr( ld_line);
 			  sscanf( ld_line, "%s", file_name);
 			  sprintf( full_path, "%s%s", base_path, file_name);
-        // remember name of first mip to define UV mapping
-        if( i==0)
-        {
-          fnImportMapping = CTString( full_path);
-        }
 			  O3D.Clear();                            // clear possible existing O3D's data
         O3D.LoadAny3DFormat_t( CTString(full_path), mStretch);
-			  if( edm_md.md_VerticesCt == 0)					// If there are no vertices in model, call New Model
+        // If there are no vertices in model, call New Model and calculate UV mapping
+			  if( edm_md.md_VerticesCt == 0)					
 			  {
 				  if( bMappingDimFound == FALSE)
 				  {
@@ -1102,40 +1092,6 @@ void CEditModel::LoadFromScript_t(CTFileName &fnScriptName) // throw char *
       // set default mip factors
       // all mip models will be spreaded beetween distance 0 and default maximum distance
       edm_md.SpreadMipSwitchFactors( 0, 5.0f);
-    }
-		// Key-word "DEFINE_MAPPING" must follow three lines with names of files used to define mapping
-    else if( EQUAL_SUB_STR( "DEFINE_MAPPING"))
-    {
-      if( edm_md.md_VerticesCt == 0)
-			{
-				ThrowF_t("Found key word \"DEFINE_MAPPING\" but model is not yet created.");
-			}
-
-      File.GetLine_t(ld_line, 128);
-  	  sscanf( ld_line, "%s", file_name);
-      sprintf( full_path, "%s%s", base_path, file_name);
-      fnOpened = CTString( full_path);
-
-      File.GetLine_t(ld_line, 128);
-  	  sscanf( ld_line, "%s", file_name);
-      sprintf( full_path, "%s%s", base_path, file_name);
-      fnClosed = CTString( full_path);
-
-      File.GetLine_t(ld_line, 128);
-  	  sscanf( ld_line, "%s", file_name);
-      sprintf( full_path, "%s%s", base_path, file_name);
-      fnUnwrapped = CTString( full_path);
-    }
-    else if( EQUAL_SUB_STR( "IMPORT_MAPPING"))
-    {
-      if( edm_md.md_VerticesCt == 0)
-			{
-				ThrowF_t("Found key word \"IMPORT_MAPPING\" but model is not yet created.");
-			}
-      File.GetLine_t(ld_line, 128);
-  	  sscanf( ld_line, "%s", file_name);
-      sprintf( full_path, "%s%s", base_path, file_name);
-      fnImportMapping = CTString( full_path);
     }
 		/*
 		 * Line containing key-word "TEXTURE_DIM" gives us texture dimensions
@@ -1175,6 +1131,8 @@ void CEditModel::LoadFromScript_t(CTFileName &fnScriptName) // throw char *
 		else if( EQUAL_SUB_STR( "TEXTURE_SPECULAR")) {}
 		else if( EQUAL_SUB_STR( "TEXTURE_BUMP")) {}
 		else if( EQUAL_SUB_STR( "TEXTURE")) {}
+    else if( EQUAL_SUB_STR( "DEFINE_MAPPING")) {}
+    else if( EQUAL_SUB_STR( "IMPORT_MAPPING")) {}
 		// If none of known key-words isnt recognised, we have wierd key-word, so throw error
 		else
 		{
@@ -1205,97 +1163,11 @@ void CEditModel::LoadFromScript_t(CTFileName &fnScriptName) // throw char *
     // ignore error message
     (void)strError;
   }
-  
-  // import mapping
-  if( (fnImportMapping != "") ||
-      ((fnClosed != "") && (fnOpened != "") && (fnUnwrapped != "")) )
-  {
-    CObject3D o3dClosed, o3dOpened, o3dUnwrapped;
-	  
-    o3dClosed.Clear();
-    o3dOpened.Clear();
-    o3dUnwrapped.Clear();
 
-    // if mapping is defined using three files
-    if( (fnClosed != "") && (fnOpened != "") && (fnUnwrapped != "") )
-    {
-      o3dClosed.LoadAny3DFormat_t( fnOpened, mStretch);
-      o3dOpened.LoadAny3DFormat_t( fnClosed, mStretch);
-      o3dUnwrapped.LoadAny3DFormat_t( fnUnwrapped, mStretch);
-    }
-    // if mapping is defined using one file
-    else
-    {
-      o3dClosed.LoadAny3DFormat_t( fnImportMapping, mStretch, CObject3D::LT_NORMAL);
-      o3dOpened.LoadAny3DFormat_t( fnImportMapping, mStretch, CObject3D::LT_OPENED);
-      o3dUnwrapped.LoadAny3DFormat_t( fnImportMapping, mStretch, CObject3D::LT_UNWRAPPED);
+  CalculateMappingForMips();
 
-      // multiply coordinates with size of texture
-      o3dUnwrapped.ob_aoscSectors.Lock();
-      o3dUnwrapped.ob_aoscSectors[0].osc_aovxVertices.Lock();
-      INDEX ctVertices = o3dUnwrapped.ob_aoscSectors[0].osc_aovxVertices.Count();
-      for(INDEX ivtx=0; ivtx<ctVertices; ivtx++)
-      {
-        o3dUnwrapped.ob_aoscSectors[0].osc_aovxVertices[ivtx](1) *= edm_md.md_Width/1024.0f;
-        o3dUnwrapped.ob_aoscSectors[0].osc_aovxVertices[ivtx](2) *= edm_md.md_Height/1024.0f;
-      }
-      o3dUnwrapped.ob_aoscSectors[0].osc_aovxVertices.Unlock();
-      o3dUnwrapped.ob_aoscSectors.Unlock();
-    }
-
-    o3dClosed.ob_aoscSectors.Lock();
-    o3dOpened.ob_aoscSectors.Lock();
-    o3dUnwrapped.ob_aoscSectors.Lock();
-
-    INDEX ctModelVertices = edm_md.md_VerticesCt;
-    INDEX ctModelPolygons = edm_md.md_MipInfos[0].mmpi_PolygonsCt;
-
-    o3dClosed.ob_aoscSectors[0].osc_aovxVertices.Lock();
-    INDEX ctClosedVertices = o3dClosed.ob_aoscSectors[0].osc_aovxVertices.Count();
-    INDEX ctClosedPolygons = o3dClosed.ob_aoscSectors[0].osc_aopoPolygons.Count();
-    o3dClosed.ob_aoscSectors[0].osc_aovxVertices.Unlock();
-
-    o3dOpened.ob_aoscSectors[0].osc_aovxVertices.Lock();
-    INDEX ctOpenedVertices = o3dOpened.ob_aoscSectors[0].osc_aovxVertices.Count();
-    INDEX ctOpenedPolygons = o3dOpened.ob_aoscSectors[0].osc_aopoPolygons.Count();
-    o3dOpened.ob_aoscSectors[0].osc_aovxVertices.Unlock();
-
-    o3dUnwrapped.ob_aoscSectors[0].osc_aovxVertices.Lock();
-    INDEX ctUnwrappedVertices = o3dUnwrapped.ob_aoscSectors[0].osc_aovxVertices.Count();
-    INDEX ctUnwrappedPolygons = o3dUnwrapped.ob_aoscSectors[0].osc_aopoPolygons.Count();
-    o3dUnwrapped.ob_aoscSectors[0].osc_aovxVertices.Unlock();
-
-    if((ctModelPolygons != ctClosedPolygons) ||
-      (ctModelPolygons != ctOpenedPolygons) ||
-      (ctModelPolygons != ctUnwrappedPolygons) )
-    {
-      ThrowF_t("ERROR: Object used to create model and some of objects used to define mapping don't have same number of polygons!");
-    }
-
-    if( ctModelVertices != ctClosedVertices)
-    {
-      ThrowF_t("ERROR: Object used to create model and object that defines closed mapping don't have same number of vertices!");
-		}
-      
-    if( ctUnwrappedVertices != ctOpenedVertices)
-    {
-      ThrowF_t("ERROR: Objects that define opened and unwrapped mapping don't have same number of vertices!");
-		}
-
-    o3dClosed.ob_aoscSectors.Unlock();
-    o3dOpened.ob_aoscSectors.Unlock();
-    o3dUnwrapped.ob_aoscSectors.Unlock();
-
-    CalculateUnwrappedMapping( o3dClosed, o3dOpened, o3dUnwrapped);
-    CalculateMappingForMips();
-  }
-  else
-  {
-    ThrowF_t("ERROR: Mapping not defined!");    
-  }
-
-	O3D.ob_aoscSectors.Unlock();
-	File.Close();
+  O3D.ob_aoscSectors.Unlock();
+  File.Close();
 
   if( edm_aasAttachedSounds.Count() == 0)
     CreateEmptyAttachingSounds();
@@ -1330,7 +1202,8 @@ void CEditModel::NewModel(CObject3D *pO3D)
     edm_md.md_VertexMipMask[ i] = 0L; // mark to all vertices that they don't exist in any mip-model
 	}
 
-  AddMipModel( pO3D);								 // we add main model, first mip-model
+  AddMipModel(pO3D);								 // we add main model, first mip-model
+
 	pO3D->ob_aoscSectors[0].UnlockAll();
   pO3D->ob_aoscSectors.Unlock();
 }
@@ -1344,8 +1217,7 @@ void CEditModel::NewModel(CObject3D *pO3D)
  */
 void CEditModel::AddMipModel(	CObject3D *pO3D)
 {
-	INDEX i, j;
-	BOOL same_found;
+  INDEX i, j;
 
   // this is mask for vertices in current mip level
   ULONG mip_vtx_mask = (1L) << edm_md.md_MipCt;
@@ -1369,27 +1241,37 @@ void CEditModel::AddMipModel(	CObject3D *pO3D)
 	 */
 	for( i=0; i<o3dvct; i++)
 	{
-		same_found = FALSE;
-		for( j=0; j<edm_md.md_VerticesCt; j++)
-		{
-			FLOAT3D vVertex = DOUBLEtoFLOAT(pO3D->ob_aoscSectors[0].osc_aovxVertices[ i]);
-      FLOAT fAbsoluteDistance = Abs( (vVertex - edm_md.md_MainMipVertices[ j]).Length() );
-			if( fAbsoluteDistance < MAX_ALLOWED_DISTANCE)
-			{
-				edm_md.md_VertexMipMask[ j] |= mip_vtx_mask;// we mark that this vertice exists in this mip model
-				pO3D->ob_aoscSectors[0].osc_aovxVertices[ i].ovx_Tag = j;// remapping verice index must be remembered
-				same_found = TRUE;								// mark that this vertex's remap is found
-				break;
-			}
-		}
-		if( same_found == FALSE)	// if no vertice close enough is found, we have error
-		{
-			ThrowF_t("Vertex from mip model %d with number %d, coordinates (%f,%f,%f), can't be found in main mip model.\n"
-			  "There can't be new vertices in rougher mip-models,"
-			  "but only vertices from main mip model can be removed and polygons reorganized.\n",
-				edm_md.md_MipCt, i,
-        pO3D->ob_aoscSectors[0].osc_aovxVertices[ i](1), pO3D->ob_aoscSectors[0].osc_aovxVertices[ i](2), pO3D->ob_aoscSectors[0].osc_aovxVertices[ i](3));
-		}
+    INDEX same_index = -1;
+
+    if (edm_md.md_MipCt == 0)
+    {
+      same_index = i;
+    }
+    else
+    {
+      for (j = 0; j < edm_md.md_VerticesCt; j++)
+      {
+        FLOAT3D vVertex = DOUBLEtoFLOAT(pO3D->ob_aoscSectors[0].osc_aovxVertices[i]);
+        FLOAT fAbsoluteDistance = Abs((vVertex - edm_md.md_MainMipVertices[j]).Length());
+        if (fAbsoluteDistance < MAX_ALLOWED_DISTANCE)
+        {
+          same_index = j; // mark that this vertex's remap is found
+          break;
+        }
+      }
+    }
+
+    if (same_index == -1)	// if no vertice close enough is found, we have error
+    {
+      ThrowF_t("Vertex from mip model %d with number %d, coordinates (%f,%f,%f), can't be found in main mip model.\n"
+        "There can't be new vertices in rougher mip-models,"
+        "but only vertices from main mip model can be removed and polygons reorganized.\n",
+        edm_md.md_MipCt, i,
+        pO3D->ob_aoscSectors[0].osc_aovxVertices[i](1), pO3D->ob_aoscSectors[0].osc_aovxVertices[i](2), pO3D->ob_aoscSectors[0].osc_aovxVertices[i](3));
+    }
+
+    edm_md.md_VertexMipMask[same_index] |= mip_vtx_mask; // we mark that this vertice exists in this mip model
+    pO3D->ob_aoscSectors[0].osc_aovxVertices[i].ovx_Tag = same_index; // remapping verice index must be remembered
 	}
 
 	/*
@@ -1416,9 +1298,6 @@ void CEditModel::AddMipModel(	CObject3D *pO3D)
     ms.ms_ulOnColor = PC_ALLWAYS_ON;							// set default ON and OFF masking colors
 		ms.ms_ulOffColor = PC_ALLWAYS_OFF;
 		ms.ms_Name = CTFileName( pO3D->ob_aoscSectors[0].osc_aomtMaterials[ i].omt_Name);
-    ms.ms_vSurface2DOffset = FLOAT3D( 1.0f, 1.0f, 1.0f);
-    ms.ms_HPB = FLOAT3D( 0.0f, 0.0f, 0.0f);
-    ms.ms_Zoom = 1.0f;
 
     ms.ms_colColor =
       pO3D->ob_aoscSectors[0].osc_aomtMaterials[ i].omt_Color | CT_OPAQUE; // copy surface color, set no alpha
@@ -1427,201 +1306,117 @@ void CEditModel::AddMipModel(	CObject3D *pO3D)
     ms.ms_ulRenderingFlags = SRF_DIFFUSE|SRF_NEW_TEXTURE_FORMAT;
 	}
 
-	/*
-	 * Then we will count how many ModelPolygonVertices we need and create array for them.
-	 * This number is equal to sum of all vertices used by all object 3D's polygons
-	 */
-	INDEX pvct = 0;
-	for( i=0; i<pmmpi->mmpi_PolygonsCt; i++)
-	{
-		pvct += pO3D->ob_aoscSectors[0].osc_aopoPolygons[ i].opo_PolygonEdges.Count();	// we have vertices as many as edges
-	}
-	/*
-	 * Now we will create an static array of temporary structures used for extracting
-	 * vertice-surface connection. We need this because we have to set for all model vertices:
-	 *	1) their texture vertices
-	 *	2) their transformed vertices.
-	 * First we will set surface and transformed indexes to every polygon vertice
-	 */
-	INDEX esvct = 0;			// for counting polygon vertices
-	CStaticArray< CExtractSurfaceVertex> aesv;
-	aesv.New( pvct);			// array with same number of members as polygon vertex array
+  struct VertexRemap
+  {
+    FLOAT2D uv;
+    INDEX material;
+    INDEX global;
 
-  {FOREACHINDYNAMICARRAY( pO3D->ob_aoscSectors[0].osc_aopoPolygons, CObjectPolygon, it1)
-	{
-		INDEX iPolySurface = pO3D->ob_aoscSectors[0].osc_aomtMaterials.Index( it1->opo_Material);	// this polygon's surface index
-	  FOREACHINDYNAMICARRAY( it1->opo_PolygonEdges, CObjectPolygonEdge, it2)
-		{
-			aesv[ esvct].esv_Surface = iPolySurface; // all these vertices are members of same polygon so they have same surface index
-			aesv[ esvct].esv_MipGlobalIndex = pO3D->ob_aoscSectors[0].osc_aovxVertices.Index( it2->ope_Edge->oed_Vertex0); // global index
-			esvct++;
-		}
-	}}
+    bool operator == (const VertexRemap& other) const
+    {
+      return uv == other.uv && material == other.material && global == other.global;
+    }
 
+    struct Hasher
+    {
+      size_t operator()(const VertexRemap& v) const
+      {
+        size_t result = FLOAT2D::Hasher()(v.uv);
+        HashCombine(result, v.material);
+        HashCombine(result, v.global);
+        return result;
+      }
+    };
+  };
 
-	/*
-	 * Then we will choose one verice from this array and see if there is any vertice
-	 * processed until now that have same surface and global index. If souch
-	 * vertice exists, copy its remap value, if it doesn't exists, set its remap value
-	 * to value of current texture vertex counter. After counting souch surface-dependent
-	 * vertices (texture vertices, tvct) we will create array for them
-	 */
-	BOOL same_vtx_found;
-	INDEX tvct = 0;
-	for( i=0; i<pvct; i++)
-	{
-		same_vtx_found = FALSE;
-		for( INDEX j=0; j<i; j++)
-		{
-			if( (aesv[ j].esv_Surface == aesv[ i].esv_Surface) &&				// if surface and global
-				  (aesv[ j].esv_MipGlobalIndex == aesv[ i].esv_MipGlobalIndex)) // vertex index are the same
-			{
-					same_vtx_found = TRUE;									// if yes, copy remap value
-					aesv[ i].esv_TextureVertexRemap = aesv[ j].esv_TextureVertexRemap;
-					break;
-			}
-		}
-		if( same_vtx_found == FALSE)									// if not, set value to current counter
-		{
-			aesv[ i].esv_TextureVertexRemap = tvct;
-			tvct ++;
-		}
-	}
-	pmmpi->mmpi_TextureVertices.New( tvct);						// create array for texture vertices
+  std::unordered_map<VertexRemap, INDEX, VertexRemap::Hasher> uniqueTexCoords;
+  std::vector<FLOAT2D> orderedUniqueTexCoords;
+  std::vector<INDEX> texCoordsRemap;
+  {FOREACHINDYNAMICARRAY(pO3D->ob_aoscSectors[0].osc_aopoPolygons, CObjectPolygon, it1)
+  {
+    INDEX iPolySurface = pO3D->ob_aoscSectors[0].osc_aomtMaterials.Index(it1->opo_Material);
 
-	/*
-	 * Now we will set texture vertex data for all surface unique vertices. We will do it by
-	 * looping this to all polygon vertices: copy coordinates of vertex from global vertex array
-	 * to UVW coordinates of texture vertex. That way we will have little overhead (some
-	 * vertices will be copied many times) but it doesn't really matter.
-	 */
-  for( i=0; i<pvct; i++)
-	{
-    pmmpi->mmpi_TextureVertices[ aesv[ i].esv_TextureVertexRemap].mtv_UVW =
-		  DOUBLEtoFLOAT(pO3D->ob_aoscSectors[0].osc_aovxVertices[ aesv[ i].esv_MipGlobalIndex]);
-	}
+    CMappingVectors mappingVectors;
+    mappingVectors.FromPlane_DOUBLE(*(it1->opo_Plane));
+    CMappingDefinition currentMapping = it1->opo_amdMappings[0];
+    currentMapping.md_fVoS *= -1.0f;
+    currentMapping.md_fVoT *= -1.0f;
+    currentMapping.md_fUOffset *= -1.0f;
 
+    FOREACHINDYNAMICARRAY(it1->opo_PolygonEdges, CObjectPolygonEdge, it2)
+    {
+      DOUBLE3D* vtxPos = it2->ope_Edge->oed_Vertex0;
+      FLOAT2D vtxUV = currentMapping.GetTextureCoordinates(mappingVectors, DOUBLEtoFLOAT(*vtxPos));
+
+      INDEX globalIndex = pO3D->ob_aoscSectors[0].osc_aovxVertices.Index(it2->ope_Edge->oed_Vertex0);
+
+      VertexRemap vertex_remap{ vtxUV, iPolySurface, globalIndex };
+      auto found_pos = uniqueTexCoords.find(vertex_remap);
+      if (found_pos == uniqueTexCoords.end())
+      {
+        uniqueTexCoords[vertex_remap] = orderedUniqueTexCoords.size();
+        texCoordsRemap.push_back(orderedUniqueTexCoords.size());
+        orderedUniqueTexCoords.push_back(vtxUV);
+      }
+      else
+      {
+        texCoordsRemap.push_back(found_pos->second);
+      }
+    }
+  }}
+
+  pmmpi->mmpi_TextureVertices.New(orderedUniqueTexCoords.size());
+
+  for (size_t i = 0; i < orderedUniqueTexCoords.size(); ++i)
+  {
+    FLOAT2D uv_coord = orderedUniqueTexCoords[i];
+
+    uv_coord(1) *= edm_md.md_Width / 1024.0f;
+    uv_coord(2) *= edm_md.md_Height / 1024.0f;
+
+    pmmpi->mmpi_TextureVertices[i].mtv_UVW = FLOAT3D(uv_coord(1), -uv_coord(2), 0.0f);
+    MEX2D mexUV;
+    mexUV(1) = MEX_METERS(pmmpi->mmpi_TextureVertices[i].mtv_UVW(1));
+    mexUV(2) = MEX_METERS(pmmpi->mmpi_TextureVertices[i].mtv_UVW(2));
+    pmmpi->mmpi_TextureVertices[i].mtv_UV = mexUV;
+  }
 
   /*
-	 * Now we intend to create data for all polygons (that includes setting polygon's
-	 * texture and transformed vertex ptrs)
-	 */
-	INDEX mpvct = 0;																// start polygon vertex counter
-	for( i=0; i<pmmpi->mmpi_PolygonsCt; i++)				// loop all model polygons
-	{
-    struct ModelPolygon *pmp = &pmmpi->mmpi_Polygons[ i];		// ptr to activ model polygon
-		pmp->mp_Surface = pO3D->ob_aoscSectors[0].osc_aomtMaterials.Index( pO3D->ob_aoscSectors[0].osc_aopoPolygons[ i].opo_Material); // copy surface index
-		pmp->mp_ColorAndAlpha =
-      pO3D->ob_aoscSectors[0].osc_aopoPolygons[ i].opo_Material->omt_Color | CT_OPAQUE; // copy surface color, set no alpha
-		INDEX ctVertices = pO3D->ob_aoscSectors[0].osc_aopoPolygons[ i].opo_PolygonEdges.Count(); // set no of polygon's vertices
-		pmp->mp_PolygonVertices.New( ctVertices); // create array for them
-		for( j=0; j<ctVertices; j++)				// fill data for this polygon's vertices
-		{
-			/*
-			 * Here we really remap one mip models's vertex in a way that we set its transformed
-			 * vertex ptr after remapping it using link (tag) to its original mip-model's vertex
-			 */
-			ULONG trans_vtx_idx = pO3D->ob_aoscSectors[0].osc_aovxVertices[ aesv[ mpvct].esv_MipGlobalIndex].ovx_Tag;
-
-			pmp->mp_PolygonVertices[ j].mpv_ptvTransformedVertex =
-				&edm_md.md_TransformedVertices[ (INDEX) trans_vtx_idx ]; // remapped ptr to transformed vertex
-			pmp->mp_PolygonVertices[ j].mpv_ptvTextureVertex =
-				&pmmpi->mmpi_TextureVertices[ aesv[ mpvct].esv_TextureVertexRemap];	// ptr to unique vertex in surface
-			mpvct ++;
-		}
-	}
-
-	edm_md.md_MipCt ++;	// finally, this mip-model is done.
-}
-
-//----------------------------------------------------------------------------------------------
-/*
- * Routine sets unwrapped mapping from given three objects
- */
-void CEditModel::CalculateUnwrappedMapping( CObject3D &o3dClosed, CObject3D &o3dOpened, CObject3D &o3dUnwrapped)
-{
-  o3dOpened.ob_aoscSectors.Lock();
-  o3dClosed.ob_aoscSectors.Lock();
-  o3dUnwrapped.ob_aoscSectors.Lock();
-  // get first mip model
-  struct ModelMipInfo *pMMI = &edm_md.md_MipInfos[ 0];
-  // for each surface in first mip model
-  for( INDEX iSurface = 0; iSurface < pMMI->mmpi_MappingSurfaces.Count(); iSurface++)
+   * Now we intend to create data for all polygons (that includes setting polygon's
+   * texture and transformed vertex ptrs)
+   */
+  INDEX mpvct = 0;
+  for (i = 0; i < pmmpi->mmpi_PolygonsCt; i++)				// loop all model polygons
   {
-    MappingSurface *pmsSurface = &pMMI->mmpi_MappingSurfaces[iSurface];
-    // for each texture vertex in surface
-    for(INDEX iSurfaceTextureVertex=0; iSurfaceTextureVertex<pmsSurface->ms_aiTextureVertices.Count(); iSurfaceTextureVertex++)
+    struct ModelPolygon* pmp = &pmmpi->mmpi_Polygons[i];		// ptr to activ model polygon
+    pmp->mp_Surface = pO3D->ob_aoscSectors[0].osc_aomtMaterials.Index(pO3D->ob_aoscSectors[0].osc_aopoPolygons[i].opo_Material); // copy surface index
+    pmp->mp_ColorAndAlpha =
+      pO3D->ob_aoscSectors[0].osc_aopoPolygons[i].opo_Material->omt_Color | CT_OPAQUE; // copy surface color, set no alpha
+
+    auto& o3d_polygon = pO3D->ob_aoscSectors[0].osc_aopoPolygons[i];
+
+    auto& polygon_edges = o3d_polygon.opo_PolygonEdges;
+    INDEX ctVertices = polygon_edges.Count(); // set no of polygon's vertices
+    pmp->mp_PolygonVertices.New(ctVertices); // create array for them
+    for (j = 0; j < ctVertices; j++)				// fill data for this polygon's vertices
     {
-      INDEX iGlobalTextureVertex = pmsSurface->ms_aiTextureVertices[iSurfaceTextureVertex];
-      ModelTextureVertex *pmtvTextureVertex = &pMMI->mmpi_TextureVertices[iGlobalTextureVertex];
-      // obtain index of model vertex
-      INDEX iModelVertex = pmtvTextureVertex->mtv_iTransformedVertex;
-      // for each polygon in opened with same surface
-      for(INDEX iOpenedPolygon=0; iOpenedPolygon< o3dOpened.ob_aoscSectors[0].osc_aopoPolygons.Count(); iOpenedPolygon++)
-      {
-        DOUBLE3D vClosedVertex;
-        DOUBLE3D vOpenedVertex;
+      /*
+       * Here we really remap one mip models's vertex in a way that we set its transformed
+       * vertex ptr after remapping it using link (tag) to its original mip-model's vertex
+       */
+      CObjectVertex* o3d_vertex = polygon_edges[j].ope_Edge->oed_Vertex0;
 
-        // get coordinate from model vertex in closed
-        o3dClosed.ob_aoscSectors[0].osc_aovxVertices.Lock();
-        vClosedVertex = o3dClosed.ob_aoscSectors[0].osc_aovxVertices[ iModelVertex];
-        o3dClosed.ob_aoscSectors[0].osc_aovxVertices.Unlock();
+      pmp->mp_PolygonVertices[j].mpv_ptvTransformedVertex =
+        &edm_md.md_TransformedVertices[(INDEX)o3d_vertex->ovx_Tag]; // remapped ptr to transformed vertex
 
-        // find vertex in opened with same coordinate
-        o3dOpened.ob_aoscSectors[0].osc_aopoPolygons.Lock();
-        CObjectPolygon *popoOpenedPolygon = &o3dOpened.ob_aoscSectors[0].osc_aopoPolygons[ iOpenedPolygon];
-        o3dOpened.ob_aoscSectors[0].osc_aopoPolygons.Unlock();
-        if( popoOpenedPolygon->opo_Material->omt_Name != pmsSurface->ms_Name) continue;
-        for( INDEX iOpenedPolyEdge=0; iOpenedPolyEdge<popoOpenedPolygon->opo_PolygonEdges.Count(); iOpenedPolyEdge++)
-        {
-          popoOpenedPolygon->opo_PolygonEdges.Lock();
-          CObjectVertex *povOpenedVertex;
-          if( !popoOpenedPolygon->opo_PolygonEdges[iOpenedPolyEdge].ope_Backward)
-          {
-            povOpenedVertex = popoOpenedPolygon->opo_PolygonEdges[iOpenedPolyEdge].ope_Edge->oed_Vertex0;
-          }
-          else
-          {
-            povOpenedVertex = popoOpenedPolygon->opo_PolygonEdges[iOpenedPolyEdge].ope_Edge->oed_Vertex1;
-          }
-          popoOpenedPolygon->opo_PolygonEdges.Unlock();
-          
-          vOpenedVertex = *povOpenedVertex;
-
-          // if these two vertices have same coordinates
-          FLOAT fAbsoluteDistance = Abs( (vClosedVertex - vOpenedVertex).Length());
-			    if( fAbsoluteDistance < MAX_ALLOWED_DISTANCE)
-          {
-            o3dClosed.ob_aoscSectors[0].osc_aovxVertices.Lock();
-            o3dUnwrapped.ob_aoscSectors[0].osc_aovxVertices.Lock();
-            // find index in opened
-            o3dOpened.ob_aoscSectors[0].osc_aovxVertices.Lock();
-            INDEX iOpenedModelVertex = o3dOpened.ob_aoscSectors[0].osc_aovxVertices.Index( povOpenedVertex);
-            o3dOpened.ob_aoscSectors[0].osc_aovxVertices.Unlock();
-            // get coordinate from unwrapped using index
-            DOUBLE3D vMappingCoordinate = o3dUnwrapped.ob_aoscSectors[0].osc_aovxVertices[ iOpenedModelVertex];
-            // set new mapping coordinates
-            pmtvTextureVertex->mtv_UVW = DOUBLEtoFLOAT( vMappingCoordinate);
-            pmtvTextureVertex->mtv_UVW(2) = -pmtvTextureVertex->mtv_UVW(2);
-            MEX2D mexUV;
-            mexUV(1) = MEX_METERS(pmtvTextureVertex->mtv_UVW(1));
-            mexUV(2) = MEX_METERS(pmtvTextureVertex->mtv_UVW(2));
-            pmtvTextureVertex->mtv_UV = mexUV;
-            o3dClosed.ob_aoscSectors[0].osc_aovxVertices.Unlock();
-            o3dUnwrapped.ob_aoscSectors[0].osc_aovxVertices.Unlock();
-          }
-        }
-      }
-      // reset surface position, rotation and zoom
-      pmsSurface->ms_HPB = FLOAT3D( 0.0f, 0.0f, 0.0f);
-      pmsSurface->ms_Zoom = 1.0f;
-      pmsSurface->ms_vSurface2DOffset = FLOAT3D( 0.0f, 0.0f, 0.0f);
+      pmp->mp_PolygonVertices[j].mpv_ptvTextureVertex =
+        &pmmpi->mmpi_TextureVertices[texCoordsRemap[mpvct++]];
     }
   }
-  o3dOpened.ob_aoscSectors.Unlock();
-  o3dClosed.ob_aoscSectors.Unlock();
-  o3dUnwrapped.ob_aoscSectors.Unlock();
+
+  edm_md.md_MipCt ++;	// finally, this mip-model is done.
 }
+
 //----------------------------------------------------------------------------------------------
 /*
  * Routine calculate mapping for mip models (except for main mip)

@@ -613,9 +613,9 @@ void CModelerApp::OnFileNew()
 {
   // call file requester for opening documents
   CDynamicArray<CTFileName> afnCreateModel;
+  auto file_filter = _EngineGUI.GetListOf3DFormats(true);
   _EngineGUI.FileRequester( "Create new model from 3D or script file",
-    "3D objects and scripts\0*.lwo;*.obj;*.3ds;*.scr\0"
-    FILTER_3DOBJ FILTER_LWO FILTER_OBJ FILTER_3DS FILTER_SCR FILTER_ALL FILTER_END,
+    file_filter.data(),
     "Create model directory", "Models\\", "", &afnCreateModel);
   // create new models
   FOREACHINDYNAMICARRAY( afnCreateModel, CTFileName, itModel)

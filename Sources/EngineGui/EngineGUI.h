@@ -14,6 +14,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 #include <Engine/Engine.h>
+#include <vector>
 
 #ifdef ENGINEGUI_EXPORTS
 
@@ -28,6 +29,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class CEngineGUI
 {
 public:
+  ENGINEGUI_API std::vector<char> GetListOf3DFormats(bool include_scr = false);
+
   /* Functions used by application for getting and setting registry keys concerning modes */
   ENGINEGUI_API void GetFullScreenModeFromRegistry( CTString strSectionName, CDisplayMode &dm, GfxAPIType &gat);
   ENGINEGUI_API void SetFullScreenModeToRegistry(   CTString strSectionName, CDisplayMode  dm, GfxAPIType  gat);
@@ -52,11 +55,6 @@ public:
 /* Predefined file filters for file requester */
 #define FILTER_ALL            "All files (*.*)\0*.*\0"
 #define FILTER_PICTURES       "Pictures (*.pcx;*.tga)\0*.pcx;*.tga\0"
-#define FILTER_3DOBJ          "3D object\0*.lwo;*.obj;*.3ds\0"
-#define FILTER_LWO            "Lightwave object (*.lwo)\0*.lwo\0"
-#define FILTER_OBJ            "Alias Wavefront Object (*.obj)\0*.obj\0"
-#define FILTER_3DS            "3DS object (*.3ds)\0*.3ds\0"
-#define FILTER_SCR            "Scripts (*.scr)\0*.scr\0"
 #define FILTER_PCX            "PCX files (*.pcx)\0*.pcx\0"
 #define FILTER_TGA            "TGA files (*.tga)\0*.tga\0"
 #define FILTER_TEX            "Textures (*.tex)\0*.tex\0"

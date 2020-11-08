@@ -176,9 +176,6 @@ struct ENGINE_API MappingSurface
   ~MappingSurface();                              // destructor
   CTString ms_Name;																// name of this surface
   COLOR   ms_colColor;														// color of this surface
-  FLOAT3D ms_vSurface2DOffset;										// center of this surface
-  FLOAT3D ms_HPB;																	// orientation of this surface
-  FLOAT   ms_Zoom;																// current zoom value
   FLOAT3D ms_vSurfaceCenterOffset;                // vector of surface center offseting
 
   COLOR ms_colDiffuse;														// difuse color of this surface

@@ -347,8 +347,9 @@ void CDlgWorldSettings::OnBrowseRightViewPicture()
 
 void CDlgWorldSettings::OnBrowseBackdropObject()
 {
+  auto file_filter = _EngineGUI.GetListOf3DFormats();
   CTFileName fnObject = _EngineGUI.FileRequester( "Select background object",
-    FILTER_3DOBJ FILTER_LWO FILTER_OBJ FILTER_3DS FILTER_ALL FILTER_END, "Backdrop object directory", "");
+    file_filter.data(), "Backdrop object directory", "");
   if( fnObject == "") return;
   GetDlgItem( IDC_BACKDROP_OBJECT_T)->SetWindowText( CString(fnObject));
 	m_strBackdropObject = fnObject;

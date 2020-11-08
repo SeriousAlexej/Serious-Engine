@@ -155,8 +155,6 @@ public:
   void CalculateSurfaceCenterOffset( INDEX iCurrentMip, INDEX iSurface);
   void RemapTextureVerticesForSurface(INDEX iMip, INDEX iSurface, BOOL bJustCount);
   void RemapTextureVertices( INDEX iCurrentMip);
-  // calculates mapping from three special 3D objects
-  void CalculateUnwrappedMapping( CObject3D &o3dClosed, CObject3D &o3dOpened, CObject3D &o3dUnwrapped);
   // calculates mapping for mip models (except for main mip)
   void CalculateMappingForMips(void);
   // updates animations

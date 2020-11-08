@@ -31,23 +31,22 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <Engine/Math/TextureMapping_Utils.h>
 
 #include <assimp/Importer.hpp>
+#include <assimp/importerdesc.h>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include <assimp/mesh.h>
 
+#include <algorithm>
+#include <limits>
 #include <unordered_map>
 #include <vector>
 
+#ifdef max
+#undef max
+#endif
+
 namespace
 {
-  static const size_t AI_DEFAULT_UV_CHANNEL = 0;
-
-  void HashCombine(std::size_t& seed, float v)
-  {
-    std::hash<float> hasher;
-    seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-  }
-
   struct aiHasher
   {
     std::size_t operator()(const aiVector3D& vec3d) const
@@ -76,7 +75,7 @@ namespace
       if (aiSceneMain->mMeshes[i]->HasFaces())
       {
         ++nonEmptyMeshes;
-        if (aiSceneMain->mMeshes[i]->HasTextureCoords(AI_DEFAULT_UV_CHANNEL))
+        if (aiSceneMain->mMeshes[i]->HasTextureCoords(0))
           ++nonEmptyWithUV;
       }
 
@@ -89,7 +88,6 @@ namespace
 
 void FillConversionArrays_t(const FLOATmatrix3D &mTransform, const aiScene* aiSceneMain);
 void ClearConversionArrays( void);
-void RemapVertices(BOOL bAsOpened);
 
 
 /*
@@ -97,7 +95,7 @@ void RemapVertices(BOOL bAsOpened);
  */
 struct ConversionTriangle {
   INDEX ct_iVtx[3];     // indices of vertices
-  INDEX ct_iTVtx[3];    // indices of texture vertices
+  INDEX ct_iTVtx[3*3];    // indices of texture vertices
   INDEX ct_iMaterial;   // index of material
 };
 
@@ -112,7 +110,7 @@ CDynamicContainer<ConversionMaterial> acmMaterials;
 CStaticArray<ConversionTriangle> actTriangles;
 CStaticArray<FLOAT3D> avVertices;
 CStaticStackArray<FLOAT3D> avDst;
-CStaticArray<FLOAT2D> avTextureVertices;
+CStaticArray<FLOAT2D> avTextureVertices[3];
 CStaticArray<INDEX> aiRemap;
 
 /////////////////////////////////////////////////////////////////////////////
@@ -148,42 +146,6 @@ CObjectSectorLock::~CObjectSectorLock() {
 }
 
 //--------------------------------------------------------------------------------------------
-// function makes Little-Big indian conversion of 4 bytes and returns valid SLONG
-inline SLONG ConvertLong( SBYTE *pfm)
-{
-  UBYTE i;
-  UBYTE ret_long[ 4];
-
-  for( i=0; i<4; i++)
-    ret_long[ i] = *((UBYTE *) pfm + 3 - i);
-  return( *((SLONG *) ret_long) );
-};
-
-//--------------------------------------------------------------------------------------------
-// function makes Little-Big indian conversion of 2 bytes and returns valid WORD
-inline INDEX ConvertWord( SBYTE *pfm)
-{
-  char aret_word[ 2];
-
-  aret_word[ 0] = *(pfm+1);
-  aret_word[ 1] = *(pfm+0);
-  INDEX ret_word = (INDEX) *((SWORD *) aret_word);
-	return( ret_word);
-};
-
-//--------------------------------------------------------------------------------------------
-// function makes Little-Big indian conversion of 4 bytes representing float and returns valid float
-inline float ConvertFloat( SBYTE *pfm)
-{
-  UBYTE i;
-  char float_no[ 4];
-
-  for( i=0; i<4; i++)
-    float_no[ i] = *( pfm + 3 - i);
-  return( *((float *) float_no) );
-};
-
-//--------------------------------------------------------------------------------------------
 // function recognizes and loads many 3D file formats, throws char* errors
 BOOL _bBatchLoading = FALSE;
 
@@ -198,10 +160,36 @@ void CObject3D::BatchLoading_t(BOOL bOn)
   _bBatchLoading = bOn;
 }
 
-void CObject3D::LoadAny3DFormat_t(
-  const CTFileName &fnmFileName,
-  const FLOATmatrix3D &mTransform,
-  enum LoadType ltLoadType/*= LT_NORMAL*/)
+const std::vector<CObject3D::TFormatDescr>& CObject3D::GetSupportedFormats()
+{
+  static std::vector<TFormatDescr> formats;
+
+  if (formats.empty())
+  {
+    Assimp::Importer importer;
+    for (size_t i = 0; i < importer.GetImporterCount(); ++i)
+    {
+      const aiImporterDesc* pDescription = importer.GetImporterInfo(i);
+      TFormatDescr descr;
+      descr.first = pDescription->mName;
+      descr.second = "*.";
+      for (const char* c = pDescription->mFileExtensions; *c; ++c)
+      {
+        if (std::isspace(*c))
+          descr.second += ";*.";
+        else
+          descr.second += *c;
+      }
+      descr.first += " (" + descr.second + ")";
+      formats.emplace_back(std::move(descr));
+    }
+    std::sort(formats.begin(), formats.end(), [](const TFormatDescr& lhs, const TFormatDescr& rhs) { return lhs.first < rhs.first; });
+  }
+
+  return formats;
+}
+
+void CObject3D::LoadAny3DFormat_t(const CTFileName &fnmFileName, const FLOATmatrix3D &mTransform)
 {
   BOOL bWasOn = _bBatchLoading;
   try {
@@ -227,36 +215,13 @@ void CObject3D::LoadAny3DFormat_t(
     // if scene is successefuly loaded
     if(aiSceneMain && aiSceneMain->mNumMeshes > 0 && aiSceneMain->mNumMaterials > 0)
     {
-      // use different methods to convert into Object3D
-      switch( ltLoadType)
-      {
-      case LT_NORMAL:
-        FillConversionArrays_t(mTransform, aiSceneMain);
-        ConvertArraysToO3D();
-        break;
-      case LT_OPENED:
-        FillConversionArrays_t(mTransform, aiSceneMain);
-        RemapVertices(TRUE);
-        ConvertArraysToO3D();
-        break;
-      case LT_UNWRAPPED:
-        FLOATmatrix3D mOne;
-        mOne.Diagonal(1.0f);
-        FillConversionArrays_t(mOne, aiSceneMain);
-        if( avTextureVertices.Count() == 0)
-        {
-    		  ThrowF_t("Unable to import mapping from 3D object because it doesn't contain mapping coordinates.");
-        }
-
-        RemapVertices(FALSE);
-        ConvertArraysToO3D();
-        break;
-      }
+      FillConversionArrays_t(mTransform, aiSceneMain);
+      ConvertArraysToO3D();
       ClearConversionArrays();
     }
     else 
     {
-		  ThrowF_t("Unable to load 3D object: %s", (const char *)fnmFileName);
+      ThrowF_t("Unable to load 3D object: %s", (const char *)fnmFileName);
     }
   
     if (!bWasOn) {
@@ -315,29 +280,34 @@ void FillConversionArrays_t(const FLOATmatrix3D &mTransform, const aiScene* aiSc
   orderedUniqueVertices.clear();
 
   // ------------ Convert object's mapping vertices (texture vertices)
-  std::unordered_map<aiVector3D, INDEX, aiHasher> uniqueTexCoords;
-  std::vector<aiVector3D*> orderedUniqueTexCoords;
-  for (size_t i = 0; i < aiSceneMain->mNumMeshes; ++i)
+  std::unordered_map<aiVector3D, INDEX, aiHasher> uniqueTexCoords[3];
+  for (size_t iUVMapIndex = 0; iUVMapIndex < 3; ++iUVMapIndex)
   {
-    auto* mesh = aiSceneMain->mMeshes[i];
-    for (size_t v = 0; v < mesh->mNumVertices; ++v)
+    std::vector<aiVector3D*> orderedUniqueTexCoords;
+    for (size_t i = 0; i < aiSceneMain->mNumMeshes; ++i)
     {
-      if (uniqueTexCoords.find(mesh->mTextureCoords[AI_DEFAULT_UV_CHANNEL][v]) == uniqueTexCoords.end())
+      auto* mesh = aiSceneMain->mMeshes[i];
+      if (!mesh->HasTextureCoords(iUVMapIndex))
+        continue;
+
+      for (size_t v = 0; v < mesh->mNumVertices; ++v)
       {
-        uniqueTexCoords[mesh->mTextureCoords[AI_DEFAULT_UV_CHANNEL][v]] = orderedUniqueTexCoords.size();
-        orderedUniqueTexCoords.push_back(&mesh->mTextureCoords[AI_DEFAULT_UV_CHANNEL][v]);
+        if (uniqueTexCoords[iUVMapIndex].find(mesh->mTextureCoords[iUVMapIndex][v]) == uniqueTexCoords[iUVMapIndex].end())
+        {
+          uniqueTexCoords[iUVMapIndex][mesh->mTextureCoords[iUVMapIndex][v]] = orderedUniqueTexCoords.size();
+          orderedUniqueTexCoords.push_back(&mesh->mTextureCoords[iUVMapIndex][v]);
+        }
       }
     }
+    if (orderedUniqueTexCoords.empty())
+      continue;
+
+    avTextureVertices[iUVMapIndex].New(orderedUniqueTexCoords.size());
+    // copy texture vertices
+    for (size_t iTVtx = 0; iTVtx < orderedUniqueTexCoords.size(); ++iTVtx)
+      avTextureVertices[iUVMapIndex][iTVtx] = (FLOAT2D&)*orderedUniqueTexCoords[iTVtx];
   }
-  avTextureVertices.New(orderedUniqueTexCoords.size());
-  // copy texture vertices
-  for (size_t iTVtx = 0; iTVtx < orderedUniqueTexCoords.size(); ++iTVtx)
-  {
-    avTextureVertices[iTVtx] = (FLOAT2D&)*orderedUniqueTexCoords[iTVtx];
-    avTextureVertices[iTVtx](2) -= 1.0f;
-  }
-  orderedUniqueTexCoords.clear();
-  
+
   // ------------ Organize triangles as list of surfaces
   // allocate triangles
   actTriangles.New(AI_GetNumFaces(aiSceneMain));
@@ -366,16 +336,22 @@ void FillConversionArrays_t(const FLOATmatrix3D &mTransform, const aiScene* aiSc
         ctTriangle.ct_iVtx[2] = uniqueVertices[mesh->mVertices[ai_face->mIndices[2]]];
       }
 
-      // copy texture vertex indices
-      if (bFlipped) {
-        ctTriangle.ct_iTVtx[0] = uniqueTexCoords[mesh->mTextureCoords[AI_DEFAULT_UV_CHANNEL][ai_face->mIndices[2]]];
-        ctTriangle.ct_iTVtx[1] = uniqueTexCoords[mesh->mTextureCoords[AI_DEFAULT_UV_CHANNEL][ai_face->mIndices[1]]];
-        ctTriangle.ct_iTVtx[2] = uniqueTexCoords[mesh->mTextureCoords[AI_DEFAULT_UV_CHANNEL][ai_face->mIndices[0]]];
-      }
-      else {
-        ctTriangle.ct_iTVtx[0] = uniqueTexCoords[mesh->mTextureCoords[AI_DEFAULT_UV_CHANNEL][ai_face->mIndices[0]]];
-        ctTriangle.ct_iTVtx[1] = uniqueTexCoords[mesh->mTextureCoords[AI_DEFAULT_UV_CHANNEL][ai_face->mIndices[1]]];
-        ctTriangle.ct_iTVtx[2] = uniqueTexCoords[mesh->mTextureCoords[AI_DEFAULT_UV_CHANNEL][ai_face->mIndices[2]]];
+
+      for (size_t iUVMapIndex = 0; iUVMapIndex < 3; ++iUVMapIndex)
+      {
+        if (!mesh->HasTextureCoords(iUVMapIndex))
+          continue;
+
+        // copy texture vertex indices
+        if (bFlipped) {
+          ctTriangle.ct_iTVtx[iUVMapIndex*3 + 0] = uniqueTexCoords[iUVMapIndex][mesh->mTextureCoords[iUVMapIndex][ai_face->mIndices[2]]];
+          ctTriangle.ct_iTVtx[iUVMapIndex*3 + 1] = uniqueTexCoords[iUVMapIndex][mesh->mTextureCoords[iUVMapIndex][ai_face->mIndices[1]]];
+          ctTriangle.ct_iTVtx[iUVMapIndex*3 + 2] = uniqueTexCoords[iUVMapIndex][mesh->mTextureCoords[iUVMapIndex][ai_face->mIndices[0]]];
+        } else {
+          ctTriangle.ct_iTVtx[iUVMapIndex*3 + 0] = uniqueTexCoords[iUVMapIndex][mesh->mTextureCoords[iUVMapIndex][ai_face->mIndices[0]]];
+          ctTriangle.ct_iTVtx[iUVMapIndex*3 + 1] = uniqueTexCoords[iUVMapIndex][mesh->mTextureCoords[iUVMapIndex][ai_face->mIndices[1]]];
+          ctTriangle.ct_iTVtx[iUVMapIndex*3 + 2] = uniqueTexCoords[iUVMapIndex][mesh->mTextureCoords[iUVMapIndex][ai_face->mIndices[2]]];
+        }
       }
 
       // obtain material
@@ -426,10 +402,8 @@ void FillConversionArrays_t(const FLOATmatrix3D &mTransform, const aiScene* aiSc
         {
           acmMaterials[iNewMaterial].cm_strName = CTString(materialName.C_Str());
           // get color
-          aiColor3D color(0.f, 0.f, 0.f);
-          aiSceneMain->mMaterials[materialIndex]->Get(AI_MATKEY_COLOR_DIFFUSE, color);
-
-          COLOR colColor = CLR_CLRF(RGB(UBYTE(color.r * 255), UBYTE(color.g * 255), UBYTE(color.b * 255)));
+          const double materialCoefficient = static_cast<double>(i+1) / aiSceneMain->mNumMeshes;
+          COLOR colColor = static_cast<COLOR>(std::numeric_limits<COLOR>::max() * materialCoefficient);
           acmMaterials[iNewMaterial].cm_colColor = colColor;
         }
         else
@@ -449,135 +423,9 @@ void ClearConversionArrays( void)
   acmMaterials.Clear();
   actTriangles.Clear();
   avVertices.Clear();
-  avTextureVertices.Clear();
+  for (size_t i = 0; i < 3; ++i)
+    avTextureVertices[i].Clear();
   aiRemap.Clear();
-}
-
-void RemapVertices(BOOL bAsOpened)
-{
-  {INDEX ctSurf = 0;
-  // fill remap array with indices of vertices in order how they appear per polygons
-  {FOREACHINDYNAMICCONTAINER(acmMaterials, ConversionMaterial, itcm)
-  {
-    _RPT1(_CRT_WARN, "Indices of polygons in surface %d:", ctSurf);
-    // for each polygon in surface
-    {FOREACHINDYNAMICCONTAINER(itcm->ms_Polygons, INDEX, itipol)
-    {
-      _RPT1(_CRT_WARN, " %d,", *itipol);
-    }}
-    _RPT0(_CRT_WARN, "\n");
-    ctSurf++;
-  }}
-  
-  _RPT0(_CRT_WARN, "Polygons and their vertex indices:\n");
-  for( INDEX ipol=0; ipol<actTriangles.Count(); ipol++)
-  {
-    INDEX idxVtx0 = actTriangles[ipol].ct_iVtx[0];
-    INDEX idxVtx1 = actTriangles[ipol].ct_iVtx[1];
-    INDEX idxVtx2 = actTriangles[ipol].ct_iVtx[2];
-    _RPT4(_CRT_WARN, "Indices of vertices in polygon %d : (%d, %d, %d)\n", ipol, idxVtx0, idxVtx1, idxVtx2);
-  }}
-
-  INDEX ctVertices = avVertices.Count();
-  aiRemap.New(ctVertices);
-
-  // fill remap array with indices of vertices in order how they appear per polygons
-  FOREACHINDYNAMICCONTAINER(acmMaterials, ConversionMaterial, itcm)
-  {
-    // fill remap array with -1
-    for( INDEX iRemap=0; iRemap<ctVertices; iRemap++)
-    {
-      aiRemap[iRemap] = -1;
-    }
-    // reset 'vertex in surface' counter
-    INDEX ctvx = 0;
-
-    // for each polygon in surface
-    {FOREACHINDYNAMICCONTAINER(itcm->ms_Polygons, INDEX, itipol)
-    {
-      INDEX idxPol = *itipol;
-      // for each vertex in polygon
-      for(INDEX iVtx=0; iVtx<3; iVtx++)
-      {
-        // get vertex's index
-        INDEX idxVtx = actTriangles[idxPol].ct_iVtx[iVtx];
-        if( aiRemap[idxVtx] == -1)
-        {
-          aiRemap[idxVtx] = ctvx;
-          ctvx++;
-        }
-      }
-    }}
-
-    INDEX ctOld = avDst.Count();
-    // allocate new block of vertices used in this surface
-    FLOAT3D *pavDst = avDst.Push( ctvx);
-
-    // for each polygon in surface
-    {FOREACHINDYNAMICCONTAINER(itcm->ms_Polygons, INDEX, itipol)
-    {
-      INDEX iPol=*itipol;
-      // for each vertex in polygon
-      for(INDEX iVtx=0; iVtx<3; iVtx++)
-      {
-        // get vertex's index
-        INDEX idxVtx = actTriangles[iPol].ct_iVtx[iVtx];
-        // get remapped index
-        INDEX iRemap = aiRemap[idxVtx];
-        // if cutting object
-        if( bAsOpened)
-        {
-          // copy vertex coordinate
-          pavDst[ iRemap] = avVertices[idxVtx];
-        }
-        // if creating unwrapped mapping
-        else
-        {
-          // copy texture coordinate
-          FLOAT3D vMap;
-          vMap(1) = avTextureVertices[actTriangles[iPol].ct_iTVtx[iVtx]](1);
-          vMap(2) = -avTextureVertices[actTriangles[iPol].ct_iTVtx[iVtx]](2);
-          vMap(3) = 0;
-          pavDst[ iRemap] = vMap;
-        }
-        // remap index of polygon vertex
-        actTriangles[iPol].ct_iVtx[iVtx] = iRemap+ctOld;
-      }
-    }}
-  }
-  aiRemap.Clear();
-  
-  // replace remapped array of vertices over original one
-  avVertices.Clear();
-  avVertices.New(avDst.Count());
-  for( INDEX iVtxNew=0; iVtxNew<avDst.Count(); iVtxNew++)
-  {
-    avVertices[iVtxNew] = avDst[iVtxNew];
-  }
-  avDst.PopAll();
-
-  {INDEX ctSurf = 0;
-  // fill remap array with indices of vertices in order how they appear per polygons
-  {FOREACHINDYNAMICCONTAINER(acmMaterials, ConversionMaterial, itcm)
-  {
-    _RPT1(_CRT_WARN, "Indices of polygons in surface %d:", ctSurf);
-    // for each polygon in surface
-    {FOREACHINDYNAMICCONTAINER(itcm->ms_Polygons, INDEX, itipol)
-    {
-      _RPT1(_CRT_WARN, " %d,", *itipol);
-    }}
-    _RPT0(_CRT_WARN, "\n");
-    ctSurf++;
-  }}
-  
-  _RPT0(_CRT_WARN, "Polygons and their vertex indices:\n");
-  for( INDEX ipol=0; ipol<actTriangles.Count(); ipol++)
-  {
-    INDEX idxVtx0 = actTriangles[ipol].ct_iVtx[0];
-    INDEX idxVtx1 = actTriangles[ipol].ct_iVtx[1];
-    INDEX idxVtx2 = actTriangles[ipol].ct_iVtx[2];
-    _RPT4(_CRT_WARN, "Indices of vertices in polygon %d : (%d, %d, %d)\n", ipol, idxVtx0, idxVtx1, idxVtx2);
-  }}
 }
 
 /*
@@ -614,7 +462,6 @@ void CObject3D::ConvertArraysToO3D( void)
 	CObjectPlane *popl = osc.osc_aoplPlanes.New(ctTriangles);
   // we need 3 edges for each polygon
   CObjectEdge *poedg = osc.osc_aoedEdges.New(ctTriangles*3);
-  bool hasTextureCoordinates = avTextureVertices.Count() > 0;
   for(INDEX iTri=0; iTri<ctTriangles; iTri++)
   {
     // obtain triangle's vertices
@@ -643,8 +490,6 @@ void CObject3D::ConvertArraysToO3D( void)
     popl[iTri] = DOUBLEplane3D( *pVtx0, *pVtx1, *pVtx2);
     popo[iTri].opo_Plane = &popl[iTri];
 
-    if (!hasTextureCoordinates)
-      continue;
 
     // copy UV coordinates to polygon texture mapping
     CMappingVectors mappingVectors;
@@ -654,19 +499,23 @@ void CObject3D::ConvertArraysToO3D( void)
     FLOAT2D p1_uv = defaultMapping.GetTextureCoordinates(mappingVectors, DOUBLEtoFLOAT(*pVtx1));
     FLOAT2D p2_uv = defaultMapping.GetTextureCoordinates(mappingVectors, DOUBLEtoFLOAT(*pVtx2));
 
-    FLOAT2D p0_uvTarget(
-      +avTextureVertices[actTriangles[iTri].ct_iTVtx[0]](1),
-      -avTextureVertices[actTriangles[iTri].ct_iTVtx[0]](2));
-    FLOAT2D p1_uvTarget(
-      +avTextureVertices[actTriangles[iTri].ct_iTVtx[1]](1),
-      -avTextureVertices[actTriangles[iTri].ct_iTVtx[1]](2));
-    FLOAT2D p2_uvTarget(
-      +avTextureVertices[actTriangles[iTri].ct_iTVtx[2]](1),
-      -avTextureVertices[actTriangles[iTri].ct_iTVtx[2]](2));
+    for (size_t i = 0; i < 3; ++i)
+    {
+      if (avTextureVertices[i].Count() == 0)
+        continue;
 
-    popo[iTri].opo_amdMappings[0] = GetMappingDefinitionFromReferenceToTarget({ p0_uv, p1_uv, p2_uv }, { p0_uvTarget, p1_uvTarget, p2_uvTarget });
-    popo[iTri].opo_amdMappings[1] = popo[iTri].opo_amdMappings[0];
-    popo[iTri].opo_amdMappings[2] = popo[iTri].opo_amdMappings[0];
+      FLOAT2D p0_uvTarget(
+        +avTextureVertices[i][actTriangles[iTri].ct_iTVtx[i*3 + 0]](1),
+        -avTextureVertices[i][actTriangles[iTri].ct_iTVtx[i*3 + 0]](2));
+      FLOAT2D p1_uvTarget(
+        +avTextureVertices[i][actTriangles[iTri].ct_iTVtx[i*3 + 1]](1),
+        -avTextureVertices[i][actTriangles[iTri].ct_iTVtx[i*3 + 1]](2));
+      FLOAT2D p2_uvTarget(
+        +avTextureVertices[i][actTriangles[iTri].ct_iTVtx[i*3 + 2]](1),
+        -avTextureVertices[i][actTriangles[iTri].ct_iTVtx[i*3 + 2]](2));
+
+      popo[iTri].opo_amdMappings[i] = GetMappingDefinitionFromReferenceToTarget({ p0_uv, p1_uv, p2_uv }, { p0_uvTarget, p1_uvTarget, p2_uvTarget });
+    }
   }
   acmMaterials.Unlock();
 }

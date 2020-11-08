@@ -93,6 +93,13 @@ inline Type Clamp( const Type x, const Type dnlimit, const Type uplimit)
   return ( x>=dnlimit ? (x<=uplimit ? x : uplimit): dnlimit );
 }
 
+template<class Type>
+void HashCombine(size_t& seed, Type v)
+{
+  std::hash<Type> hasher;
+  seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+}
+
 /* 
  *  fast implementations
  */
