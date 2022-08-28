@@ -109,7 +109,8 @@ protected:
     auto property_copy = *mp_property;
     auto entities_copy = m_entities;
     Changed();
-    EventHub::instance().PropertyChanged(entities_copy, &property_copy, this);
+    if (!signalsBlocked())
+      EventHub::instance().PropertyChanged(entities_copy, &property_copy, this);
   }
 
 private:
