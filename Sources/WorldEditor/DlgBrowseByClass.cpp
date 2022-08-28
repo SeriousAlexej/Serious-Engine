@@ -698,7 +698,7 @@ void CDlgBrowseByClass::AdjustSize()
     return;
 
   CRect client_rect;
-  GetWindowRect(&client_rect);
+  GetClientRect(&client_rect);
   const int w = client_rect.Width();
   const int h = client_rect.Height();
 
