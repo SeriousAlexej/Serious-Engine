@@ -508,6 +508,8 @@ public:
 // Operations
   CWorldEditorApp();
 	~CWorldEditorApp();
+
+  void AddToRecentFileList(LPCTSTR lpszPathName) override;
   void InstallOneTimeSelectionStealer(std::function<void(CEntity*)>&& selection_stealer, void* source);
   const std::function<void(CEntity*)>& GetSelectionStealer() const;
 	void MyParseCommandLine(void);

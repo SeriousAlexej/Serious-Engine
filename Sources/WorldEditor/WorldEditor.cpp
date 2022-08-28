@@ -510,6 +510,13 @@ static CTString GetNextParam(void)
   }
 }
 
+void CWorldEditorApp::AddToRecentFileList(LPCTSTR lpszPathName)
+{
+  ASSERT_VALID(this);
+  if (m_pRecentFileList)
+    m_pRecentFileList->Add(lpszPathName);
+}
+
 void CWorldEditorApp::InstallOneTimeSelectionStealer(std::function<void(CEntity*)>&& selection_stealer, void* source)
 {
   m_selection_stealer = std::move(selection_stealer);
