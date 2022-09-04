@@ -222,7 +222,7 @@ BOOL PropertyTree_MFC_Host::Create(CWnd* pParentWnd, UINT nIDTemplate, UINT nSty
 
 void PropertyTree_MFC_Host::OnSize(UINT, int cx, int cy)
 {
-  if (mp_impl->WinWidget())
+  if (mp_impl && mp_impl->WinWidget())
     mp_impl->WinWidget()->resize(cx - 16, cy - 16);
 }
 
@@ -260,7 +260,7 @@ CSize PropertyTree_MFC_Host::CalcDynamicLayout(int nLength, DWORD dwMode)
 
 bool PropertyTree_MFC_Host::IsUnderMouse() const
 {
-  if (!mp_impl->WinWidget() || !mp_impl->WinWidget()->isEnabled())
+  if (!mp_impl || !mp_impl->WinWidget() || !mp_impl->WinWidget()->isEnabled())
     return false;
 
   return mp_impl->WinWidget()->underMouse();
@@ -268,10 +268,18 @@ bool PropertyTree_MFC_Host::IsUnderMouse() const
 
 CPropertyID* PropertyTree_MFC_Host::GetSelectedProperty() const
 {
+  if (!mp_impl)
+    return nullptr;
   return mp_impl->GetSelectedProperty();
 }
 
 void PropertyTree_MFC_Host::SaveState() const
 {
-  mp_impl->SaveState();
+  if (mp_impl)
+    mp_impl->SaveState();
+}
+
+void PropertyTree_MFC_Host::Reset()
+{
+  mp_impl.reset();
 }
