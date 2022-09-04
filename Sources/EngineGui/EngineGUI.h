@@ -32,6 +32,25 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #endif
 
+class CWinAppQt : public CWinApp {
+public:
+  struct ModalGuard {
+    ModalGuard()
+    {
+      if (auto* app = dynamic_cast<CWinAppQt*>(AfxGetApp()))
+        app->m_showing_modal_dialog = true;
+    }
+    ~ModalGuard()
+    {
+      if (auto* app = dynamic_cast<CWinAppQt*>(AfxGetApp()))
+        app->m_showing_modal_dialog = false;
+    }
+  };
+
+protected:
+  bool m_showing_modal_dialog;
+};
+
 class CEngineGUI
 {
 public:

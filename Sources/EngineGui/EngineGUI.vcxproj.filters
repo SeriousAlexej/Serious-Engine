@@ -16,6 +16,12 @@
     <Filter Include="Wizard Files">
       <UniqueIdentifier>{43491365-8482-4361-90a0-59df05280571}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\GroBrowser">
+      <UniqueIdentifier>{d4d2b3a8-e4db-4f53-87cd-43bc6e354a49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GroBrowser">
+      <UniqueIdentifier>{f29c7e89-acd1-4d08-97f8-de5185730fe7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DlgChooseTextureType.cpp">
@@ -44,6 +50,9 @@
     </ClCompile>
     <ClCompile Include="WndDisplayTexture.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GroBrowser\GroBrowser.cpp">
+      <Filter>Source Files\GroBrowser</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -74,6 +83,12 @@
     <ClInclude Include="WndDisplayTexture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GroBrowser\GroBrowser.h">
+      <Filter>Header Files\GroBrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="GroBrowser\GroBrowser.ui.h">
+      <Filter>Header Files\GroBrowser</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Graphics.rc">
@@ -88,5 +103,8 @@
       <Filter>Wizard Files</Filter>
     </CustomBuild>
     <CustomBuild Include="ReadMe.txt" />
+    <CustomBuild Include="GroBrowser\GroBrowser.ui">
+      <Filter>Source Files\GroBrowser</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>

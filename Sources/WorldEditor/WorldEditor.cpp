@@ -424,16 +424,6 @@ CWorldEditorView* CWorldEditorApp::GetActiveView(void)
 
 CWorldEditorApp theApp;
 
-CWorldEditorApp::ModalGuard::ModalGuard()
-{
-  theApp.m_showing_modal_dialog = true;
-}
-
-CWorldEditorApp::ModalGuard::~ModalGuard()
-{
-  theApp.m_showing_modal_dialog = false;
-}
-
 /////////////////////////////////////////////////////////////////////////////
 // CWorldEditorApp initialization
 

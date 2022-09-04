@@ -85,14 +85,13 @@ public:
   void WriteToIniFile();
 };
 
-class CModelerApp : public CWinApp
+class CModelerApp : public CWinAppQt
 {
 private:
   void OnQtAbout();
 
 private:
   QObject* mp_qtContext = nullptr;
-  bool m_showing_modal_dialog;
 
 public:
   void EditScriptAndReopenDocument(CTFileName fnScriptName);
@@ -147,12 +146,6 @@ public:
   // variables for display modes for different modes
 	CChangeable m_chPlacement;
 	CChangeable m_chGlobal;
-
-  struct ModalGuard
-  {
-    ModalGuard();
-    ~ModalGuard();
-  };
 
   CModelerApp();
   ~CModelerApp();

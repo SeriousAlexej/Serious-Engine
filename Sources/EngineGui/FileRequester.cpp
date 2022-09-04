@@ -14,23 +14,39 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 #include "stdh.h"
+#include <GroBrowser/GroBrowser.h>
 #include <Engine/Templates/Stock_CTextureData.h>
+
+#include <QApplication>
+#include <QWinWidget>
 
 // thumbnail window
 static CWnd _wndThumbnail;
+bool gro_browser_requested = false;
+bool allow_gro_browser = false;
 CDrawPort *_pDrawPort = NULL;
 CViewPort *_pViewPort = NULL;
 static INDEX gui_bEnableRequesterThumbnails=TRUE;
 
 UINT APIENTRY FileOpenRequesterHook( HWND hdlg, UINT uiMsg, WPARAM wParam,	LPARAM lParam)
 {
+  if (uiMsg == WM_COMMAND)
+  {
+    if (LOWORD(wParam) == IDC_PICK_IN_GRO && HIWORD(wParam) == BN_CLICKED)
+    {
+      gro_browser_requested = true;
+      HWND hDialog = GetParent(hdlg);
+      PostMessage(hDialog, WM_COMMAND, MAKEWPARAM(IDCANCEL, BN_CLICKED), (LPARAM)GetDlgItem(hDialog, IDCANCEL));
+    }
+  }
+
   _pShell->DeclareSymbol("persistent user INDEX gui_bEnableRequesterThumbnails;", &gui_bEnableRequesterThumbnails);
   if( !gui_bEnableRequesterThumbnails)
   {
     return 0;
   }
 
-  CTextureData *pTextureData = NULL;
+  CTextureData* pTextureData = NULL;
   if( uiMsg == WM_NOTIFY)
   {
     // obtain file open notification structure
@@ -39,6 +55,9 @@ UINT APIENTRY FileOpenRequesterHook( HWND hdlg, UINT uiMsg, WPARAM wParam,	LPARA
     NMHDR *pNMHeader = &pONNotify->hdr;
     if(pNMHeader->code == CDN_INITDONE)
     {
+      if (!allow_gro_browser || !QApplication::instance())
+        ShowWindow(GetDlgItem(hdlg, IDC_PICK_IN_GRO), SW_HIDE);
+
       HWND hwnd = GetDlgItem( hdlg, IDC_THUMBNAIL_RECT);
       RECT rect;
       BOOL bSuccess = GetClientRect( hwnd, &rect);
@@ -231,13 +250,23 @@ CTFileName CEngineGUI::FileRequester(
   ofnRequestFiles.lpstrDefExt = "";
 
   BOOL bResult;
+  gro_browser_requested = false;
+  allow_gro_browser = false;
   if( bIfOpen)
   {
-    bResult = GetOpenFileNameA( &ofnRequestFiles);
+    allow_gro_browser = true;
+    bResult = GetOpenFileNameA(&ofnRequestFiles);
   }
   else
   {
     bResult = GetSaveFileNameA( &ofnRequestFiles);
+  }
+  if (gro_browser_requested)
+  {
+    CWinAppQt::ModalGuard guard;
+    QWinWidget modal_widget(AfxGetMainWnd()->GetSafeHwnd(), nullptr, Qt::WindowFlags {});
+    GroBrowser gro_browser(&modal_widget);
+    gro_browser.exec();
   }
 
   if( bResult)

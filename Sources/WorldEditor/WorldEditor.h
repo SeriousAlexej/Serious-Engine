@@ -319,11 +319,10 @@ public:
   void MouseMoveNotify( HWND hwndCaller, ULONG ulTime, TTCFunction_type *pCallBack, void *pThis);
 };
 
-class CWorldEditorApp : public CWinApp
+class CWorldEditorApp : public CWinAppQt
 {
 private:
   CWorldEditorDoc *m_pLastActivatedDocument;
-  bool m_showing_modal_dialog;
   std::function<void(CEntity*)> m_selection_stealer;
 public:
 // Atributes
@@ -498,12 +497,6 @@ public:
 
   CChangeableRT m_ctTerrainPage;
   CChangeableRT m_ctTerrainPageCanvas;
-
-  struct ModalGuard
-  {
-    ModalGuard();
-    ~ModalGuard();
-  };
 
 // Operations
   CWorldEditorApp();

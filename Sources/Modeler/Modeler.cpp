@@ -244,16 +244,6 @@ CModelerApp::~CModelerApp()
 
 CModelerApp theApp;
 
-CModelerApp::ModalGuard::ModalGuard()
-{
-  theApp.m_showing_modal_dialog = true;
-}
-
-CModelerApp::ModalGuard::~ModalGuard()
-{
-  theApp.m_showing_modal_dialog = false;
-}
-
 /////////////////////////////////////////////////////////////////////////////
 // CModelerApp initialization
 
