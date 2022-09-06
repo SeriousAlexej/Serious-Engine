@@ -89,6 +89,9 @@
     <ClInclude Include="GroBrowser\GroBrowser.ui.h">
       <Filter>Header Files\GroBrowser</Filter>
     </ClInclude>
+    <ClInclude Include="GroBrowser\GroBrowser.qrc.h">
+      <Filter>Header Files\GroBrowser</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Graphics.rc">
@@ -104,6 +107,9 @@
     </CustomBuild>
     <CustomBuild Include="ReadMe.txt" />
     <CustomBuild Include="GroBrowser\GroBrowser.ui">
+      <Filter>Source Files\GroBrowser</Filter>
+    </CustomBuild>
+    <CustomBuild Include="GroBrowser\GroBrowser.qrc">
       <Filter>Source Files\GroBrowser</Filter>
     </CustomBuild>
   </ItemGroup>

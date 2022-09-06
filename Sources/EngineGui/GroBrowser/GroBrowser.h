@@ -17,6 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define GRO_BROWSER_H
 
 #include <QDialog>
+#include <QFileIconProvider>
 
 #include <memory>
 
@@ -24,13 +25,27 @@ namespace Ui {
 class GroBrowser;
 }
 
+class QListWidgetItem;
+
 class GroBrowser : public QDialog {
 public:
   explicit GroBrowser(QWidget* parent = nullptr);
   ~GroBrowser();
 
+  struct _FileNode;
+
+private:
+  bool eventFilter(QObject* watched, QEvent* event) override;
+  bool _CD(QListWidgetItem* item);
+  void _OnDoubleClicked(QListWidgetItem* item);
+  void _RefillList();
+  void _CacheFiles();
+
 private:
   std::unique_ptr<Ui::GroBrowser> mp_ui;
+  QFileIconProvider m_icon_provider;
+  _FileNode* mp_current_node = nullptr;
+  static std::unique_ptr<_FileNode> mp_root_node;
 };
 
 #endif
