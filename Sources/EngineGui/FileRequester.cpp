@@ -265,8 +265,8 @@ CTFileName CEngineGUI::FileRequester(
   {
     CWinAppQt::ModalGuard guard;
     QWinWidget modal_widget(AfxGetMainWnd()->GetSafeHwnd(), nullptr, Qt::WindowFlags {});
-    GroBrowser gro_browser(&modal_widget);
-    gro_browser.exec();
+    GroBrowser gro_browser(pchrFilters, pafnSelectedFiles, &modal_widget);
+    bResult = gro_browser.exec() == QDialog::Accepted ? TRUE : FALSE;
   }
 
   if( bResult)

@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <QPushButton>
 #include <QKeyEvent>
+#include <QRegExp>
 
 #include <algorithm>
 #include <string_view>
@@ -49,7 +50,7 @@ struct GroBrowser::_FileNode {
 
 std::unique_ptr<GroBrowser::_FileNode> GroBrowser::mp_root_node;
 
-GroBrowser::GroBrowser(QWidget* parent)
+GroBrowser::GroBrowser(const char* filter, bool multiselection, QWidget* parent)
   : QDialog(parent)
   , mp_ui(std::make_unique<Ui::GroBrowser>())
 {
@@ -61,15 +62,21 @@ GroBrowser::GroBrowser(QWidget* parent)
   mp_ui->setupUi(this);
   m_icon_provider.setOptions(QFileIconProvider::DontUseCustomDirectoryIcons);
 
+  _FillFilter(filter);
+  _RefillList();
+
   mp_ui->listWidget->installEventFilter(this);
+  mp_ui->listWidget->setSelectionMode(multiselection ? QAbstractItemView::ExtendedSelection : QAbstractItemView::SingleSelection);
+  mp_ui->buttonBox->button(QDialogButtonBox::Open)->setEnabled(false);
   connect(mp_ui->buttonUp, &QPushButton::clicked, this, &GroBrowser::_OnCDUp);
   connect(mp_ui->buttonBack, &QPushButton::clicked, this, &GroBrowser::_OnCDBack);
   connect(mp_ui->buttonForward, &QPushButton::clicked, this, &GroBrowser::_OnCDForward);
   connect(mp_ui->listWidget, &QListWidget::itemDoubleClicked, this, &GroBrowser::_OnDoubleClicked);
+  connect(mp_ui->comboFilter, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &GroBrowser::_RefillList);
   connect(mp_ui->buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
   connect(mp_ui->buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
 
-  _RefillList();
+  mp_ui->listWidget->setFocus();
 }
 
 GroBrowser::~GroBrowser()
@@ -165,12 +172,49 @@ void GroBrowser::_OnDoubleClicked(QListWidgetItem* item)
   _CD(item);
 }
 
+void GroBrowser::_FillFilter(const char* filter)
+{
+  while (filter && *filter)
+  {
+    QString name = filter;
+    filter += name.length() + 1;
+    QString extension = filter;
+    filter += extension.length() + 1;
+    mp_ui->comboFilter->addItem(name, extension);
+  }
+
+  if (mp_ui->comboFilter->count() > 0)
+    mp_ui->comboFilter->setCurrentIndex(0);
+  else
+    mp_ui->comboFilter->setVisible(false);
+}
+
 void GroBrowser::_RefillList()
 {
   mp_ui->listWidget->clear();
 
-  auto insert_node = [this](const std::unique_ptr<_FileNode>& node)
+  std::vector<QRegExp> filters;
+  if (auto filter_wildcard = mp_ui->comboFilter->currentData(); filter_wildcard.isValid())
   {
+    const auto wildcards = filter_wildcard.toString().split(';', QString::SkipEmptyParts);
+    for (const auto& wildcard : wildcards)
+    {
+      QRegExp filter;
+      filter.setPattern(wildcard);
+      filter.setPatternSyntax(QRegExp::Wildcard);
+      filter.setCaseSensitivity(Qt::CaseInsensitive);
+      filters.push_back(filter);
+    }
+  }
+
+  auto insert_node = [this, &filters](const std::unique_ptr<_FileNode>& node)
+  {
+    if (node->IsFile() && !filters.empty())
+    {
+      if (std::none_of(filters.begin(), filters.end(), [&](const QRegExp& filter) { return filter.exactMatch(node->name); }))
+        return;
+    }
+
     QIcon node_icon;
     if (node->IsFile())
       node_icon = m_icon_provider.icon(QFileInfo(node->name));

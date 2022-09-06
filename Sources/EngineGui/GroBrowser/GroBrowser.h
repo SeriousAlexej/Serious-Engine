@@ -31,7 +31,7 @@ class QListWidgetItem;
 
 class GroBrowser : public QDialog {
 public:
-  explicit GroBrowser(QWidget* parent = nullptr);
+  GroBrowser(const char* filter, bool multiselection, QWidget* parent = nullptr);
   ~GroBrowser();
 
   struct _FileNode;
@@ -51,6 +51,7 @@ private:
   void _OnCDBack();
   void _OnCDForward();
   void _OnDoubleClicked(QListWidgetItem* item);
+  void _FillFilter(const char* filter);
   void _RefillList();
   void _CacheFiles();
 
