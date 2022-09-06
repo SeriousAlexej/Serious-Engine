@@ -989,7 +989,10 @@ BOOL CWorldEditorApp::SaveAllModified()
     }
   }
 
-	return CWinApp::SaveAllModified();
+  auto res = CWinApp::SaveAllModified();
+  if (res == TRUE)
+    pMainFrame->m_propertyTree.Reset();
+  return res;
 }
 
 void CWorldEditorApp::ReadFromIniFileOnInit(void)

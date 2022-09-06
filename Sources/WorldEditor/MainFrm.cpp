@@ -724,7 +724,6 @@ void CMainFrame::OnClose()
   SET_COLOR_TO_INI(30, L"30");
   SET_COLOR_TO_INI(31, L"31");
 
-  m_propertyTree.Reset();
   CMDIFrameWnd::OnClose();
 }
 
