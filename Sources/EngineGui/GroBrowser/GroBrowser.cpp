@@ -27,6 +27,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 Q_DECLARE_METATYPE(GroBrowser::_FileNode*)
 
+static constexpr size_t g_maxBackSteps = 20;
+
 struct GroBrowser::_FileNode {
   QString name;
   _FileNode* parent = nullptr;
@@ -36,6 +38,13 @@ struct GroBrowser::_FileNode {
   {
     return children.empty();
   }
+
+  QString Path() const
+  {
+    if (parent && !parent->name.isEmpty())
+      return parent->Path() + '\\' + name;
+    return name;
+  }
 };
 
 std::unique_ptr<GroBrowser::_FileNode> GroBrowser::mp_root_node;
@@ -44,6 +53,7 @@ GroBrowser::GroBrowser(QWidget* parent)
   : QDialog(parent)
   , mp_ui(std::make_unique<Ui::GroBrowser>())
 {
+  m_forward_history.reserve(g_maxBackSteps);
   _CacheFiles();
   mp_current_node = mp_root_node.get();
 
@@ -52,6 +62,9 @@ GroBrowser::GroBrowser(QWidget* parent)
   m_icon_provider.setOptions(QFileIconProvider::DontUseCustomDirectoryIcons);
 
   mp_ui->listWidget->installEventFilter(this);
+  connect(mp_ui->buttonUp, &QPushButton::clicked, this, &GroBrowser::_OnCDUp);
+  connect(mp_ui->buttonBack, &QPushButton::clicked, this, &GroBrowser::_OnCDBack);
+  connect(mp_ui->buttonForward, &QPushButton::clicked, this, &GroBrowser::_OnCDForward);
   connect(mp_ui->listWidget, &QListWidget::itemDoubleClicked, this, &GroBrowser::_OnDoubleClicked);
   connect(mp_ui->buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
   connect(mp_ui->buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
@@ -79,16 +92,72 @@ bool GroBrowser::eventFilter(QObject* watched, QEvent* event)
   return QDialog::eventFilter(watched, event);
 }
 
+bool GroBrowser::_CD(_FileNode* node, HistoryDirection history_direction)
+{
+  switch (history_direction)
+  {
+  case HistoryDirection::New:
+    if (!node || node->IsFile())
+      return false;
+    m_forward_history.clear();
+    m_history.push_back(mp_current_node);
+    if (m_history.size() == g_maxBackSteps)
+      m_history.pop_front();
+    break;
+
+  case HistoryDirection::Back:
+    if (m_history.empty())
+      return false;
+
+    node = m_history.back();
+    m_history.pop_back();
+    m_forward_history.push_back(mp_current_node);
+    break;
+
+  case HistoryDirection::Forward:
+    if (m_forward_history.empty())
+      return false;
+
+    node = m_forward_history.back();
+    m_forward_history.pop_back();
+    m_history.push_back(mp_current_node);
+    if (m_history.size() == g_maxBackSteps)
+      m_history.pop_front();
+    break;
+
+  default:
+    return false;
+  }
+
+  mp_current_node = node;
+  _RefillList();
+  mp_ui->buttonUp->setEnabled(mp_current_node->parent);
+  mp_ui->buttonBack->setEnabled(!m_history.empty());
+  mp_ui->buttonForward->setEnabled(!m_forward_history.empty());
+  mp_ui->linePath->setText(mp_current_node->Path());
+  return true;
+}
+
 bool GroBrowser::_CD(QListWidgetItem* item)
 {
   auto* node = item->data(Qt::UserRole).value<_FileNode*>();
-  if (!node->IsFile())
-  {
-    mp_current_node = node;
-    _RefillList();
-    return true;
-  }
-  return false;
+  return _CD(node, HistoryDirection::New);
+}
+
+void GroBrowser::_OnCDUp()
+{
+  if (mp_current_node->parent)
+    _CD(mp_current_node->parent, HistoryDirection::New);
+}
+
+void GroBrowser::_OnCDBack()
+{
+  _CD(nullptr, HistoryDirection::Back);
+}
+
+void GroBrowser::_OnCDForward()
+{
+  _CD(nullptr, HistoryDirection::Forward);
 }
 
 void GroBrowser::_OnDoubleClicked(QListWidgetItem* item)
