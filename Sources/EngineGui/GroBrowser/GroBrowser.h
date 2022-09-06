@@ -17,6 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define GRO_BROWSER_H
 
 #include <QDialog>
+#include <QString>
 #include <QFileIconProvider>
 
 #include <deque>
@@ -33,6 +34,8 @@ class GroBrowser : public QDialog {
 public:
   GroBrowser(const char* filter, bool multiselection, QWidget* parent = nullptr);
   ~GroBrowser();
+
+  std::vector<QString> SelectedFiles() const;
 
   struct _FileNode;
 
@@ -51,6 +54,7 @@ private:
   void _OnCDBack();
   void _OnCDForward();
   void _OnDoubleClicked(QListWidgetItem* item);
+  void _OnSelectionChanged();
   void _FillFilter(const char* filter);
   void _RefillList();
   void _CacheFiles();

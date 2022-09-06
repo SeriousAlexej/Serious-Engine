@@ -266,7 +266,28 @@ CTFileName CEngineGUI::FileRequester(
     CWinAppQt::ModalGuard guard;
     QWinWidget modal_widget(AfxGetMainWnd()->GetSafeHwnd(), nullptr, Qt::WindowFlags {});
     GroBrowser gro_browser(pchrFilters, pafnSelectedFiles, &modal_widget);
-    bResult = gro_browser.exec() == QDialog::Accepted ? TRUE : FALSE;
+    gro_browser.exec();
+    const auto files = gro_browser.SelectedFiles();
+    if (!files.empty())
+    {
+      if (pafnSelectedFiles)
+      {
+        for (const auto& file : files)
+        {
+          const auto file_path = file.toLocal8Bit();
+          (*pafnSelectedFiles->New()) = CTString(file_path.constData());
+        }
+
+        AfxSetResourceHandle((HINSTANCE)hOldResource);
+        return CTString("Multiple files selected");
+      }
+      else
+      {
+        AfxSetResourceHandle((HINSTANCE)hOldResource);
+        const auto file_path = files.front().toLocal8Bit();
+        return CTString(file_path.constData());
+      }
+    }
   }
 
   if( bResult)

@@ -72,6 +72,7 @@ GroBrowser::GroBrowser(const char* filter, bool multiselection, QWidget* parent)
   connect(mp_ui->buttonBack, &QPushButton::clicked, this, &GroBrowser::_OnCDBack);
   connect(mp_ui->buttonForward, &QPushButton::clicked, this, &GroBrowser::_OnCDForward);
   connect(mp_ui->listWidget, &QListWidget::itemDoubleClicked, this, &GroBrowser::_OnDoubleClicked);
+  connect(mp_ui->listWidget, &QListWidget::itemSelectionChanged, this, &GroBrowser::_OnSelectionChanged);
   connect(mp_ui->comboFilter, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &GroBrowser::_RefillList);
   connect(mp_ui->buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
   connect(mp_ui->buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
@@ -81,6 +82,21 @@ GroBrowser::GroBrowser(const char* filter, bool multiselection, QWidget* parent)
 
 GroBrowser::~GroBrowser()
 {
+}
+
+std::vector<QString> GroBrowser::SelectedFiles() const
+{
+  std::vector<QString> files;
+
+  if (result() == QDialog::Accepted)
+    for (const auto* item : mp_ui->listWidget->selectedItems())
+    {
+      auto* node = item->data(Qt::UserRole).value<_FileNode*>();
+      if (node && node->IsFile())
+        files.push_back(node->Path());
+    }
+
+  return files;
 }
 
 bool GroBrowser::eventFilter(QObject* watched, QEvent* event)
@@ -170,6 +186,17 @@ void GroBrowser::_OnCDForward()
 void GroBrowser::_OnDoubleClicked(QListWidgetItem* item)
 {
   _CD(item);
+}
+
+void GroBrowser::_OnSelectionChanged()
+{
+  const auto selection = mp_ui->listWidget->selectedItems();
+  const bool has_selected_file = std::any_of(selection.begin(), selection.end(), [](const QListWidgetItem* item)
+    {
+      auto* node = item->data(Qt::UserRole).value<_FileNode*>();
+      return node && node->IsFile();
+    });
+  mp_ui->buttonBox->button(QDialogButtonBox::Open)->setEnabled(has_selected_file);
 }
 
 void GroBrowser::_FillFilter(const char* filter)
