@@ -17,7 +17,6 @@
 #define ID_CLOSE                        7
 #define ID_ADD_ANIMATION                8
 #define ID_DELETE_ANIMATION             9
-#define IDD_ABOUTBOX                    100
 #define CG_IDD_BROWSEDIALOGBAR          102
 #define IDD_PROPERTY_TREE               103
 #define CG_IDD_PROPERTYCOMBO            105

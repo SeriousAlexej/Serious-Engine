@@ -1217,22 +1217,6 @@ END
 // Dialog
 //
 
-IDD_ABOUTBOX DIALOG 0, 0, 216, 87
-STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "About WorldEditor"
-FONT 8, "MS Sans Serif"
-BEGIN
-    ICON            IDR_MAINFRAME,IDC_STATIC,108,7,20,20
-    DEFPUSHBUTTON   "OK",IDOK,177,7,32,13,WS_GROUP
-    CTEXT           "Serious Engine",IDC_STATIC,7,9,58,8,SS_NOPREFIX
-    LTEXT           "Copyright © 2001 CroTeam Ltd. All rights reserved.",IDC_STATIC,7,72,197,8
-    CTEXT           "Serious Editor",IDC_STATIC,7,18,60,8,SS_NOPREFIX
-    LTEXT           "For licensing Serious Engine email:",IDC_STATIC,7,42,115,8
-    LTEXT           "licensing@croteam.com",IDC_STATIC,129,42,80,8
-    LTEXT           "Please visit Croteam's WWW site at:",IDC_STATIC,7,51,121,8
-    LTEXT           "www.croteam.com",IDC_STATIC,129,51,80,8
-END
-
 IDD_CREATE_VIRTUAL_DIRECTORY DIALOG 0, 0, 318, 125
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Virtual directory"
@@ -2327,22 +2311,6 @@ END
 #ifdef APSTUDIO_INVOKED
 GUIDELINES DESIGNINFO
 BEGIN
-    IDD_ABOUTBOX, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 209
-        VERTGUIDE, 67
-        VERTGUIDE, 101
-        VERTGUIDE, 129
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 80
-        HORZGUIDE, 17
-        HORZGUIDE, 26
-        HORZGUIDE, 50
-        HORZGUIDE, 59
-        HORZGUIDE, 80
-    END
-
     IDD_CREATE_VIRTUAL_DIRECTORY, DIALOG
     BEGIN
         LEFTMARGIN, 7

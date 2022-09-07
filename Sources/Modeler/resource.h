@@ -5,7 +5,6 @@
 #define ID_EXPORT                       3
 #define ID_CLEAR_SELECTION              3
 #define ID_SELECT_ALL                   4
-#define IDD_ABOUTBOX                    100
 #define ID_MAGNIFY_MORE                 106
 #define ID_MAGNIFY_LESS                 107
 #define ID_TEST_MODE_WND                109
