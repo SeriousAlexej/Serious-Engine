@@ -15,6 +15,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "stdh.h"
 #include "GroBrowser.h"
+#include "GroBrowser.h.moc"
 #include "GroBrowser.ui.h"
 #include "GroBrowser.qrc.h"
 
@@ -48,6 +49,45 @@ struct GroBrowser::_FileNode {
   }
 };
 
+CacheBuilder::CacheBuilder(std::unique_ptr<GroBrowser::_FileNode>& root_node, QObject* parent)
+  : QThread(parent)
+  , mp_root_node(root_node)
+{
+}
+
+void CacheBuilder::run()
+{
+  mp_root_node = std::make_unique<GroBrowser::_FileNode>();
+  CDynamicStackArray<CTFileName> game_files;
+  MakeDirList(game_files, CTString(""), "", DLI_RECURSIVE);
+  for (INDEX i = 0; i < game_files.Count(); ++i)
+  {
+    CTFileName full_filename;
+    const auto file_type = ExpandFilePath(EFP_READ, game_files[i], full_filename);
+    if (file_type == EFP_BASEZIP || file_type == EFP_MODZIP)
+    {
+      GroBrowser::_FileNode* current_parent = mp_root_node.get();
+      const std::string_view str_view(full_filename.str_String, full_filename.Length());
+      auto beg = std::begin(str_view);
+      const auto end = std::end(str_view);
+      while (true)
+      {
+        auto next_beg = std::find(beg, end, '\\');
+        const auto name = QString::fromLocal8Bit(beg.operator->(), std::distance(beg, next_beg));
+        auto new_node = std::make_unique<GroBrowser::_FileNode>();
+        new_node->name = name;
+        new_node->parent = current_parent;
+        auto [inserted_node, dummy] = current_parent->children.try_emplace(name.toLower(), std::move(new_node));
+        current_parent = inserted_node->second.get();
+        if (next_beg == end)
+          break;
+        beg = std::next(next_beg);
+      }
+    }
+  }
+  Calculated();
+}
+
 std::unique_ptr<GroBrowser::_FileNode> GroBrowser::mp_root_node;
 
 GroBrowser::GroBrowser(const char* filter, bool multiselection, QWidget* parent)
@@ -55,15 +95,11 @@ GroBrowser::GroBrowser(const char* filter, bool multiselection, QWidget* parent)
   , mp_ui(std::make_unique<Ui::GroBrowser>())
 {
   m_forward_history.reserve(g_maxBackSteps);
-  _CacheFiles();
-  mp_current_node = mp_root_node.get();
-
   setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
-  mp_ui->setupUi(this);
   m_icon_provider.setOptions(QFileIconProvider::DontUseCustomDirectoryIcons);
+  mp_ui->setupUi(this);
 
   _FillFilter(filter);
-  _RefillList();
 
   mp_ui->listWidget->installEventFilter(this);
   mp_ui->listWidget->setSelectionMode(multiselection ? QAbstractItemView::ExtendedSelection : QAbstractItemView::SingleSelection);
@@ -77,11 +113,25 @@ GroBrowser::GroBrowser(const char* filter, bool multiselection, QWidget* parent)
   connect(mp_ui->buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
   connect(mp_ui->buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
 
-  mp_ui->listWidget->setFocus();
+  if (!mp_root_node)
+  {
+    mp_ui->stackedWidget->setCurrentWidget(mp_ui->pageProgress);
+    auto* cache_builder = new CacheBuilder(mp_root_node, this);
+    connect(cache_builder, &CacheBuilder::Calculated, this, &GroBrowser::_OnCacheReady);
+    connect(cache_builder, &CacheBuilder::finished, cache_builder, &QObject::deleteLater);
+    cache_builder->start();
+    mp_cache_builder = cache_builder;
+  }
+  else
+  {
+    _OnCacheReady();
+  }
 }
 
 GroBrowser::~GroBrowser()
 {
+  if (mp_cache_builder)
+    mp_cache_builder->wait();
 }
 
 std::vector<QString> GroBrowser::SelectedFiles() const
@@ -259,37 +309,10 @@ void GroBrowser::_RefillList()
       insert_node(node);
 }
 
-void GroBrowser::_CacheFiles()
+void GroBrowser::_OnCacheReady()
 {
-  if (mp_root_node)
-    return;
-
-  mp_root_node = std::make_unique<_FileNode>();
-  CDynamicStackArray<CTFileName> game_files;
-  MakeDirList(game_files, CTString(""), "", DLI_RECURSIVE);
-  for (INDEX i = 0; i < game_files.Count(); ++i)
-  {
-    CTFileName full_filename;
-    const auto file_type = ExpandFilePath(EFP_READ, game_files[i], full_filename);
-    if (file_type == EFP_BASEZIP || file_type == EFP_MODZIP)
-    {
-      _FileNode* current_parent = mp_root_node.get();
-      const std::string_view str_view(full_filename.str_String, full_filename.Length());
-      auto beg = std::begin(str_view);
-      const auto end = std::end(str_view);
-      while (true)
-      {
-        auto next_beg = std::find(beg, end, '\\');
-        const auto name = QString::fromLocal8Bit(beg.operator->(), std::distance(beg, next_beg));
-        auto new_node = std::make_unique<_FileNode>();
-        new_node->name = name;
-        new_node->parent = current_parent;
-        auto [inserted_node, dummy] = current_parent->children.try_emplace(name.toLower(), std::move(new_node));
-        current_parent = inserted_node->second.get();
-        if (next_beg == end)
-          break;
-        beg = std::next(next_beg);
-      }
-    }
-  }
+  mp_ui->stackedWidget->setCurrentWidget(mp_ui->pageMain);
+  mp_current_node = mp_root_node.get();
+  _RefillList();
+  mp_ui->listWidget->setFocus();
 }

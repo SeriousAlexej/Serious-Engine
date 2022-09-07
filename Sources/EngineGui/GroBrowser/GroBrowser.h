@@ -18,6 +18,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <QDialog>
 #include <QString>
+#include <QThread>
+#include <QPointer>
 #include <QFileIconProvider>
 
 #include <deque>
@@ -57,7 +59,7 @@ private:
   void _OnSelectionChanged();
   void _FillFilter(const char* filter);
   void _RefillList();
-  void _CacheFiles();
+  void _OnCacheReady();
 
 private:
   std::unique_ptr<Ui::GroBrowser> mp_ui;
@@ -65,7 +67,22 @@ private:
   _FileNode* mp_current_node = nullptr;
   std::deque<_FileNode*> m_history;
   std::vector<_FileNode*> m_forward_history;
+  QPointer<QThread> mp_cache_builder;
   static std::unique_ptr<_FileNode> mp_root_node;
+};
+
+class CacheBuilder final : public QThread {
+  Q_OBJECT
+public:
+  explicit CacheBuilder(std::unique_ptr<GroBrowser::_FileNode>& root_node, QObject* parent = nullptr);
+
+  Q_SIGNAL void Calculated();
+
+private:
+  void run() override;
+
+private:
+  std::unique_ptr<GroBrowser::_FileNode>& mp_root_node;
 };
 
 #endif

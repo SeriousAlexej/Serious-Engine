@@ -83,9 +83,6 @@
     <ClInclude Include="WndDisplayTexture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GroBrowser\GroBrowser.h">
-      <Filter>Header Files\GroBrowser</Filter>
-    </ClInclude>
     <ClInclude Include="GroBrowser\GroBrowser.ui.h">
       <Filter>Header Files\GroBrowser</Filter>
     </ClInclude>
@@ -112,5 +109,13 @@
     <CustomBuild Include="GroBrowser\GroBrowser.qrc">
       <Filter>Source Files\GroBrowser</Filter>
     </CustomBuild>
+    <CustomBuild Include="GroBrowser\GroBrowser.h">
+      <Filter>Header Files\GroBrowser</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="GroBrowser\GroBrowser.h.moc">
+      <Filter>Header Files\GroBrowser</Filter>
+    </None>
   </ItemGroup>
 </Project>
