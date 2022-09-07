@@ -77,6 +77,9 @@ public:
   explicit CacheBuilder(std::unique_ptr<GroBrowser::_FileNode>& root_node, QObject* parent = nullptr);
 
   Q_SIGNAL void Calculated();
+  Q_SIGNAL void Max(int maximum);
+  Q_SIGNAL void FileDone(int done);
+  Q_SIGNAL void Progress(QString currentFile);
 
 private:
   void run() override;

@@ -60,6 +60,7 @@ void CacheBuilder::run()
   mp_root_node = std::make_unique<GroBrowser::_FileNode>();
   CDynamicStackArray<CTFileName> game_files;
   MakeDirList(game_files, CTString(""), "", DLI_RECURSIVE);
+  Max(game_files.Count());
   for (INDEX i = 0; i < game_files.Count(); ++i)
   {
     CTFileName full_filename;
@@ -83,7 +84,9 @@ void CacheBuilder::run()
           break;
         beg = std::next(next_beg);
       }
+      Progress(current_parent->name);
     }
+    FileDone(i + 1);
   }
   Calculated();
 }
@@ -119,6 +122,9 @@ GroBrowser::GroBrowser(const char* filter, bool multiselection, QWidget* parent)
     auto* cache_builder = new CacheBuilder(mp_root_node, this);
     connect(cache_builder, &CacheBuilder::Calculated, this, &GroBrowser::_OnCacheReady);
     connect(cache_builder, &CacheBuilder::finished, cache_builder, &QObject::deleteLater);
+    connect(cache_builder, &CacheBuilder::Max, this, [this](int maximum) { mp_ui->progressBar->setMaximum(maximum); });
+    connect(cache_builder, &CacheBuilder::FileDone, this, [this](int done) { mp_ui->progressBar->setValue(done); });
+    connect(cache_builder, &CacheBuilder::Progress, this, [this](QString current_file) { mp_ui->labelCurrentFile->setText(current_file); });
     cache_builder->start();
     mp_cache_builder = cache_builder;
   }
