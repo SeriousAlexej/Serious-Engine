@@ -94,6 +94,7 @@ private:
   QObject* mp_qtContext = nullptr;
 
 public:
+  void AddToRecentFileList(LPCTSTR lpszPathName) override;
   void EditScriptAndReopenDocument(CTFileName fnScriptName);
 	BOOL SubInitInstance(void);
   BOOL m_bRefreshPatchPalette;

@@ -458,6 +458,13 @@ void CModelerApp::OnQtAbout()
   QMessageBox::aboutQt(&modal_widget, "About Qt");
 }
 
+void CModelerApp::AddToRecentFileList(LPCTSTR lpszPathName)
+{
+  ASSERT_VALID(this);
+  if (m_pRecentFileList)
+    m_pRecentFileList->Add(lpszPathName);
+}
+
 void CModelerApp::EditScriptAndReopenDocument(CTFileName fnScriptName)
 {
   try
