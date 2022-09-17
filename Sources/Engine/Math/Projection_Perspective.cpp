@@ -384,10 +384,16 @@ void CPerspectiveProjection3D::ProjectCoordinate(const FLOAT3D &v3dObjectPoint,
   v3dViewPoint = v3dObjectPoint*pr_RotationMatrix + pr_TranslationVector;
 
   // divide X and Y with Z and add the center of screen
-  v3dViewPoint(1) = pr_ScreenCenter(1) +
-      v3dViewPoint(1) * ppr_PerspectiveRatios(1) / v3dViewPoint(3);
-  v3dViewPoint(2) = pr_ScreenCenter(2) +
-      v3dViewPoint(2) * ppr_PerspectiveRatios(2) / v3dViewPoint(3);
+  v3dViewPoint(1) = pr_ScreenCenter(1) + v3dViewPoint(1) * ppr_PerspectiveRatios(1) / v3dViewPoint(3);
+  v3dViewPoint(2) = pr_ScreenCenter(2) + v3dViewPoint(2) * ppr_PerspectiveRatios(2) / v3dViewPoint(3);
+}
+
+FLOAT3D CPerspectiveProjection3D::ProjectCoordinateReverse(const FLOAT3D& v3dViewPoint) const
+{
+  FLOAT3D v3dObjectPoint = v3dViewPoint;
+  v3dObjectPoint(1) = (v3dObjectPoint(1) - pr_ScreenCenter(1)) / ppr_PerspectiveRatios(1) * v3dObjectPoint(3);
+  v3dObjectPoint(2) = (v3dObjectPoint(2) - pr_ScreenCenter(2)) / ppr_PerspectiveRatios(2) * v3dObjectPoint(3);
+  return (v3dObjectPoint - pr_TranslationVector) * (!pr_RotationMatrix);
 }
 
 /*

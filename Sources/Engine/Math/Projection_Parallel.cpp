@@ -262,14 +262,16 @@ void CParallelProjection3D::ProjectCoordinate(const FLOAT3D &v3dObjectPoint,
   // rotate and translate the point
   v3dViewPoint = v3dObjectPoint*pr_RotationMatrix + pr_TranslationVector;
   // multiply X and Y coordinates with zoom factor and add the center of screen
-  v3dViewPoint(1) =
-    pr_ScreenCenter(1)
-    +v3dViewPoint(1)*pr_vZoomFactors(1)
-    +v3dViewPoint(3)*pr_vStepFactors(1);
-  v3dViewPoint(2) =
-    pr_ScreenCenter(2)
-    +v3dViewPoint(2)*pr_vZoomFactors(2)
-    +v3dViewPoint(3)*pr_vStepFactors(2);
+  v3dViewPoint(1) = pr_ScreenCenter(1) + v3dViewPoint(1)*pr_vZoomFactors(1) + v3dViewPoint(3)*pr_vStepFactors(1);
+  v3dViewPoint(2) = pr_ScreenCenter(2) + v3dViewPoint(2)*pr_vZoomFactors(2) + v3dViewPoint(3)*pr_vStepFactors(2);
+}
+
+FLOAT3D CParallelProjection3D::ProjectCoordinateReverse(const FLOAT3D& v3dViewPoint) const
+{
+  FLOAT3D v3dObjectPoint = v3dViewPoint;
+  v3dObjectPoint(1) = (v3dObjectPoint(1) - pr_ScreenCenter(1) - v3dObjectPoint(3) * pr_vStepFactors(1)) / pr_vZoomFactors(1);
+  v3dObjectPoint(2) = (v3dObjectPoint(2) - pr_ScreenCenter(2) - v3dObjectPoint(3) * pr_vStepFactors(2)) / pr_vZoomFactors(2);
+  return (v3dObjectPoint - pr_TranslationVector) * (!pr_RotationMatrix);
 }
 
 /*

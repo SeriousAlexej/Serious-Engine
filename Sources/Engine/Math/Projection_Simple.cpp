@@ -116,6 +116,11 @@ void CSimpleProjection3D::ProjectCoordinate(const FLOAT3D &v3dObjectPoint,
   v3dViewPoint = v3dObjectPoint*pr_RotationMatrix + pr_TranslationVector;
 }
 
+FLOAT3D CSimpleProjection3D::ProjectCoordinateReverse(const FLOAT3D& v3dViewPoint) const
+{
+  return (v3dViewPoint - pr_TranslationVector) * (!pr_RotationMatrix);
+}
+
 /*
  * Get a distance of object point from the viewer.
  */

@@ -130,6 +130,8 @@ public:
 
   /* Project 3D object point into 3D view space. */
   virtual void ProjectCoordinate(const FLOAT3D &v3dObjectPoint, FLOAT3D &v3dViewPoint) const = 0;
+  /* Reverse project 3D view point into 3D object space */
+  virtual FLOAT3D ProjectCoordinateReverse(const FLOAT3D& v3dViewPoint) const = 0;
   /* Get a distance of object point from the viewer. */
   virtual FLOAT GetDistance(const FLOAT3D &v3dObjectPoint) const = 0;
   /* Project 3D object direction vector into 3D view space. */
@@ -202,6 +204,8 @@ public:
 
   /* Project 3D object point into 3D view space. */
   void ProjectCoordinate(const FLOAT3D &v3dObjectPoint, FLOAT3D &v3dViewPoint) const;
+  /* Reverse project 3D view point into 3D object space */
+  FLOAT3D ProjectCoordinateReverse(const FLOAT3D& v3dViewPoint) const;
   /* Get a distance of object point from the viewer. */
   FLOAT GetDistance(const FLOAT3D &v3dObjectPoint) const;
   /* Project 3D object direction vector into 3D view space. */
@@ -263,6 +267,8 @@ public:
 
   /* Project 3D object point into 3D view space. */
   void ProjectCoordinate(const FLOAT3D &v3dObjectPoint, FLOAT3D &v3dViewPoint) const;
+  /* Reverse project 3D view point into 3D object space */
+  FLOAT3D ProjectCoordinateReverse(const FLOAT3D& v3dViewPoint) const;
   /* Get a distance of object point from the viewer. */
   FLOAT GetDistance(const FLOAT3D &v3dObjectPoint) const;
   /* Project 3D object direction vector into 3D view space. */
@@ -321,6 +327,8 @@ public:
 
   /* Project 3D object point into 3D view space. */
   virtual void ProjectCoordinate(const FLOAT3D &v3dObjectPoint, FLOAT3D &v3dViewPoint) const;
+  /* Reverse project 3D view point into 3D object space */
+  FLOAT3D ProjectCoordinateReverse(const FLOAT3D& v3dViewPoint) const;
   /* Get a distance of object point from the viewer. */
   virtual FLOAT GetDistance(const FLOAT3D &v3dObjectPoint) const;
   /* Project 3D object direction vector into 3D view space. */
@@ -377,6 +385,8 @@ public:
 
   /* Project 3D object point into 3D view space. */
   void ProjectCoordinate(const FLOAT3D &v3dObjectPoint, FLOAT3D &v3dViewPoint) const;
+  /* Reverse project 3D view point into 3D object space */
+  FLOAT3D ProjectCoordinateReverse(const FLOAT3D& v3dViewPoint) const;
   /* Get a distance of object point from the viewer. */
   FLOAT GetDistance(const FLOAT3D &v3dObjectPoint) const;
   /* Project 3D object direction vector into 3D view space. */

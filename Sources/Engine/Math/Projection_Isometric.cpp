@@ -276,6 +276,14 @@ void CIsometricProjection3D::ProjectCoordinate(const FLOAT3D &v3dObjectPoint,
   v3dViewPoint(2) = pr_ScreenCenter(2) + v3dViewPoint(2) * ipr_ZoomFactor*pr_fViewStretch;
 }
 
+FLOAT3D CIsometricProjection3D::ProjectCoordinateReverse(const FLOAT3D& v3dViewPoint) const
+{
+  FLOAT3D v3dObjectPoint = v3dViewPoint;
+  v3dObjectPoint(1) = (v3dObjectPoint(1) - pr_ScreenCenter(1)) / ipr_ZoomFactor / pr_fViewStretch;
+  v3dObjectPoint(2) = (v3dObjectPoint(2) - pr_ScreenCenter(2)) / ipr_ZoomFactor / pr_fViewStretch;
+  return (v3dObjectPoint - pr_TranslationVector) * (!pr_RotationMatrix);
+}
+
 /*
  * Get a distance of object point from the viewer.
  */
