@@ -438,6 +438,15 @@ public:
   CTextureData *m_ptdEntityMarkerTexture;
 	CModelData *m_pEntityMarkerModelData;
 	CModelObject *m_pEntityMarkerModelObject;
+  CTextureData* m_gizmo_texture;
+  CModelData* m_axis_data = nullptr;
+  CModelObject* m_axis_model = nullptr;
+  CModelData* m_axis_selected_data = nullptr;
+  CModelObject* m_axis_model_selected = nullptr;
+  CModelData* m_ring_data = nullptr;
+  CModelObject* m_ring_model = nullptr;
+  CModelData* m_ring_selected_data = nullptr;
+  CModelObject* m_ring_model_selected = nullptr;
   // for holding portal selection marker model
   CTextureData *m_ptdPortalMarkerTexture;
 	CModelData *m_pPortalMarkerModelData;

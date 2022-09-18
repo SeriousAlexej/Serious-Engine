@@ -3488,6 +3488,68 @@ void CWorldEditorDoc::SelectEntitiesByVolumeBox(void)
   SetStatusLineModeInfoMessage();
 }
 
+void CWorldEditorDoc::UpdateGizmoVisibility()
+{
+  const bool old_visibility = m_gizmo_visibility;
+  const auto* old_exclusivity = m_exclusive_gizmo_visibility;
+
+  m_gizmo_visibility = false;
+  m_exclusive_gizmo_visibility = nullptr;
+
+  if (GetEditingMode() == ENTITY_MODE && m_selEntitySelection.Count() != 0)
+  {
+    bool all_views_have_none_interaction = true;
+    POSITION pos = GetFirstViewPosition();
+    for (auto* view = static_cast<CWorldEditorView*>(GetNextView(pos)); view; view = static_cast<CWorldEditorView*>(GetNextView(pos)))
+    {
+      if (view->GetChildFrame()->m_bViewFromEntity)
+        continue;
+
+      if (view->m_iaInputAction != IA_NONE)
+        all_views_have_none_interaction = false;
+
+      if (view->m_iaInputAction == IA_MOVING_ENTITY_SELECTION_ALONG_AXIS ||
+        view->m_iaInputAction == IA_ROTATING_ENTITY_SELECTION_AROUND_AXIS)
+      {
+        m_exclusive_gizmo_visibility = view;
+        break;
+      }
+    }
+
+    const bool bCtrl = (GetKeyState(VK_CONTROL) & 0x8000) != 0;
+    const bool bShift = (GetKeyState(VK_SHIFT) & 0x8000) != 0;
+    const bool bAlt = (GetKeyState(VK_MENU) & 0x8000) != 0;
+    m_gizmo_visibility = m_exclusive_gizmo_visibility || (all_views_have_none_interaction && bCtrl && !bShift && !bAlt);
+  }
+
+  if (old_exclusivity != m_exclusive_gizmo_visibility || m_gizmo_visibility != old_visibility)
+    UpdateAllViews(m_exclusive_gizmo_visibility);
+}
+
+bool CWorldEditorDoc::GizmoVisible(const CWorldEditorView* view) const
+{
+  if (!m_gizmo_visibility)
+    return false;
+  if (!m_exclusive_gizmo_visibility)
+    return true;
+  return view == m_exclusive_gizmo_visibility;
+}
+
+void CWorldEditorDoc::UpdateSelectionCommonPos()
+{
+  m_plMouseMove = CPlacement3D(FLOAT3D(0, 0, 0), ANGLE3D(0, 0, 0));
+
+  if (m_selEntitySelection.Count() == 0)
+    return;
+
+  FLOATaabbox3D box;
+  // accumulate positions
+  for (CEntity* iten : m_selEntitySelection)
+    box |= iten->GetPlacement().pl_PositionVector;
+  m_plMouseMove.pl_PositionVector = box.Center();
+  m_plMouseMove.pl_PositionVector(2) = box.Min()(2);
+}
+
 /*
  * Function corects coordinates of vertices that represent box because given vertice is
  * moved and box has invalid geometry

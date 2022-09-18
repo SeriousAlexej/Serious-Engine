@@ -19,6 +19,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef WORLDEDITORVIEW_H
 #define WORLDEDITORVIEW_H 1
 
+#include <utility>
+#include <optional>
 
 extern BOOL MyChooseColor( COLORREF &clrNewColor, CWnd &wndOwner);
 
@@ -32,6 +34,16 @@ extern BOOL MyChooseColor( COLORREF &clrNewColor, CWnd &wndOwner);
 
 #define OVXF_CLOSEST  (1L<<8)
 #define OVXF_SELECTED (1L<<9)
+
+enum class GizmoAxis
+{
+  X_Translation,
+  Y_Translation,
+  Z_Translation,
+  X_Rotation,
+  Y_Rotation,
+  Z_Rotation
+};
 
 enum InputAction {
   IA_NONE = 0,
@@ -71,6 +83,8 @@ enum InputAction {
   IA_MANUAL_MIP_SWITCH_FACTOR_CHANGING,
   IA_CHANGING_RANGE_PROPERTY,
   IA_CHANGING_ANGLE3D_PROPERTY,
+  IA_MOVING_ENTITY_SELECTION_ALONG_AXIS,
+  IA_ROTATING_ENTITY_SELECTION_AROUND_AXIS
 };
 
 class CWorldEditorView : public CView      
@@ -113,8 +127,6 @@ public:
   FLOAT m_fpixGridSteep;        // steep in float pixels f of grid line
   FLOAT3D m_f3dRotationOrigin;  // used as rotation origin while changing mapping coordinates
   FLOATplane3D m_plTranslationPlane;  // plane used for polgon mapping translation
-  CPlacement3D m_plMouseMove;   // used for continous mouse editting
-  CPlacement3D m_plMouseOffset; // used for offseted mouse editting
   CBrushPolygon *m_pbpoTranslationPlane;
   // current grid in meters
   FLOAT m_fGridInMeters;
@@ -152,8 +164,12 @@ public:
 	COLORREF m_PaperColor;
 	COLORREF m_InkColor;
 	BOOL m_IsWinBcgTexture;
-// Operations
+	std::optional<GizmoAxis> m_selected_axis;
+	FLOAT2D m_axis_projection;
 public:
+	void ResetInteraction();
+	void AdjustGizmoProjection(CAnyProjection3D& proj);
+	std::optional<std::pair<GizmoAxis, FLOAT2D>> HoveredAxis();
   // obtain draw port
   inline CDrawPort *GetDrawPort( void) {
     if( theApp.m_bChangeDisplayModeInProgress)

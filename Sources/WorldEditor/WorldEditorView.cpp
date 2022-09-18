@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <Engine/Terrain/TerrainMisc.h>
 #include <Engine/Math/TextureMapping_Utils.h>
 
+#include <vector>
 #include <cmath>
 
 #ifdef _DEBUG
@@ -360,6 +361,210 @@ END_MESSAGE_MAP()
   
 namespace
 {
+  constexpr FLOAT g_gizmo_z_offset = -5.0f;
+
+  FLOAT _DistanceToEdge(const FLOAT2D& p, const FLOAT2D& e1, const FLOAT2D& e2)
+  {
+    const FLOAT2D e1p = p - e1;
+    const FLOAT2D e2e1 = e2 - e1;
+    const FLOAT edge_len = e2e1.Length();
+    if (edge_len < 0.01)
+      return e1p.Length();
+    const FLOAT proj = e1p % e2e1 / edge_len;
+    if (proj < 0)
+      return e1p.Length();
+    if (proj > edge_len)
+      return (p - e2).Length();
+    return (e2e1 / edge_len * proj + e1 - p).Length();
+  }
+
+  CModelObject* _GetAxisModel(GizmoAxis gizmo, std::optional<GizmoAxis> selected)
+  {
+    CModelObject* m = nullptr;
+    switch (gizmo)
+    {
+    case GizmoAxis::X_Translation: [[fallthrough]];
+    case GizmoAxis::Y_Translation: [[fallthrough]];
+    case GizmoAxis::Z_Translation:
+      if (selected.has_value() && gizmo == *selected)
+        m = theApp.m_axis_model_selected;
+      else
+        m = theApp.m_axis_model;
+      break;
+    case GizmoAxis::X_Rotation: [[fallthrough]];
+    case GizmoAxis::Y_Rotation: [[fallthrough]];
+    case GizmoAxis::Z_Rotation:
+      if (selected.has_value() && gizmo == *selected)
+        m = theApp.m_ring_model_selected;
+      else
+        m = theApp.m_ring_model;
+      break;
+    default:
+      break;
+    }
+    return m;
+  }
+
+  FLOAT3D _GetAxisDirection(GizmoAxis gizmo)
+  {
+    switch (gizmo)
+    {
+    case GizmoAxis::X_Translation: [[fallthrough]];
+    case GizmoAxis::X_Rotation:
+      return FLOAT3D(1, 0, 0);
+
+    case GizmoAxis::Y_Translation: [[fallthrough]];
+    case GizmoAxis::Y_Rotation:
+      return FLOAT3D(0, 1, 0);
+
+    case GizmoAxis::Z_Translation: [[fallthrough]];
+    case GizmoAxis::Z_Rotation:
+      return FLOAT3D(0, 0, 1);
+
+    default:
+      break;
+    }
+    return FLOAT3D(0, 0, 0);
+  }
+
+  FLOAT3D _GetAxisHPB(GizmoAxis gizmo)
+  {
+    switch (gizmo)
+    {
+    case GizmoAxis::X_Translation: [[fallthrough]];
+    case GizmoAxis::X_Rotation:
+      return FLOAT3D(0, 1, 0);
+
+    case GizmoAxis::Y_Translation: [[fallthrough]];
+    case GizmoAxis::Y_Rotation:
+      return FLOAT3D(1, 0, 0);
+
+    case GizmoAxis::Z_Translation: [[fallthrough]];
+    case GizmoAxis::Z_Rotation:
+      return FLOAT3D(0, 0, 1);
+
+    default:
+      break;
+    }
+    return FLOAT3D(0, 0, 0);
+  }
+
+  ANGLE3D _GetAxisRotation(GizmoAxis gizmo)
+  {
+    ANGLE3D a(0, 0, 0);
+    DirectionVectorToAngles(_GetAxisDirection(gizmo), a);
+    return a;
+  }
+
+  COLOR _GetAxisColor(GizmoAxis gizmo)
+  {
+    COLOR c = C_GRAY;
+    switch (gizmo)
+    {
+    case GizmoAxis::X_Translation: [[fallthrough]];
+    case GizmoAxis::X_Rotation:
+      c = C_RED;
+      break;
+    case GizmoAxis::Y_Translation: [[fallthrough]];
+    case GizmoAxis::Y_Rotation:
+      c = C_GREEN;
+      break;
+    case GizmoAxis::Z_Translation: [[fallthrough]];
+    case GizmoAxis::Z_Rotation:
+      c = C_BLUE;
+      break;
+    default:
+      break;
+    }
+    return c;
+  }
+
+  std::vector<std::pair<FLOAT2D, FLOAT2D>> _GenerateCircle(const int num_verts, const double radius)
+  {
+    std::vector<std::pair<FLOAT2D, FLOAT2D>> edges;
+    const double angle_step = PI * 2.0 / num_verts;
+    for (int i = 0; i < num_verts; ++i)
+    {
+      const double angle1 = angle_step * i;
+      const double angle2 = angle_step + angle1;
+      const FLOAT2D p1(static_cast<FLOAT>(std::cos(angle1) * radius), static_cast<FLOAT>(std::sin(angle1) * radius));
+      const FLOAT2D p2(static_cast<FLOAT>(std::cos(angle2) * radius), static_cast<FLOAT>(std::sin(angle2) * radius));
+      edges.push_back({ p1, p2 });
+    }
+    return edges;
+  }
+
+  using TEdge = std::pair<FLOAT3D, FLOAT3D>;
+
+  std::vector<TEdge> _GetAxisContour(const FLOAT3D& origin, GizmoAxis gizmo)
+  {
+    static const std::vector<std::pair<FLOAT2D, FLOAT2D>> circle_2d = _GenerateCircle(20, 0.4);
+
+    std::vector<TEdge> res;
+    switch (gizmo)
+    {
+    case GizmoAxis::X_Translation:
+      res = { {FLOAT3D(0, 0, 0), FLOAT3D(1, 0, 0)} };
+      break;
+
+    case GizmoAxis::Y_Translation:
+      res = { {FLOAT3D(0, 0, 0), FLOAT3D(0, 1, 0)} };
+      break;
+
+    case GizmoAxis::Z_Translation:
+      res = { {FLOAT3D(0, 0, 0), FLOAT3D(0, 0, 1)} };
+      break;
+
+    case GizmoAxis::X_Rotation:
+      {
+        static std::vector<TEdge> x_circle;
+        if (x_circle.empty())
+        {
+          x_circle.reserve(circle_2d.size());
+          for (const auto& [e1, e2] : circle_2d)
+            x_circle.push_back({ FLOAT3D(1, e1(2), e1(1)), FLOAT3D(1, e2(2), e2(1)) });
+        }
+        res = x_circle;
+        break;
+      }
+
+    case GizmoAxis::Y_Rotation:
+      {
+        static std::vector<TEdge> y_circle;
+        if (y_circle.empty())
+        {
+          y_circle.reserve(circle_2d.size());
+          for (const auto& [e1, e2] : circle_2d)
+            y_circle.push_back({ FLOAT3D(e1(2), 1, e1(1)), FLOAT3D(e2(2), 1, e2(1)) });
+        }
+        res = y_circle;
+        break;
+      }
+
+    case GizmoAxis::Z_Rotation:
+      {
+        static std::vector<TEdge> z_circle;
+        if (z_circle.empty())
+        {
+          z_circle.reserve(circle_2d.size());
+          for (const auto& [e1, e2] : circle_2d)
+            z_circle.push_back({ FLOAT3D(e1(1), e1(2), 1), FLOAT3D(e2(1), e2(2), 1) });
+        }
+        res = z_circle;
+        break;
+      }
+    default:
+      break;
+    }
+
+    for (auto& edge : res)
+    {
+      edge.first += origin;
+      edge.second += origin;
+    }
+    return res;
+  }
+
   const CBrushEdge* _FindCommonEdge(const CBrushPolygon& poly_A, const CBrushPolygon& poly_B)
   {
     for (INDEX i = 0; i < poly_A.bpo_abpePolygonEdges.Count(); ++i)
@@ -491,9 +696,6 @@ CWorldEditorView::~CWorldEditorView()
 
 BOOL CWorldEditorView::PreCreateWindow(CREATESTRUCT& cs)
 {
-	// TODO: Modify the Window class or styles here by modifying
-	//  the CREATESTRUCT cs
-
 	return CView::PreCreateWindow(cs);
 }
 
@@ -1221,7 +1423,63 @@ void CWorldEditorView::RenderView( CDrawPort *pDP)
     pModelObject->SetupModelRendering(rmRenderModel);
     pModelObject->RenderModel(rmRenderModel);
   }
+
   EndModelRenderingView();
+
+  if (pDoc->GizmoVisible(this))
+  {
+    pDP->FillZBuffer(ZBUF_BACK);
+
+    CAnyProjection3D axisProj = prProjection;
+    AdjustGizmoProjection(axisProj);
+
+    BeginModelRenderingView(axisProj, pDP);
+
+    FLOAT3D selection_center;
+    prProjection->ProjectCoordinate(pDoc->m_plMouseMove.pl_PositionVector, selection_center);
+    selection_center(3) = g_gizmo_z_offset;
+
+    const auto gizmo_origin = axisProj->ProjectCoordinateReverse(selection_center);
+    auto hovered_axis = m_selected_axis;
+    if (!hovered_axis.has_value())
+    {
+      auto hovered_axis_and_proj = HoveredAxis();
+      if (hovered_axis_and_proj.has_value())
+        hovered_axis = hovered_axis_and_proj->first;
+    }
+
+    auto draw_gizmo = [this, &hovered_axis, &gizmo_origin](GizmoAxis gizmo)
+    {
+      auto* axis_model = _GetAxisModel(gizmo, hovered_axis);
+
+      UBYTE alpha = UBYTE(200);
+      if (hovered_axis.has_value() && gizmo == *hovered_axis)
+        alpha = CT_OPAQUE;
+
+      COLOR col = C_GRAY;
+      if (!m_selected_axis.has_value() || gizmo == *m_selected_axis)
+        col = _GetAxisColor(gizmo);
+
+      axis_model->mo_colBlendColor = col | alpha;
+      CRenderModel rm;
+      rm.SetObjectPlacement(CPlacement3D(gizmo_origin, _GetAxisRotation(gizmo)));
+      rm.rm_vLightDirection = FLOAT3D(1, 0, 0);
+      rm.rm_colLight = C_WHITE;
+      rm.rm_colAmbient = C_WHITE;
+      axis_model->SetupModelRendering(rm);
+      axis_model->RenderModel(rm);
+    };
+
+    draw_gizmo(GizmoAxis::X_Translation);
+    draw_gizmo(GizmoAxis::Y_Translation);
+    draw_gizmo(GizmoAxis::Z_Translation);
+    draw_gizmo(GizmoAxis::X_Rotation);
+    draw_gizmo(GizmoAxis::Y_Rotation);
+    draw_gizmo(GizmoAxis::Z_Rotation);
+    EndModelRenderingView();
+  }
+
+
 
   // if we should draw orientation icon, do it now because latter we may
   // have problems due to automatic InitRenderer (in that case we would try
@@ -1645,7 +1903,7 @@ CMainFrame *CWorldEditorView::GetMainFrame()
 
 void CWorldEditorView::OnKillFocus(CWnd* pNewWnd)
 {
-  m_iaInputAction = IA_NONE;
+  ResetInteraction();
   // discard laso selection
   m_avpixLaso.Clear();
   CView::OnKillFocus(pNewWnd);
@@ -1789,6 +2047,7 @@ void CWorldEditorView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 
   // call parent's key pressed function
   GetChildFrame()->KeyPressed( nChar, nRepCnt, nFlags);
+  pDoc->UpdateGizmoVisibility();
 }
 
 void CWorldEditorView::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -1816,7 +2075,8 @@ void CWorldEditorView::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
   // shut down tool tips
   theApp.m_cttToolTips.ManualOff();
 
-	CView::OnKeyUp(nChar, nRepCnt, nFlags);
+  CView::OnKeyUp(nChar, nRepCnt, nFlags);
+  pDoc->UpdateGizmoVisibility();
 }
 
 void CWorldEditorView::SetMipBrushFactor(void)
@@ -1842,8 +2102,8 @@ void CWorldEditorView::SetMipBrushFactor(void)
   // document has changed
   pDoc->SetModifiedFlag();
   // update all views
-  pDoc->UpdateAllViews( NULL);
-  m_iaInputAction = IA_NONE;
+  pDoc->UpdateAllViews(NULL);
+  ResetInteraction();
 }
 
 void CWorldEditorView::StartMouseInput( CPoint point)
@@ -1852,14 +2112,11 @@ void CWorldEditorView::StartMouseInput( CPoint point)
   BOOL bCSGOn = pDoc->m_pwoSecondLayer != NULL;
 
   pDoc->UpdateAllViews(NULL);
-  // reset offseted placement
-  m_plMouseOffset.pl_PositionVector = FLOAT3D(0.0f, 0.0f, 0.0f);
-  m_plMouseOffset.pl_OrientationAngle = ANGLE3D(0, 0, 0);
   // if there is CSG operation active
   if( bCSGOn)
   {
     // copy original layer's placement because we need to perform "continous moving"
-    m_plMouseMove = pDoc->m_plSecondLayer;
+    pDoc->m_plMouseMove = pDoc->m_plSecondLayer;
   }
   // otherwise if we are in entity mode and there is at least 1 entity selected
   else if( pDoc->GetEditingMode() == ENTITY_MODE)
@@ -1870,19 +2127,7 @@ void CWorldEditorView::StartMouseInput( CPoint point)
     }
     else
     {
-      FLOATaabbox3D box;
-      CPlacement3D plEntityCenter;
-      plEntityCenter = CPlacement3D( FLOAT3D(0.0f,0.0f,0.0f), ANGLE3D(0,0,0));
-      {for (CEntity* iten : pDoc->m_selEntitySelection)
-      {
-        // accumulate positions
-        box |= iten->GetPlacement().pl_PositionVector;
-        //plEntityCenter.pl_OrientationAngle += iten->GetPlacement().pl_OrientationAngle;
-      }}
-      plEntityCenter.pl_PositionVector = box.Center();
-      plEntityCenter.pl_PositionVector(2) = box.Min()(2);
-      // calculate average rotation
-      //plEntityCenter.pl_OrientationAngle /= (ANGLE)pDoc->m_selEntitySelection.Count();
+      pDoc->UpdateSelectionCommonPos();
       // remember
       pDoc->m_aSelectedEntityPlacements.Clear();
       pDoc->m_aSelectedEntityPlacements.New(pDoc->m_selEntitySelection.Count());
@@ -1890,13 +2135,10 @@ void CWorldEditorView::StartMouseInput( CPoint point)
       {for (CEntity* iten : pDoc->m_selEntitySelection)
       {
         CPlacement3D plRelative = iten->GetPlacement();
-        plRelative.AbsoluteToRelativeSmooth(plEntityCenter);
+        plRelative.AbsoluteToRelativeSmooth(pDoc->m_plMouseMove);
         pDoc->m_aSelectedEntityPlacements[ ienCurrent] = plRelative;
         ienCurrent++;
       }}
-
-      // copy it's placement for continous moving
-      m_plMouseMove = plEntityCenter;
     }
   }
   else if( pDoc->GetEditingMode() == VERTEX_MODE)
@@ -2502,7 +2744,7 @@ void CWorldEditorView::RenderAndApplyTerrainEditBrush(FLOAT3D vHit)
 
 void CWorldEditorView::OnLButtonDown(UINT nFlags, CPoint point)
 {
-  m_iaInputAction = IA_NONE;
+  ResetInteraction();
 
   CDrawPort *pdpValidDrawPort = GetDrawPort();
   if( pdpValidDrawPort == NULL) return;
@@ -2743,8 +2985,41 @@ void CWorldEditorView::OnLButtonDown(UINT nFlags, CPoint point)
     // if ctrl pressed, we want to move or rotate entity selection
     if( bCtrl && !bShift && !bAlt)
     {
-      if( bRMB) m_iaInputAction = IA_ROTATING_ENTITY_SELECTION;
-      else      m_iaInputAction = IA_MOVING_ENTITY_SELECTION_IN_FLOOR_PLANE;
+      if (bRMB)
+      {
+        m_iaInputAction = IA_ROTATING_ENTITY_SELECTION;
+      }
+      else if (auto axis_and_proj = HoveredAxis(); axis_and_proj.has_value())
+      {
+        switch (axis_and_proj->first)
+        {
+        case GizmoAxis::X_Translation: [[fallthrough]];
+        case GizmoAxis::Y_Translation: [[fallthrough]];
+        case GizmoAxis::Z_Translation:
+          m_axis_projection = axis_and_proj->second;
+          m_selected_axis = axis_and_proj->first;
+          m_iaInputAction = IA_MOVING_ENTITY_SELECTION_ALONG_AXIS;
+          pDoc->UpdateGizmoVisibility();
+          break;
+
+        case GizmoAxis::X_Rotation: [[fallthrough]];
+        case GizmoAxis::Y_Rotation: [[fallthrough]];
+        case GizmoAxis::Z_Rotation:
+          m_axis_projection = axis_and_proj->second;
+          m_selected_axis = axis_and_proj->first;
+          m_iaInputAction = IA_ROTATING_ENTITY_SELECTION_AROUND_AXIS;
+          pDoc->UpdateGizmoVisibility();
+          break;
+
+        default:
+          m_iaInputAction = IA_MOVING_ENTITY_SELECTION_IN_FLOOR_PLANE;
+          break;
+        }
+      }
+      else
+      {
+        m_iaInputAction = IA_MOVING_ENTITY_SELECTION_IN_FLOOR_PLANE;
+      }
       StartMouseInput( point);
     }
     // if we are in browsing entities mode (or select by volume)
@@ -2912,8 +3187,8 @@ void CWorldEditorView::OnLButtonDown(UINT nFlags, CPoint point)
         StartMouseInput( point);
         // remember hitted point
         m_f3dRotationOrigin = crRayHit.cr_vHit;
-        m_plMouseMove.pl_PositionVector = crRayHit.cr_vHit;
-        m_plMouseMove.pl_OrientationAngle = ANGLE3D( 0, 0, 0);
+        pDoc->m_plMouseMove.pl_PositionVector = crRayHit.cr_vHit;
+        pDoc->m_plMouseMove.pl_OrientationAngle = ANGLE3D( 0, 0, 0);
         m_pbpoTranslationPlane = crRayHit.cr_pbpoBrushPolygon;
         m_plTranslationPlane = crRayHit.cr_pbpoBrushPolygon->bpo_pbplPlane->bpl_plAbsolute;
       }
@@ -3052,7 +3327,8 @@ void CWorldEditorView::InvokeSelectLayerCombo(void)
 
 void CWorldEditorView::OnRButtonDown(UINT nFlags, CPoint point)
 {
-  if( m_iaInputAction != IA_MIP_SETTING)  m_iaInputAction = IA_NONE;
+  if (m_iaInputAction != IA_MIP_SETTING)
+    ResetInteraction();
 
 	CWorldEditorDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
@@ -3193,12 +3469,12 @@ void CWorldEditorView::OnRButtonDown(UINT nFlags, CPoint point)
         }
         else
         {
-          m_iaInputAction = IA_NONE;
+          ResetInteraction();
         }
       }
       else
       {
-        m_iaInputAction = IA_NONE;
+        ResetInteraction();
       }
     }
     // Alt+Ctrl+RMB sets clicked entity as target on first available free target ptr slot
@@ -3215,8 +3491,15 @@ void CWorldEditorView::OnRButtonDown(UINT nFlags, CPoint point)
     // if ctrl+rmb pressed, we want to move entity selection in view plane
     else if( bCtrl && !bShift && !bAlt)
     {
-      if( bLMB) m_iaInputAction = IA_ROTATING_ENTITY_SELECTION;
-      else      m_iaInputAction = IA_MOVING_ENTITY_SELECTION_IN_VIEW_PLANE;
+      if (bLMB)
+      {
+        ResetInteraction();
+        m_iaInputAction = IA_ROTATING_ENTITY_SELECTION;
+      }
+      else
+      {
+        m_iaInputAction = IA_MOVING_ENTITY_SELECTION_IN_VIEW_PLANE;
+      }
       StartMouseInput( point);
     }
     else if( bShift && bSpace && !GetChildFrame()->m_bAutoMipBrushingOn)
@@ -3378,7 +3661,7 @@ void CWorldEditorView::OnLButtonUp(UINT nFlags, CPoint point)
     }
   }
 
-  m_iaInputAction = IA_NONE;
+  ResetInteraction();
 
   CView::OnLButtonUp(nFlags, point);
 }
@@ -3399,7 +3682,7 @@ void CWorldEditorView::OnRButtonUp(UINT nFlags, CPoint point)
     pDoc->m_woWorld.UpdateSectorsAfterVertexChange( pDoc->m_selVertexSelection);
   }
 
-  m_iaInputAction = IA_NONE;
+  ResetInteraction();
   StopMouseInput();
   CView::OnRButtonUp(nFlags, point);
 }
@@ -3419,7 +3702,7 @@ void SelectDescendents( NewEntitySelection& selEntity, CEntity &enParent)
 
 void CWorldEditorView::OnLButtonDblClk(UINT nFlags, CPoint point)
 {
-  m_iaInputAction = IA_NONE;
+  ResetInteraction();
 
   CWorldEditorDoc* pDoc = GetDocument();
   BOOL bSpace = (GetKeyState( ' ') & 128) != 0;
@@ -4137,13 +4420,14 @@ void CWorldEditorView::OnMouseMove(UINT nFlags, CPoint point)
   if(((m_iaInputAction == IA_SELECT_LASSO_ENTITY) ||
     (m_iaInputAction == IA_SELECT_LASSO_BRUSH_VERTEX)) && !bLMB)
   {
-    m_iaInputAction = IA_NONE;
+    ResetInteraction();
     // discard laso selection
     m_avpixLaso.Clear();
   }
 
   // if neather mouse key is pressed, simulate that action is none
-  if( !bLMB && !bRMB) m_iaInputAction = IA_NONE;
+  if (!bLMB && !bRMB)
+    ResetInteraction();
    
   CMainFrame* pMainFrame = STATIC_DOWNCAST(CMainFrame, AfxGetMainWnd());
   CWorldEditorDoc* pDoc = GetDocument();
@@ -4172,7 +4456,7 @@ void CWorldEditorView::OnMouseMove(UINT nFlags, CPoint point)
       pMainFrame->MDIActivate(GetParentFrame());
 
       // cancel any possible previous actions
-      m_iaInputAction = IA_NONE;
+      ResetInteraction();
     }
   }
 
@@ -4213,7 +4497,9 @@ void CWorldEditorView::OnMouseMove(UINT nFlags, CPoint point)
       (m_iaInputAction == IA_SELECT_LASSO_ENTITY) ||
       (m_iaInputAction == IA_SELECT_LASSO_BRUSH_VERTEX) ||
       (m_iaInputAction == IA_STRETCH_BRUSH_VERTEX) ||
-      (m_iaInputAction == IA_ROTATE_BRUSH_VERTEX) ) {
+      (m_iaInputAction == IA_ROTATE_BRUSH_VERTEX) ||
+      (m_iaInputAction == IA_MOVING_ENTITY_SELECTION_ALONG_AXIS) ||
+      (m_iaInputAction == IA_ROTATING_ENTITY_SELECTION_AROUND_AXIS)) {
     bRayHitNeeded = FALSE;
   } else {
     bRayHitNeeded = TRUE;
@@ -4476,7 +4762,7 @@ void CWorldEditorView::OnMouseMove(UINT nFlags, CPoint point)
     case IA_ROTATING_SECOND_LAYER:
     {
       // use trackball method for rotation
-      svViewer.RotatePlacement_TrackBall(m_plMouseMove, -lOffsetX, -lOffsetY, 0);
+      svViewer.RotatePlacement_TrackBall(pDoc->m_plMouseMove, -lOffsetX, -lOffsetY, 0);
       pDoc->m_chSelections.MarkChanged();
       bObjectMoved = TRUE;
       break;
@@ -4484,7 +4770,7 @@ void CWorldEditorView::OnMouseMove(UINT nFlags, CPoint point)
     case IA_MOVING_ENTITY_SELECTION_IN_FLOOR_PLANE:
     case IA_MOVING_SECOND_LAYER_IN_FLOOR_PLANE:
     {
-      svViewer.TranslatePlacement_OwnSystem(m_plMouseMove, lOffsetX, lOffsetY, 0);
+      svViewer.TranslatePlacement_OwnSystem(pDoc->m_plMouseMove, lOffsetX, lOffsetY, 0);
       pDoc->m_chSelections.MarkChanged();
       bObjectMoved = TRUE;
       break;
@@ -4492,7 +4778,23 @@ void CWorldEditorView::OnMouseMove(UINT nFlags, CPoint point)
     case IA_MOVING_ENTITY_SELECTION_IN_VIEW_PLANE:
     case IA_MOVING_SECOND_LAYER_IN_VIEW_PLANE:
     {
-      svViewer.TranslatePlacement_OwnSystem(m_plMouseMove, lOffsetX, 0, lOffsetY);
+      svViewer.TranslatePlacement_OwnSystem(pDoc->m_plMouseMove, lOffsetX, 0, lOffsetY);
+      pDoc->m_chSelections.MarkChanged();
+      bObjectMoved = TRUE;
+      break;
+    }
+    case IA_MOVING_ENTITY_SELECTION_ALONG_AXIS:
+    {
+      const FLOAT2D mouse_delta(lOffsetX, -lOffsetY);
+      const FLOAT shift = (m_axis_projection % mouse_delta) / svViewer.GetZoomFactor();
+      pDoc->m_plMouseMove.Translate_AbsoluteSystem(_GetAxisDirection(*m_selected_axis) * shift);
+      pDoc->m_chSelections.MarkChanged();
+      bObjectMoved = TRUE;
+      break;
+    }
+    case IA_ROTATING_ENTITY_SELECTION_AROUND_AXIS:
+    {
+      pDoc->m_plMouseMove.Rotate_HPB(_GetAxisHPB(*m_selected_axis) * lOffsetX);
       pDoc->m_chSelections.MarkChanged();
       bObjectMoved = TRUE;
       break;
@@ -4738,9 +5040,9 @@ void CWorldEditorView::OnMouseMove(UINT nFlags, CPoint point)
     case IA_ROTATING_POLYGON_MAPPING:
     {
       if(crRayHit.cr_pbpoBrushPolygon==NULL) return;
-      svViewer.RotatePlacement_TrackBall(m_plMouseMove, lOffsetX, lOffsetY, 0);
+      svViewer.RotatePlacement_TrackBall(pDoc->m_plMouseMove, lOffsetX, lOffsetY, 0);
       // get rotation angle
-      ANGLE3D angMappingRotation = m_plMouseMove.pl_OrientationAngle;
+      ANGLE3D angMappingRotation = pDoc->m_plMouseMove.pl_OrientationAngle;
 
       CTString strDataPaneText;
       strDataPaneText.PrintF("H=%g,P=%g,B=%g",
@@ -4771,8 +5073,8 @@ void CWorldEditorView::OnMouseMove(UINT nFlags, CPoint point)
       bRefreshView = TRUE;
       pDoc->UpdateAllViews( NULL);
       // reset mouse placement
-      m_plMouseMove.pl_PositionVector = crRayHit.cr_vHit;
-      m_plMouseMove.pl_OrientationAngle = ANGLE3D( 0, 0, 0);
+      pDoc->m_plMouseMove.pl_PositionVector = crRayHit.cr_vHit;
+      pDoc->m_plMouseMove.pl_OrientationAngle = ANGLE3D( 0, 0, 0);
       // refresh position page
       pDoc->RefreshCurrentInfoPage();
       break;
@@ -4781,7 +5083,7 @@ void CWorldEditorView::OnMouseMove(UINT nFlags, CPoint point)
     {
       // find translation vector in 3d
       crRayHit.cr_vHit = GetMouseHitOnPlane(point, m_plTranslationPlane);
-      FLOAT3D f3dMappingTranslation = crRayHit.cr_vHit-m_plMouseMove.pl_PositionVector;
+      FLOAT3D f3dMappingTranslation = crRayHit.cr_vHit- pDoc->m_plMouseMove.pl_PositionVector;
       // find how much that offsets hit polygon
       if( m_pbpoTranslationPlane == NULL) return;
       CBrushPolygon &bpo = *m_pbpoTranslationPlane;
@@ -4811,8 +5113,8 @@ void CWorldEditorView::OnMouseMove(UINT nFlags, CPoint point)
       bRefreshView = TRUE;
       pDoc->UpdateAllViews( NULL);
       // reset mouse placement
-      m_plMouseMove.pl_PositionVector = crRayHit.cr_vHit;
-      m_plMouseMove.pl_OrientationAngle = ANGLE3D( 0, 0, 0);
+      pDoc->m_plMouseMove.pl_PositionVector = crRayHit.cr_vHit;
+      pDoc->m_plMouseMove.pl_OrientationAngle = ANGLE3D( 0, 0, 0);
       // refresh position page
       pDoc->RefreshCurrentInfoPage();
       break;
@@ -4834,13 +5136,15 @@ void CWorldEditorView::OnMouseMove(UINT nFlags, CPoint point)
         (m_iaInputAction == IA_ROTATING_SECOND_LAYER) )
     {
       // copy new placement to second layer
-      pDoc->m_plSecondLayer = m_plMouseMove;
+      pDoc->m_plSecondLayer = pDoc->m_plMouseMove;
       pDoc->SnapToGrid( pDoc->m_plSecondLayer, m_fGridInMeters/GRID_DISCRETE_VALUES);
       theApp.m_vfpCurrent.vfp_plPrimitive = pDoc->m_plSecondLayer;
     }
     else if( (m_iaInputAction == IA_MOVING_ENTITY_SELECTION_IN_FLOOR_PLANE) ||
              (m_iaInputAction == IA_MOVING_ENTITY_SELECTION_IN_VIEW_PLANE) ||
-             (m_iaInputAction == IA_ROTATING_ENTITY_SELECTION) )
+             (m_iaInputAction == IA_ROTATING_ENTITY_SELECTION) ||
+             (m_iaInputAction == IA_MOVING_ENTITY_SELECTION_ALONG_AXIS) ||
+             (m_iaInputAction == IA_ROTATING_ENTITY_SELECTION_AROUND_AXIS))
     {
       ASSERT( pDoc->m_aSelectedEntityPlacements.Count()==pDoc->m_selEntitySelection.Count());
       if( pDoc->m_aSelectedEntityPlacements.Count()!=pDoc->m_selEntitySelection.Count()) return;
@@ -4864,7 +5168,7 @@ void CWorldEditorView::OnMouseMove(UINT nFlags, CPoint point)
         {
           // set new entity placement
           CPlacement3D plEntityPlacement = pDoc->m_aSelectedEntityPlacements[ienCurrent];
-          plEntityPlacement.RelativeToAbsoluteSmooth(m_plMouseMove);
+          plEntityPlacement.RelativeToAbsoluteSmooth(pDoc->m_plMouseMove);
           pDoc->SnapToGrid( plEntityPlacement, m_fGridInMeters/GRID_DISCRETE_VALUES);
           iten->SetPlacement(plEntityPlacement);
           pDoc->SetModifiedFlag();
@@ -4875,7 +5179,7 @@ void CWorldEditorView::OnMouseMove(UINT nFlags, CPoint point)
       {
         DiscardShadows( penBrush);
       }
-      if(m_iaInputAction == IA_ROTATING_ENTITY_SELECTION)
+      if(m_iaInputAction == IA_ROTATING_ENTITY_SELECTION || m_iaInputAction == IA_ROTATING_ENTITY_SELECTION_AROUND_AXIS)
       {
         // check for terrain updating
         {for (CEntity* iten : pDoc->m_selEntitySelection)
@@ -4897,7 +5201,7 @@ void CWorldEditorView::OnMouseMove(UINT nFlags, CPoint point)
 
   // if rotating/moving viewer (bRefreshView) or moving CSG layer, entities or polygon's
   // mapping (bObjectMoved) or editing primitive (bRecreatePrimitive)
-  if( bRefreshView || bObjectMoved || bRecreatePrimitive)
+  if( bRefreshView || bObjectMoved || bRecreatePrimitive || pDoc->GizmoVisible(this))
   {
     // see in preferences if all views should be updated
     if( theApp.m_Preferences.ap_UpdateAllways || bRepaintImmediately ||
@@ -7879,7 +8183,7 @@ LRESULT CWorldEditorView::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 
 void CWorldEditorView::OnRButtonDblClk(UINT nFlags, CPoint point)
 {
-  m_iaInputAction = IA_NONE;
+  ResetInteraction();
 
   BOOL bSpace = (GetKeyState( VK_SPACE)&0x8000) != 0;
   BOOL bCtrl = (GetKeyState( VK_CONTROL)&0x8000) != 0;
@@ -8215,6 +8519,88 @@ void CWorldEditorView::OnDeleteSectors()
   OnDeleteEntities();
 }
 
+void CWorldEditorView::ResetInteraction()
+{
+  const bool should_update =
+    m_selected_axis.has_value() ||
+    m_iaInputAction == IA_MOVING_ENTITY_SELECTION_ALONG_AXIS ||
+    m_iaInputAction == IA_ROTATING_ENTITY_SELECTION_AROUND_AXIS;
+
+  if (m_iaInputAction == IA_ROTATING_ENTITY_SELECTION || m_iaInputAction == IA_ROTATING_ENTITY_SELECTION_AROUND_AXIS)
+    GetDocument()->UpdateSelectionCommonPos();
+
+  m_iaInputAction = IA_NONE;
+  m_selected_axis = std::nullopt;
+  if (should_update)
+    GetDocument()->UpdateGizmoVisibility();
+}
+
+void CWorldEditorView::AdjustGizmoProjection(CAnyProjection3D& proj)
+{
+  if (proj.IsIsometric())
+    ((CIsometricProjection3D&)*proj).ZoomFactorL() = 100.0f;
+  else
+    ((CPerspectiveProjection3D&)*proj).FOVL() = AngleRad(std::atan(m_pdpDrawPort->GetWidth() / 800.0)) * 2.0;
+}
+
+std::optional<std::pair<GizmoAxis, FLOAT2D>> CWorldEditorView::HoveredAxis()
+{
+  auto* pDoc = GetDocument();
+  CSlaveViewer svViewer(GetChildFrame()->m_mvViewer, m_ptProjectionType, pDoc->m_plGrid, m_pdpDrawPort);
+  CAnyProjection3D view_proj;
+  svViewer.MakeProjection(view_proj);
+  view_proj->Prepare();
+
+  CAnyProjection3D axis_proj = view_proj;
+  AdjustGizmoProjection(axis_proj);
+
+  FLOAT3D selection_center;
+  view_proj->ProjectCoordinate(pDoc->m_plMouseMove.pl_PositionVector, selection_center);
+  selection_center(3) = g_gizmo_z_offset;
+
+  CPoint cursor_pos;
+  ::GetCursorPos(&cursor_pos);
+  ScreenToClient(&cursor_pos);
+  const FLOAT2D mouse_pos(cursor_pos.x, m_pdpDrawPort->GetHeight() - cursor_pos.y);
+  const auto gizmo_origin = axis_proj->ProjectCoordinateReverse(selection_center);
+  const FLOAT hover_sensitivity = 7.0f;
+  for (const auto axis :
+    {
+      GizmoAxis::X_Translation,
+      GizmoAxis::Y_Translation,
+      GizmoAxis::Z_Translation,
+      GizmoAxis::X_Rotation,
+      GizmoAxis::Y_Rotation,
+      GizmoAxis::Z_Rotation
+    })
+  {
+    const auto edges = _GetAxisContour(gizmo_origin, axis);
+    if (std::any_of(edges.begin(), edges.end(), [&](const TEdge& edge)
+      {
+        FLOAT3D e1;
+        FLOAT3D e2;
+        axis_proj->ProjectCoordinate(edge.first, e1);
+        axis_proj->ProjectCoordinate(edge.second, e2);
+        return _DistanceToEdge(mouse_pos, FLOAT2D(e1(1), e1(2)), FLOAT2D(e2(1), e2(2))) <= hover_sensitivity;
+      }))
+    {
+      FLOAT3D axis_dir_3d = _GetAxisDirection(axis) + gizmo_origin;
+      FLOAT3D axis_origin;
+      FLOAT3D axis_dir;
+      axis_proj->ProjectCoordinate(gizmo_origin, axis_origin);
+      axis_proj->ProjectCoordinate(axis_dir_3d, axis_dir);
+      FLOAT2D axis_dir_2d(axis_dir(1) - axis_origin(1), axis_dir(2) - axis_origin(2));
+      const FLOAT axis_len = axis_dir_2d.Length();
+      if (axis_len < 0.01)
+        axis_dir_2d = FLOAT2D(1, 0);
+      else
+        axis_dir_2d /= axis_len;
+      return std::make_pair(axis, axis_dir_2d);
+    }
+  }
+
+  return std::nullopt;
+}
 
 void CWorldEditorView::GetToolTipText( char *pToolTipText)
 {
@@ -11123,79 +11509,6 @@ BOOL CWorldEditorView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
   CWorldEditorDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
 
-  // ctrl + mouse wheel toggle modes
-  /*
-  if( bCtrl && !bSpace && !bShift && !bAlt)
-  {
-    for( INDEX iKnee=0; iKnee<Abs(iCount); iKnee++)
-    {
-      if(iCount<0)
-      {
-        switch(pDoc->GetEditingMode())
-        {
-        case( ENTITY_MODE):
-          {
-            pDoc->SetEditingMode( SECTOR_MODE);
-            break;
-          }
-        case( SECTOR_MODE):
-          {
-            pDoc->SetEditingMode( POLYGON_MODE);
-            break;
-          }
-        case( POLYGON_MODE):
-          {
-            pDoc->SetEditingMode( VERTEX_MODE);
-            break;
-          }
-        case( VERTEX_MODE):
-          {
-            pDoc->SetEditingMode( TERRAIN_MODE);
-            break;
-          }
-        case( TERRAIN_MODE):
-          {
-            pDoc->SetEditingMode( ENTITY_MODE);
-            break;
-          }
-        }
-      }
-      else
-      {
-        switch(pDoc->GetEditingMode())
-        {
-        case( ENTITY_MODE):
-          {
-            pDoc->SetEditingMode( TERRAIN_MODE);
-            break;
-          }
-        case( SECTOR_MODE):
-          {
-            pDoc->SetEditingMode( ENTITY_MODE);
-            break;
-          }
-        case( POLYGON_MODE):
-          {
-            pDoc->SetEditingMode( SECTOR_MODE);
-            break;
-          }
-        case( VERTEX_MODE):
-          {
-            pDoc->SetEditingMode( POLYGON_MODE);
-            break;
-          }
-        case( TERRAIN_MODE):
-          {
-            pDoc->SetEditingMode( VERTEX_MODE);
-            break;
-          }
-        }
-      }
-      pDoc->m_chSelections.MarkChanged();
-      pDoc->UpdateAllViews( NULL);
-    }
-  }
-  */
   // space+ctrl+lmb zoomes in 2x
   if( bSpace && bCtrl)
   {

@@ -124,6 +124,7 @@ public:
   CPlacement3D m_plSecondLayer;
   CPlacement3D m_plDeltaPlacement;
   CPlacement3D m_plLastPlacement;
+  CPlacement3D m_plMouseMove;   // used for continous mouse editting
   CWorld m_woWorld;
   CWorld *m_pwoSecondLayer;   // world for holding second layer
   CEntity *m_penPrimitive;
@@ -153,8 +154,15 @@ public:
   FLOAT3D m_vCutLineEnd;
   FLOAT3D m_vControlLineDragStart;
 
-// Operations
+private:
+  CWorldEditorView* m_exclusive_gizmo_visibility = nullptr;
+  bool m_gizmo_visibility = false;
+
 public:
+  void UpdateGizmoVisibility();
+  bool GizmoVisible(const CWorldEditorView* view) const;
+
+  void UpdateSelectionCommonPos();
   // Function corects coordinates of vertices that represent box because given vertice is
   // moved and box has invalid geometry
   void CorrectBox(INDEX iMovedVtx, FLOAT3D vNewPosition);
@@ -216,7 +224,7 @@ public:
   // redoes last undoed operation
   void Redo(void);
   // retrieves editing mode
-  inline INDEX GetEditingMode() { return m_iMode;};
+  inline INDEX GetEditingMode() const { return m_iMode;};
   // selects all entities in volume
   void OnSelectAllInVolume(void);
   // sets editing mode

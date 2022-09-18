@@ -561,6 +561,8 @@ BOOL CWorldEditorApp::SubInitInstance()
   QObject::connect(&EventHub::instance(), &EventHub::CurrentEntitySelectionChanged, [this]
     {
       InstallOneTimeSelectionStealer(nullptr, nullptr);
+      if (auto* doc = theApp.GetActiveDocument())
+        doc->UpdateSelectionCommonPos();
     });
 
   m_showing_modal_dialog = false;
@@ -791,6 +793,37 @@ BOOL CWorldEditorApp::SubInitInstance()
   
   try
   {
+    DECLARE_CTFILENAME(fn_gizmo_tex, "Models\\Editor\\Gizmo\\Gizmo.tex");
+    m_gizmo_texture = _pTextureStock->Obtain_t(fn_gizmo_tex);
+
+    DECLARE_CTFILENAME(fn_axis, "Models\\Editor\\Gizmo\\Axis.mdl");
+    m_axis_data = _pModelStock->Obtain_t(fn_axis);
+    m_axis_model = new CModelObject();
+    m_axis_model->SetData(m_axis_data);
+    m_axis_model->SetAnim(0);
+    m_axis_model->mo_toTexture.SetData(m_gizmo_texture);
+
+    DECLARE_CTFILENAME(fn_axis_sel, "Models\\Editor\\Gizmo\\AxisSelected.mdl");
+    m_axis_selected_data = _pModelStock->Obtain_t(fn_axis_sel);
+    m_axis_model_selected = new CModelObject();
+    m_axis_model_selected->SetData(m_axis_selected_data);
+    m_axis_model_selected->SetAnim(0);
+    m_axis_model_selected->mo_toTexture.SetData(m_gizmo_texture);
+
+    DECLARE_CTFILENAME(fn_ring, "Models\\Editor\\Gizmo\\Ring.mdl");
+    m_ring_data = _pModelStock->Obtain_t(fn_ring);
+    m_ring_model = new CModelObject();
+    m_ring_model->SetData(m_ring_data);
+    m_ring_model->SetAnim(0);
+    m_ring_model->mo_toTexture.SetData(m_gizmo_texture);
+
+    DECLARE_CTFILENAME(fn_ring_sel, "Models\\Editor\\Gizmo\\RingSelected.mdl");
+    m_ring_selected_data = _pModelStock->Obtain_t(fn_ring_sel);
+    m_ring_model_selected = new CModelObject();
+    m_ring_model_selected->SetData(m_ring_selected_data);
+    m_ring_model_selected->SetAnim(0);
+    m_ring_model_selected->mo_toTexture.SetData(m_gizmo_texture);
+
     // load entity selection marker model
   	DECLARE_CTFILENAME( fnEntityMarker, "Models\\Editor\\EntityMarker.mdl");
     m_pEntityMarkerModelData = _pModelStock->Obtain_t( fnEntityMarker);
@@ -1943,6 +1976,44 @@ int CWorldEditorApp::ExitInstance()
     _pModelStock->Release( m_pEntityMarkerModelData);
     delete m_pEntityMarkerModelObject;
     m_pEntityMarkerModelObject = NULL;
+  }
+
+  if (m_axis_data)
+  {
+    _pModelStock->Release(m_axis_data);
+    delete m_axis_model;
+    m_axis_model = nullptr;
+    m_axis_data = nullptr;
+  }
+
+  if (m_axis_selected_data)
+  {
+    _pModelStock->Release(m_axis_selected_data);
+    delete m_axis_model_selected;
+    m_axis_model_selected = nullptr;
+    m_axis_selected_data = nullptr;
+  }
+
+  if (m_ring_data)
+  {
+    _pModelStock->Release(m_ring_data);
+    delete m_ring_model;
+    m_ring_model = nullptr;
+    m_ring_data = nullptr;
+  }
+
+  if (m_ring_selected_data)
+  {
+    _pModelStock->Release(m_ring_selected_data);
+    delete m_ring_model_selected;
+    m_ring_model_selected = nullptr;
+    m_ring_selected_data = nullptr;
+  }
+
+  if (m_gizmo_texture)
+  {
+    _pTextureStock->Release(m_gizmo_texture);
+    m_gizmo_texture = nullptr;
   }
 
   // release portal marker texture
