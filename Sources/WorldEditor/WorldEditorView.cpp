@@ -1423,7 +1423,6 @@ void CWorldEditorView::RenderView( CDrawPort *pDP)
     pModelObject->SetupModelRendering(rmRenderModel);
     pModelObject->RenderModel(rmRenderModel);
   }
-
   EndModelRenderingView();
 
   if (pDoc->GizmoVisible(this))
@@ -1478,8 +1477,6 @@ void CWorldEditorView::RenderView( CDrawPort *pDP)
     draw_gizmo(GizmoAxis::Z_Rotation);
     EndModelRenderingView();
   }
-
-
 
   // if we should draw orientation icon, do it now because latter we may
   // have problems due to automatic InitRenderer (in that case we would try
