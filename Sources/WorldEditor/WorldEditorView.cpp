@@ -5169,7 +5169,8 @@ void CWorldEditorView::OnMouseMove(UINT nFlags, CPoint point)
           // set new entity placement
           CPlacement3D plEntityPlacement = pDoc->m_aSelectedEntityPlacements[ienCurrent];
           plEntityPlacement.RelativeToAbsoluteSmooth(pDoc->m_plMouseMove);
-          pDoc->SnapToGrid( plEntityPlacement, m_fGridInMeters/GRID_DISCRETE_VALUES);
+          if (m_iaInputAction != IA_ROTATING_ENTITY_SELECTION_AROUND_AXIS)
+            pDoc->SnapToGrid(plEntityPlacement, m_fGridInMeters / GRID_DISCRETE_VALUES);
           iten->SetPlacement(plEntityPlacement);
           pDoc->SetModifiedFlag();
         }
