@@ -498,7 +498,7 @@ namespace
 
   std::vector<TEdge> _GetAxisContour(const FLOAT3D& origin, GizmoAxis gizmo)
   {
-    static const std::vector<std::pair<FLOAT2D, FLOAT2D>> circle_2d = _GenerateCircle(20, 0.4);
+    static const std::vector<std::pair<FLOAT2D, FLOAT2D>> circle_2d = _GenerateCircle(12, 0.375);
 
     std::vector<TEdge> res;
     switch (gizmo)
@@ -8541,6 +8541,7 @@ void CWorldEditorView::AdjustGizmoProjection(CAnyProjection3D& proj)
     ((CIsometricProjection3D&)*proj).ZoomFactorL() = 100.0f;
   else
     ((CPerspectiveProjection3D&)*proj).FOVL() = AngleRad(std::atan(m_pdpDrawPort->GetWidth() / 800.0)) * 2.0;
+  proj->Prepare();
 }
 
 std::optional<std::pair<GizmoAxis, FLOAT2D>> CWorldEditorView::HoveredAxis()
@@ -8549,6 +8550,13 @@ std::optional<std::pair<GizmoAxis, FLOAT2D>> CWorldEditorView::HoveredAxis()
   CSlaveViewer svViewer(GetChildFrame()->m_mvViewer, m_ptProjectionType, pDoc->m_plGrid, m_pdpDrawPort);
   CAnyProjection3D view_proj;
   svViewer.MakeProjection(view_proj);
+  if (m_ptProjectionType != CSlaveViewer::PT_PERSPECTIVE && !_wrpWorldRenderPrefs.wrp_bApplyFarClipPlaneInIsometricProjection)
+    view_proj->FarClipDistanceL() = -1;
+  else
+    view_proj->FarClipDistanceL() = _wrpWorldRenderPrefs.wrp_fFarClipPlane;
+
+  view_proj->DepthBufferNearL() = 0.0f;
+  view_proj->DepthBufferFarL() = 0.9f;
   view_proj->Prepare();
 
   CAnyProjection3D axis_proj = view_proj;
