@@ -38,9 +38,11 @@ after_build:
   - xcopy /E /I VirtualTrees deploy\VirtualTrees
   - xcopy /I ModEXT.txt deploy\
   - xcopy /I SE1_10.gro deploy\
+  - xcopy /I SE1_10_AdditionalData.gro deploy\
   - mkdir deploy_portable
   - xcopy /E /I Bin_1.10 deploy_portable\Bin_1.10
   - xcopy /E /I Licenses deploy_portable\Bin_1.10\Licenses
+  - xcopy /I SE1_10_AdditionalData.gro deploy_portable\
 
 artifacts:
   - path: .\deploy
