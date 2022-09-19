@@ -39,6 +39,7 @@ Build/
 Debug/
 
 # Visual Studio
+*.aps
 *.vs
 *.opendb
 *.sdf
