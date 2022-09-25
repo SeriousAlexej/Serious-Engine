@@ -116,6 +116,7 @@ public:
   CListHead m_lhUndo;
   // list head for redo
   CListHead m_lhRedo;
+  BOOL m_absoluteRotation;
   BOOL m_bAutoSnap;
   BOOL m_bOrientationIcons;
   BOOL m_bPrimitiveMode;
@@ -159,6 +160,7 @@ private:
   bool m_gizmo_visibility = false;
 
 public:
+  void FlipRotationMode();
   void UpdateGizmoVisibility();
   bool GizmoVisible(const CWorldEditorView* view) const;
 

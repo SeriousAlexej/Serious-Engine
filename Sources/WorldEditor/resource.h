@@ -150,6 +150,7 @@
 #define IDD_TERRAIN_HEIGHTMAP_SIZE      256
 #define IDD_EDIT_TERRAIN_LAYER          257
 #define IDD_TE_OPTION_SETTINGS          258
+#define IDI_ICON_PICK                   259
 #define IDD_TERRAIN_PROPERTIES          261
 #define IDD_GENERATE_FBM                262
 #define IDC_VIRTUALTREE                 1000
@@ -194,6 +195,7 @@
 #define IDC_ALLIGN_Y                    1016
 #define IDC_BROWSE_CONTINOUS_NOISE      1016
 #define IDC_FBM_EXPORT                  1016
+#define IDC_PICK_ROTATION               1016
 #define IDC_BUTTON3                     1017
 #define IDC_BASE_VERTICES               1017
 #define IDC_CANCEL                      1017
@@ -307,6 +309,7 @@
 #define IDC_BUTTON31                    1045
 #define IDC_USE_BCG_PICTURE             1045
 #define IDC_CSG_PRECISSION              1045
+#define IDC_STATIC_PICK_ROTATION        1045
 #define IDC_BUTTON32                    1046
 #define IDC_CHECK1                      1046
 #define IDC_RENDER_EDITOR_MODELS        1046
@@ -320,6 +323,7 @@
 #define IDC_EXPAND_EDGES                1046
 #define IDC_AUTO_GENERATE_LAYER_DISTRIBUTION 1046
 #define IDC_ADD_NEGATIVE_VALUES         1046
+#define IDC_ABSOLUTE_ROTATION           1046
 #define IDC_TEXTURE_INFO                1047
 #define IDC_AUTO_RENDERING_RANGE        1047
 #define IDC_IS_PASSABLE                 1047
@@ -740,6 +744,7 @@
 #define IDC_CT_OCTAVES_SPIN             1262
 #define IDC_GLOBAL_PRETENDER            1263
 #define IDC_BCG_PICTURE_SIZE            1264
+#define IDC_SNAP_TO_GRID                1264
 #define IDC_FBM_PREVIEW_FRAME           1284
 #define IDC_IS_LIGHT_BEAM_PASSABLLE     11048
 #define IDC_NO_SHADOW                   11049
@@ -1318,9 +1323,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        256
+#define _APS_NEXT_RESOURCE_VALUE        260
 #define _APS_NEXT_COMMAND_VALUE         33391
-#define _APS_NEXT_CONTROL_VALUE         1264
+#define _APS_NEXT_CONTROL_VALUE         1265
 #define _APS_NEXT_SYMED_VALUE           111
 #endif
 #endif

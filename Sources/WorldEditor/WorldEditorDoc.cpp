@@ -198,6 +198,7 @@ CWorldEditorDoc::CWorldEditorDoc()
   m_fLastPrimitiveLenght = 0.0;
   m_bLastIfOuter = FALSE;
   m_ttLastTriangularisationType = theApp.m_vfpCurrent.vfp_ttTriangularisationType;
+  m_absoluteRotation = TRUE;
   m_bAutoSnap = TRUE;
   m_bPrimitiveMode = FALSE;
   m_pwoSecondLayer = NULL;
@@ -221,6 +222,8 @@ CWorldEditorDoc::CWorldEditorDoc()
   // initialize last placement
   m_plLastPlacement.pl_PositionVector = FLOAT3D(0.0f,0.0f,0.0f);
   m_plLastPlacement.pl_OrientationAngle = ANGLE3D(0,0,0);
+
+  m_plMouseMove = CPlacement3D(FLOAT3D(0, 0, 0), ANGLE3D(0, 0, 0));
 
   // initialize create box vertices
   char strIni[ 128];
@@ -1195,13 +1198,10 @@ void CWorldEditorDoc::SnapAngle( ANGLE &angDest, ANGLE angStep /* SNAP_ANGLE_GRI
 // does "snap to grid" for given placement
 void CWorldEditorDoc::SnapToGrid( CPlacement3D &plPlacement, FLOAT fSnapValue)
 {
+  if (!m_bAutoSnap)
+    return;
   FLOAT fAngleSnap = SNAP_ANGLE_GRID;
   if( fSnapValue < SNAP_FLOAT_CM) fSnapValue = SNAP_FLOAT_CM;
-  if( !m_bAutoSnap)
-  {
-    fSnapValue = SNAP_FLOAT_CM;
-    fAngleSnap = ANGLE_SNAP/32.0f;
-  }
 
   // snap X coordinate
   SnapFloat( plPlacement.pl_PositionVector(1), fSnapValue);
@@ -3488,6 +3488,12 @@ void CWorldEditorDoc::SelectEntitiesByVolumeBox(void)
   SetStatusLineModeInfoMessage();
 }
 
+void CWorldEditorDoc::FlipRotationMode()
+{
+  m_absoluteRotation = !m_absoluteRotation;
+  UpdateSelectionCommonPos();
+}
+
 void CWorldEditorDoc::UpdateGizmoVisibility()
 {
   const bool old_visibility = m_gizmo_visibility;
@@ -3537,7 +3543,9 @@ bool CWorldEditorDoc::GizmoVisible(const CWorldEditorView* view) const
 
 void CWorldEditorDoc::UpdateSelectionCommonPos()
 {
-  m_plMouseMove = CPlacement3D(FLOAT3D(0, 0, 0), ANGLE3D(0, 0, 0));
+  m_plMouseMove.pl_PositionVector = FLOAT3D(0, 0, 0);
+  if (m_absoluteRotation)
+    m_plMouseMove.pl_OrientationAngle = ANGLE3D(0, 0, 0);
 
   if (m_selEntitySelection.Count() == 0)
     return;

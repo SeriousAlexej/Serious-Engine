@@ -405,26 +405,37 @@ namespace
     return m;
   }
 
-  FLOAT3D _GetAxisDirection(GizmoAxis gizmo)
+  FLOAT3D _GetAxisDirection(GizmoAxis gizmo, const CWorldEditorDoc* pDoc)
   {
+    FLOAT3D res(0, 0, -1);
     switch (gizmo)
     {
     case GizmoAxis::X_Translation: [[fallthrough]];
     case GizmoAxis::X_Rotation:
-      return FLOAT3D(1, 0, 0);
+      res = FLOAT3D(1, 0, 0);
+      break;
 
     case GizmoAxis::Y_Translation: [[fallthrough]];
     case GizmoAxis::Y_Rotation:
-      return FLOAT3D(0, 1, 0);
+      res = FLOAT3D(0, 1, 0);
+      break;
 
     case GizmoAxis::Z_Translation: [[fallthrough]];
     case GizmoAxis::Z_Rotation:
-      return FLOAT3D(0, 0, 1);
+      res = FLOAT3D(0, 0, 1);
+      break;
 
     default:
       break;
     }
-    return FLOAT3D(0, 0, 0);
+    if (pDoc && !pDoc->m_absoluteRotation)
+    {
+      FLOATmatrix3D rot;
+      MakeRotationMatrix(rot, pDoc->m_plMouseMove.pl_OrientationAngle);
+      res *= rot;
+    }
+
+    return res;
   }
 
   FLOAT3D _GetAxisHPB(GizmoAxis gizmo)
@@ -449,10 +460,10 @@ namespace
     return FLOAT3D(0, 0, 0);
   }
 
-  ANGLE3D _GetAxisRotation(GizmoAxis gizmo)
+  ANGLE3D _GetAxisRotation(GizmoAxis gizmo, const CWorldEditorDoc* pDoc)
   {
     ANGLE3D a(0, 0, 0);
-    DirectionVectorToAngles(_GetAxisDirection(gizmo), a);
+    DirectionVectorToAnglesNoSnap(_GetAxisDirection(gizmo, pDoc), a);
     return a;
   }
 
@@ -496,7 +507,7 @@ namespace
 
   using TEdge = std::pair<FLOAT3D, FLOAT3D>;
 
-  std::vector<TEdge> _GetAxisContour(const FLOAT3D& origin, GizmoAxis gizmo)
+  std::vector<TEdge> _GetAxisContour(const CPlacement3D& pl, GizmoAxis gizmo)
   {
     static const std::vector<std::pair<FLOAT2D, FLOAT2D>> circle_2d = _GenerateCircle(12, 0.375);
 
@@ -557,10 +568,12 @@ namespace
       break;
     }
 
+    FLOATmatrix3D rot;
+    MakeRotationMatrix(rot, pl.pl_OrientationAngle);
     for (auto& edge : res)
     {
-      edge.first += origin;
-      edge.second += origin;
+      edge.first = (edge.first * rot) + pl.pl_PositionVector;
+      edge.second = (edge.second * rot) + pl.pl_PositionVector;
     }
     return res;
   }
@@ -1447,7 +1460,7 @@ void CWorldEditorView::RenderView( CDrawPort *pDP)
         hovered_axis = hovered_axis_and_proj->first;
     }
 
-    auto draw_gizmo = [this, &hovered_axis, &gizmo_origin](GizmoAxis gizmo)
+    auto draw_gizmo = [this, &hovered_axis, &gizmo_origin, pDoc](GizmoAxis gizmo)
     {
       auto* axis_model = _GetAxisModel(gizmo, hovered_axis);
 
@@ -1461,7 +1474,7 @@ void CWorldEditorView::RenderView( CDrawPort *pDP)
 
       axis_model->mo_colBlendColor = col | alpha;
       CRenderModel rm;
-      rm.SetObjectPlacement(CPlacement3D(gizmo_origin, _GetAxisRotation(gizmo)));
+      rm.SetObjectPlacement(CPlacement3D(gizmo_origin, _GetAxisRotation(gizmo, pDoc)));
       rm.rm_vLightDirection = FLOAT3D(1, 0, 0);
       rm.rm_colLight = C_WHITE;
       rm.rm_colAmbient = C_WHITE;
@@ -4784,14 +4797,18 @@ void CWorldEditorView::OnMouseMove(UINT nFlags, CPoint point)
     {
       const FLOAT2D mouse_delta(lOffsetX, -lOffsetY);
       const FLOAT shift = (m_axis_projection % mouse_delta) / svViewer.GetZoomFactor();
-      pDoc->m_plMouseMove.Translate_AbsoluteSystem(_GetAxisDirection(*m_selected_axis) * shift);
+      pDoc->m_plMouseMove.Translate_AbsoluteSystem(_GetAxisDirection(*m_selected_axis, pDoc) * shift);
       pDoc->m_chSelections.MarkChanged();
       bObjectMoved = TRUE;
       break;
     }
     case IA_ROTATING_ENTITY_SELECTION_AROUND_AXIS:
     {
-      pDoc->m_plMouseMove.Rotate_HPB(_GetAxisHPB(*m_selected_axis) * lOffsetX);
+      const auto delta = _GetAxisHPB(*m_selected_axis) * lOffsetX;
+      if (pDoc->m_absoluteRotation)
+        pDoc->m_plMouseMove.Rotate_HPB(delta);
+      else
+        pDoc->m_plMouseMove.Rotate_HPB_OwnSystem(delta);
       pDoc->m_chSelections.MarkChanged();
       bObjectMoved = TRUE;
       break;
@@ -8569,6 +8586,10 @@ std::optional<std::pair<GizmoAxis, FLOAT2D>> CWorldEditorView::HoveredAxis()
   ScreenToClient(&cursor_pos);
   const FLOAT2D mouse_pos(cursor_pos.x, m_pdpDrawPort->GetHeight() - cursor_pos.y);
   const auto gizmo_origin = axis_proj->ProjectCoordinateReverse(selection_center);
+  ANGLE3D gizmo_rotation(0, 0, 0);
+  if (!pDoc->m_absoluteRotation)
+    gizmo_rotation = pDoc->m_plMouseMove.pl_OrientationAngle;
+  const CPlacement3D gizmo_placement(gizmo_origin, gizmo_rotation);
   const FLOAT hover_sensitivity = 7.0f;
   for (const auto axis :
     {
@@ -8580,7 +8601,7 @@ std::optional<std::pair<GizmoAxis, FLOAT2D>> CWorldEditorView::HoveredAxis()
       GizmoAxis::Z_Rotation
     })
   {
-    const auto edges = _GetAxisContour(gizmo_origin, axis);
+    const auto edges = _GetAxisContour(gizmo_placement, axis);
     if (std::any_of(edges.begin(), edges.end(), [&](const TEdge& edge)
       {
         FLOAT3D e1;
@@ -8590,12 +8611,10 @@ std::optional<std::pair<GizmoAxis, FLOAT2D>> CWorldEditorView::HoveredAxis()
         return _DistanceToEdge(mouse_pos, FLOAT2D(e1(1), e1(2)), FLOAT2D(e2(1), e2(2))) <= hover_sensitivity;
       }))
     {
-      FLOAT3D axis_dir_3d = _GetAxisDirection(axis) + gizmo_origin;
-      FLOAT3D axis_origin;
+      FLOAT3D axis_dir_3d = _GetAxisDirection(axis, pDoc) + gizmo_placement.pl_PositionVector;
       FLOAT3D axis_dir;
-      axis_proj->ProjectCoordinate(gizmo_origin, axis_origin);
       axis_proj->ProjectCoordinate(axis_dir_3d, axis_dir);
-      FLOAT2D axis_dir_2d(axis_dir(1) - axis_origin(1), axis_dir(2) - axis_origin(2));
+      FLOAT2D axis_dir_2d(axis_dir(1) - selection_center(1), axis_dir(2) - selection_center(2));
       const FLOAT axis_len = axis_dir_2d.Length();
       if (axis_len < 0.01)
         axis_dir_2d = FLOAT2D(1, 0);

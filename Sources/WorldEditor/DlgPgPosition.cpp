@@ -19,6 +19,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "stdafx.h"
 #include "DlgPgPosition.h"
 
+#include <QPointer>
+
 #ifdef _DEBUG
 #undef new
 #define new DEBUG_NEW
@@ -45,6 +47,19 @@ CDlgPgPosition::CDlgPgPosition() : CPropertyPage(CDlgPgPosition::IDD)
 
 CDlgPgPosition::~CDlgPgPosition()
 {
+}
+
+BOOL CDlgPgPosition::OnInitDialog()
+{
+  BOOL res = CPropertyPage::OnInitDialog();
+  HICON pick_icon = static_cast<HICON>(::LoadImage(theApp.m_hInstance, MAKEINTRESOURCE(IDI_ICON_PICK), IMAGE_ICON, 16, 16, LR_DEFAULTCOLOR));
+  if (pick_icon)
+  {
+    auto* pick_button = static_cast<CButton*>(GetDlgItem(IDC_PICK_ROTATION));
+    pick_button->SetIcon(pick_icon);
+  }
+  mp_context = std::make_unique<QObject>();
+  return res;
 }
 
 void CDlgPgPosition::DoDataExchange(CDataExchange* pDX)
@@ -78,7 +93,7 @@ void CDlgPgPosition::DoDataExchange(CDataExchange* pDX)
       m_fZ = pDoc->m_plSecondLayer.pl_PositionVector(3);
     }
     // otherwise if we are in entity mode and there is only one entity selected
-    else if( (pDoc->m_iMode == ENTITY_MODE) && ( pDoc->m_selEntitySelection.Count() == 1) )
+    else if (pDoc->m_iMode == ENTITY_MODE && pDoc->m_selEntitySelection.Count() == 1)
     {
       // get first entity
       CEntity *penEntityOne = pDoc->m_selEntitySelection.GetFirstInSelection();
@@ -97,12 +112,22 @@ void CDlgPgPosition::DoDataExchange(CDataExchange* pDX)
   }
 
 	//{{AFX_DATA_MAP(CDlgPgPosition)
+  const BOOL single_selection = pDoc->m_selEntitySelection.Count() == 1;
+  GetDlgItem(IDC_EDIT_BANKING)->EnableWindow(single_selection);
+  GetDlgItem(IDC_EDIT_HEADING)->EnableWindow(single_selection);
+  GetDlgItem(IDC_EDIT_PITCH)->EnableWindow(single_selection);
+  GetDlgItem(IDC_EDIT_X)->EnableWindow(single_selection);
+  GetDlgItem(IDC_EDIT_Y)->EnableWindow(single_selection);
+  GetDlgItem(IDC_EDIT_Z)->EnableWindow(single_selection);
+
 	DDX_Text(pDX, IDC_EDIT_BANKING, m_fBanking);
 	DDX_Text(pDX, IDC_EDIT_HEADING, m_fHeading);
 	DDX_Text(pDX, IDC_EDIT_PITCH, m_fPitch);
 	DDX_Text(pDX, IDC_EDIT_X, m_fX);
 	DDX_Text(pDX, IDC_EDIT_Y, m_fY);
-	DDX_Text(pDX, IDC_EDIT_Z, m_fZ);
+  DDX_Text(pDX, IDC_EDIT_Z, m_fZ);
+  DDX_Check(pDX, IDC_ABSOLUTE_ROTATION, pDoc->m_absoluteRotation);
+  DDX_Check(pDX, IDC_SNAP_TO_GRID, pDoc->m_bAutoSnap);
 	//}}AFX_DATA_MAP
 
   // if dialog is giving data
@@ -129,43 +154,49 @@ void CDlgPgPosition::DoDataExchange(CDataExchange* pDX)
     // otherwise if we are in entity mode
     else if( pDoc->m_iMode == ENTITY_MODE)
     {
-      // there must be only one entity selected
-      ASSERT( pDoc->m_selEntitySelection.Count() == 1);
-      
-      // get first entity
-      CEntity *penEntityOne = pDoc->m_selEntitySelection.GetFirstInSelection();
+      if (pDoc->m_selEntitySelection.Count() == 1)
+      {
+        // get first entity
+        CEntity* penEntityOne = pDoc->m_selEntitySelection.GetFirstInSelection();
 
-      // get placement of first entity
-      CPlacement3D plEntityOnePlacement = penEntityOne->GetPlacement();
-      plEntityOnePlacement.pl_OrientationAngle(1) = AngleDeg( m_fHeading);
-	    plEntityOnePlacement.pl_OrientationAngle(2) = AngleDeg( m_fPitch);
-	    plEntityOnePlacement.pl_OrientationAngle(3) = AngleDeg( m_fBanking);
+        // get placement of first entity
+        CPlacement3D plEntityOnePlacement = penEntityOne->GetPlacement();
+        plEntityOnePlacement.pl_OrientationAngle(1) = AngleDeg(m_fHeading);
+        plEntityOnePlacement.pl_OrientationAngle(2) = AngleDeg(m_fPitch);
+        plEntityOnePlacement.pl_OrientationAngle(3) = AngleDeg(m_fBanking);
 
-      plEntityOnePlacement.pl_PositionVector(1) = m_fX;
-      plEntityOnePlacement.pl_PositionVector(2) = m_fY;
-      plEntityOnePlacement.pl_PositionVector(3) = m_fZ;
+        plEntityOnePlacement.pl_PositionVector(1) = m_fX;
+        plEntityOnePlacement.pl_PositionVector(2) = m_fY;
+        plEntityOnePlacement.pl_PositionVector(3) = m_fZ;
 
-      // snap entity's placement
-      pDoc->SnapToGrid( plEntityOnePlacement, SNAP_FLOAT_12);
-      
-      // set placement back to entity
-      penEntityOne->SetPlacement( plEntityOnePlacement);
+        // snap entity's placement
+        pDoc->SnapToGrid(plEntityOnePlacement, SNAP_FLOAT_12);
 
-      pDoc->SetModifiedFlag( TRUE);
-      pDoc->UpdateAllViews( NULL);
-      m_udSelection.MarkUpdated();
+        // set placement back to entity
+        penEntityOne->SetPlacement(plEntityOnePlacement);
 
-      // update all document's views
-      pDoc->UpdateAllViews( NULL);
+        pDoc->SetModifiedFlag(TRUE);
+        pDoc->UpdateAllViews(NULL);
+        m_udSelection.MarkUpdated();
+
+        // update all document's views
+        pDoc->UpdateAllViews(NULL);
+      }
+      else
+      {
+        m_udSelection.MarkUpdated();
+      }
     }
   }
 }
 
-
 BEGIN_MESSAGE_MAP(CDlgPgPosition, CPropertyPage)
-	//{{AFX_MSG_MAP(CDlgPgPosition)
-		// NOTE: the ClassWizard will add message map macros here
-	//}}AFX_MSG_MAP
+  ON_COMMAND(IDC_PICK_ROTATION, OnPickRotation)
+  ON_UPDATE_COMMAND_UI(IDC_PICK_ROTATION, OnUpdatePickRotation)
+  ON_COMMAND(IDC_ABSOLUTE_ROTATION, OnAbsoluteRotation)
+  ON_UPDATE_COMMAND_UI(IDC_ABSOLUTE_ROTATION, OnUpdateAbsoluteRotation)
+  ON_COMMAND(IDC_SNAP_TO_GRID, OnSnapToGrid)
+  ON_UPDATE_COMMAND_UI(IDC_SNAP_TO_GRID, OnUpdateSnapToGrid)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -177,11 +208,15 @@ BOOL CDlgPgPosition::OnIdle(LONG lCount)
   CWorldEditorDoc* pDoc = theApp.GetDocument();
   if( (pDoc == NULL) || !IsWindow(m_hWnd)) return FALSE;
 
+  UpdateDialogControls(GetDlgItem(IDC_PICK_ROTATION), FALSE);
+  UpdateDialogControls(GetDlgItem(IDC_ABSOLUTE_ROTATION), FALSE);
+  UpdateDialogControls(GetDlgItem(IDC_SNAP_TO_GRID), FALSE);
+
   // if selections have been changed (they are not up to date)
   if( !pDoc->m_chSelections.IsUpToDate( m_udSelection))
   {
     // update dialog data
-    UpdateData( FALSE);
+    UpdateData(FALSE);
   }
 
   return TRUE;
@@ -199,4 +234,54 @@ BOOL CDlgPgPosition::PreTranslateMessage(MSG* pMsg)
     return TRUE;
   }
 	return CPropertyPage::PreTranslateMessage(pMsg);
+}
+
+void CDlgPgPosition::OnPickRotation()
+{
+  auto* curr_doc = theApp.GetDocument();
+  if (!mp_context || !curr_doc)
+    return;
+  theApp.InstallOneTimeSelectionStealer([this, curr_doc, qContext = QPointer { mp_context.get() }]
+  (CEntity* entity)
+  {
+    if (!qContext)
+      return;
+    CWorldEditorDoc* pDoc = theApp.GetDocument();
+    if (pDoc == curr_doc && !pDoc->m_absoluteRotation)
+    {
+      pDoc->m_plMouseMove.pl_OrientationAngle = entity->GetPlacement().pl_OrientationAngle;
+      pDoc->UpdateSelectionCommonPos();
+    }
+  },
+    this);
+}
+
+void CDlgPgPosition::OnUpdatePickRotation(CCmdUI* pCmdUI)
+{
+  CWorldEditorDoc* pDoc = theApp.GetDocument();
+  pCmdUI->Enable(!pDoc->m_absoluteRotation && !theApp.GetSelectionStealer());
+}
+
+void CDlgPgPosition::OnAbsoluteRotation()
+{
+  CWorldEditorDoc* pDoc = theApp.GetDocument();
+  pDoc->FlipRotationMode();
+}
+
+void CDlgPgPosition::OnUpdateAbsoluteRotation(CCmdUI* pCmdUI)
+{
+  CWorldEditorDoc* pDoc = theApp.GetDocument();
+  pCmdUI->SetCheck(pDoc->m_absoluteRotation);
+}
+
+void CDlgPgPosition::OnSnapToGrid()
+{
+  CWorldEditorDoc* pDoc = theApp.GetDocument();
+  pDoc->m_bAutoSnap = !pDoc->m_bAutoSnap;
+}
+
+void CDlgPgPosition::OnUpdateSnapToGrid(CCmdUI* pCmdUI)
+{
+  CWorldEditorDoc* pDoc = theApp.GetDocument();
+  pCmdUI->SetCheck(pDoc->m_bAutoSnap);
 }

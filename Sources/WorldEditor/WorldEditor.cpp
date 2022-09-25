@@ -562,7 +562,11 @@ BOOL CWorldEditorApp::SubInitInstance()
     {
       InstallOneTimeSelectionStealer(nullptr, nullptr);
       if (auto* doc = theApp.GetActiveDocument())
+      {
+        doc->m_plMouseMove.pl_OrientationAngle = ANGLE3D(0, 0, 0);
         doc->UpdateSelectionCommonPos();
+        doc->m_chSelections.MarkChanged();
+      }
     });
 
   m_showing_modal_dialog = false;

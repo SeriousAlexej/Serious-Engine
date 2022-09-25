@@ -868,4 +868,9 @@
       <Filter>Header Files\Tree</Filter>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\pick.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
 </Project>

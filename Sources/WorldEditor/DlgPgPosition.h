@@ -28,7 +28,8 @@ class CDlgPgPosition : public CPropertyPage
 // Construction
 public:
 	CDlgPgPosition();
-	~CDlgPgPosition();
+  ~CDlgPgPosition();
+  BOOL OnInitDialog() override;
   BOOL OnIdle(LONG lCount);
   CUpdateableRT m_udSelection;
 
@@ -58,8 +59,16 @@ protected:
 	// Generated message map functions
 	//{{AFX_MSG(CDlgPgPosition)
 		// NOTE: the ClassWizard will add member functions here
-	//}}AFX_MSG
+  //}}AFX_MSG
+  afx_msg void OnPickRotation();
+  afx_msg void OnUpdatePickRotation(CCmdUI* pCmdUI);
+  afx_msg void OnAbsoluteRotation();
+  afx_msg void OnUpdateAbsoluteRotation(CCmdUI* pCmdUI);
+  afx_msg void OnSnapToGrid();
+  afx_msg void OnUpdateSnapToGrid(CCmdUI* pCmdUI);
 	DECLARE_MESSAGE_MAP()
 
+private:
+	std::unique_ptr<QObject> mp_context;
 };
 #endif // DLGPGPOSITION_H

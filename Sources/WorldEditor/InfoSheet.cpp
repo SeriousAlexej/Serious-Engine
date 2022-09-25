@@ -218,9 +218,9 @@ BOOL CInfoSheet::OnIdle(LONG lCount)
         }
       }
     }
-    // else if we are in entity mode and only one entity is selected,
+    // else if we are in entity mode and at least one entity is selected,
     // force info mode: INFO_MODE_POSITION
-    else if( (pDoc->m_iMode == ENTITY_MODE) && (pDoc->m_selEntitySelection.Count() == 1) )
+    else if(pDoc->m_iMode == ENTITY_MODE && pDoc->m_selEntitySelection.Count() >= 1)
     {
       if( m_ModeID != INFO_MODE_POSITION)
       {
