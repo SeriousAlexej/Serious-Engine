@@ -204,6 +204,19 @@ void CPlacement3D::Rotate_HPB(const ANGLE3D &a3dRotation)
 }
 
 /*
+ * Rotate using HPB method in own coordinate system.
+ */
+void CPlacement3D::Rotate_HPB_OwnSystem(const ANGLE3D& rot)
+{
+  FLOATmatrix3D rot_own;
+  MakeRotationMatrix(rot_own, pl_OrientationAngle);
+  FLOATmatrix3D rot_new;
+  MakeRotationMatrix(rot_new, rot);
+  rot_own *= rot_new;
+  DecomposeRotationMatrixNoSnap(pl_OrientationAngle, rot_own);
+}
+
+/*
  * Translate in own coordinate system.
  */
 void CPlacement3D::Translate_OwnSystem(const FLOAT3D &f3dRelativeTranslation)

@@ -43,6 +43,8 @@ public:
   void Rotate_Airplane(const ANGLE3D &a3dRotation);
   /* Rotate using HPB method. */
   void Rotate_HPB(const ANGLE3D &a3dRotation);
+  /* Rotate using HPB in own coordinate system. */
+  void Rotate_HPB_OwnSystem(const ANGLE3D& rot);
   /* Translate in own coordinate system. */
   void Translate_OwnSystem(const FLOAT3D &f3dRelativeTranslation);
   /* Translate in absolute coordinate system. */
