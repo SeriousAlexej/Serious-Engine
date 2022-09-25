@@ -200,7 +200,7 @@ void DirectionVectorToAnglesNoSnap(const FLOAT3D &vDirection, ANGLE3D &a3dAngles
   p = ASin(y);
 
   // if y is near +1 or -1
-  if (y>0.99 || y<-0.99) {
+  if (y>0.9999 || y<-0.9999) {
     // heading is irrelevant
     h = 0;
   // otherwise
