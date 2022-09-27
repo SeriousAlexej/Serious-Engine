@@ -5,3 +5,7 @@
 	path = Sources/qtsolutions
 	url = https://github.com/SeriousAlexej/qt-solutions.git
 	branch = master
+[submodule "Sources/EntitiesAlpha"]
+	path = Sources/EntitiesAlpha
+	url = https://gitlab.com/TwilightWingsStudio/entitiesalpha.git
+	branch = master
