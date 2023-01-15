@@ -237,10 +237,6 @@ inline void MatrixTranspose(Matrix12 &r, const Matrix12 &m)
   r[11] = -r[8]*m[3] - r[9]*m[7] - r[10]*m[11];
 }
 
-// viewer absolute and object space projection
-static FLOAT3D _vViewer;
-static FLOAT3D _vViewerObj;
-static FLOAT3D _vLightObj;
 // returns haze/fog value in vertex 
 static FLOAT3D _vZDirView, _vHDirView;
 static FLOAT   _fFogAddH;
@@ -258,8 +254,7 @@ static void GetFogMapInVertex( GFXVertex4 &vtx, GFXTexCoord &tex)
 // check vertex against haze
 static void GetHazeMapInVertex( GFXVertex4 &vtx, FLOAT &tx1)
 {
-  const FLOAT fD = vtx.x*_vViewerObj(1) + vtx.y*_vViewerObj(2) + vtx.z*_vViewerObj(3);
-  tx1 = (fD+_fHazeAdd) * _haze_fMul;
+  tx1 = (-_fHazeAdd - vtx.z) * _haze_fMul;
 }
 
 // check model's bounding box against fog
@@ -299,24 +294,6 @@ BOOL PrepareHaze(void)
   ULONG &ulRenFlags = RM_GetRenderFlags();
   if( ulRenFlags & SRMF_HAZE) {
     _fHazeAdd  = _haze_hp.hp_fNear;
-    _fHazeAdd += -_mObjToView[11];
-/*
-    // get viewer -z in viewer space
-    _vZDirView = FLOAT3D(0,0,-1);
-    // get fog direction in viewer space
-    // _vHDirView = _fog_vHDirAbs;
-    // RotateVector(_vHDirView.vector, _mAbsToViewer);
-    _vHDirView = _fog_vHDirView;
-    // get viewer offset
-    // _fFogAddZ = _vViewer % (rm.rm_vObjectPosition - _aprProjection->pr_vViewerPosition);  // BUG in compiler !!!!
-    _fFogAddZ = -_mObjToView[11];
-    // get fog offset
-    _fFogAddH = _fog_fAddH;/*(
-      _vHDirView(1)*_mObjToView[3] +
-      _vHDirView(2)*_mObjToView[7] +
-      _vHDirView(3)*_mObjToView[11]) + _fog_fp.fp_fH3;
-      CPrintF("hdir:%g,%g,%g addz:%g addh:%g\n", _vHDirView(1), _vHDirView(2), _vHDirView(3), _fFogAddZ, _fFogAddH);
-*/
     return TRUE;
   }
   return FALSE;

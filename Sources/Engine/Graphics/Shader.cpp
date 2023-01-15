@@ -150,7 +150,7 @@ void shaDoFogPass(void)
   if(_paHazeUVMap!=NULL) {
     gfxSetTextureWrapping( GFX_CLAMP, GFX_CLAMP);
     gfxSetTexture( _haze_ulTexture, _haze_tpLocal);
-    gfxSetTexCoordArray(_paHazeUVMap, TRUE);
+    gfxSetTexCoordArray(_paHazeUVMap, FALSE);
     gfxBlendFunc( GFX_SRC_ALPHA, GFX_INV_SRC_ALPHA);
     gfxEnableBlend();
     // set vertex color array for haze
