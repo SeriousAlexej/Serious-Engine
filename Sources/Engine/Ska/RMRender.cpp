@@ -243,16 +243,15 @@ static FLOAT3D _vViewerObj;
 static FLOAT3D _vLightObj;
 // returns haze/fog value in vertex 
 static FLOAT3D _vZDirView, _vHDirView;
-static FLOAT   _fFogAddZ, _fFogAddH;
+static FLOAT   _fFogAddH;
 static FLOAT   _fHazeAdd;
 
 // check vertex against fog
 static void GetFogMapInVertex( GFXVertex4 &vtx, GFXTexCoord &tex)
 {
-  const FLOAT fD = vtx.x*_vZDirView(1) + vtx.y*_vZDirView(2) + vtx.z*_vZDirView(3);
   const FLOAT fH = vtx.x*_vHDirView(1) + vtx.y*_vHDirView(2) + vtx.z*_vHDirView(3);
-  tex.s = (fD+_fFogAddZ) * _fog_fMulZ;
-//  tex.s = (vtx.z) * _fog_fMulZ;
+  // -vtx.z in viewer coordinate system just means 'how deep/far away vertex is from viewer plane'
+  tex.s = -vtx.z * _fog_fMulZ;
   tex.t = (fH+_fFogAddH) * _fog_fMulH;
 }
 
@@ -331,18 +330,9 @@ BOOL PrepareFog(void)
     // get viewer -z in viewer space
     _vZDirView = FLOAT3D(0,0,-1);
     // get fog direction in viewer space
-    // _vHDirView = _fog_vHDirAbs;
-    // RotateVector(_vHDirView.vector, _mAbsToViewer);
     _vHDirView = _fog_vHDirView;
-    // get viewer offset
-    // _fFogAddZ = _vViewer % (rm.rm_vObjectPosition - _aprProjection->pr_vViewerPosition);  // BUG in compiler !!!!
-    _fFogAddZ = -_mObjToView[11];
     // get fog offset
-    _fFogAddH = _fog_fAddH;/*(
-      _vHDirView(1)*_mObjToView[3] +
-      _vHDirView(2)*_mObjToView[7] +
-      _vHDirView(3)*_mObjToView[11]) + _fog_fp.fp_fH3;
-      CPrintF("hdir:%g,%g,%g addz:%g addh:%g\n", _vHDirView(1), _vHDirView(2), _vHDirView(3), _fFogAddZ, _fFogAddH);*/
+    _fFogAddH = _fog_fAddH;
     return TRUE;
   }
   return FALSE;
