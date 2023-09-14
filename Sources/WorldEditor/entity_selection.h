@@ -25,6 +25,7 @@ public:
 
   size_t Count() const;
   BOOL IsSelected(const CEntity& entity) const;
+  void Select(const std::set<CEntity*>& entities);
   void Select(CEntity& entity);
   void Deselect(CEntity& entity);
   CEntity* GetFirstInSelection() const;

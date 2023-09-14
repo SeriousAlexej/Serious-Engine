@@ -144,7 +144,7 @@ public:
     QObject::connect(&EventHub::instance(), &EventHub::EntityPicked, mp_tree_view, [this]
       (CEntity* picked_entity)
       {
-        mp_tree_model->OnEntityPicked(picked_entity, mp_tree_view->selectionModel()->selectedIndexes());
+        mp_tree_model->OnEntityPicked(picked_entity, mp_tree_view->selectionModel()->selectedRows());
       });
   }
 

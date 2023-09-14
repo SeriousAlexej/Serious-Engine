@@ -3697,17 +3697,26 @@ void CWorldEditorView::OnRButtonUp(UINT nFlags, CPoint point)
   CView::OnRButtonUp(nFlags, point);
 }
 
+
+std::set<CEntity*> _GetUnselectedDescendents(CEntity& enParent)
+{
+  std::set<CEntity*> result;
+  FOREACHINLIST(CEntity, en_lnInParent, enParent.en_lhChildren, itenChild)
+  {
+    const auto lowerDescendents = _GetUnselectedDescendents(*itenChild);
+    result.insert(lowerDescendents.begin(), lowerDescendents.end());
+  }
+  if (!enParent.IsSelected(ENF_SELECTED))
+  {
+    result.insert(&enParent);
+  }
+  return result;
+}
+
 // select all descendents of selected entity
 void SelectDescendents( NewEntitySelection& selEntity, CEntity &enParent)
 {
-  FOREACHINLIST( CEntity, en_lnInParent, enParent.en_lhChildren, itenChild)
-  {
-    SelectDescendents( selEntity, *itenChild);
-  }
-  if( !enParent.IsSelected( ENF_SELECTED))
-  {
-    selEntity.Select( enParent);
-  }
+  selEntity.Select(_GetUnselectedDescendents(enParent));
 }
 
 void CWorldEditorView::OnLButtonDblClk(UINT nFlags, CPoint point)

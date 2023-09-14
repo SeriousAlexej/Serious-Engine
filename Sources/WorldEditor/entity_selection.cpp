@@ -35,6 +35,21 @@ BOOL NewEntitySelection::IsSelected(const CEntity& entity) const
   return entity.IsSelected(ENF_SELECTED);
 }
 
+void NewEntitySelection::Select(const std::set<CEntity*>& entities)
+{
+  for (auto* entity : entities)
+  {
+    if (!entity->IsSelected(ENF_SELECTED))
+    {
+      entity->Select(ENF_SELECTED);
+      m_entities.insert(entity);
+    } else {
+      ASSERTALWAYS("Object already selected!");
+    }
+  }
+  Notify();
+}
+
 void NewEntitySelection::Select(CEntity& entity)
 {
   if (!entity.IsSelected(ENF_SELECTED))
