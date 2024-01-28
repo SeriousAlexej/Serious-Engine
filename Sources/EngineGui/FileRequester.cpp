@@ -30,6 +30,17 @@ static INDEX gui_bEnableRequesterThumbnails=TRUE;
 
 UINT APIENTRY FileOpenRequesterHook( HWND hdlg, UINT uiMsg, WPARAM wParam,	LPARAM lParam)
 {
+  if (uiMsg == WM_NOTIFY)
+  {
+    OFNOTIFY* pONNotify = (OFNOTIFY*)lParam;
+    NMHDR* pNMHeader = &pONNotify->hdr;
+    if (pNMHeader->code == CDN_INITDONE)
+    {
+      if (!allow_gro_browser || !QApplication::instance())
+        ShowWindow(GetDlgItem(hdlg, IDC_PICK_IN_GRO), SW_HIDE);
+    }
+  }
+
   if (uiMsg == WM_COMMAND)
   {
     if (LOWORD(wParam) == IDC_PICK_IN_GRO && HIWORD(wParam) == BN_CLICKED)
@@ -55,9 +66,6 @@ UINT APIENTRY FileOpenRequesterHook( HWND hdlg, UINT uiMsg, WPARAM wParam,	LPARA
     NMHDR *pNMHeader = &pONNotify->hdr;
     if(pNMHeader->code == CDN_INITDONE)
     {
-      if (!allow_gro_browser || !QApplication::instance())
-        ShowWindow(GetDlgItem(hdlg, IDC_PICK_IN_GRO), SW_HIDE);
-
       HWND hwnd = GetDlgItem( hdlg, IDC_THUMBNAIL_RECT);
       RECT rect;
       BOOL bSuccess = GetClientRect( hwnd, &rect);
