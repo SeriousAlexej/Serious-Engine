@@ -1033,8 +1033,10 @@ void CDlgBrowseByClass::OnSelectSectors()
 BOOL CDlgBrowseByClass::PreTranslateMessage(MSG* pMsg) 
 {
   BOOL bCtrl = (GetKeyState( VK_CONTROL)&0x8000) != 0;
+  const auto* focus_wnd = m_listEntities.GetFocus();
   if( ((pMsg->message==WM_KEYDOWN) || (pMsg->message==WM_SYSKEYDOWN)) && 
-      ((int)pMsg->wParam=='A') && bCtrl)
+      ((int)pMsg->wParam=='A') && bCtrl &&
+      focus_wnd && focus_wnd->GetSafeHwnd() == m_listEntities.GetSafeHwnd())
   {
     OnSelectAll();
   }
