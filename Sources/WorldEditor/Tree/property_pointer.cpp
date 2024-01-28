@@ -85,13 +85,12 @@ public:
   {
     if (target_entity && target_entity->IsTargetable())
     {
-      for (auto* entity : m_entities)
-      {
-        auto* actual_property = entity->PropertyForName(mp_property->pid_strName);
-        if (!entity->IsTargetValid(actual_property->ep_slOffset, target_entity))
-          return false;
-      }
-      return true;
+      return std::all_of(m_entities.begin(), m_entities.end(),
+        [this, target_entity](CEntity* p_entity)
+        {
+          auto* actual_property = p_entity->PropertyForName(mp_property->pid_strName);
+          return p_entity->IsTargetValid(actual_property->ep_slOffset, target_entity);
+        });
     }
     return false;
   }
