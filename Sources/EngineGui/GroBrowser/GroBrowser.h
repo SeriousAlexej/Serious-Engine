@@ -34,7 +34,7 @@ class QListWidgetItem;
 
 class GroBrowser : public QDialog {
 public:
-  GroBrowser(const char* filter, bool multiselection, QWidget* parent = nullptr);
+  GroBrowser(const char* filter, bool multiselection, const CTString& default_selection, QWidget* parent = nullptr);
   ~GroBrowser();
 
   std::vector<QString> SelectedFiles() const;
@@ -68,6 +68,7 @@ private:
   std::deque<_FileNode*> m_history;
   std::vector<_FileNode*> m_forward_history;
   QPointer<QThread> mp_cache_builder;
+  const QString m_default_selection;
   static std::unique_ptr<_FileNode> mp_root_node;
 };
 

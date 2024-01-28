@@ -273,7 +273,7 @@ CTFileName CEngineGUI::FileRequester(
   {
     CWinAppQt::ModalGuard guard;
     QWinWidget modal_widget(AfxGetMainWnd()->GetSafeHwnd(), nullptr, Qt::WindowFlags {});
-    GroBrowser gro_browser(pchrFilters, pafnSelectedFiles, &modal_widget);
+    GroBrowser gro_browser(pchrFilters, pafnSelectedFiles, strDefaultDir + strFileSelectedByDefault, &modal_widget);
     gro_browser.exec();
     const auto files = gro_browser.SelectedFiles();
     if (!files.empty())

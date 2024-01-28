@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <QPushButton>
 #include <QKeyEvent>
 #include <QRegExp>
+#include <QTimer>
 
 #include <algorithm>
 #include <string_view>
@@ -94,9 +95,10 @@ void CacheBuilder::run()
 
 std::unique_ptr<GroBrowser::_FileNode> GroBrowser::mp_root_node;
 
-GroBrowser::GroBrowser(const char* filter, bool multiselection, QWidget* parent)
+GroBrowser::GroBrowser(const char* filter, bool multiselection, const CTString& default_selection, QWidget* parent)
   : QDialog(parent)
   , mp_ui(std::make_unique<Ui::GroBrowser>())
+  , m_default_selection(QString::fromLocal8Bit(default_selection.str_String).toLower())
 {
   m_forward_history.reserve(g_maxBackSteps);
   setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
@@ -137,7 +139,7 @@ GroBrowser::GroBrowser(const char* filter, bool multiselection, QWidget* parent)
   }
   else
   {
-    _OnCacheReady();
+    QTimer::singleShot(0, this, &GroBrowser::_OnCacheReady);
   }
 }
 
@@ -222,10 +224,6 @@ bool GroBrowser::_CD(_FileNode* node, HistoryDirection history_direction)
 
   mp_current_node = node;
   _RefillList();
-  mp_ui->buttonUp->setEnabled(mp_current_node->parent);
-  mp_ui->buttonBack->setEnabled(!m_history.empty());
-  mp_ui->buttonForward->setEnabled(!m_forward_history.empty());
-  mp_ui->linePath->setText(mp_current_node->Path());
   return true;
 }
 
@@ -333,6 +331,11 @@ void GroBrowser::_RefillList()
   for (const auto& [dummy, node] : mp_current_node->children)
     if (node->IsFile())
       insert_node(node);
+
+  mp_ui->buttonUp->setEnabled(mp_current_node->parent);
+  mp_ui->buttonBack->setEnabled(!m_history.empty());
+  mp_ui->buttonForward->setEnabled(!m_forward_history.empty());
+  mp_ui->linePath->setText(mp_current_node->Path());
 }
 
 void GroBrowser::_OnCacheReady()
@@ -345,6 +348,28 @@ void GroBrowser::_OnCacheReady()
   }
   mp_ui->stackedWidget->setCurrentWidget(mp_ui->pageMain);
   mp_current_node = mp_root_node.get();
+
+  const auto selection_path = m_default_selection.split('\\', Qt::SkipEmptyParts);
+  int i = 0;
+  while (i < selection_path.size())
+  {
+    auto next_node = mp_current_node->children.find(selection_path.at(i++));
+    if (next_node == mp_current_node->children.end() || next_node->second->IsFile())
+      break;
+    mp_current_node = next_node->second.get();
+  }
+
   _RefillList();
+
+  if (i == selection_path.size() && !selection_path.isEmpty())
+  {
+    const auto found_leaf = mp_ui->listWidget->findItems(selection_path.back(), Qt::MatchFixedString);
+    if (!found_leaf.isEmpty())
+    {
+      found_leaf.front()->setSelected(true);
+      mp_ui->listWidget->scrollToItem(found_leaf.front(), QAbstractItemView::PositionAtCenter);
+    }
+  }
+
   mp_ui->listWidget->setFocus();
 }
