@@ -61,7 +61,7 @@ void CacheBuilder::run()
   CDynamicStackArray_CTFileName game_files;
   MakeDirList(game_files, CTString(""), "", DLI_RECURSIVE);
   Max(game_files.Count());
-  for (INDEX i = 0; i < game_files.Count(); ++i)
+  for (INDEX i = 0; i < game_files.Count() && !isInterruptionRequested(); ++i)
   {
     CTFileName full_filename;
     CTFileNamePtr game_file = game_files[i];
@@ -116,6 +116,12 @@ GroBrowser::GroBrowser(const char* filter, bool multiselection, QWidget* parent)
   connect(mp_ui->comboFilter, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &GroBrowser::_RefillList);
   connect(mp_ui->buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
   connect(mp_ui->buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
+  connect(mp_ui->buttonCancelCaching, &QPushButton::clicked, this, [this]
+    {
+      mp_ui->buttonCancelCaching->setEnabled(false);
+      if (mp_cache_builder && mp_cache_builder->isRunning())
+        mp_cache_builder->requestInterruption();
+    });
 
   if (!mp_root_node)
   {
@@ -137,8 +143,13 @@ GroBrowser::GroBrowser(const char* filter, bool multiselection, QWidget* parent)
 
 GroBrowser::~GroBrowser()
 {
-  if (mp_cache_builder)
+  if (mp_cache_builder && mp_cache_builder->isRunning())
+  {
+    mp_cache_builder->disconnect(this);
+    mp_cache_builder->requestInterruption();
     mp_cache_builder->wait();
+    mp_root_node.release();
+  }
 }
 
 std::vector<QString> GroBrowser::SelectedFiles() const
@@ -318,6 +329,12 @@ void GroBrowser::_RefillList()
 
 void GroBrowser::_OnCacheReady()
 {
+  if (mp_cache_builder && mp_cache_builder->isInterruptionRequested())
+  {
+    mp_root_node.reset();
+    reject();
+    return;
+  }
   mp_ui->stackedWidget->setCurrentWidget(mp_ui->pageMain);
   mp_current_node = mp_root_node.get();
   _RefillList();
