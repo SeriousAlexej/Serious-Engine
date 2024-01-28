@@ -253,7 +253,15 @@ void GroBrowser::_OnCDForward()
 
 void GroBrowser::_OnDoubleClicked(QListWidgetItem* item)
 {
-  _CD(item);
+  const auto* node = item->data(Qt::UserRole).value<_FileNode*>();
+  if (node && node->IsFile())
+  {
+    mp_ui->listWidget->clearSelection();
+    item->setSelected(true);
+    accept();
+  } else {
+    _CD(item);
+  }
 }
 
 void GroBrowser::_OnSelectionChanged()
