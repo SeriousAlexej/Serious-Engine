@@ -24,15 +24,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <functional>
 
+#include <QString>
+
 /////////////////////////////////////////////////////////////////////////////
 // CDlgBrowseByClass dialog
 
-class CDlgBrowseByClass : public CDialog 
+class CDlgBrowseByClass final : public CDialog 
 {
 // Construction
 public:
 	CDlgBrowseByClass(CWnd* pParent = NULL, bool for_picking = false, std::function<bool(CEntity*)>&& filter = nullptr);   // standard constructor
 	~CDlgBrowseByClass();
+  BOOL Create(UINT nIDTemplate, CWnd* pParentWnd = nullptr) override;
   void AddEntity( CEntity *pen);
   void FillListWithEntities(void);
   void InitializePluggins(void);
@@ -53,6 +56,9 @@ public:
 	CString	m_strEntitiesInVolume;
 	BOOL	m_bShowVolume;
 	BOOL	m_bShowImportants;
+  CString m_filter_string;
+  QString m_filter_string_qstring;
+  CCtrlEditString m_filter_edit;
 	//}}AFX_DATA
 
 
@@ -66,7 +72,7 @@ public:
 	//}}AFX_VIRTUAL
 
 // Implementation
-protected:
+private:
 
 	// Generated message map functions
 	//{{AFX_MSG(CDlgBrowseByClass)
@@ -88,8 +94,15 @@ protected:
 	afx_msg void OnDisplayVolume();
 	afx_msg void OnSelendokPluggins();
 	afx_msg void OnDisplayImportants();
+	afx_msg void OnEnChangeEditFilterentity();
+	afx_msg void OnTimer(UINT eventID);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
+
+  bool _EntityMatchesStringFilter(const CEntity* entity) const;
+
+private:
+  UINT_PTR m_filter_timer = 0;
 };
 
 //{{AFX_INSERT_LOCATION}}

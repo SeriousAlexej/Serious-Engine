@@ -19,6 +19,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "stdafx.h"
 #include "DlgBrowseByClass.h"
 
+#include <unordered_map>
+
 #ifdef _DEBUG
 #undef new
 #define new DEBUG_NEW
@@ -51,6 +53,8 @@ CDynamicContainer<CEntity> dcEntities;
 #define COLUMN_P 11
 #define COLUMN_B 12
 #define COLUMN_PROPERTY_START 13
+
+static constexpr UINT_PTR g_filter_timer_id = 42;
 
 CEntity *_penForDistanceSort = NULL;
 BOOL _bOfSameClass=FALSE;
@@ -401,6 +405,7 @@ CDlgBrowseByClass::CDlgBrowseByClass(CWnd* pParent /*=NULL*/, bool for_picking, 
 {
 	//{{AFX_DATA_INIT(CDlgBrowseByClass)
 	m_strEntitiesInVolume = _T("");
+  m_filter_string = _T("");
 	m_bShowVolume = FALSE;
 	m_bShowImportants = FALSE;
 	//}}AFX_DATA_INIT
@@ -411,6 +416,16 @@ CDlgBrowseByClass::CDlgBrowseByClass(CWnd* pParent /*=NULL*/, bool for_picking, 
 CDlgBrowseByClass::~CDlgBrowseByClass()
 {
   dcEntities.Clear();
+}
+
+BOOL CDlgBrowseByClass::Create(UINT nIDTemplate, CWnd* pParentWnd)
+{
+  if (CDialog::Create(nIDTemplate, pParentWnd) == FALSE)
+    return FALSE;
+
+  m_filter_edit.SubclassDlgItem(IDC_EDIT_FILTERENTITY, this);
+
+  return TRUE;
 }
 
 void CDlgBrowseByClass::DoDataExchange(CDataExchange* pDX)
@@ -436,9 +451,11 @@ void CDlgBrowseByClass::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_PLUGGINS, m_ctrlPluggins);
 	DDX_Control(pDX, IDC_ENTITY_LIST, m_listEntities);
 	DDX_Text(pDX, IDC_ENTITIES_IN_VOLUME_T, m_strEntitiesInVolume);
+  DDX_Text(pDX, IDC_EDIT_FILTERENTITY, m_filter_string);
 	DDX_Check(pDX, IDC_DISPLAY_VOLUME, m_bShowVolume);
 	DDX_Check(pDX, IDC_DISPLAY_IMPORTANTS, m_bShowImportants);
 	//}}AFX_DATA_MAP
+  m_filter_string_qstring = QString::fromWCharArray(m_filter_string);
 
   // if dialog is giving data
   if( pDX->m_bSaveAndValidate != FALSE)
@@ -477,10 +494,10 @@ void CDlgBrowseByClass::DoDataExchange(CDataExchange* pDX)
   }
 }
 
-
 BEGIN_MESSAGE_MAP(CDlgBrowseByClass, CDialog)
 	//{{AFX_MSG_MAP(CDlgBrowseByClass)
   ON_WM_SIZE()
+  ON_WM_TIMER()
 	ON_NOTIFY(NM_DBLCLK, IDC_ENTITY_LIST, OnDblclkEntityList)
 	ON_NOTIFY(LVN_COLUMNCLICK, IDC_ENTITY_LIST, OnColumnclickEntityList)
 	ON_NOTIFY(NM_RCLICK, IDC_ENTITY_LIST, OnRclickEntityList)
@@ -495,6 +512,7 @@ BEGIN_MESSAGE_MAP(CDlgBrowseByClass, CDialog)
 	ON_BN_CLICKED(IDC_DISPLAY_VOLUME, OnDisplayVolume)
 	ON_CBN_SELENDOK(IDC_PLUGGINS, OnSelendokPluggins)
 	ON_BN_CLICKED(IDC_DISPLAY_IMPORTANTS, OnDisplayImportants)
+  ON_EN_CHANGE(IDC_EDIT_FILTERENTITY, OnEnChangeEditFilterentity)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -531,7 +549,7 @@ void CDlgBrowseByClass::AddEntity( CEntity *pen)
     itItem.iSubItem = iColumn;
     INDEX iFormat;
     CTString strValue=::GetItemValue(pen, iColumn, iFormat);
-    swprintf( achrTemp, L"%s", CString(strValue));
+    swprintf( achrTemp, L"%s", CA2W(strValue, CP_ACP));
     itItem.pszText = achrTemp;
     m_listEntities.SetItem( &itItem);
   }
@@ -572,7 +590,7 @@ void CDlgBrowseByClass::FillListWithEntities(void)
   CWorldEditorDoc *pDoc = theApp.GetDocument();
   
   CDynamicContainer<class CEntity> *penContainer=GetCurrentContainer();
-  _bOfSameClass=AreAllEntitiesOfTheSameClass(penContainer);  
+  _bOfSameClass=AreAllEntitiesOfTheSameClass(penContainer);
 
   // empty entities list
   m_listEntities.DeleteAllItems();
@@ -587,7 +605,8 @@ void CDlgBrowseByClass::FillListWithEntities(void)
     if(!(iten->en_ulFlags&ENF_HIDDEN) &&
         ((pbscSector == NULL) || !(pbscSector->bsc_ulFlags & BSCF_HIDDEN)) &&
         (!m_bShowImportants || iten->IsImportant()) &&
-        (!m_filter || m_filter(iten)))
+        (!m_filter || m_filter(iten)) &&
+        _EntityMatchesStringFilter(iten))
     {
       AddEntity( &iten.Current());
     }
@@ -626,7 +645,6 @@ void CDlgBrowseByClass::FillListWithEntities(void)
   _bTempContainer=FALSE;
   UpdateData( FALSE);
 }
-
 
 void CDlgBrowseByClass::InitializeListColumns(void)
 {
@@ -718,8 +736,15 @@ void CDlgBrowseByClass::AdjustSize()
   const PIX pixx = rect.left;
   const PIX pixw = (w - pixx - pixSX * 2) / 4;
   p_entities_in_volume->MoveWindow(pixx, rect.top, pixw, rect.Height());
-  GetDlgItem(IDC_DISPLAY_VOLUME)->MoveWindow(pixx + pixw * 1, rect.top, pixw, rect.Height() + 1);
-  GetDlgItem(IDC_DISPLAY_IMPORTANTS)->MoveWindow(pixx + pixw * 2, rect.top, pixw, rect.Height() + 1);
+  auto* filter_label = GetDlgItem(IDC_FILTER_LABEL);
+  TEXTMETRIC text_metric;
+  ZeroMemory(&text_metric, sizeof(TEXTMETRIC));
+  GetTextMetrics(filter_label->GetDC()->GetSafeHdc(), &text_metric);
+  const int filter_label_width = min(text_metric.tmMaxCharWidth * strlen("Filter:"), pixw / 3);
+  filter_label->MoveWindow(pixx + pixw * 1, rect.top, filter_label_width, text_metric.tmHeight);
+  GetDlgItem(IDC_EDIT_FILTERENTITY)->MoveWindow(pixx + pixw * 1 + filter_label_width + 8, rect.top, pixw - filter_label_width - 16, text_metric.tmHeight);
+  GetDlgItem(IDC_DISPLAY_VOLUME)->MoveWindow(pixx + pixw * 2, rect.top, pixw/2, rect.Height() + 1);
+  GetDlgItem(IDC_DISPLAY_IMPORTANTS)->MoveWindow(pixx + pixw * 2 + pixw/2, rect.top, pixw/2, rect.Height() + 1);
   GetDlgItem(IDC_PLUGGINS_T)->MoveWindow(pixx + pixw * 3, rect.top, pixw / 4, rect.Height());
   GetDlgItem(IDC_PLUGGINS)->MoveWindow(pixx + pixw * 3 + pixw / 4, rect.top - 4, pixw * 3 / 4, rect.Height() - 4);
 
@@ -1206,4 +1231,49 @@ void CDlgBrowseByClass::OnDisplayImportants()
   m_bShowVolume = FALSE;
   UpdateData( FALSE);
   FillListWithEntities();
+}
+
+void CDlgBrowseByClass::OnEnChangeEditFilterentity()
+{
+  UpdateData(TRUE);
+  if (m_filter_timer != 0)
+  {
+    m_filter_timer = 0;
+    KillTimer(g_filter_timer_id);
+  }
+  m_filter_timer = SetTimer(g_filter_timer_id, 500, nullptr);
+}
+
+void CDlgBrowseByClass::OnTimer(UINT eventID)
+{
+  if (eventID == g_filter_timer_id)
+  {
+    m_filter_timer = 0;
+    KillTimer(g_filter_timer_id);
+    FillListWithEntities();
+  }
+  CDialog::OnTimer(eventID);
+}
+
+bool CDlgBrowseByClass::_EntityMatchesStringFilter(const CEntity* entity) const
+{
+  if (m_filter_string_qstring.isEmpty())
+    return true;
+
+  const QString entity_name = QString::fromLocal8Bit(entity->GetName());
+  if (entity_name.contains(m_filter_string_qstring, Qt::CaseInsensitive))
+    return true;
+
+  const QString entity_description = QString::fromLocal8Bit(entity->GetDescription());
+  if (entity_description.contains(m_filter_string_qstring, Qt::CaseInsensitive))
+    return true;
+
+  static std::unordered_map<const CDLLEntityClass*, QString> class_names_cache;
+  auto class_name_it = class_names_cache.find(entity->en_pecClass->ec_pdecDLLClass);
+  if (class_name_it == class_names_cache.end())
+    class_name_it = class_names_cache.emplace(
+      entity->en_pecClass->ec_pdecDLLClass,
+      QString::fromLocal8Bit(entity->en_pecClass->ec_pdecDLLClass->dec_strName)).first;
+  const auto& entity_class = class_name_it->second;
+  return entity_class.contains(m_filter_string_qstring, Qt::CaseInsensitive);
 }
