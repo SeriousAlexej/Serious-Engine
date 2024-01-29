@@ -271,6 +271,7 @@ void GroBrowser::_OnSelectionChanged()
       return node && node->IsFile();
     });
   mp_ui->buttonBox->button(QDialogButtonBox::Open)->setEnabled(has_selected_file);
+  _UpdateLinePath();
 }
 
 void GroBrowser::_FillFilter(const char* filter)
@@ -335,7 +336,20 @@ void GroBrowser::_RefillList()
   mp_ui->buttonUp->setEnabled(mp_current_node->parent);
   mp_ui->buttonBack->setEnabled(!m_history.empty());
   mp_ui->buttonForward->setEnabled(!m_forward_history.empty());
-  mp_ui->linePath->setText(mp_current_node->Path());
+  _UpdateLinePath();
+}
+
+void GroBrowser::_UpdateLinePath()
+{
+  const auto* current_node = mp_current_node;
+  const auto selection = mp_ui->listWidget->selectedItems();
+  if (selection.size() == 1)
+  {
+    const auto* node = selection.front()->data(Qt::UserRole).value<_FileNode*>();
+    if (node && node->IsFile())
+      current_node = node;
+  }
+  mp_ui->linePath->setText(current_node->Path());
 }
 
 void GroBrowser::_OnCacheReady()

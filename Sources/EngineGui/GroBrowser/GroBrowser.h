@@ -59,6 +59,7 @@ private:
   void _OnSelectionChanged();
   void _FillFilter(const char* filter);
   void _RefillList();
+  void _UpdateLinePath();
   void _OnCacheReady();
 
 private:
