@@ -111,19 +111,22 @@ UINT APIENTRY FileOpenRequesterHook( HWND hdlg, UINT uiMsg, WPARAM wParam,	LPARA
     {
       // remove application path
       fnSelectedFileFullPath.RemoveApplicationPath_t();
+      const auto selectedFileExtension = fnSelectedFileFullPath.FileExt();
+      const auto& supported_image_formats = CImageInfo::GetSupportedImportFormats();
       CTFileName fnThumbnail = CTString("");
-      if( (fnSelectedFileFullPath.FileExt() == ".wld") ||
-          (fnSelectedFileFullPath.FileExt() == ".mdl") )
+      if (selectedFileExtension == ".wld" || selectedFileExtension == ".mdl")
       {
         fnThumbnail = fnSelectedFileFullPath.FileDir()+fnSelectedFileFullPath.FileName()+".tbn";
       }
-      else if( (fnSelectedFileFullPath.FileExt() == ".tex") ||
-               (fnSelectedFileFullPath.FileExt() == ".tbn") )
+      else if (selectedFileExtension == ".tex" || selectedFileExtension == ".tbn")
       {
         fnThumbnail = fnSelectedFileFullPath;
       }
-      else if( (fnSelectedFileFullPath.FileExt() == ".pcx") ||
-               (fnSelectedFileFullPath.FileExt() == ".tga") )
+      else if (std::any_of(supported_image_formats.begin(), supported_image_formats.end(),
+        [&](const std::string& extension)
+        {
+          return selectedFileExtension == extension.c_str();
+        }))
       {
         CImageInfo iiImageInfo;
         _EngineGUI.LoadAnyGfxFormat_t(iiImageInfo, fnSelectedFileFullPath);
