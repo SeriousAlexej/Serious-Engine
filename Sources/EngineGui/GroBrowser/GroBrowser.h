@@ -60,6 +60,7 @@ private:
   void _FillFilter(const char* filter);
   void _RefillList();
   void _UpdateLinePath();
+  void _UpdatePreview();
   void _OnCacheReady();
 
 private:

@@ -160,7 +160,7 @@ void CEngineGUI::LoadAnyGfxFormat_t(CImageInfo& ii, const CTFileName& strFileNam
   ii.LoadAnyGfxFormat_t(strFileName);
 }
 
-std::vector<std::string> GetSupportedImportFormats()
+std::vector<std::string> CEngineGUI::GetSupportedImportFormats()
 {
   std::set<std::string> formats;
   for (const auto& format : QImageReader::supportedImageFormats())
@@ -170,7 +170,7 @@ std::vector<std::string> GetSupportedImportFormats()
   return { formats.begin(), formats.end() };
 }
 
-std::vector<std::string> GetSupportedExportFormats()
+std::vector<std::string> CEngineGUI::GetSupportedExportFormats()
 {
   return { ".tga" };
 }

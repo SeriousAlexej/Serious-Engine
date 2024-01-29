@@ -19,6 +19,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "GroBrowser.ui.h"
 #include "GroBrowser.qrc.h"
 
+#include <SeriousEngineCppAPI/Templates/Stock_CTextureData.h>
+
 #include <QPushButton>
 #include <QKeyEvent>
 #include <QRegExp>
@@ -98,7 +100,7 @@ std::unique_ptr<GroBrowser::_FileNode> GroBrowser::mp_root_node;
 GroBrowser::GroBrowser(const char* filter, bool multiselection, const CTString& default_selection, QWidget* parent)
   : QDialog(parent)
   , mp_ui(std::make_unique<Ui::GroBrowser>())
-  , m_default_selection(QString::fromLocal8Bit(default_selection.str_String).toLower())
+  , m_default_selection(QString::fromLocal8Bit(static_cast<const char*>(default_selection)).toLower())
 {
   m_forward_history.reserve(g_maxBackSteps);
   setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
@@ -272,6 +274,7 @@ void GroBrowser::_OnSelectionChanged()
     });
   mp_ui->buttonBox->button(QDialogButtonBox::Open)->setEnabled(has_selected_file);
   _UpdateLinePath();
+  _UpdatePreview();
 }
 
 void GroBrowser::_FillFilter(const char* filter)
@@ -337,6 +340,7 @@ void GroBrowser::_RefillList()
   mp_ui->buttonBack->setEnabled(!m_history.empty());
   mp_ui->buttonForward->setEnabled(!m_forward_history.empty());
   _UpdateLinePath();
+  _UpdatePreview();
 }
 
 void GroBrowser::_UpdateLinePath()
@@ -350,6 +354,102 @@ void GroBrowser::_UpdateLinePath()
       current_node = node;
   }
   mp_ui->linePath->setText(current_node->Path());
+}
+
+void GroBrowser::_UpdatePreview()
+{
+  const auto selection = mp_ui->listWidget->selectedItems();
+  if (selection.size() == 1)
+  {
+    const auto* node = selection.front()->data(Qt::UserRole).value<_FileNode*>();
+    if (node && node->IsFile())
+    {
+      CTextureDataPtr textureData;
+
+      try
+      {
+        CTFileName nodePath = CTString(node->Path().toLocal8Bit().data());
+        const auto nodeExtension = nodePath.FileExt();
+        CTFileName thumbnailFile = CTString("");
+
+        if (nodeExtension == ".wld" || nodeExtension == ".mdl")
+        {
+          thumbnailFile = nodePath.FileDir() + nodePath.FileName() + ".tbn";
+        }
+        else if (nodeExtension == ".tex" || nodeExtension == ".tbn")
+        {
+          thumbnailFile = nodePath;
+        }
+        else
+        {
+          const auto& supported_image_formats = _EngineGUI.GetSupportedImportFormats();
+          if (std::any_of(supported_image_formats.begin(), supported_image_formats.end(),
+            [&](const std::string& extension)
+            {
+              return nodeExtension == extension.c_str();
+            }))
+          {
+            CImageInfo iiImageInfo;
+            _EngineGUI.LoadAnyGfxFormat_t(iiImageInfo, nodePath);
+            if ((iiImageInfo.ii_Width == 1 << ((int)Log2(iiImageInfo.ii_Width))) &&
+                (iiImageInfo.ii_Height == 1 << ((int)Log2(iiImageInfo.ii_Height))))
+            {
+              thumbnailFile = CTString("Temp\\Temp.tex");
+              CTextureData tdForPictureConverting;
+              tdForPictureConverting.Create_t(&iiImageInfo, iiImageInfo.ii_Width, 1, FALSE);
+              tdForPictureConverting.Save_t(thumbnailFile);
+            }
+          }
+        }
+
+        if (thumbnailFile != "")
+        {
+          CUpdateable updatable;
+          updatable.MarkUpdated();
+          textureData = _pTextureStock_Obtain_t(thumbnailFile);
+          textureData->Force(TEX_CONSTANT | TEX_STATIC | TEX_KEEPCOLOR);
+          // if texture data is up to date to recently changed updatable
+          // then it means it was not reloaded
+          if (textureData->IsUpToDate(updatable))
+            textureData->Reload();
+        }
+      }
+      catch (const char*)
+      {
+        textureData.Reset();
+      }
+
+      if (textureData)
+      {
+        if (true)
+        {
+          const QImage image(
+            reinterpret_cast<const unsigned char*>(textureData->td_pulFrames),
+            textureData->GetPixWidth(),
+            textureData->GetPixHeight(),
+            textureData->GetPixWidth() * BYTES_PER_TEXEL,
+            QImage::Format_RGBA8888);
+
+          const auto frameSize = mp_ui->previewThumbnail->frameWidth();
+          const auto width = mp_ui->previewThumbnail->width();
+          const auto height = mp_ui->previewThumbnail->height();
+          mp_ui->previewThumbnail->setPixmap(
+            QPixmap::fromImage(image).scaled(
+              width - frameSize*2,
+              height - frameSize*2,
+              Qt::IgnoreAspectRatio,
+              Qt::SmoothTransformation));
+        }
+        const auto previewDescription = textureData->GetDescription();
+        mp_ui->previewInfo->setText(QString::fromLocal8Bit(static_cast<const char*>(previewDescription)));
+        _pTextureStock_Release(*textureData);
+        return;
+      }
+    }
+  }
+
+  mp_ui->previewThumbnail->clear();
+  mp_ui->previewInfo->setText("No thumbnail");
 }
 
 void GroBrowser::_OnCacheReady()

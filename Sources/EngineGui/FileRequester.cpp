@@ -112,7 +112,7 @@ UINT APIENTRY FileOpenRequesterHook( HWND hdlg, UINT uiMsg, WPARAM wParam,	LPARA
       // remove application path
       fnSelectedFileFullPath.RemoveApplicationPath_t();
       const auto selectedFileExtension = fnSelectedFileFullPath.FileExt();
-      const auto& supported_image_formats = CImageInfo::GetSupportedImportFormats();
+      const auto& supported_image_formats = _EngineGUI.GetSupportedImportFormats();
       CTFileName fnThumbnail = CTString("");
       if (selectedFileExtension == ".wld" || selectedFileExtension == ".mdl")
       {

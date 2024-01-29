@@ -67,6 +67,8 @@ public:
   ENGINEGUI_API void CreateTexture_t(const CTFileName& inFileName, const CTFileName& outFileName, MEX inMex, INDEX inMipmaps, BOOL bForce32bit);
   ENGINEGUI_API ImageFormat GetGfxFileInfo_t(CImageInfo& ii, const CTFileName& strFileName);
   ENGINEGUI_API void LoadAnyGfxFormat_t(CImageInfo& ii, const CTFileName& strFileName);
+  ENGINEGUI_API std::vector<std::string> GetSupportedImportFormats();
+  ENGINEGUI_API std::vector<std::string> GetSupportedExportFormats();
   ENGINEGUI_API std::vector<char> GetListOfExportImageFormats();
   ENGINEGUI_API std::vector<char> GetListOfImportImageFormats(bool include_scr = false);
   ENGINEGUI_API std::vector<char> GetListOf3DFormats(bool include_scr = false);
