@@ -77,6 +77,8 @@ void CDlgPgPosition::DoDataExchange(CDataExchange* pDX)
   // get active view 
   CWorldEditorView *pWorldEditorView = theApp.GetActiveView();
 
+  const BOOL single_selection = pDoc->m_selEntitySelection.Count() == 1;
+
   // if dialog is recieving data
   if( pDX->m_bSaveAndValidate == FALSE)
   {
@@ -93,7 +95,7 @@ void CDlgPgPosition::DoDataExchange(CDataExchange* pDX)
       m_fZ = pDoc->m_plSecondLayer.pl_PositionVector(3);
     }
     // otherwise if we are in entity mode and there is only one entity selected
-    else if (pDoc->m_iMode == ENTITY_MODE && pDoc->m_selEntitySelection.Count() == 1)
+    else if (pDoc->m_iMode == ENTITY_MODE && single_selection)
     {
       // get first entity
       CEntity *penEntityOne = pDoc->m_selEntitySelection.GetFirstInSelection();
@@ -112,13 +114,13 @@ void CDlgPgPosition::DoDataExchange(CDataExchange* pDX)
   }
 
 	//{{AFX_DATA_MAP(CDlgPgPosition)
-  const BOOL single_selection = pDoc->m_selEntitySelection.Count() == 1;
-  GetDlgItem(IDC_EDIT_BANKING)->EnableWindow(single_selection);
-  GetDlgItem(IDC_EDIT_HEADING)->EnableWindow(single_selection);
-  GetDlgItem(IDC_EDIT_PITCH)->EnableWindow(single_selection);
-  GetDlgItem(IDC_EDIT_X)->EnableWindow(single_selection);
-  GetDlgItem(IDC_EDIT_Y)->EnableWindow(single_selection);
-  GetDlgItem(IDC_EDIT_Z)->EnableWindow(single_selection);
+  const BOOL enable_position_controls = (pDoc->m_iMode != ENTITY_MODE) || (single_selection != FALSE);
+  GetDlgItem(IDC_EDIT_BANKING)->EnableWindow(enable_position_controls);
+  GetDlgItem(IDC_EDIT_HEADING)->EnableWindow(enable_position_controls);
+  GetDlgItem(IDC_EDIT_PITCH)->EnableWindow(enable_position_controls);
+  GetDlgItem(IDC_EDIT_X)->EnableWindow(enable_position_controls);
+  GetDlgItem(IDC_EDIT_Y)->EnableWindow(enable_position_controls);
+  GetDlgItem(IDC_EDIT_Z)->EnableWindow(enable_position_controls);
 
 	DDX_Text(pDX, IDC_EDIT_BANKING, m_fBanking);
 	DDX_Text(pDX, IDC_EDIT_HEADING, m_fHeading);
