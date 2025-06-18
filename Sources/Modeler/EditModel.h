@@ -19,13 +19,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
-#include <Engine/Base/Lists.h>
-#include <Engine/Base/CTString.h>
-#include <Engine/Base/FileName.h>
-#include <Engine/Math/Vector.h>
-#include <Engine/Math/Object3D.h>
-#include <Engine/Templates/StaticArray.h>
-#include <Engine/Models/RenderModel.h>
+#include <SeriousEngineCppAPI/Base/Lists.h>
+#include <SeriousEngineCppAPI/Base/CTString.h>
+#include <SeriousEngineCppAPI/Base/FileName.h>
+#include <SeriousEngineCppAPI/Math/Vector.h>
+#include <SeriousEngineCppAPI/Math/Object3D.h>
+#include <SeriousEngineCppAPI/Templates/StaticArray.h>
+#include <SeriousEngineCppAPI/Models/RenderModel.h>
 
 #include "Script/Script.h"
 

@@ -59,6 +59,9 @@ Debug/
 *.bsc
 *.cnt
 *.recipe
+*.idb
+*.ncb
+*.opt
 
 # Generated configuration files
 *.plr
