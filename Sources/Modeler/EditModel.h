@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <SeriousEngineCppAPI/Base/CTString.h>
 #include <SeriousEngineCppAPI/Base/FileName.h>
 #include <SeriousEngineCppAPI/Math/Vector.h>
+#include <SeriousEngineCppAPI/Math/Matrix.h>
 #include <SeriousEngineCppAPI/Math/Object3D.h>
 #include <SeriousEngineCppAPI/Templates/StaticArray.h>
 #include <SeriousEngineCppAPI/Models/RenderModel.h>
