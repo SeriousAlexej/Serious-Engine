@@ -117,7 +117,7 @@ public:
 
   CUpdateable m_udViewPicture;
 
-  ModelTextureVertex *m_pmtvClosestVertex;
+  ModelTextureVertexPtr m_pmtvClosestVertex;
 
   INDEX m_iClossestSurface;
   float m_fCurrentMipFactor;
@@ -127,8 +127,8 @@ public:
 	CPoint m_MouseDownLocation;
   CPoint m_BoxStart;
 
-  CDrawPort *m_pDrawPort;
-  CViewPort *m_pViewPort;
+  CDrawPortPtr m_pDrawPort;
+  CViewPortPtr m_pViewPort;
 
 private:
   CPlacement3D _GetCameraPlacement() const;

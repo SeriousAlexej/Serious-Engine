@@ -46,8 +46,8 @@ public:
   CWnd m_wndW;
   CWnd m_wndC;
   CWnd m_wndF;
-  CDrawPort *m_apdp[7];
-  CViewPort *m_apvp[7];
+  CDrawPortPtr m_apdp[7];
+  CViewPortPtr m_apvp[7];
 
   CTextureObject m_toN;
   CTextureObject m_toS;

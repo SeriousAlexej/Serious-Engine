@@ -40,11 +40,11 @@ public:
   CWnd m_wndGraph;
   CWnd m_wndPreview;
 
-  CDrawPort *m_pGraphDrawPort;
-  CViewPort *m_pGraphViewPort;
+  CDrawPortPtr m_pGraphDrawPort;
+  CViewPortPtr m_pGraphViewPort;
 
-  CDrawPort *m_pPreviewDrawPort;
-  CViewPort *m_pPreviewViewPort;
+  CDrawPortPtr m_pPreviewDrawPort;
+  CViewPortPtr m_pPreviewViewPort;
 
 	CDlgCreateSpecularTexture(CWnd* pParent = NULL);   // standard constructor
   FLOAT GetFactorForPercentage( INDEX iSlider);

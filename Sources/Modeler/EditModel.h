@@ -24,7 +24,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <SeriousEngineCppAPI/Base/FileName.h>
 #include <SeriousEngineCppAPI/Math/Vector.h>
 #include <SeriousEngineCppAPI/Math/Matrix.h>
-#include <SeriousEngineCppAPI/Math/Object3D.h>
 #include <SeriousEngineCppAPI/Templates/StaticArray.h>
 #include <SeriousEngineCppAPI/Models/RenderModel.h>
 
@@ -57,7 +56,7 @@ class CTextureDataInfo
 {
 public:
   CListNode tdi_ListNode;
-  CTextureData *tdi_TextureData;
+  CTextureDataPtr tdi_TextureData;
   CTFileName tdi_FileName;
 };
 
@@ -114,7 +113,7 @@ public:
 struct ImportedMesh;
 struct ImportedSkeleton;
 
-class CEditModel : public CSerial
+class CEditModel
 {
 private:
   struct FrameGenerator
@@ -140,8 +139,8 @@ public:
   CModelData edm_md;															// edited model data
   TBoneToTriangle m_boneTriangleMapping; // If bone triangles were generated, this map shall contain triangle indices for each bone
   INDEX m_boneTriangleMappingGeneration = 0;
-  CDynamicArray<CAttachedModel> edm_aamAttachedModels;// array of attached models
-  CStaticArray<CAttachedSound> edm_aasAttachedSounds;// array of attached sounds
+  std::vector<CAttachedModel> edm_aamAttachedModels;// array of attached models
+  std::vector<CAttachedSound> edm_aasAttachedSounds;// array of attached sounds
   CThumbnailSettings edm_tsThumbnailSettings;     // remembered parameters for taking thumbnail
   CListHead edm_WorkingSkins;	                // list of file names and texture data objects
   CListHead edm_UndoList;                         // list containing structures used for undo operation

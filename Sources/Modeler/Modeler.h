@@ -38,7 +38,7 @@ public:
   ~CBcgTexture();
   CListNode wt_ListNode;
   CTextureObject wt_toTexture;
-  CTextureData *wt_TextureData;
+  CTextureDataPtr wt_TextureData;
   CTFileName wt_FileName;
 };
 
@@ -47,7 +47,7 @@ class CWorkingPatch
 {
 public:
   CListNode wp_ListNode;
-  CTextureData *wp_TextureData;
+  CTextureDataPtr wp_TextureData;
   CTFileName wp_FileName;
 };
 
@@ -111,17 +111,17 @@ public:
   INDEX m_iApi;
   BOOL m_bChangeDisplayModeInProgress;
 	// for lamp model
-  CModelData *m_pLampModelData;
-	CModelObject *m_LampModelObject;
-  CTextureData *m_ptdLamp;
+  CModelDataPtr m_pLampModelData;
+	CModelObjectPtr m_LampModelObject;
+  CTextureDataPtr m_ptdLamp;
   // for collision box
-  CTextureData *m_ptdCollisionBoxTexture;
-	CModelData *m_pCollisionBoxModelData;
-	CModelObject *m_pCollisionBoxModelObject;
+  CTextureDataPtr m_ptdCollisionBoxTexture;
+	CModelDataPtr m_pCollisionBoxModelData;
+	CModelObjectPtr m_pCollisionBoxModelObject;
   // for floor
-  CTextureData *m_ptdFloorTexture;
-	CModelData *m_pFloorModelData;
-	CModelObject *m_pFloorModelObject;
+  CTextureDataPtr m_ptdFloorTexture;
+	CModelDataPtr m_pFloorModelData;
+	CModelObjectPtr m_pFloorModelObject;
   CDocTemplate *m_pdtModelDocTemplate;
   // List head for holding working textures
   CListHead m_WorkingTextures;

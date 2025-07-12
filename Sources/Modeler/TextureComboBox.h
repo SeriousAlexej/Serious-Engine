@@ -26,7 +26,7 @@ class CTextureComboBox : public CComboBox
 // Construction
 public:
 	BOOL OnIdle(LONG lCount);
-  CTextureData *m_ptdSelectedTexture;
+  CTextureDataPtr m_ptdSelectedTexture;
 	CTextureComboBox();
 
 // Attributes
