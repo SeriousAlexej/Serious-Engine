@@ -130,7 +130,7 @@ public:
   // Only instance of CAppPrefs holding preferences data for modeler application
   class CAppPrefs m_Preferences;
   // Application's Croteam font data
-  CFontData *m_pfntFont;
+  CFontDataPtr m_pfntFont;
 
   // ptrs to property pages
 	class CDlgInfoPgNone *m_pPgInfoNone;
