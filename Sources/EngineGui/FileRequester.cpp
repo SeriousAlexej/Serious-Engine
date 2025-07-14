@@ -15,7 +15,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "stdh.h"
 #include <GroBrowser/GroBrowser.h>
-#include <Engine/Templates/Stock_CTextureData.h>
+#include <SeriousEngineCAPI/Templates/Stock_CTextureData.h>
 
 #include <QApplication>
 #include <QWinWidget>
@@ -24,8 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 static CWnd _wndThumbnail;
 bool gro_browser_requested = false;
 bool allow_gro_browser = false;
-CDrawPort *_pDrawPort = NULL;
-CViewPort *_pViewPort = NULL;
+CDrawPortPtr _pDrawPort;
+CViewPortPtr _pViewPort;
 static INDEX gui_bEnableRequesterThumbnails=TRUE;
 
 UINT APIENTRY FileOpenRequesterHook( HWND hdlg, UINT uiMsg, WPARAM wParam,	LPARAM lParam)
@@ -40,13 +40,13 @@ UINT APIENTRY FileOpenRequesterHook( HWND hdlg, UINT uiMsg, WPARAM wParam,	LPARA
     }
   }
 
-  _pShell->DeclareSymbol("persistent user INDEX gui_bEnableRequesterThumbnails;", &gui_bEnableRequesterThumbnails);
+  _pShell_DeclareSymbol("persistent user INDEX gui_bEnableRequesterThumbnails;", &gui_bEnableRequesterThumbnails);
   if( !gui_bEnableRequesterThumbnails)
   {
     return 0;
   }
 
-  CTextureData* pTextureData = NULL;
+  CTextureDataPtr pTextureData;
   if( uiMsg == WM_NOTIFY)
   {
     // obtain file open notification structure
@@ -89,7 +89,7 @@ UINT APIENTRY FileOpenRequesterHook( HWND hdlg, UINT uiMsg, WPARAM wParam,	LPARA
                             CWnd::FromHandle(hdlg), IDW_FILE_THUMBNAIL);
                             */
       // initialize canvas for thumbnail window
-      _pGfx->CreateWindowCanvas( _wndThumbnail.m_hWnd, &_pViewPort, &_pDrawPort);
+      _pGfx_CreateWindowCanvas( _wndThumbnail.m_hWnd, _pViewPort, _pDrawPort);
     }
     char strSelectedFullPath[ PATH_MAX];
     CTFileName fnSelectedFileFullPath;
@@ -118,7 +118,7 @@ UINT APIENTRY FileOpenRequesterHook( HWND hdlg, UINT uiMsg, WPARAM wParam,	LPARA
                (fnSelectedFileFullPath.FileExt() == ".tga") )
       {
         CImageInfo iiImageInfo;
-        iiImageInfo.LoadAnyGfxFormat_t( fnSelectedFileFullPath);
+        _EngineGUI.LoadAnyGfxFormat_t(iiImageInfo, fnSelectedFileFullPath);
         // both dimension must be potentions of 2
         if( (iiImageInfo.ii_Width  == 1<<((int)Log2( iiImageInfo.ii_Width))) &&
             (iiImageInfo.ii_Height == 1<<((int)Log2( iiImageInfo.ii_Height))) )
@@ -133,14 +133,14 @@ UINT APIENTRY FileOpenRequesterHook( HWND hdlg, UINT uiMsg, WPARAM wParam,	LPARA
       if( fnThumbnail != "")
       {
         // obtain thumbnail
-        pTextureData = _pTextureStock->Obtain_t( fnThumbnail);
+        pTextureData = _pTextureStock_Obtain_t( fnThumbnail);
         pTextureData->Reload();
       }
     }
     catch( char* err_str)
     {
       (void)err_str;
-      pTextureData = NULL;
+      pTextureData.Reset();
     }
 
     if( IsWindow( _wndThumbnail) )
@@ -159,12 +159,12 @@ UINT APIENTRY FileOpenRequesterHook( HWND hdlg, UINT uiMsg, WPARAM wParam,	LPARA
         if( pTextureData != NULL)
         {
           CTextureObject toPreview;
-          toPreview.SetData( pTextureData);
+          toPreview.SetData( *pTextureData);
           _pDrawPort->PutTexture( &toPreview, rectPict);
           CWnd::FromHandle( GetDlgItem( hdlg, IDC_THUMBNAIL_DESCRIPTION))->SetWindowText( 
             CString(pTextureData->GetDescription()));
           // release the texture
-          _pTextureStock->Release( pTextureData);
+          _pTextureStock_Release( *pTextureData);
         }
         else
         {
@@ -195,16 +195,16 @@ UINT APIENTRY FileOpenRequesterHook( HWND hdlg, UINT uiMsg, WPARAM wParam,	LPARA
 }
 
 CTFileName CEngineGUI::FileRequester( 
-        char *pchrTitle/*="Choose file"*/, 
+        const char *pchrTitle/*="Choose file"*/, 
         const char *pchrFilters/*=FILTER_ALL FILTER_END*/,
-        char *pchrRegistry/*="KEY_NAME_REQUEST_FILE_DIR"*/,
+        const char *pchrRegistry/*="KEY_NAME_REQUEST_FILE_DIR"*/,
         CTString strDefaultDir/*=""*/, 
         CTString strFileSelectedByDefault/*=""*/,
-        CDynamicArray<CTFileName> *pafnSelectedFiles/*=NULL*/,
+        CDynamicArray_CTFileName *pafnSelectedFiles/*=NULL*/,
         BOOL bIfOpen/*=TRUE*/)
 {
-  _pDrawPort = NULL;
-  _pViewPort = NULL;
+  _pDrawPort.Reset();
+  _pViewPort.Reset();
   // stupid way to change resources, but it must be done
   HANDLE hOldResource = AfxGetResourceHandle();
   // activate CTGfx resources
@@ -219,10 +219,10 @@ CTFileName CEngineGUI::FileRequester(
   ofnRequestFiles.hwndOwner = AfxGetMainWnd()->m_hWnd;
   ofnRequestFiles.lpstrFilter = pchrFilters;
   ofnRequestFiles.lpstrFile = chrFiles;
-  sprintf( chrFiles, "%s", strFileSelectedByDefault);
+  sprintf( chrFiles, "%s", static_cast<const char*>(strFileSelectedByDefault));
   ofnRequestFiles.nMaxFile = 2048;
 
-  CString strRequestInDirectory = _fnmApplicationPath+strDefaultDir;
+  CString strRequestInDirectory(_fnmApplicationPath+strDefaultDir);
   if( pchrRegistry != NULL)
   {
     strRequestInDirectory = AfxGetApp()->GetProfileString(L"Scape", CString(pchrRegistry), 
@@ -230,7 +230,7 @@ CTFileName CEngineGUI::FileRequester(
   }
 
   // if directory is not inside engine dir
-  CTString strTest = CStringA(strRequestInDirectory);
+  CTString strTest = static_cast<const char*>(CStringA(strRequestInDirectory));
   if (!strTest.RemovePrefix(_fnmApplicationPath)) {
     // force it there
     strRequestInDirectory = _fnmApplicationPath;
@@ -358,8 +358,8 @@ CTFileName CEngineGUI::FileRequester(
   }
   if( _pViewPort != NULL)
   {
-    _pGfx->DestroyWindowCanvas( _pViewPort);
-    _pViewPort = NULL;
+    _pGfx_DestroyWindowCanvas( _pViewPort);
+    _pViewPort.Reset();
   }
   // restore resources
   AfxSetResourceHandle( (HINSTANCE) hOldResource);
@@ -378,8 +378,8 @@ ENGINEGUI_API CTFileName FileRequester(
 
 
 CTFileName CEngineGUI::BrowseTexture(CTFileName fnDefaultSelected/*=""*/,
-                                      char *pchrIniKeyName/*=KEY_NAME_REQUEST_FILE_DIR*/,
-                                      char *pchrWindowTitle/*="Choose texture"*/,
+                                      const char *pchrIniKeyName/*=KEY_NAME_REQUEST_FILE_DIR*/,
+                                      const char *pchrWindowTitle/*="Choose texture"*/,
                                       BOOL bIfOpen/*=TRUE*/)
 {
   return FileRequester( pchrWindowTitle, FILTER_TEX FILTER_END, pchrIniKeyName,

@@ -18,7 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "StdH.h"
 #include "DlgCreateNormalTexture.h"
-#include <Engine/Templates/Stock_CTextureData.h>
+#include <SeriousEngineCAPI/Templates/Stock_CTextureData.h>
 
 #ifdef _DEBUG
 #undef new
@@ -45,7 +45,6 @@ CDlgCreateNormalTexture::CDlgCreateNormalTexture( CTFileName fnInputFile, CWnd* 
 
   m_bSourcePictureValid = FALSE;
   m_bPreviewWindowsCreated = FALSE;
-  m_ptdCreated = NULL;
   
   CTFileName fnTexFileName = fnInputFile.FileDir() + fnInputFile.FileName() + ".tex";
   // remember source and created texture name
@@ -60,7 +59,7 @@ CDlgCreateNormalTexture::CDlgCreateNormalTexture( CTFileName fnInputFile, CWnd* 
   {
     // if can't get picture file information
     CImageInfo iiImageInfo;
-    if (iiImageInfo.GetGfxFileInfo_t( m_fnSourceFileName)==UNSUPPORTED_FILE)
+    if (_EngineGUI.GetGfxFileInfo_t(iiImageInfo, m_fnSourceFileName)==UNSUPPORTED_FILE)
     {
       // throw error
       ThrowF_t("File '%s' has unsupported file format", 
@@ -87,7 +86,7 @@ CDlgCreateNormalTexture::CDlgCreateNormalTexture( CTFileName fnInputFile, CWnd* 
   // try to
   try
   { // obtain texture with the same name (if already exists)
-    CTextureData *pTD = _pTextureStock->Obtain_t( fnTexFileName);
+    CTextureDataPtr pTD = _pTextureStock_Obtain_t( fnTexFileName);
     pTD->Reload();
     // now pick up initial number of mip levels
     m_bCreateMipmaps = pTD->td_ctFineMipLevels>1;
@@ -96,7 +95,7 @@ CDlgCreateNormalTexture::CDlgCreateNormalTexture( CTFileName fnInputFile, CWnd* 
     // remember existing texture's flags
     _bWasForced32 = pTD->td_ulFlags & TEX_32BIT;
     // release texture
-    _pTextureStock->Release( pTD);
+    _pTextureStock_Release(*pTD);
   }
   // if texture can't be obtained
   catch( char *err_str)
@@ -132,9 +131,10 @@ void CDlgCreateNormalTexture::RefreshCreatedTexture(void)
   try
   {
     // create temporary texture
-    CreateTexture_t( m_fnSourceFileName, CTString( "Temp\\Temp.tex"),
+    _EngineGUI.CreateTexture_t( m_fnSourceFileName, CTString( "Temp\\Temp.tex"),
                      m_pixSourceWidth, MAX_MEX_LOG2+1, FALSE);
-    m_ptdCreated = _pTextureStock->Obtain_t( CTString( "Temp\\Temp.tex"));
+    const CTFileName temp_texture = CTString("Temp\\Temp.tex");
+    m_ptdCreated = _pTextureStock_Obtain_t(temp_texture);
     m_ptdCreated->Reload();
   }
   catch(char *err_str)
@@ -143,7 +143,7 @@ void CDlgCreateNormalTexture::RefreshCreatedTexture(void)
     return;
   }
   // set texture data to texture preview window so it could show preview picture
-  m_wndViewCreatedTexture.m_toTexture.SetData( m_ptdCreated);
+  m_wndViewCreatedTexture.m_toTexture.SetData( *m_ptdCreated);
 }
 
 
@@ -154,8 +154,8 @@ void CDlgCreateNormalTexture::ReleaseCreatedTexture(void)
   if( m_ptdCreated != NULL)
   {
     // free obtained texture
-    _pTextureStock->Release( m_ptdCreated);
-    m_ptdCreated = NULL;
+    _pTextureStock_Release( *m_ptdCreated);
+    m_ptdCreated.Reset();
     m_wndViewCreatedTexture.m_toTexture.SetData( NULL);
   }
   // reset forced upload quality
@@ -283,7 +283,7 @@ void CDlgCreateNormalTexture::OnCreateTexture()
   }
   // create texture
   try {
-    CreateTexture_t( m_fnSourceFileName, m_fnCreatedFileName, mexWidth, iMipMaps,
+    _EngineGUI.CreateTexture_t( m_fnSourceFileName, m_fnCreatedFileName, mexWidth, iMipMaps,
                      m_wndViewCreatedTexture.m_bForce32);
   }
   catch( char *err_str) {

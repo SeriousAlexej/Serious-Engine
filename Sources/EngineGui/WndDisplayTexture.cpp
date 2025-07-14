@@ -17,7 +17,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 //
 
 #include "StdH.h"
-#include <Engine/Graphics/TextureEffects.h>
 
 #ifdef _DEBUG
 #undef new
@@ -37,8 +36,6 @@ CWndDisplayTexture::CWndDisplayTexture()
   m_pLeftMouseButtonReleased = NULL;
   m_pRightMouseButtonClicked = NULL;
   m_pRightMouseButtonMoved = NULL;
-  m_pDrawPort = NULL;
-  m_pViewPort = NULL;
   m_iTimerID = -1;
   m_bChequeredAlpha = TRUE;
   m_bForce32  = FALSE;
@@ -80,11 +77,11 @@ void CWndDisplayTexture::OnPaint()
 
   if( m_pViewPort==NULL && m_pDrawPort==NULL)
   { // initialize canvas for active texture button
-    _pGfx->CreateWindowCanvas( m_hWnd, &m_pViewPort, &m_pDrawPort);
+    _pGfx_CreateWindowCanvas( m_hWnd, m_pViewPort, m_pDrawPort);
   }
 
   // get texture data
-  CTextureData *pTD = (CTextureData*)m_toTexture.GetData();
+  CTextureDataPtr pTD = (CTextureData*)m_toTexture.GetData().get();
   BOOL bAlphaChannel = FALSE;
   // if there is a valid drawport, and the drawport can be locked
   if( m_pDrawPort!=NULL && m_pDrawPort->Lock())
@@ -93,7 +90,7 @@ void CWndDisplayTexture::OnPaint()
       PIX pixWidth  = pTD->GetPixWidth();
       PIX pixHeight = pTD->GetPixHeight();
       // adjust for effect texture
-      if( pTD->td_ptegEffect != NULL) {
+      if( pTD->HasEffectTexture()) {
         pixWidth  = pTD->td_pixBufferWidth;
         pixHeight = pTD->td_pixBufferHeight;
       }
@@ -163,9 +160,9 @@ void CWndDisplayTexture::OnPaint()
   }
 
   // if this is effect texture
-  if( pTD!=NULL && pTD->td_ptegEffect!=NULL)
+  if( pTD!=NULL && pTD->HasEffectTexture())
   { // display rendering speed
-    DOUBLE dMS = pTD->td_ptegEffect->GetRenderingTime() * 1000.0;
+    DOUBLE dMS = pTD->td_ptegEffect_GetRenderingTime() * 1000.0;
     // only if valid
     if( dMS>0) {
       char achrSpeed[256];
@@ -185,13 +182,13 @@ void CWndDisplayTexture::OnTimer(UINT nIDEvent)
 	// on our timer discard test animation window
   if( nIDEvent == 1)
   {
-    TIME timeCurrentTick = _pTimer->GetRealTimeTick();
+    TIME timeCurrentTick = _pTimer_GetRealTimeTick();
     if( timeCurrentTick > timeLastTick )
     {
-      _pTimer->SetCurrentTick( timeCurrentTick);
+      _pTimer_SetCurrentTick( timeCurrentTick);
       timeLastTick = timeCurrentTick;
     }
-    Invalidate(FALSE);	
+    Invalidate(FALSE);
   }
 
 	CWnd::OnTimer(nIDEvent);
@@ -202,12 +199,12 @@ void CWndDisplayTexture::OnDestroy()
 {
   if( m_pViewPort != NULL)
   {
-    _pGfx->DestroyWindowCanvas( m_pViewPort);
-    m_pViewPort = NULL;
+    _pGfx_DestroyWindowCanvas( m_pViewPort);
+    m_pViewPort.Reset();
   }
 
   KillTimer( m_iTimerID);
-  _pTimer->SetCurrentTick( 0.0f);
+  _pTimer_SetCurrentTick( 0.0f);
 	CWnd::OnDestroy();
 }
 
@@ -223,7 +220,6 @@ void CWndDisplayTexture::OnLButtonDown(UINT nFlags, CPoint point)
   m_pixLineStopV  = point.y;
 
   // get texture data from surface
-  CTextureData *pTD = (CTextureData*)m_toTexture.GetData();
   PIX pixU = point.x-m_pixWinOffsetU;
   PIX pixV = point.y-m_pixWinOffsetV;
   if( pixU<0 || pixU>m_pixWinWidth ) return;
@@ -246,7 +242,6 @@ void CWndDisplayTexture::OnLButtonUp(UINT nFlags, CPoint point)
   m_bDrawLine = FALSE;
 
   // get texture data from surface
-  CTextureData *pTD = (CTextureData*)m_toTexture.GetData();
   PIX pixU = point.x-m_pixWinOffsetU;
   PIX pixV = point.y-m_pixWinOffsetV;
   if( pixU<0 || pixU>m_pixWinWidth ) return;
@@ -266,7 +261,6 @@ void CWndDisplayTexture::OnLButtonUp(UINT nFlags, CPoint point)
 void CWndDisplayTexture::OnRButtonDown(UINT nFlags, CPoint point) 
 {
   // get texture data from surface
-  CTextureData *pTD = (CTextureData*)m_toTexture.GetData();
   PIX pixU = point.x-m_pixWinOffsetU;
   PIX pixV = point.y-m_pixWinOffsetV;
   if( pixU<0 || pixU>m_pixWinWidth ) return;
@@ -288,7 +282,6 @@ void CWndDisplayTexture::OnMouseMove(UINT nFlags, CPoint point)
   // if right mouse is down
   if (nFlags&MK_RBUTTON) {
     // get texture data from surface
-    CTextureData *pTD = (CTextureData*)m_toTexture.GetData();
     PIX pixU = point.x-m_pixWinOffsetU;
     PIX pixV = point.y-m_pixWinOffsetV;
     if( pixU<0 || pixU>m_pixWinWidth ) return;

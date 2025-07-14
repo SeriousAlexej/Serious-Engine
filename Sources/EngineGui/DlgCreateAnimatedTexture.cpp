@@ -18,7 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "StdH.h"
 #include "DlgCreateAnimatedTexture.h"
-#include <Engine/Templates/Stock_CTextureData.h>
+#include <SeriousEngineCAPI/Templates/Stock_CTextureData.h>
 
 
 #ifdef _DEBUG
@@ -42,8 +42,8 @@ void CDlgCreateAnimatedTexture::ReleaseCreatedTexture(void)
   if( m_ptdCreated!= NULL)
   {
     // free obtained texture
-    _pTextureStock->Release( m_ptdCreated);
-    m_ptdCreated = NULL;
+    _pTextureStock_Release(*m_ptdCreated);
+    m_ptdCreated.Reset();
     m_wndViewCreatedTexture.m_toTexture.SetData( NULL);
   }
 }
@@ -89,12 +89,12 @@ void CDlgCreateAnimatedTexture::RefreshTexture(void)
     // write context of edit ctrl to temporary script file
     CTFileStream fileScript;
     fileScript.Create_t( fnTempScript);
-    CTString strEditScript = CStringA(m_strEditScript);
-    char *pScript = (char *) AllocMemory( strlen(strEditScript)+1);
+    CTString strEditScript = static_cast<const char*>(CStringA(m_strEditScript));
+    char *pScript = (char *) AllocMemory_( strEditScript.Length()+1);
     strcpy( pScript, strEditScript);
-    fileScript.WriteRawChunk_t( pScript, strlen(strEditScript)+1);
+    fileScript.WriteRawChunk_t( pScript, strEditScript.Length()+1);
     fileScript.Close();
-    FreeMemory( pScript);
+    FreeMemory_( pScript);
   
     // process script
     ProcessScript_t( fnTempScript);
@@ -102,10 +102,10 @@ void CDlgCreateAnimatedTexture::RefreshTexture(void)
     // release old texture if it exists and obtain new texture
     ReleaseCreatedTexture();
     // obtain newly created texture
-    m_ptdCreated = _pTextureStock->Obtain_t( fnTemptexture);
+    m_ptdCreated = _pTextureStock_Obtain_t( fnTemptexture);
     m_ptdCreated->Reload();
     // set texture data to texture preview window so it could display texture
-    m_wndViewCreatedTexture.m_toTexture.SetData( m_ptdCreated);
+    m_wndViewCreatedTexture.m_toTexture.SetData( *m_ptdCreated);
 
     char achrSize[64];
     sprintf( achrSize, "%d x %d", 
@@ -124,7 +124,7 @@ void CDlgCreateAnimatedTexture::RefreshTexture(void)
 }
 
 CDlgCreateAnimatedTexture::CDlgCreateAnimatedTexture(
-  CDynamicArray<CTFileName> &afnPictures, CWnd* pParent /*=NULL*/)
+  CDynamicArray_CTFileName &afnPictures, CWnd* pParent /*=NULL*/)
 	: CDialog(CDlgCreateAnimatedTexture::IDD, pParent)
 {
   //{{AFX_DATA_INIT(CDlgCreateAnimatedTexture)
@@ -136,14 +136,12 @@ CDlgCreateAnimatedTexture::CDlgCreateAnimatedTexture(
   // remember array of selected frames
   m_pafnPictures = &afnPictures;
   // set first frame as input file name
-  afnPictures.Lock();
-  CTFileName fnInputFile = afnPictures[0];
-  afnPictures.Unlock();
+  CTFileNamePtr fnInputFile = afnPictures[0];
   
-  if( (fnInputFile != "") && 
-      ((fnInputFile.FileExt() == ".tex") || (fnInputFile.FileExt() == ".scr")) )
+  if( (*fnInputFile != "") && 
+      ((fnInputFile->FileExt() == ".tex") || (fnInputFile->FileExt() == ".scr")) )
   {
-    m_strCreatedTextureName = fnInputFile.FileDir() + fnInputFile.FileName() + ".tex";
+    m_strCreatedTextureName = fnInputFile->FileDir() + fnInputFile->FileName() + ".tex";
   }
   else
   {
@@ -151,13 +149,12 @@ CDlgCreateAnimatedTexture::CDlgCreateAnimatedTexture(
   }
 
   m_bPreviewWindowsCreated = FALSE;
-  m_ptdCreated = NULL;
   m_pixSourceWidth = -1;  
   m_pixSourceHeight = -1;  
 
 	// remember source and destination file names
-  m_fnSourceFileName = fnInputFile;
-  m_fnCreatedFileName = fnInputFile.FileDir()+fnInputFile.FileName()+".tex";
+  m_fnSourceFileName = *fnInputFile;
+  m_fnCreatedFileName = fnInputFile->FileDir()+fnInputFile->FileName()+".tex";
 }
 
 CDlgCreateAnimatedTexture::~CDlgCreateAnimatedTexture()
@@ -264,7 +261,8 @@ void CDlgCreateAnimatedTexture::OnCreateTexture()
   }
   else
   {
-    fnSaveName = CTString( CStringA(m_strCreatedTextureName));
+    CTString createdTextureName = static_cast<const char*>(CStringA(m_strCreatedTextureName));
+    fnSaveName = createdTextureName;
   }
 
   // set newly picked names for final script and texture
@@ -344,16 +342,16 @@ BOOL CDlgCreateAnimatedTexture::OnInitDialog()
       "SPEED 0.1\r\n"
       "FRAMES %d\r\n",
       METERS_MEX(m_pixSourceWidth * (1 << 5) ),
-      (CTString&)m_fnCreatedFileName.FileDir(),
+      static_cast<const char*>((CTString&)m_fnCreatedFileName.FileDir()),
       m_pafnPictures->Count());
     // add name for each frame
     FOREACHINDYNAMICARRAY( *m_pafnPictures, CTFileName, itPicture)
     {
-      CTFileName &fn=*itPicture;
-      CTString strName=fn.FileName();
-      CTString strExt=fn.FileExt();
+      CTFileNamePtr fn = *itPicture;
+      CTString strName=fn->FileName();
+      CTString strExt=fn->FileExt();
       // add finishing part of script
-      sprintf( achrDefaultScript, "%s    %s%s\r\n", achrDefaultScript, strName, strExt);
+      sprintf( achrDefaultScript, "%s    %s%s\r\n", achrDefaultScript, static_cast<const char*>(strName), static_cast<const char*>(strExt));
     }
     // add finishing part of script
     sprintf( achrDefaultScript, "%sANIM_END\r\nEND\r\n", achrDefaultScript);
@@ -366,10 +364,10 @@ BOOL CDlgCreateAnimatedTexture::OnInitDialog()
   try
   {
     // obtain texture with the same name (if exists)
-    CTextureData *pTD = _pTextureStock->Obtain_t( fnTexFileName);
+    CTextureDataPtr pTD = _pTextureStock_Obtain_t( fnTexFileName);
     pTD->Reload();
     // release texture
-    _pTextureStock->Release( pTD);
+    _pTextureStock_Release(*pTD);
   }
   // if texture can't be obtained
   catch( char *err_str)

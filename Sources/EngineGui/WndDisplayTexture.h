@@ -49,8 +49,8 @@ public:
   void (*m_pRightMouseButtonClicked)( PIX pixX, PIX pixY);
   void (*m_pRightMouseButtonMoved)( PIX pixX, PIX pixY);
   CTextureObject m_toTexture;
-  CDrawPort *m_pDrawPort;
-  CViewPort *m_pViewPort;
+  CDrawPortPtr m_pDrawPort;
+  CViewPortPtr m_pViewPort;
   int m_iTimerID;
   BOOL m_bChequeredAlpha;
   BOOL m_bForce32;

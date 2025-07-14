@@ -14,10 +14,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 #include "StdH.h"
-#include <Engine/Templates/Stock_CTextureData.h>
-#include <Engine/Models/ImportedMesh.h>
+#include "ImportedMesh.h"
+#include <SeriousEngineCAPI/Templates/Stock_CTextureData.h>
+#include <SeriousEngineCAPI/Base/Memory.h>
+
+#include <QImageReader>
+#include <QImage>
 
 #include <algorithm>
+#include <set>
 
 // global engine gui handling object
 CEngineGUI _EngineGUI;
@@ -56,11 +61,125 @@ void AddFilter(std::vector<char>& result, const std::string& descr, const std::s
 }
 } // anonymous namespace
 
+void CEngineGUI::CreateTexture_t(const CTFileName& inFileName, MEX inMex, INDEX inMipmaps, BOOL bForce32bit)
+{
+  CTFileName outFileName = inFileName.FileDir() + inFileName.FileName() + ".TEX";
+  this->CreateTexture_t(inFileName, outFileName, inMex, inMipmaps, bForce32bit);
+}
+
+void CEngineGUI::CreateTexture_t(const CTFileName& inFileName, const CTFileName& outFileName, MEX inMex, INDEX inMipmaps, BOOL bForce32bit)
+{
+  if (inFileName.FileExt() == ".SCR")
+  {
+    // input is a script file
+    ProcessScript_t(inFileName);
+  }
+  else
+  {
+    // input is a picture file
+    CTextureData tex;
+    CImageInfo inPic;
+
+    // mex must be specified and valid
+    if ((inMex <= 0)) throw(TRANS("Invalid or unspecified mexel units."));
+
+    // load picture
+    this->LoadAnyGfxFormat_t(inPic, inFileName);
+
+    // create texture
+    tex.Create_t(&inPic, inMex, inMipmaps, bForce32bit);
+
+    // no more need for picture - get out!
+    inPic.Clear();
+
+    // save texture to file
+    tex.Save_t(outFileName);
+  }
+}
+
+ImageFormat CEngineGUI::GetGfxFileInfo_t(CImageInfo& ii, const CTFileName& strFileName)
+{
+  ImageFormat format = (ImageFormat)ii.GetGfxFileInfo_t(strFileName);
+  if (format == ImageFormat::Unsupported)
+  {
+    auto fullFileName = strFileName;
+    fullFileName.RemoveApplicationPath_t();
+    fullFileName = _fnmApplicationPath + _fnmMod + fullFileName;
+    fullFileName.SetAbsolutePath();
+
+    QImage im;
+    if (im.load(QString(fullFileName)))
+    {
+      ii.ii_Width = im.width();
+      ii.ii_Height = im.height();
+      ii.ii_BitsPerPixel = im.hasAlphaChannel() ? 32 : 24;
+      return ImageFormat::Other;
+    }
+  }
+  return format;
+}
+
+// check for the supported gfx format file and invokes corresponding routine to load it
+void CEngineGUI::LoadAnyGfxFormat_t(CImageInfo& ii, const CTFileName& strFileName) // throw char *
+{
+  auto iFileFormat = this->GetGfxFileInfo_t(ii, strFileName);
+  if (iFileFormat == ImageFormat::Other)
+  {
+    auto fullFileName = strFileName;
+    fullFileName.RemoveApplicationPath_t();
+    fullFileName = _fnmApplicationPath + _fnmMod + fullFileName;
+    fullFileName.SetAbsolutePath();
+
+    QImage im;
+    if (im.load(QString(fullFileName)))
+    {
+      const auto format = im.format();
+      if (im.hasAlphaChannel() && format != QImage::Format_RGBA8888)
+        im = im.convertToFormat(QImage::Format_RGBA8888);
+      else if (format != QImage::Format_RGB888)
+        im = im.convertToFormat(QImage::Format_RGB888);
+
+      const auto bytesPerPixel = ii.ii_BitsPerPixel / 8;
+      const auto byteCount = ii.ii_Width * ii.ii_Height * bytesPerPixel;
+      ii.ii_Picture = (UBYTE*)AllocMemory_(byteCount);
+
+      if (im.byteCount() == byteCount)
+      {
+        memcpy(ii.ii_Picture, im.constBits(), byteCount);
+      }
+      else
+      {
+        const auto lineSize = ii.ii_Width * bytesPerPixel;
+        for (PIX line = 0; line < ii.ii_Height; ++line)
+          memcpy(ii.ii_Picture + line * lineSize, im.constBits() + line * im.bytesPerLine(), lineSize);
+      }
+    }
+    return;
+  }
+
+  ii.LoadAnyGfxFormat_t(strFileName);
+}
+
+std::vector<std::string> GetSupportedImportFormats()
+{
+  std::set<std::string> formats;
+  for (const auto& format : QImageReader::supportedImageFormats())
+    formats.insert('.' + QString(format).toLower().toStdString());
+  formats.insert(".tga");
+  formats.insert(".pcx");
+  return { formats.begin(), formats.end() };
+}
+
+std::vector<std::string> GetSupportedExportFormats()
+{
+  return { ".tga" };
+}
+
 std::vector<char> CEngineGUI::GetListOfExportImageFormats()
 {
   std::vector<char> result;
 
-  for (const auto& format : CImageInfo::GetSupportedExportFormats())
+  for (const auto& format : GetSupportedExportFormats())
     AddFilter(result, "Picture file (*" + format + ')', '*' + format);
 
   result.push_back('\0');
@@ -76,7 +195,7 @@ std::vector<char> CEngineGUI::GetListOfImportImageFormats(bool include_scr)
   };
 
   std::string formatList;
-  for (const auto& format : CImageInfo::GetSupportedImportFormats())
+  for (const auto& format : GetSupportedImportFormats())
   {
     if (!formatList.empty())
       formatList += ';';
@@ -136,7 +255,6 @@ std::vector<char> CEngineGUI::GetListOf3DFormats(bool include_scr)
   return result;
 }
 
-
 void CEngineGUI::SelectMode( CDisplayMode &dm, GfxAPIType &gat)
 {
   // stupid way to change resources, but it must be done
@@ -156,9 +274,8 @@ void CEngineGUI::SelectMode( CDisplayMode &dm, GfxAPIType &gat)
   if( iDialogResult == IDOK) SetFullScreenModeToRegistry( "Display modes", dm, gat);
 }
 
-
 CTFileName CEngineGUI::CreateTexture(CTFileName fnTexFileToRecreate/*=CTString("")*/,
-                         CDynamicArray<CTFileName> *pafnCreatedTextures/*=NULL*/)
+                         CDynamicArray_CTFileName *pafnCreatedTextures/*=NULL*/)
 {
   CTFileName fnResult;
   // stupid way to change resources, but it must be done
@@ -170,17 +287,17 @@ CTFileName CEngineGUI::CreateTexture(CTFileName fnTexFileToRecreate/*=CTString("
   if( fnTexFileToRecreate != "")
   {
     fnResult = fnTexFileToRecreate;
-    CTextureData *ptdTextureToRecreate;
+    CTextureDataPtr ptdTextureToRecreate;
     CTFileName fnToRecreateNoExt =
       fnTexFileToRecreate.FileDir()+fnTexFileToRecreate.FileName();
     // try to
     try
     {
       // obtain texture to recreate
-      ptdTextureToRecreate = _pTextureStock->Obtain_t( fnTexFileToRecreate);
+      ptdTextureToRecreate = _pTextureStock_Obtain_t( fnTexFileToRecreate);
       ptdTextureToRecreate->Reload();
       // if texture is of effect type, call create effect texture dialog
-      if( ptdTextureToRecreate->td_ptegEffect != NULL)
+      if( ptdTextureToRecreate->HasEffectTexture())
       {
         // call create effect texture dialog with .tex name
         CDlgCreateEffectTexture dlgCreateEffectTexture( fnTexFileToRecreate);
@@ -193,7 +310,7 @@ CTFileName CEngineGUI::CreateTexture(CTFileName fnTexFileToRecreate/*=CTString("
         CTString strFullNameNoExt = _fnmApplicationPath +
           fnTexFileToRecreate.FileDir() + fnTexFileToRecreate.FileName();
 
-        const auto supportedFormats = CImageInfo::GetSupportedImportFormats();
+        const auto supportedFormats = GetSupportedImportFormats();
 
         bool matchingImageFound = false;
         for (const auto& ext : supportedFormats)
@@ -211,8 +328,8 @@ CTFileName CEngineGUI::CreateTexture(CTFileName fnTexFileToRecreate/*=CTString("
         // else if script exists
         if(!matchingImageFound && GetFileAttributesA( strFullNameNoExt+".scr") != -1)
         {
-          CDynamicArray<CTFileName> afnScript;
-          CTFileName *pfnScript = afnScript.New();
+          CDynamicArray_CTFileName afnScript;
+          CTFileNamePtr pfnScript = afnScript.New();
           *pfnScript = fnToRecreateNoExt+".scr";
           // call create animated texture dialog with script name
           CDlgCreateAnimatedTexture dlgCreateAnimatedTexture( afnScript);
@@ -220,13 +337,13 @@ CTFileName CEngineGUI::CreateTexture(CTFileName fnTexFileToRecreate/*=CTString("
         }
         else if (!matchingImageFound)
         {
-          WarningMessage( "Cannot find source for recreating texture: \"%s\"", (CTString&)fnTexFileToRecreate);
+          WarningMessage( "Cannot find source for recreating texture: \"%s\"", fnTexFileToRecreate);
         }
       }
       // reload the texture
       ptdTextureToRecreate->Reload();
       // release obtained texture
-      _pTextureStock->Release( ptdTextureToRecreate);
+      _pTextureStock_Release(*ptdTextureToRecreate);
     }
     catch( char *err_str)
     {
@@ -251,7 +368,7 @@ CTFileName CEngineGUI::CreateTexture(CTFileName fnTexFileToRecreate/*=CTString("
           fnResult = dlgCreateEffectTexture.m_fnCreatedTextureName;
           if( pafnCreatedTextures != NULL)
           {
-            CTFileName *pfnCreatedTexture = pafnCreatedTextures->New();
+            CTFileNamePtr pfnCreatedTexture = pafnCreatedTextures->New();
             *pfnCreatedTexture = fnResult;
           }
         }
@@ -263,7 +380,7 @@ CTFileName CEngineGUI::CreateTexture(CTFileName fnTexFileToRecreate/*=CTString("
         const auto filters = GetListOfImportImageFormats(iDlgResult == 1);
 
         // call file requester for opening textures
-        CDynamicArray<CTFileName> afnCreateTexture;
+        CDynamicArray_CTFileName afnCreateTexture;
         FileRequester( "Create texture", filters.data(), KEY_NAME_CREATE_TEXTURE_DIR,
                        "Textures\\", "", &afnCreateTexture);
         if( afnCreateTexture.Count() == 0)
@@ -276,19 +393,19 @@ CTFileName CEngineGUI::CreateTexture(CTFileName fnTexFileToRecreate/*=CTString("
         // if requested texture type is 0 we want to create normal texture
         if( iDlgResult == 0)
         {
-          const auto supportedFormats = CImageInfo::GetSupportedImportFormats();
+          const auto supportedFormats = GetSupportedImportFormats();
           auto is_ext_supported = [&supportedFormats](const std::string& ext)
           { return std::find(supportedFormats.begin(), supportedFormats.end(), ext) != supportedFormats.end(); };
           // create textures
           FOREACHINDYNAMICARRAY( afnCreateTexture, CTFileName, itPicture)
           {
-            CTFileName fnSource = itPicture.Current();
-            std::string ext = fnSource.FileExt().str_String;
+            CTFileNamePtr fnSource = itPicture.Current();
+            std::string ext = static_cast<const char*>(fnSource->FileExt());
             std::transform(ext.begin(), ext.end(), ext.begin(), [](unsigned char c) { return std::tolower(c); });
             if (is_ext_supported(ext))
             {
               // call create normal texture dialog
-              CDlgCreateNormalTexture dlgCreateNormalTexture( fnSource);
+              CDlgCreateNormalTexture dlgCreateNormalTexture( *fnSource);
               if( dlgCreateNormalTexture.m_bSourcePictureValid)
               {
                 if( dlgCreateNormalTexture.DoModal() == IDOK)
@@ -296,7 +413,7 @@ CTFileName CEngineGUI::CreateTexture(CTFileName fnTexFileToRecreate/*=CTString("
                   fnResult = dlgCreateNormalTexture.m_fnCreatedFileName;
                   if( pafnCreatedTextures != NULL)
                   {
-                    CTFileName *pfnCreatedTexture = pafnCreatedTextures->New();
+                    CTFileNamePtr pfnCreatedTexture = pafnCreatedTextures->New();
                     *pfnCreatedTexture = fnResult;
                   }
                 }
@@ -315,7 +432,7 @@ CTFileName CEngineGUI::CreateTexture(CTFileName fnTexFileToRecreate/*=CTString("
             fnResult = dlgCreateAnimatedTexture.m_fnCreatedFileName;
             if( pafnCreatedTextures != NULL)
             {
-              CTFileName *pfnCreatedTexture = pafnCreatedTextures->New();
+              CTFileNamePtr pfnCreatedTexture = pafnCreatedTextures->New();
               *pfnCreatedTexture = fnResult;
             }
           }
@@ -328,10 +445,7 @@ CTFileName CEngineGUI::CreateTexture(CTFileName fnTexFileToRecreate/*=CTString("
   return fnResult;
 }
 
-
-
 /* Functions used by application for getting and setting registry keys concerning modes */
-
 void CEngineGUI::GetFullScreenModeFromRegistry( CTString strSectionName, CDisplayMode &dm, GfxAPIType &gat)
 {
   // prepare full screen mode as default
@@ -339,10 +453,10 @@ void CEngineGUI::GetFullScreenModeFromRegistry( CTString strSectionName, CDispla
   dm.dm_pixSizeJ = 480;
   dm.dm_ddDepth  = DD_DEFAULT;
   // read FS parameters from registry
-  CTString strResult = CStringA(AfxGetApp()->GetProfileString( CString(strSectionName), L"Full screen mode", L"640 x 480 x 0"));
+  CTString strResult = static_cast<const char*>(CStringA(AfxGetApp()->GetProfileString( CString(strSectionName), L"Full screen mode", L"640 x 480 x 0")));
   strResult.ScanF( "%d x %d x %d", &dm.dm_pixSizeI, &dm.dm_pixSizeJ, &dm.dm_ddDepth);
   if( dm.dm_ddDepth<DD_DEFAULT || dm.dm_ddDepth>DD_32BIT) dm.dm_ddDepth = DD_DEFAULT;
-  strResult = CStringA(AfxGetApp()->GetProfileString( CString(strSectionName), L"Full screen API", L"OpenGL"));
+  strResult = static_cast<const char*>(CStringA(AfxGetApp()->GetProfileString( CString(strSectionName), L"Full screen API", L"OpenGL")));
 #ifdef SE1_D3D
   gat = (strResult=="Direct3D") ? GAT_D3D : GAT_OGL;
 #else // SE1_D3D
@@ -350,8 +464,7 @@ void CEngineGUI::GetFullScreenModeFromRegistry( CTString strSectionName, CDispla
 #endif // SE1_D3D
 }
 
-
-void CEngineGUI::SetFullScreenModeToRegistry( CTString strSectionName, CDisplayMode dm, GfxAPIType gat)
+void CEngineGUI::SetFullScreenModeToRegistry( CTString strSectionName, const CDisplayMode& dm, GfxAPIType gat)
 {
   CTString strDM( 0, "%d x %d x %d", dm.dm_pixSizeI, dm.dm_pixSizeJ, dm.dm_ddDepth);
 #ifdef SE1_D3D

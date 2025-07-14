@@ -29,13 +29,13 @@ class CDlgCreateAnimatedTexture : public CDialog
 {
 // Construction
 public:
-	CDlgCreateAnimatedTexture(CDynamicArray<CTFileName> &afnPictures, CWnd* pParent = NULL);   // standard constructor
+	CDlgCreateAnimatedTexture(CDynamicArray_CTFileName &afnPictures, CWnd* pParent = NULL);   // standard constructor
 	~CDlgCreateAnimatedTexture();
   void ReleaseCreatedTexture(void);
   void InitAnimationsCombo(void);
   void RefreshTexture(void);
   
-  CDynamicArray<CTFileName> *m_pafnPictures;
+  CDynamicArray_CTFileName* m_pafnPictures;
   BOOL m_bPreviewWindowsCreated;
   PIX m_pixSourceWidth;
   PIX m_pixSourceHeight;
@@ -43,7 +43,7 @@ public:
   CTFileName m_fnCreatedFileName;
   CWndDisplayTexture m_wndViewDetailTexture;
   CWndDisplayTexture m_wndViewCreatedTexture;
-  CTextureData *m_ptdCreated;
+  CTextureDataPtr m_ptdCreated;
 
 // Dialog Data
 	//{{AFX_DATA(CDlgCreateAnimatedTexture)

@@ -22,24 +22,25 @@
     <Keyword>MFCProj</Keyword>
     <ProjectGuid>{870758F3-5C2F-D196-2A89-CC336EBE7779}</ProjectGuid>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>EngineEX</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Template|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseOfMfc>Dynamic</UseOfMfc>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseOfMfc>Dynamic</UseOfMfc>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -94,7 +95,7 @@
       <ProgramDataBaseFileName>.\Release\</ProgramDataBaseFileName>
       <DisableSpecificWarnings>4996;4333</DisableSpecificWarnings>
       <AdditionalIncludeDirectories>$(SolutionDir)qtsolutions\qtwinmigrate\src\;$(Qt_dir)\include\;$(Qt_dir)\include\QtCore\;$(Qt_dir)\include\QtGui\;$(Qt_dir)\include\QtWidgets\;$(Qt_dir)\include\QtWinExtras\;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Midl>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -116,10 +117,10 @@
       <LinkDLL>true</LinkDLL>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
-      <OutputFile>Release\EngineGUI.dll</OutputFile>
+      <OutputFile>Release\EngineEX.dll</OutputFile>
       <ImportLibrary>.\Release\EngineGUI.lib</ImportLibrary>
-      <AdditionalLibraryDirectories>$(SolutionDir)Engine\$(Configuration)\;$(SolutionDir)qtwinmigrateBuild\$(Configuration)\;$(Qt_dir)\lib\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Qt5Core.lib;Qt5Gui.lib;Qt5Widgets.lib;Qt5WinExtras.lib;QtSolutions_MFCMigrationFramework.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)SeriousEngineCAPI\Release\;$(SolutionDir)Engine\$(Configuration)\;$(SolutionDir)qtwinmigrateBuild\$(Configuration)\;$(Qt_dir)\lib\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SeriousEngineCAPI.lib;Qt5Core.lib;Qt5Gui.lib;Qt5Widgets.lib;Qt5WinExtras.lib;QtSolutions_MFCMigrationFramework.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CustomBuildStep>
       <Command>copy Release\$(TargetName).dll $(SolutionDir)..\Bin_1.10\ &gt;nul</Command>
@@ -146,7 +147,7 @@
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <DisableSpecificWarnings>4996;4333</DisableSpecificWarnings>
       <AdditionalIncludeDirectories>$(SolutionDir)qtsolutions\qtwinmigrate\src\;$(Qt_dir)\include\;$(Qt_dir)\include\QtCore\;$(Qt_dir)\include\QtGui\;$(Qt_dir)\include\QtWidgets\;$(Qt_dir)\include\QtWinExtras\;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Midl>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -168,11 +169,11 @@
       <LinkDLL>true</LinkDLL>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
-      <OutputFile>Debug/EngineGUID.dll</OutputFile>
+      <OutputFile>Debug/EngineEXD.dll</OutputFile>
       <ImportLibrary>.\Debug\EngineGUID.lib</ImportLibrary>
       <MapExports>true</MapExports>
-      <AdditionalLibraryDirectories>$(SolutionDir)Engine\$(Configuration)\;$(SolutionDir)qtwinmigrateBuild\$(Configuration)\;$(Qt_dir)\lib\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Qt5Cored.lib;Qt5Guid.lib;Qt5Widgetsd.lib;Qt5WinExtrasd.lib;QtSolutions_MFCMigrationFrameworkd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)SeriousEngineCAPI\Release\;$(SolutionDir)Engine\$(Configuration)\;$(SolutionDir)qtwinmigrateBuild\$(Configuration)\;$(Qt_dir)\lib\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SeriousEngineCAPI.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5Widgetsd.lib;Qt5WinExtrasd.lib;QtSolutions_MFCMigrationFrameworkd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CustomBuildStep>
       <Command>copy Debug\$(TargetName).dll $(SolutionDir)..\Bin_1.10\Debug\ &gt;nul</Command>

@@ -58,17 +58,18 @@ CacheBuilder::CacheBuilder(std::unique_ptr<GroBrowser::_FileNode>& root_node, QO
 void CacheBuilder::run()
 {
   mp_root_node = std::make_unique<GroBrowser::_FileNode>();
-  CDynamicStackArray<CTFileName> game_files;
+  CDynamicStackArray_CTFileName game_files;
   MakeDirList(game_files, CTString(""), "", DLI_RECURSIVE);
   Max(game_files.Count());
   for (INDEX i = 0; i < game_files.Count(); ++i)
   {
     CTFileName full_filename;
-    const auto file_type = ExpandFilePath(EFP_READ, game_files[i], full_filename);
+    CTFileNamePtr game_file = game_files[i];
+    const auto file_type = ExpandFilePath(EFP_READ, *game_file, full_filename);
     if (file_type == EFP_BASEZIP || file_type == EFP_MODZIP)
     {
       GroBrowser::_FileNode* current_parent = mp_root_node.get();
-      const std::string_view str_view(full_filename.str_String, full_filename.Length());
+      const std::string_view str_view(full_filename, full_filename.Length());
       auto beg = std::begin(str_view);
       const auto end = std::end(str_view);
       while (true)

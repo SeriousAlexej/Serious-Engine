@@ -43,7 +43,7 @@ public:
   CTFileName m_fnCreatedFileName;
   CWndDisplayTexture m_wndViewDetailTexture;
   CWndDisplayTexture m_wndViewCreatedTexture;
-  CTextureData *m_ptdCreated;
+  CTextureDataPtr m_ptdCreated;
      
 // Dialog Data
 	//{{AFX_DATA(CDlgCreateNormalTexture)

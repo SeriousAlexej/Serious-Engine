@@ -29,7 +29,7 @@ class CDlgSelectMode : public CDialog
 {
 public:
   CDisplayMode *m_pdm;
-  CDisplayMode *m_pdmAvailableModes;
+  CDisplayModeEnumerator_* m_pdmAvailableModes;
   INDEX m_ctAvailableDisplayModes;
   enum GfxAPIType *m_pGfxAPI;
 // Construction

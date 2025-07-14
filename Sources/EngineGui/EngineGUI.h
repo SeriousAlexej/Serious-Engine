@@ -13,8 +13,9 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#include <Engine/Engine.h>
+#include <SeriousEngineCppAPI/Engine.h>
 #include <vector>
+#include <string>
 
 #ifdef ENGINEGUI_EXPORTS
 
@@ -25,9 +26,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #define ENGINEGUI_API __declspec(dllimport)
 
   #ifdef NDEBUG
-    #pragma comment(lib, "EngineGUI.lib")
+    #pragma comment(lib, "EngineEX.lib")
   #else
-    #pragma comment(lib, "EngineGUID.lib")
+    #pragma comment(lib, "EngineEXD.lib")
   #endif
 
 #endif
@@ -51,22 +52,33 @@ protected:
   bool m_showing_modal_dialog;
 };
 
+enum ImageFormat
+{
+  Unsupported = UNSUPPORTED_FILE,
+  Pcx = PCX_FILE,
+  Tga = TGA_FILE,
+  Other
+};
+
 class CEngineGUI
 {
 public:
+  ENGINEGUI_API void CreateTexture_t(const CTFileName& inFileName, MEX inMex, INDEX inMipmaps, BOOL bForce32bit);
+  ENGINEGUI_API void CreateTexture_t(const CTFileName& inFileName, const CTFileName& outFileName, MEX inMex, INDEX inMipmaps, BOOL bForce32bit);
+  ENGINEGUI_API ImageFormat GetGfxFileInfo_t(CImageInfo& ii, const CTFileName& strFileName);
+  ENGINEGUI_API void LoadAnyGfxFormat_t(CImageInfo& ii, const CTFileName& strFileName);
   ENGINEGUI_API std::vector<char> GetListOfExportImageFormats();
   ENGINEGUI_API std::vector<char> GetListOfImportImageFormats(bool include_scr = false);
   ENGINEGUI_API std::vector<char> GetListOf3DFormats(bool include_scr = false);
 
   /* Functions used by application for getting and setting registry keys concerning modes */
-  ENGINEGUI_API void GetFullScreenModeFromRegistry( CTString strSectionName, CDisplayMode &dm, GfxAPIType &gat);
-  ENGINEGUI_API void SetFullScreenModeToRegistry(   CTString strSectionName, CDisplayMode  dm, GfxAPIType  gat);
+  ENGINEGUI_API void GetFullScreenModeFromRegistry( CTString strSectionName, CDisplayMode& dm, GfxAPIType &gat);
+  ENGINEGUI_API void SetFullScreenModeToRegistry(   CTString strSectionName, const CDisplayMode& dm, GfxAPIType  gat);
   /* Call select mode dialog */
   ENGINEGUI_API void SelectMode( CDisplayMode &dm, GfxAPIType &gat);
-
   /* Call create texture dialog */
   ENGINEGUI_API CTFileName CreateTexture( CTFileName fnTexFileToRecreate = CTString(""),
-                                          CDynamicArray<CTFileName> *pafnCreatedTextures=NULL);
+                                          CDynamicArray_CTFileName *pafnCreatedTextures=NULL);
 
 /* Predefined registry key names */
 #define KEY_NAME_REQUEST_FILE_DIR "Request file directory"
@@ -92,17 +104,18 @@ public:
 #define FILTER_SMC            "SMC files (*.smc)\0*.smc\0"
 #define FILTER_END            "\0"
   /* File requester with thumbnail display */
-  ENGINEGUI_API CTFileName FileRequester( char *pchrTitle="Choose file",
+  ENGINEGUI_API CTFileName FileRequester(
+                            const char *pchrTitle="Choose file",
                             const char *pchrFilters=FILTER_ALL FILTER_END,
-                            char *pchrRegistry=KEY_NAME_REQUEST_FILE_DIR,
+                            const char *pchrRegistry=KEY_NAME_REQUEST_FILE_DIR,
                             CTString strDefaultDir="", CTString strFileSelectedByDefault="",
-                            CDynamicArray<CTFileName> *pafnSelectedFiles=NULL,
+                            CDynamicArray_CTFileName *pafnSelectedFiles=NULL,
                             BOOL bIfOpen=TRUE);
 
   /* Call browse texture requester */
   ENGINEGUI_API CTFileName BrowseTexture(CTFileName fnDefaultSelected=CTString(""),
-    char *pchrIniKeyName=KEY_NAME_REQUEST_FILE_DIR,
-    char *pchrWindowTitle="Choose texture",
+    const char *pchrIniKeyName=KEY_NAME_REQUEST_FILE_DIR,
+    const char *pchrWindowTitle="Choose texture",
     BOOL bIfOpen=TRUE);
 };
 
