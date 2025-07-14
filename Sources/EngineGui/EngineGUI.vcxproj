@@ -94,7 +94,7 @@
       <ObjectFileName>.\Release\</ObjectFileName>
       <ProgramDataBaseFileName>.\Release\</ProgramDataBaseFileName>
       <DisableSpecificWarnings>4996;4333</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>$(SolutionDir)qtsolutions\qtwinmigrate\src\;$(Qt_dir)\include\;$(Qt_dir)\include\QtCore\;$(Qt_dir)\include\QtGui\;$(Qt_dir)\include\QtWidgets\;$(Qt_dir)\include\QtWinExtras\;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\assimp\include\;..\assimpBuild\include\;$(SolutionDir)qtsolutions\qtwinmigrate\src\;$(Qt_dir)\include\;$(Qt_dir)\include\QtCore\;$(Qt_dir)\include\QtGui\;$(Qt_dir)\include\QtWidgets\;$(Qt_dir)\include\QtWinExtras\;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Midl>
@@ -119,8 +119,8 @@
       <SubSystem>Console</SubSystem>
       <OutputFile>Release\EngineEX.dll</OutputFile>
       <ImportLibrary>.\Release\EngineGUI.lib</ImportLibrary>
-      <AdditionalLibraryDirectories>$(SolutionDir)SeriousEngineCAPI\Release\;$(SolutionDir)Engine\$(Configuration)\;$(SolutionDir)qtwinmigrateBuild\$(Configuration)\;$(Qt_dir)\lib\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SeriousEngineCAPI.lib;Qt5Core.lib;Qt5Gui.lib;Qt5Widgets.lib;Qt5WinExtras.lib;QtSolutions_MFCMigrationFramework.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)assimpBuild\code\$(Configuration)\;$(SolutionDir)assimpBuild\contrib\zlib\$(Configuration)\;$(SolutionDir)assimpBuild\contrib\irrXML\$(Configuration)\;$(SolutionDir)SeriousEngineCAPI\Release\;$(SolutionDir)Engine\$(Configuration)\;$(SolutionDir)qtwinmigrateBuild\$(Configuration)\;$(Qt_dir)\lib\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SeriousEngineCAPI.lib;assimp.lib;irrXML.lib;zlibstatic.lib;Qt5Core.lib;Qt5Gui.lib;Qt5Widgets.lib;Qt5WinExtras.lib;QtSolutions_MFCMigrationFramework.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CustomBuildStep>
       <Command>copy Release\$(TargetName).dll $(SolutionDir)..\Bin_1.10\ &gt;nul</Command>
@@ -146,7 +146,7 @@
       <ProgramDataBaseFileName>.\Debug\</ProgramDataBaseFileName>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <DisableSpecificWarnings>4996;4333</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>$(SolutionDir)qtsolutions\qtwinmigrate\src\;$(Qt_dir)\include\;$(Qt_dir)\include\QtCore\;$(Qt_dir)\include\QtGui\;$(Qt_dir)\include\QtWidgets\;$(Qt_dir)\include\QtWinExtras\;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\assimp\include\;..\assimpBuild\include\;$(SolutionDir)qtsolutions\qtwinmigrate\src\;$(Qt_dir)\include\;$(Qt_dir)\include\QtCore\;$(Qt_dir)\include\QtGui\;$(Qt_dir)\include\QtWidgets\;$(Qt_dir)\include\QtWinExtras\;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Midl>
@@ -172,8 +172,8 @@
       <OutputFile>Debug/EngineEXD.dll</OutputFile>
       <ImportLibrary>.\Debug\EngineGUID.lib</ImportLibrary>
       <MapExports>true</MapExports>
-      <AdditionalLibraryDirectories>$(SolutionDir)SeriousEngineCAPI\Release\;$(SolutionDir)Engine\$(Configuration)\;$(SolutionDir)qtwinmigrateBuild\$(Configuration)\;$(Qt_dir)\lib\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SeriousEngineCAPI.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5Widgetsd.lib;Qt5WinExtrasd.lib;QtSolutions_MFCMigrationFrameworkd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)assimpBuild\code\$(Configuration)\;$(SolutionDir)assimpBuild\contrib\zlib\$(Configuration)\;$(SolutionDir)assimpBuild\contrib\irrXML\$(Configuration)\;$(SolutionDir)SeriousEngineCAPI\Release\;$(SolutionDir)Engine\$(Configuration)\;$(SolutionDir)qtwinmigrateBuild\$(Configuration)\;$(Qt_dir)\lib\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SeriousEngineCAPI.lib;assimpd.lib;irrXMLd.lib;zlibstaticd.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5Widgetsd.lib;Qt5WinExtrasd.lib;QtSolutions_MFCMigrationFrameworkd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CustomBuildStep>
       <Command>copy Debug\$(TargetName).dll $(SolutionDir)..\Bin_1.10\Debug\ &gt;nul</Command>
@@ -195,6 +195,9 @@
     <ClCompile Include="EngineGUI.cpp" />
     <ClCompile Include="FileRequester.cpp" />
     <ClCompile Include="GroBrowser\GroBrowser.cpp" />
+    <ClCompile Include="ImportedMesh.cpp" />
+    <ClCompile Include="ImportedSkeletalAnimation.cpp" />
+    <ClCompile Include="ImportedSkeleton.cpp" />
     <ClCompile Include="StdH.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">StdH.h</PrecompiledHeaderFile>
@@ -220,6 +223,9 @@
     </CustomBuild>
     <ClInclude Include="GroBrowser\GroBrowser.qrc.h" />
     <ClInclude Include="GroBrowser\GroBrowser.ui.h" />
+    <ClInclude Include="ImportedMesh.h" />
+    <ClInclude Include="ImportedSkeletalAnimation.h" />
+    <ClInclude Include="ImportedSkeleton.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="StdH.h" />
     <ClInclude Include="WndDisplayTexture.h" />

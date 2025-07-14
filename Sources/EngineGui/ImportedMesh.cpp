@@ -18,9 +18,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "ImportedMesh.h"
 #include "ImportedSkeleton.h"
 
-#include <Engine/Base/Stream.h>
-#include <Engine/Graphics/Color.h>
-#include <Engine/Math/Functions.h>
+#include <SeriousEngineCppAPI/Base/Stream.h>
+//#include <SeriousEngineCppAPI/Graphics/Color.h>
+#include <SeriousEngineCppAPI/Math/Functions.h>
+
+#ifdef min
+#undef min
+#endif
+#ifdef max
+#undef max
+#endif
 
 #include <assimp/Importer.hpp>
 #include <assimp/importerdesc.h>
@@ -35,14 +42,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <unordered_set>
 #include <map>
 #include <vector>
-
-#ifdef max
-#undef max
-#undef min
-#endif
-
-#undef W
-#undef NONE
 
 template<>
 struct std::hash<aiVector3D>
@@ -257,7 +256,7 @@ void ImportedMesh::ApplySkinning(const ImportedSkeleton& animSkeleton, const FLO
   };
   _TransformsCache transformCache;
 
-  const auto inverseMeshTransform = InverseMatrix(mTransform);
+  const auto inverseMeshTransform = mTransform.InverseMatrix();
   for (size_t v = 0; v < m_vertices.size(); ++v)
   {
     const auto& weights = m_verticeWeights[v];
@@ -297,7 +296,7 @@ void ImportedMesh::FillFromFile(const CTFileName& fnmFileName, const FLOATmatrix
   Assimp::Importer importerWithoutNormals;
   // do not read normals from input file
   importerWithoutNormals.SetPropertyInteger(AI_CONFIG_PP_RVC_FLAGS, aiComponent_NORMALS);
-  const aiScene* aiSceneMain = importerWithoutNormals.ReadFile(strFile.str_String,
+  const aiScene* aiSceneMain = importerWithoutNormals.ReadFile(strFile,
     aiProcess_JoinIdenticalVertices |
     aiProcess_Triangulate |
     aiProcess_GenUVCoords |
@@ -322,7 +321,7 @@ size_t ImportedMesh::GetUVChannelCount(const CTFileName& fileName)
   Assimp::Importer importerWithoutNormals;
   // do not read normals from input file
   importerWithoutNormals.SetPropertyInteger(AI_CONFIG_PP_RVC_FLAGS, aiComponent_NORMALS);
-  const aiScene* aiSceneMain = importerWithoutNormals.ReadFile(strFile.str_String,
+  const aiScene* aiSceneMain = importerWithoutNormals.ReadFile(strFile,
     aiProcess_JoinIdenticalVertices |
     aiProcess_Triangulate |
     aiProcess_GenUVCoords |

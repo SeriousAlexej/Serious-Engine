@@ -17,17 +17,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "ImportedSkeletalAnimation.h"
 
-#include <Engine/Base/Stream.h>
+#include <SeriousEngineCppAPI/Base/Stream.h>
+
+#ifdef min
+#undef min
+#endif
+#ifdef max
+#undef max
+#endif
 
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 
 #include <algorithm>
-
-#ifdef max
-#undef max
-#endif
 
 namespace
 {
@@ -142,7 +145,7 @@ ImportedSkeletalAnimation::ImportedSkeletalAnimation(
   const CTString strFile = _fnmApplicationPath + fileName;
 
   Assimp::Importer importer;
-  const aiScene* aiSceneMain = importer.ReadFile(strFile.str_String, 0);
+  const aiScene* aiSceneMain = importer.ReadFile(strFile, 0);
 
   if (!aiSceneMain)
     ThrowF_t("Unable to load file %s: %s", (const char*)fileName, importer.GetErrorString());
@@ -186,7 +189,7 @@ void ImportedSkeletalAnimation::ReapplyByReference(const ImportedSkeleton& refSk
       if (refBonePos == refSkeleton.m_bones.end())
         continue;
       auto& refBone = refBonePos->second;
-      const FLOATmatrix4D transform = InverseMatrix(refBone.m_transformToParent) * bone.m_transformToParent;
+      const FLOATmatrix4D transform = refBone.m_transformToParent.InverseMatrix() * bone.m_transformToParent;
       const auto& origBone = m_defaultPose.m_bones.at(bone.m_name);
       bone.m_transformToParent = origBone.m_transformToParent * transform;
     }
@@ -198,7 +201,7 @@ std::vector<std::string> ImportedSkeletalAnimation::GetAnimationsInFile(const CT
   const CTString strFile = _fnmApplicationPath + fileName;
 
   Assimp::Importer importer;
-  const aiScene* aiSceneMain = importer.ReadFile(strFile.str_String, 0);
+  const aiScene* aiSceneMain = importer.ReadFile(strFile, 0);
 
   if (!aiSceneMain)
     return {};

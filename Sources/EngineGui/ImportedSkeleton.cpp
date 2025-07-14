@@ -17,7 +17,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "ImportedSkeleton.h"
 
-#include <Engine/Base/Stream.h>
+#include <SeriousEngineCppAPI/Base/Stream.h>
+
+#ifdef min
+#undef min
+#endif
+#ifdef max
+#undef max
+#endif
 
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
@@ -60,7 +67,7 @@ void ImportedSkeleton::FillFromFile(const CTFileName& fileName)
   const CTString strFile = _fnmApplicationPath + fileName;
 
   Assimp::Importer importer;
-  const aiScene* aiSceneMain = importer.ReadFile(strFile.str_String, 0);
+  const aiScene* aiSceneMain = importer.ReadFile(strFile, 0);
 
   if (aiSceneMain)
     FillFromScene(*aiSceneMain);
@@ -73,7 +80,7 @@ bool ImportedSkeleton::ContainsSkeleton(const CTFileName& fileName)
   const CTString strFile = _fnmApplicationPath + fileName;
 
   Assimp::Importer importer;
-  const aiScene* aiSceneMain = importer.ReadFile(strFile.str_String, 0);
+  const aiScene* aiSceneMain = importer.ReadFile(strFile, 0);
 
   return aiSceneMain && aiSceneMain->mRootNode->mNumChildren > 0;
 }

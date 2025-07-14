@@ -16,8 +16,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef IMPORTED_MESH_H
 #define IMPORTED_MESH_H
 
-#include <Engine/Base/CTString.h>
-#include <Engine/Math/Vector.h>
+#include <SeriousEngineCppAPI/Base/CTString.h>
+#include <SeriousEngineCppAPI/Math/Vector.h>
 
 #include <array>
 #include <string>
@@ -28,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 struct aiScene;
 struct ImportedSkeleton;
 
-struct ENGINE_API ImportedMesh
+struct ENGINEGUI_API ImportedMesh
 {
 public:
   using TFormatDescr = std::pair<std::string, std::string>;

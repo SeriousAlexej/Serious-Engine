@@ -18,14 +18,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "ImportedSkeleton.h"
 
-#include <Engine/Base/Types.h>
-#include <Engine/Math/Vector.h>
+#include <SeriousEngineCppAPI/Base/Types.h>
+#include <SeriousEngineCppAPI/Math/Vector.h>
 
 #include <string>
 
 struct aiAnimation;
 
-struct ENGINE_API ImportedSkeletalAnimation
+struct ENGINEGUI_API ImportedSkeletalAnimation
 {
 public:
   ImportedSkeletalAnimation(
@@ -45,7 +45,7 @@ public:
   ImportedSkeleton m_defaultPose;
 
 private:
-  void ImportedSkeletalAnimation::BakeFrames(const aiAnimation& anim);
+  void BakeFrames(const aiAnimation& anim);
 };
 
 #endif

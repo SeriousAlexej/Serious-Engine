@@ -16,8 +16,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef IMPORTED_SKELETON_H
 #define IMPORTED_SKELETON_H
 
-#include <Engine/Base/Types.h>
-#include <Engine/Math/Vector.h>
+#include <SeriousEngineCppAPI/Base/Types.h>
+#include <SeriousEngineCppAPI/Math/Vector.h>
 
 #include <string>
 #include <vector>
@@ -26,10 +26,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 struct aiScene;
 struct aiNode;
 
-struct ENGINE_API ImportedSkeleton
+struct ENGINEGUI_API ImportedSkeleton
 {
 public:
-  struct ENGINE_API Bone
+  struct ENGINEGUI_API Bone
   {
     std::string m_name;
     FLOATmatrix4D m_transformToParent;

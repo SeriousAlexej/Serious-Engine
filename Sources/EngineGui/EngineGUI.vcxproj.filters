@@ -22,6 +22,12 @@
     <Filter Include="Header Files\GroBrowser">
       <UniqueIdentifier>{f29c7e89-acd1-4d08-97f8-de5185730fe7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Mesh">
+      <UniqueIdentifier>{1e520ae1-96e4-4783-b9ec-4eb1eea15254}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Mesh">
+      <UniqueIdentifier>{21150b3a-9ecd-4718-8fe7-47137def2b27}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DlgChooseTextureType.cpp">
@@ -53,6 +59,15 @@
     </ClCompile>
     <ClCompile Include="GroBrowser\GroBrowser.cpp">
       <Filter>Source Files\GroBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="ImportedMesh.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="ImportedSkeletalAnimation.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="ImportedSkeleton.cpp">
+      <Filter>Source Files\Mesh</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -88,6 +103,15 @@
     </ClInclude>
     <ClInclude Include="GroBrowser\GroBrowser.qrc.h">
       <Filter>Header Files\GroBrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="ImportedMesh.h">
+      <Filter>Header Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="ImportedSkeletalAnimation.h">
+      <Filter>Header Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="ImportedSkeleton.h">
+      <Filter>Header Files\Mesh</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
