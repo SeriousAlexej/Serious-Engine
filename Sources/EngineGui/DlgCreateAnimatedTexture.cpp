@@ -39,7 +39,7 @@ static char THIS_FILE[] = __FILE__;
 void CDlgCreateAnimatedTexture::ReleaseCreatedTexture(void)
 {
   // if there is texture obtained, release it
-  if( m_ptdCreated!= NULL)
+  if( m_ptdCreated)
   {
     // free obtained texture
     _pTextureStock_Release(*m_ptdCreated);
@@ -51,7 +51,7 @@ void CDlgCreateAnimatedTexture::ReleaseCreatedTexture(void)
 void CDlgCreateAnimatedTexture::InitAnimationsCombo(void)
 {
   m_ctrlAnimationsCombo.ResetContent();
-  if( m_ptdCreated != NULL)
+  if( m_ptdCreated)
   {
     CAnimInfo aiInfo;
     for( INDEX iAnim=0; iAnim<m_ptdCreated->GetAnimsCt(); iAnim++)
@@ -69,7 +69,7 @@ void CDlgCreateAnimatedTexture::InitAnimationsCombo(void)
 
 void CDlgCreateAnimatedTexture::OnSelchangeTextureAnimations() 
 {
-  if( m_ptdCreated != NULL)
+  if( m_ptdCreated)
   {
     // set selected animation
     INDEX iAnim = m_ctrlAnimationsCombo.GetCurSel();

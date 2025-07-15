@@ -75,7 +75,7 @@ void CWndDisplayTexture::OnPaint()
 	
   if( m_iTimerID==-1) m_iTimerID = (int)SetTimer( 1, 50, NULL);
 
-  if( m_pViewPort==NULL && m_pDrawPort==NULL)
+  if( !m_pViewPort && !m_pDrawPort)
   { // initialize canvas for active texture button
     _pGfx_CreateWindowCanvas( m_hWnd, m_pViewPort, m_pDrawPort);
   }
@@ -84,9 +84,9 @@ void CWndDisplayTexture::OnPaint()
   CTextureDataPtr pTD = (CTextureData*)m_toTexture.GetData().get();
   BOOL bAlphaChannel = FALSE;
   // if there is a valid drawport, and the drawport can be locked
-  if( m_pDrawPort!=NULL && m_pDrawPort->Lock())
+  if( m_pDrawPort && m_pDrawPort->Lock())
   { // if it has any texture
-    if( pTD!=NULL) {
+    if( pTD) {
       PIX pixWidth  = pTD->GetPixWidth();
       PIX pixHeight = pTD->GetPixHeight();
       // adjust for effect texture
@@ -137,7 +137,7 @@ void CWndDisplayTexture::OnPaint()
     }
 
     // if it has any texture
-    if( pTD!=NULL) {
+    if( pTD) {
       // create rectangle proportional with texture ratio covering whole draw port
       PIXaabbox2D rectPict = PIXaabbox2D( PIX2D( m_pixWinOffsetU, m_pixWinOffsetV),
                                           PIX2D( m_pixWinOffsetU+m_pixWinWidth, m_pixWinOffsetV+m_pixWinHeight));
@@ -156,11 +156,11 @@ void CWndDisplayTexture::OnPaint()
     // unlock the drawport
     m_pDrawPort->Unlock();
     // swap if there is a valid viewport
-    if( m_pViewPort!=NULL) m_pViewPort->SwapBuffers();
+    if( m_pViewPort) m_pViewPort->SwapBuffers();
   }
 
   // if this is effect texture
-  if( pTD!=NULL && pTD->HasEffectTexture())
+  if( pTD && pTD->HasEffectTexture())
   { // display rendering speed
     DOUBLE dMS = pTD->td_ptegEffect_GetRenderingTime() * 1000.0;
     // only if valid
@@ -197,7 +197,7 @@ void CWndDisplayTexture::OnTimer(UINT nIDEvent)
 
 void CWndDisplayTexture::OnDestroy() 
 {
-  if( m_pViewPort != NULL)
+  if( m_pViewPort)
   {
     _pGfx_DestroyWindowCanvas( m_pViewPort);
     m_pViewPort.Reset();

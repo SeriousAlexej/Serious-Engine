@@ -146,7 +146,7 @@ UINT APIENTRY FileOpenRequesterHook( HWND hdlg, UINT uiMsg, WPARAM wParam,	LPARA
     if( IsWindow( _wndThumbnail) )
     {
       // if there is a valid drawport, and the drawport can be locked
-      if( (_pDrawPort != NULL) && (_pDrawPort->Lock()) )
+      if( (_pDrawPort) && (_pDrawPort->Lock()) )
       {
         PIXaabbox2D rectPict;
         rectPict = PIXaabbox2D( PIX2D(0, 0),
@@ -156,7 +156,7 @@ UINT APIENTRY FileOpenRequesterHook( HWND hdlg, UINT uiMsg, WPARAM wParam,	LPARA
         // erase z-buffer
         _pDrawPort->FillZBuffer(ZBUF_BACK);
         // if there is valid active texture
-        if( pTextureData != NULL)
+        if( pTextureData)
         {
           CTextureObject toPreview;
           toPreview.SetData( *pTextureData);
@@ -184,7 +184,7 @@ UINT APIENTRY FileOpenRequesterHook( HWND hdlg, UINT uiMsg, WPARAM wParam,	LPARA
       }
 
       // if there is a valid viewport
-      if (_pViewPort!=NULL)
+      if (_pViewPort)
       {
         // swap it
         _pViewPort->SwapBuffers();
@@ -356,7 +356,7 @@ CTFileName CEngineGUI::FileRequester(
       return fnResult;
     }
   }
-  if( _pViewPort != NULL)
+  if( _pViewPort)
   {
     _pGfx_DestroyWindowCanvas( _pViewPort);
     _pViewPort.Reset();

@@ -351,7 +351,7 @@ void CDlgSelectMode::OnTestButton()
   _pGfx_CreateWindowCanvas( wndTestWindowedMode.m_hWnd, pViewPort, pDrawPort);
 
   // if screen or window opening was not successful
-  if( pViewPort == NULL) {
+  if( !pViewPort) {
     AfxMessageBox( L"Unable to setup full screen display. Test mode failed.");
     return;
   }

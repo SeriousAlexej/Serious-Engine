@@ -151,7 +151,7 @@ void CDlgCreateNormalTexture::RefreshCreatedTexture(void)
 void CDlgCreateNormalTexture::ReleaseCreatedTexture(void)
 {
   // if there is texture obtained, release it
-  if( m_ptdCreated != NULL)
+  if( m_ptdCreated)
   {
     // free obtained texture
     _pTextureStock_Release( *m_ptdCreated);

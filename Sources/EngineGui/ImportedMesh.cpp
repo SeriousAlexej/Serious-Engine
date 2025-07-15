@@ -387,7 +387,7 @@ void ImportedMesh::FillConversionArrays_t(const FLOATmatrix3D& mTransform, const
         channelsOfMesh.push_back(j);
       }
     }
-    for (int i = 0; i < mesh->mNumBones; ++i)
+    for (unsigned int i = 0; i < mesh->mNumBones; ++i)
     {
       const auto* bone = mesh->mBones[i];
       auto& offset = boneOffsets[bone->mName.C_Str()];
@@ -463,7 +463,7 @@ void ImportedMesh::FillConversionArrays_t(const FLOATmatrix3D& mTransform, const
   size_t meshIndex = 0;
   for (auto* mesh : validMeshes)
   {
-    for (INDEX iTriangle = 0; iTriangle < mesh->mNumFaces; iTriangle++)
+    for (unsigned int iTriangle = 0; iTriangle < mesh->mNumFaces; iTriangle++)
     {
       auto& ctTriangle = m_triangles[trianglesOffset + iTriangle];
 
