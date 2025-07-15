@@ -117,8 +117,6 @@ public:
 
   CUpdateable m_udViewPicture;
 
-  ModelTextureVertexPtr m_pmtvClosestVertex;
-
   INDEX m_iClossestSurface;
   float m_fCurrentMipFactor;
   INDEX m_iCurrentFrame;
@@ -138,12 +136,12 @@ private:
 // Operations
 public:
 	void OnIdle(void);
-  void ClearBcg( COLOR color, CDrawPort *pDrawPort);
-  void RenderView( CDrawPort *pDrawPort);
+  void ClearBcg( COLOR color, CDrawPortPtr pDrawPort);
+  void RenderView( CDrawPortPtr pDrawPort);
   static CModelerView *GetActiveView(void);
   static CModelerView *GetActiveMappingView(void);
   static CModelerView *GetActiveMappingNormalView(void);
-  void SetProjectionData( CPerspectiveProjection3D &prProjection, CDrawPort *pDP);
+  void SetProjectionData( CPerspectiveProjection3D &prProjection, CDrawPortPtr pDP);
   INDEX GetClosestVertex(FLOAT3D &vClosestVertex);
   void ResetViewerPosition(void);
   void MagnifyMapping(CPoint point, FLOAT fMagnification);

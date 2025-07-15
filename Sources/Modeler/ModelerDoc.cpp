@@ -17,12 +17,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 //
 
 #include "stdafx.h"
-#include <Engine/Templates/Stock_CAnimData.h>
-#include <Engine/Templates/Stock_CTextureData.h>
-#include <Engine/Templates/Stock_CSoundData.h>
-#include <Engine/Templates/Stock_CModelData.h>
+#include <SeriousEngineCAPI/Templates/Stock_CAnimData.h>
+#include <SeriousEngineCAPI/Templates/Stock_CTextureData.h>
+#include <SeriousEngineCAPI/Templates/Stock_CSoundData.h>
+#include <SeriousEngineCAPI/Templates/Stock_CModelData.h>
 
-#include <Engine/Build.h>
+//#include <Engine/Build.h>
 
 #ifdef _DEBUG
 #undef new
@@ -60,10 +60,10 @@ CModelerDoc::CModelerDoc()
 
 CModelerDoc::~CModelerDoc()
 {
-  _pAnimStock->FreeUnused();
-  _pTextureStock->FreeUnused();
-  _pModelStock->FreeUnused();
-  _pSoundStock->FreeUnused();
+  _pAnimStock_FreeUnused();
+  _pTextureStock_FreeUnused();
+  _pModelStock_FreeUnused();
+  _pSoundStock_FreeUnused();
 }
 
 BOOL CModelerDoc::CreateModelFromScriptFile( CTFileName fnScrFileName, char *strError)
@@ -135,7 +135,8 @@ void CModelerDoc::Dump(CDumpContext& dc) const
 BOOL CModelerDoc::OnOpenDocument(LPCTSTR lpszPathName) 
 {
 	m_bDocLoadedOk = FALSE;
-  CTFileName fnModelFile = CTString(CStringA(lpszPathName));
+  CTString pn = static_cast<const char*>(CStringA(lpszPathName));
+  CTFileName fnModelFile = pn;
 
   try
   {
@@ -158,16 +159,15 @@ BOOL CModelerDoc::OnOpenDocument(LPCTSTR lpszPathName)
     return FALSE;
   }
 
-  INDEX ctLoadedModels=m_emEditModel.edm_aamAttachedModels.Count();
+  INDEX ctLoadedModels=m_emEditModel.edm_aamAttachedModels.size();
   INDEX ctAttachmentPositions=m_emEditModel.edm_md.md_aampAttachedPosition.Count();
   
   if(ctLoadedModels<ctAttachmentPositions)
   {
     for( INDEX iPos=ctLoadedModels; iPos<ctAttachmentPositions; iPos++)
     {
-      m_emEditModel.edm_aamAttachedModels.New();
-      m_emEditModel.edm_aamAttachedModels.Lock();
-      CAttachedModel &am=m_emEditModel.edm_aamAttachedModels[iPos];
+      m_emEditModel.edm_aamAttachedModels.emplace_back(std::make_unique<CAttachedModel>());
+      CAttachedModel& am = *m_emEditModel.edm_aamAttachedModels[iPos];
       DECLARE_CTFILENAME( fnAxis, "Models\\Editor\\Axis.mdl");
       am.am_bVisible=TRUE;
       am.am_strName="Not loaded";
@@ -180,13 +180,12 @@ BOOL CModelerDoc::OnOpenDocument(LPCTSTR lpszPathName)
       {
         WarningMessage( strError);
       }
-      m_emEditModel.edm_aamAttachedModels.Unlock();
     }
   }
 
 	m_bDocLoadedOk = TRUE;
   // flush stale caches
-  _pShell->Execute("FreeUnusedStock();");
+  _pShell_Execute("FreeUnusedStock();");
   SelectSurface( 0, TRUE);
   return TRUE;
 }
@@ -195,7 +194,8 @@ BOOL CModelerDoc::OnSaveDocument(LPCTSTR lpszPathName)
 {
   CMainFrame* pMainFrame = STATIC_DOWNCAST(CMainFrame, AfxGetMainWnd());
 	//return CDocument::OnSaveDocument(lpszPathName);
-  CTFileName fnModelFile = CTString(CStringA(lpszPathName));
+  CTString pn = static_cast<const char*>(CStringA(lpszPathName));
+  CTFileName fnModelFile = pn;
   try
   {
     fnModelFile.RemoveApplicationPath_t();
@@ -237,7 +237,8 @@ BOOL CModelerDoc::OnSaveDocument(LPCTSTR lpszPathName)
       if( pmdCurrent->IsModified())
       {
         CTString strMessage;
-        CTFileName fnDoc = CTString(CStringA(pmdCurrent->GetPathName()));
+        CTString pn = static_cast<const char*>(CStringA(pmdCurrent->GetPathName()));
+        CTFileName fnDoc = pn;
         strMessage.PrintF("Do you want to save model \"%s\" before reloading its attachments?", fnDoc.FileName() );
         if( ::MessageBoxA( pMainFrame->m_hWnd, strMessage,
                         "Warning !", MB_YESNO | MB_ICONWARNING | MB_DEFBUTTON1 | 
@@ -296,8 +297,9 @@ void CModelerDoc::OnFileAddTexture()
     return;
 
   // call file requester for adding textures
-  CDynamicArray<CTFileName> afnTextures;
-  CTFileName fnDocName = CTString(CStringA(GetPathName()));
+  CDynamicArray_CTFileName afnTextures;
+  CTString pn = static_cast<const char*>(CStringA(GetPathName()));
+  CTFileName fnDocName = pn;
   theApp.WriteProfileString( L"Scape", L"Add texture directory", CString(fnDocName.FileDir()));
   _EngineGUI.FileRequester( "Choose textures to add", FILTER_TEX FILTER_END,
     "Add texture directory", "Textures\\", fnDocName.FileName()+".tex", &afnTextures);
@@ -308,10 +310,10 @@ void CModelerDoc::OnFileAddTexture()
   {
     CTextureDataInfo *pNewTDI;
     // add texture
-    CTFileName fnTexName = itTexture.Current();
+    CTFileNamePtr fnTexName = itTexture.Current();
     try
     {
-      pNewTDI =m_emEditModel.AddTexture_t( fnTexName, mexWidth, mexHeight);
+      pNewTDI =m_emEditModel.AddTexture_t( *fnTexName, mexWidth, mexHeight);
     }
     catch( char *err_str)
     {
@@ -337,13 +339,15 @@ void CModelerDoc::OnUpdateFileAddTexture(CCmdUI* pCmdUI)
 
 CTString CModelerDoc::GetModelDirectory( void)
 {
-  CTFileName fnResult = CTFileName( CTString(CStringA(GetPathName()))).FileDir();
+  CTString pn = static_cast<const char*>(CStringA(GetPathName()));
+  CTFileName fnResult = CTFileName( pn).FileDir();
   return CTString( fnResult);
 }
 
 CTString CModelerDoc::GetModelName( void)
 {
-  CTFileName fnResult = CTFileName( CTString(CStringA(GetPathName()))).FileName();
+  CTString pn = static_cast<const char*>(CStringA(GetPathName()));
+  CTFileName fnResult = CTFileName( pn).FileName();
   return CTString( fnResult);
 }
 
@@ -377,21 +381,19 @@ void CModelerDoc::SetupAttachments( void)
   {
     CModelerView *pmvView = (CModelerView *) GetNextView(pos);
     INDEX iAttachment = 0;
-    FOREACHINDYNAMICARRAY( m_emEditModel.edm_aamAttachedModels, CAttachedModel, itam)
+    for (auto& itam : m_emEditModel.edm_aamAttachedModels)
     {
-      m_emEditModel.edm_aamAttachedModels.Lock();
-      CAttachedModel *pamAttachedModel = &m_emEditModel.edm_aamAttachedModels[ iAttachment];
+      CAttachedModel *pamAttachedModel = m_emEditModel.edm_aamAttachedModels[ iAttachment].get();
       if( pamAttachedModel->am_bVisible)
       {
-        CAttachmentModelObject *pamo = pmvView->m_ModelObject.AddAttachmentModel( iAttachment);
-        CModelData *pMD = (CModelData *) pamAttachedModel->am_moAttachedModel.GetData();
+        CAttachmentModelObjectPtr pamo = pmvView->m_ModelObject.AddAttachmentModel( iAttachment);
+        CModelDataPtr pMD = pamAttachedModel->am_moAttachedModel.GetData();
         ASSERT(pMD != NULL);
         pamo->amo_moModelObject.SetData( pMD);
         pamo->amo_moModelObject.AutoSetTextures();
         pamo->amo_moModelObject.AutoSetAttachments();
         pamo->amo_moModelObject.StartAnim( itam->am_iAnimation);
       }
-      m_emEditModel.edm_aamAttachedModels.Unlock();
       iAttachment++;
     }
   }
@@ -401,8 +403,8 @@ void CModelerDoc::ClearSurfaceSelection(void)
 {
   ModelMipInfo &mmi = m_emEditModel.edm_md.md_MipInfos[ m_iCurrentMip];
   for( INDEX iSurface=0; iSurface<mmi.mmpi_MappingSurfaces.Count(); iSurface++) {
-    MappingSurface &ms = mmi.mmpi_MappingSurfaces[ iSurface];
-    ms.ms_ulRenderingFlags &= ~SRF_SELECTED;
+    MappingSurfacePtr ms = mmi.mmpi_MappingSurfaces[ iSurface];
+    ms->ms_ulRenderingFlags &= ~SRF_SELECTED;
   }
 }
 
@@ -410,8 +412,8 @@ void CModelerDoc::SelectAllSurfaces(void)
 {
   ModelMipInfo &mmi = m_emEditModel.edm_md.md_MipInfos[ m_iCurrentMip];
   for( INDEX iSurface=0; iSurface<mmi.mmpi_MappingSurfaces.Count(); iSurface++) {
-    MappingSurface &ms = mmi.mmpi_MappingSurfaces[ iSurface];
-    ms.ms_ulRenderingFlags |= SRF_SELECTED;
+    MappingSurfacePtr ms = mmi.mmpi_MappingSurfaces[ iSurface];
+    ms->ms_ulRenderingFlags |= SRF_SELECTED;
   }
 }
 
@@ -421,8 +423,8 @@ INDEX CModelerDoc::GetCountOfSelectedSurfaces(void)
   ModelMipInfo &mmi = m_emEditModel.edm_md.md_MipInfos[ m_iCurrentMip];
   for( INDEX iSurface=0; iSurface<mmi.mmpi_MappingSurfaces.Count(); iSurface++)
   {
-    MappingSurface &ms = mmi.mmpi_MappingSurfaces[ iSurface];
-    if( ms.ms_ulRenderingFlags&SRF_SELECTED) ctSelectedSurfaces++;
+    MappingSurfacePtr ms = mmi.mmpi_MappingSurfaces[ iSurface];
+    if( ms->ms_ulRenderingFlags&SRF_SELECTED) ctSelectedSurfaces++;
   }
   return ctSelectedSurfaces;
 }
@@ -435,8 +437,8 @@ INDEX CModelerDoc::GetOnlySelectedSurface(void)
   INDEX iSurface=0;
   for( ; iSurface<mmi.mmpi_MappingSurfaces.Count(); iSurface++)
   {
-    MappingSurface &ms = mmi.mmpi_MappingSurfaces[ iSurface];
-    if( ms.ms_ulRenderingFlags&SRF_SELECTED) break;
+    MappingSurfacePtr ms = mmi.mmpi_MappingSurfaces[ iSurface];
+    if( ms->ms_ulRenderingFlags&SRF_SELECTED) break;
   }
   return iSurface;
 }
@@ -456,16 +458,16 @@ void CModelerDoc::SelectPreviousSurface(void)
   ModelMipInfo &mmi = m_emEditModel.edm_md.md_MipInfos[ m_iCurrentMip];
   INDEX iFirstSelected = 1;
   for( INDEX iSurface=0; iSurface<mmi.mmpi_MappingSurfaces.Count(); iSurface++) {
-    MappingSurface &ms = mmi.mmpi_MappingSurfaces[ iSurface];
-    if( ms.ms_ulRenderingFlags&SRF_SELECTED) {
+    MappingSurfacePtr ms = mmi.mmpi_MappingSurfaces[ iSurface];
+    if( ms->ms_ulRenderingFlags&SRF_SELECTED) {
       iFirstSelected = iSurface;
       break;
     }
   }
   ClearSurfaceSelection();
   iFirstSelected = (iFirstSelected+mmi.mmpi_MappingSurfaces.Count()-1)%mmi.mmpi_MappingSurfaces.Count();
-  MappingSurface &ms = mmi.mmpi_MappingSurfaces[ iFirstSelected];
-  ms.ms_ulRenderingFlags |= SRF_SELECTED;
+  MappingSurfacePtr ms = mmi.mmpi_MappingSurfaces[ iFirstSelected];
+  ms->ms_ulRenderingFlags |= SRF_SELECTED;
   theApp.m_chGlobal.MarkChanged();
 }
 
@@ -474,8 +476,8 @@ void CModelerDoc::SelectSurface(INDEX iSurface, BOOL bClearRest)
   ModelMipInfo &mmi = m_emEditModel.edm_md.md_MipInfos[ m_iCurrentMip];
   if( iSurface >= mmi.mmpi_MappingSurfaces.Count()) return;
   if( bClearRest) ClearSurfaceSelection();
-  MappingSurface &ms = mmi.mmpi_MappingSurfaces[ iSurface];
-  ms.ms_ulRenderingFlags |= SRF_SELECTED;
+  MappingSurfacePtr ms = mmi.mmpi_MappingSurfaces[ iSurface];
+  ms->ms_ulRenderingFlags |= SRF_SELECTED;
   theApp.m_chGlobal.MarkChanged();
 }
 
@@ -484,16 +486,16 @@ void CModelerDoc::SelectNextSurface(void)
   ModelMipInfo &mmi = m_emEditModel.edm_md.md_MipInfos[ m_iCurrentMip];
   INDEX iFirstSelected = 1;
   for( INDEX iSurface=0; iSurface<mmi.mmpi_MappingSurfaces.Count(); iSurface++) {
-    MappingSurface &ms = mmi.mmpi_MappingSurfaces[ iSurface];
-    if( ms.ms_ulRenderingFlags&SRF_SELECTED) {
+    MappingSurfacePtr ms = mmi.mmpi_MappingSurfaces[ iSurface];
+    if( ms->ms_ulRenderingFlags&SRF_SELECTED) {
       iFirstSelected = iSurface;
       break;
     }
   }
   ClearSurfaceSelection();
   iFirstSelected = (iFirstSelected+1)%mmi.mmpi_MappingSurfaces.Count();
-  MappingSurface &ms = mmi.mmpi_MappingSurfaces[ iFirstSelected];
-  ms.ms_ulRenderingFlags |= SRF_SELECTED;
+  MappingSurfacePtr ms = mmi.mmpi_MappingSurfaces[ iFirstSelected];
+  ms->ms_ulRenderingFlags |= SRF_SELECTED;
   theApp.m_chGlobal.MarkChanged();
 }
 
@@ -503,8 +505,8 @@ void CModelerDoc::ToggleSurfaceSelection( INDEX iSurfaceToToggle)
 
   ClearSurfaceSelection();
   ModelMipInfo &mmi = m_emEditModel.edm_md.md_MipInfos[ m_iCurrentMip];
-  MappingSurface &ms = mmi.mmpi_MappingSurfaces[ iSurfaceToToggle];
-  ms.ms_ulRenderingFlags ^= SRF_SELECTED;
+  MappingSurfacePtr ms = mmi.mmpi_MappingSurfaces[ iSurfaceToToggle];
+  ms->ms_ulRenderingFlags ^= SRF_SELECTED;
   theApp.m_chGlobal.MarkChanged();
 }
 
@@ -515,12 +517,12 @@ void CModelerDoc::SpreadSurfaceSelection( void)
     ModelMipInfo &mmiDst = m_emEditModel.edm_md.md_MipInfos[ iMip];
     // copy selected flag for surfaces with same names
     for( INDEX iSurfaceSrc=0; iSurfaceSrc<mmiSrc.mmpi_MappingSurfaces.Count(); iSurfaceSrc++) {
-      MappingSurface &msSrc = mmiSrc.mmpi_MappingSurfaces[ iSurfaceSrc];
+      MappingSurfacePtr msSrc = mmiSrc.mmpi_MappingSurfaces[ iSurfaceSrc];
       for( INDEX iSurfaceDst=0; iSurfaceDst<mmiDst.mmpi_MappingSurfaces.Count(); iSurfaceDst++) {
-        MappingSurface &msDst = mmiDst.mmpi_MappingSurfaces[ iSurfaceDst];
-        if( CTString(msSrc.ms_Name) == msDst.ms_Name) {
-          msDst.ms_ulRenderingFlags &= ~SRF_SELECTED;
-          msDst.ms_ulRenderingFlags |= msSrc.ms_ulRenderingFlags & SRF_SELECTED;
+        MappingSurfacePtr msDst = mmiDst.mmpi_MappingSurfaces[ iSurfaceDst];
+        if( msSrc->ms_Name == msDst->ms_Name) {
+          msDst->ms_ulRenderingFlags &= ~SRF_SELECTED;
+          msDst->ms_ulRenderingFlags |= msSrc->ms_ulRenderingFlags & SRF_SELECTED;
         }
       }
     }

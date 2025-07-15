@@ -32,7 +32,7 @@ public:
   void SelectMipModel( INDEX iMipToSelect);
   void ClearAttachments( void);
   void SetupAttachments( void);
-  CAttachmentModelObject *GetAttachmentModelObject( INDEX iAttachment);
+  CAttachmentModelObjectPtr GetAttachmentModelObject( INDEX iAttachment);
 	void OnIdle(void);
 	CEditModel m_emEditModel;
 
