@@ -21,8 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "Script/ModelConfigurationEditor.h"
 #include "Script/ScriptIO.h"
 
-#include <Engine/Templates/Stock_CModelData.h>
-#include <Engine/Templates/Stock_CTextureData.h>
+#include <SeriousEngineCAPI/Templates/Stock_CModelData.h>
+#include <SeriousEngineCAPI/Templates/Stock_CTextureData.h>
 
 #include <QtWin>
 #include <QIcon>
@@ -70,7 +70,7 @@ BOOL GetFlagFromProfile( CTString strVarName, BOOL bDefault)
   CTString strDefault;
   if( bDefault) strDefault = "YES";
   else          strDefault = "NO";
-  CTString strTemp = CStringA(theApp.GetProfileString( L"Modeler prefs", CString(strVarName), CString(strDefault)));
+  CTString strTemp = static_cast<const char*>(CStringA(theApp.GetProfileString( L"Modeler prefs", CString(strVarName), CString(strDefault))));
   if( strTemp == "YES") return TRUE;
   return FALSE;
 };
@@ -85,7 +85,7 @@ INDEX GetIndexFromProfile( CTString strVarName, INDEX iDefault)
 {
   CTString strDefault;
   strDefault.PrintF("%d", iDefault);
-  CTString strTemp = CStringA(theApp.GetProfileString( L"Modeler prefs", CString(strVarName), CString(strDefault)));
+  CTString strTemp = static_cast<const char*>(CStringA(theApp.GetProfileString( L"Modeler prefs", CString(strVarName), CString(strDefault))));
   INDEX iValue;
   sscanf( strTemp, "%d", &iValue);
   return iValue;
@@ -102,7 +102,7 @@ COLOR GetColorFromProfile( CTString strVarName, COLOR colDefault)
 {
   CTString strDefault;
   strDefault.PrintF("0x%08x", colDefault);
-  CTString strTemp = CStringA(theApp.GetProfileString( L"Modeler prefs", CString(strVarName), CString(strDefault)));
+  CTString strTemp = static_cast<const char*>(CStringA(theApp.GetProfileString( L"Modeler prefs", CString(strVarName), CString(strDefault))));
   COLOR colValue;
   sscanf( strTemp, "0x%08x", &colValue);
   return colValue;
@@ -162,18 +162,10 @@ CModelerApp::CModelerApp()
 {
   m_bRefreshPatchPalette = FALSE;
   m_OnIdlePaused = FALSE;
-  m_pLampModelData = NULL;
-  m_pFloorModelData = NULL;
-  m_pCollisionBoxModelData = NULL;
-  m_ptdCollisionBoxTexture = NULL;
-  m_ptdLamp = NULL;
-  m_ptdFloorTexture = NULL;
-  m_pfntFont = NULL;
 }
 
 CBcgTexture::CBcgTexture()
 {
-  wt_TextureData = NULL;
 }
 
 CBcgTexture::~CBcgTexture()
@@ -184,56 +176,56 @@ CModelerApp::~CModelerApp()
 {
   if( m_pLampModelData != NULL)
   {
-    _pModelStock->Release( m_pLampModelData);
+    _pModelStock_Release( *m_pLampModelData);
     delete m_LampModelObject;
   }
   
   if( m_pCollisionBoxModelData != NULL)
   {
-    _pModelStock->Release( m_pCollisionBoxModelData);
+    _pModelStock_Release( *m_pCollisionBoxModelData);
     delete m_pCollisionBoxModelObject;
     m_pCollisionBoxModelObject = NULL;
   }
 
   if( m_pFloorModelData != NULL)
   {
-    _pModelStock->Release( m_pFloorModelData);
+    _pModelStock_Release( *m_pFloorModelData);
     delete m_pFloorModelObject;
     m_pFloorModelObject = NULL;
   }
   
   if( m_ptdCollisionBoxTexture != NULL)
   {
-    _pTextureStock->Release( m_ptdCollisionBoxTexture);
-    m_ptdCollisionBoxTexture = NULL;
+    _pTextureStock_Release( *m_ptdCollisionBoxTexture);
+    m_ptdCollisionBoxTexture.Reset();
   }
 
   if( m_ptdLamp != NULL)
   {
-    _pTextureStock->Release( m_ptdLamp);
-    m_ptdLamp = NULL;
+    _pTextureStock_Release( *m_ptdLamp);
+    m_ptdLamp.Reset();
   }
   
   if( m_ptdFloorTexture != NULL)
   {
-    _pTextureStock->Release( m_ptdFloorTexture);
-    m_ptdFloorTexture = NULL;
+    _pTextureStock_Release( *m_ptdFloorTexture);
+    m_ptdFloorTexture.Reset();
   }
   
 
-  FORDELETELIST( CBcgTexture, wt_ListNode, m_WorkingTextures, litTex)
+  for (auto& litTex : m_WorkingTextures)
   {
     ASSERT( litTex->wt_TextureData != NULL);
-    _pTextureStock->Release( litTex->wt_TextureData);
-    delete &litTex.Current();
+    _pTextureStock_Release( *litTex->wt_TextureData);
   }
+  m_WorkingTextures.clear();
 
-  FORDELETELIST( CWorkingPatch, wp_ListNode, m_WorkingPatches, litPatch)
+  for (auto& litPatch : m_WorkingPatches)
   {
     CTextureData *pTD = litPatch->wp_TextureData;
-    _pTextureStock->Release( litPatch->wp_TextureData);
-    delete &litPatch.Current();
+    _pTextureStock_Release( *litPatch->wp_TextureData);
   }
+  m_WorkingPatches.clear();
 
   SE_EndEngine();
 }
@@ -250,9 +242,10 @@ CModelerApp theApp;
 BOOL CModelerApp::InitInstance()
 {
   BOOL bResult;
-  CTSTREAM_BEGIN {
-    bResult = SubInitInstance();
-  } CTSTREAM_END;
+  CTStream::ExecuteWithStreamHandling([this, &bResult]
+    {
+      bResult = SubInitInstance();
+    });
   return bResult;
 }
 
@@ -317,12 +310,12 @@ BOOL CModelerApp::SubInitInstance()
 	ParseCommandLine(cmdInfo);
 
   // load startup script
-  _pShell->Execute( "include \"Scripts\\Modeler_startup.ini\"");
+  _pShell_Execute( "include \"Scripts\\Modeler_startup.ini\"");
   
   m_iApi=GAT_OGL;
   m_iApi=GetProfileInt(L"Display modes", L"SED Gfx API", GAT_OGL);
   // (re)set default display mode
-  _pGfx->ResetDisplayMode((enum GfxAPIType) m_iApi);
+  _pGfx_ResetDisplayMode((enum GfxAPIType) m_iApi);
 
   m_Preferences.ReadFromIniFile();
 
@@ -334,7 +327,8 @@ BOOL CModelerApp::SubInitInstance()
     for( INDEX i=0; i<iWorkingTexturesCt; i++) {
       sprintf( strWTName, "Working texture %02d", i);
       INI_READ( strWTName, "Error in INI .file!");
-      AddModelerWorkingTexture( CTString(CStringA(strIni)));
+      CTString texture = static_cast<const char*>(CStringA(strIni));
+      AddModelerWorkingTexture( texture);
     }
   }
   // load working patches
@@ -344,7 +338,8 @@ BOOL CModelerApp::SubInitInstance()
   for( INDEX i=0; i<iWorkingPatchesCt; i++) {
     sprintf( strWPName, "Working patch %02d", i);
     INI_READ( strWPName, "Error in INI .file!");
-    AddModelerWorkingPatch( CTString(CStringA(strIni)));
+    CTString patch = static_cast<const char*>(CStringA(strIni));
+    AddModelerWorkingPatch( patch);
   }
   pMainFrame->m_StainsComboBox.Refresh();
 
@@ -358,36 +353,36 @@ BOOL CModelerApp::SubInitInstance()
   try
   { // load lamp model
     DECLARE_CTFILENAME( fnLampName, "Models\\Editor\\Lamp.mdl");
-    m_pLampModelData = _pModelStock->Obtain_t( fnLampName);
+    m_pLampModelData = _pModelStock_Obtain_t( fnLampName);
     m_LampModelObject = new CModelObject;
     m_LampModelObject->SetData(m_pLampModelData);
     m_LampModelObject->SetAnim( 0);
     // load lamp's texture
     DECLARE_CTFILENAME( fnLampTex, "Models\\Editor\\SpotLight.tex");
-    m_ptdLamp = _pTextureStock->Obtain_t( fnLampTex);
-    m_LampModelObject->mo_toTexture.SetData( m_ptdLamp); 
+    m_ptdLamp = _pTextureStock_Obtain_t( fnLampTex);
+    m_LampModelObject->mo_toTexture.SetData( *m_ptdLamp);
 
     // load collision box model
     DECLARE_CTFILENAME( fnCollisionBox, "Models\\Editor\\CollisionBox.mdl");
-    m_pCollisionBoxModelData = _pModelStock->Obtain_t( fnCollisionBox);
+    m_pCollisionBoxModelData = _pModelStock_Obtain_t( fnCollisionBox);
     m_pCollisionBoxModelObject = new CModelObject;
     m_pCollisionBoxModelObject->SetData(m_pCollisionBoxModelData);
     m_pCollisionBoxModelObject->SetAnim( 0);
     // load collision box's texture
     DECLARE_CTFILENAME( fnCollisionBoxTex, "Models\\Editor\\CollisionBox.tex");
-    m_ptdCollisionBoxTexture = _pTextureStock->Obtain_t( fnCollisionBoxTex);
-    m_pCollisionBoxModelObject->mo_toTexture.SetData( m_ptdCollisionBoxTexture); 
+    m_ptdCollisionBoxTexture = _pTextureStock_Obtain_t( fnCollisionBoxTex);
+    m_pCollisionBoxModelObject->mo_toTexture.SetData( *m_ptdCollisionBoxTexture); 
 
     // load floor model
     DECLARE_CTFILENAME( fnFloor, "Models\\Editor\\Floor.mdl");
-    m_pFloorModelData = _pModelStock->Obtain_t( fnFloor);
+    m_pFloorModelData = _pModelStock_Obtain_t( fnFloor);
     m_pFloorModelObject = new CModelObject;
     m_pFloorModelObject->SetData(m_pFloorModelData);
     m_pFloorModelObject->SetAnim( 0);
     // load collision box's texture
     DECLARE_CTFILENAME( fnFloorTex, "Models\\Editor\\Floor.tex");
-    m_ptdFloorTexture = _pTextureStock->Obtain_t( fnFloorTex);
-    m_pFloorModelObject->mo_toTexture.SetData( m_ptdFloorTexture); 
+    m_ptdFloorTexture = _pTextureStock_Obtain_t( fnFloorTex);
+    m_pFloorModelObject->mo_toTexture.SetData( *m_ptdFloorTexture);
 
     DECLARE_CTFILENAME( fnShadowTex, "Textures\\Effects\\Shadow\\SimpleModelShadow.tex");
     // setup simple model shadow texture
@@ -406,15 +401,15 @@ BOOL CModelerApp::SubInitInstance()
     // if we loaded collision box's texture
     if( m_ptdCollisionBoxTexture != NULL) {
       // release it and
-      _pTextureStock->Release( m_ptdCollisionBoxTexture);
-      m_ptdCollisionBoxTexture = NULL;
+      _pTextureStock_Release( *m_ptdCollisionBoxTexture);
+      m_ptdCollisionBoxTexture.Reset();
     }
 
     // if we loaded lamp's texture
     if( m_ptdLamp != NULL) {
       // release it and
-      _pTextureStock->Release( m_ptdLamp);
-      m_ptdLamp = NULL;
+      _pTextureStock_Release( *m_ptdLamp);
+      m_ptdLamp.Reset();
     }
 
     // if we allocated model object for floor
@@ -426,8 +421,8 @@ BOOL CModelerApp::SubInitInstance()
     // if we loaded floor's texture
     if( m_ptdFloorTexture != NULL) {
       // release it and
-      _pTextureStock->Release( m_ptdFloorTexture);
-      m_ptdFloorTexture = NULL;
+      _pTextureStock_Release( *m_ptdFloorTexture);
+      m_ptdFloorTexture.Reset();
     }
   }
 
@@ -492,7 +487,8 @@ void CModelerApp::EditScriptAndReopenDocument(CTFileName fnScriptName)
   while (pos != NULL)
   {
     CModelerDoc* pmdCurrent = (CModelerDoc*)theApp.m_pdtModelDocTemplate->GetNextDoc(pos);
-    if (CTFileName(CTString(CStringA(pmdCurrent->GetPathName()))) == fnModelName)
+    CTString pmdCurrentPathName = static_cast<const char*>(CStringA(pmdCurrent->GetPathName()));
+    if (CTFileName(pmdCurrentPathName) == fnModelName)
       pmdCurrent->OnCloseDocument();
   }
   CDocument* pDocument = theApp.m_pdtModelDocTemplate->CreateNewDocument();
@@ -537,7 +533,7 @@ void CModelerApp::EditScriptAndReopenDocument(CTFileName fnScriptName)
   CTFileName fnIniFileName = fnScriptName.NoExt() + ".ini";
   try
   {
-    ((CModelerDoc*)pDocument)->m_emEditModel.CSerial::Load_t(fnIniFileName);
+    ((CModelerDoc*)pDocument)->m_emEditModel.Load_t_base(fnIniFileName);
   }
   catch (char* strError)
   {
@@ -565,12 +561,12 @@ BOOL CModelerApp::OnIdle(LONG lCount)
   if (m_showing_modal_dialog)
     return CWinApp::OnIdle(lCount);
 
-  if( _pTimer != NULL)
+  if( _pTimerExists())
   {
-    TIME timeCurrentTick = _pTimer->GetRealTimeTick();
+    TIME timeCurrentTick = _pTimer_GetRealTimeTick();
     if( (timeCurrentTick > timeLastTick) && !m_OnIdlePaused)
     {
-      _pTimer->SetCurrentTick( timeCurrentTick);
+      _pTimer_SetCurrentTick( timeCurrentTick);
       timeLastTick = timeCurrentTick;
       POSITION pos = m_pdtModelDocTemplate->GetFirstDocPosition();
 
@@ -681,7 +677,7 @@ void CModelerApp::CreateNewDocument( CTFileName fnRequestedFile)
 void CModelerApp::OnFileNew()
 {
   // call file requester for opening documents
-  CDynamicArray<CTFileName> afnCreateModel;
+  CDynamicArray_CTFileName afnCreateModel;
   auto file_filter = _EngineGUI.GetListOf3DFormats(true);
   _EngineGUI.FileRequester( "Create new model from 3D or script file",
     file_filter.data(),
@@ -690,14 +686,14 @@ void CModelerApp::OnFileNew()
   FOREACHINDYNAMICARRAY( afnCreateModel, CTFileName, itModel)
   {
     // create new models
-    CreateNewDocument( itModel.Current());
+    CreateNewDocument( *itModel.Current());
   }
 }
 /////////////////////////////////////////////////////////////////////////////
 void CModelerApp::OnFileOpen()
 {
   // call file requester for opening documents
-  CDynamicArray<CTFileName> afnOpenModel;
+  CDynamicArray_CTFileName afnOpenModel;
   _EngineGUI.FileRequester( "Open model or script file",
     "Model files (*.mdl)\0*.mdl\0"
     "Script files (*.scr)\0*.scr\0"
@@ -709,7 +705,7 @@ void CModelerApp::OnFileOpen()
   FOREACHINDYNAMICARRAY( afnOpenModel, CTFileName, itModel)
   {
     // we will use full file name to call OnOpenDocument()
-    CTFileName fnFullRequestedFile = _fnmApplicationPath + itModel.Current();
+    CTFileName fnFullRequestedFile = _fnmApplicationPath + (*itModel.Current());
 
     BOOL bScriptDocument = FALSE;
     if (fnFullRequestedFile.FileExt() == ".scr")
@@ -790,28 +786,27 @@ int CModelerApp::ExitInstance()
 
 BOOL CModelerApp::AddModelerWorkingTexture( CTFileName fnTexName)
 {
-  CBcgTexture *pNewWT = new CBcgTexture;
+  auto pNewWT = std::make_unique<CBcgTexture>();
 
   pNewWT->wt_FileName = fnTexName;
   try
   {
-    pNewWT->wt_TextureData = _pTextureStock->Obtain_t( fnTexName);
+    pNewWT->wt_TextureData = _pTextureStock_Obtain_t( fnTexName);
   }
   catch( char *err_str)
   {
     MessageBoxA( m_pMainWnd->m_hWnd, err_str, "Warning!", MB_OK|MB_ICONHAND|MB_SYSTEMMODAL);
-    if( pNewWT != NULL) delete pNewWT;
     return FALSE;
   }
-  pNewWT->wt_toTexture.SetData( pNewWT->wt_TextureData);
+  pNewWT->wt_toTexture.SetData( *pNewWT->wt_TextureData);
 
-  m_WorkingTextures.AddTail( pNewWT->wt_ListNode);
+  m_WorkingTextures.push_back(std::move(pNewWT));
   return TRUE;
 }
 
 BOOL CModelerApp::AddModelerWorkingPatch( CTFileName fnPatchName)
 {
-  FOREACHINLIST( CWorkingPatch, wp_ListNode, m_WorkingPatches, itPatch)
+  for (auto& itPatch : m_WorkingPatches)
   {
     if( itPatch->wp_FileName == fnPatchName)
     {
@@ -822,51 +817,49 @@ BOOL CModelerApp::AddModelerWorkingPatch( CTFileName fnPatchName)
     }
   }
 
-  CWorkingPatch *pNewWP = new CWorkingPatch;
+  auto pNewWP = std::make_unique<CWorkingPatch>();
   pNewWP->wp_FileName = fnPatchName;
   try
   {
-    pNewWP->wp_TextureData = _pTextureStock->Obtain_t( pNewWP->wp_FileName);
+    pNewWP->wp_TextureData = _pTextureStock_Obtain_t( pNewWP->wp_FileName);
   }
   catch( char *err_str)
   {
     MessageBoxA( m_pMainWnd->m_hWnd, err_str, "Warning!", MB_OK|MB_ICONHAND|MB_SYSTEMMODAL);
-    delete pNewWP;
     return FALSE;
   }
-  m_WorkingPatches.AddTail( pNewWP->wp_ListNode);
+  m_WorkingPatches.push_back(std::move(pNewWP));
   return TRUE;
 }
 
 const CTextureObject *CModelerApp::GetValidBcgTexture( CTFileName fnTexName)
 {
 	const CTextureObject *ptoResult = NULL;
-  FOREACHINLIST( CBcgTexture, wt_ListNode, m_WorkingTextures, it_wt)
+  for (auto& it_wt : m_WorkingTextures)
   {
     if( it_wt->wt_FileName == fnTexName)
     {
       return &it_wt->wt_toTexture;
     }
   }
-  if( !m_WorkingTextures.IsEmpty())
+  if( !m_WorkingTextures.empty())
   {
-    ptoResult = &(LIST_HEAD( m_WorkingTextures, CBcgTexture, wt_ListNode)->wt_toTexture);
+    ptoResult = &(m_WorkingTextures.front()->wt_toTexture);
   }
   return ptoResult;
 }
 
 const CTFileName CModelerApp::NextPrevBcgTexture( CTFileName fnTexName, INDEX iNextPrev)
 {
-  INDEX ctTextures = m_WorkingTextures.Count();
+  INDEX ctTextures = m_WorkingTextures.size();
   ASSERT( ctTextures > 1);
 
-  CStaticArray<CTFileName> afnTemp;
-  afnTemp.New( ctTextures);
+  std::vector<CTFileName> afnTemp(ctTextures);
   
   INDEX iCurrent = -1;
   INDEX iIter = 0;
   // add textures to static array and remember current texture's index by name
-  FOREACHINLIST( CBcgTexture, wt_ListNode, m_WorkingTextures, it_wt)
+  for (auto& it_wt : m_WorkingTextures)
   {
     afnTemp[iIter] = it_wt->wt_FileName;
     if( it_wt->wt_FileName == fnTexName)
@@ -936,7 +929,8 @@ void CAppPrefs::ReadFromIniFile()
   GET_COLOR( ap_MappingWinBcgColor);
 
   INI_READ( "Default background texture", "");
-  ap_DefaultWinBcgTexture = CTString(CStringA(strIni));
+  CTString ctstrIni = static_cast<const char*>(CStringA(strIni));
+  ap_DefaultWinBcgTexture = ctstrIni;
   
   CMainFrame* pMainFrame = STATIC_DOWNCAST(CMainFrame, AfxGetMainWnd());
 }
@@ -992,11 +986,11 @@ void CAppPrefs::WriteToIniFile()
   INI_WRITE( "Default background texture");
   
   // Now for working textures
-  INDEX iWorkingTexturesCt = theApp.m_WorkingTextures.Count();
+  INDEX iWorkingTexturesCt = theApp.m_WorkingTextures.size();
   theApp.WriteProfileInt( L"Modeler prefs", L"Modeler working textures count",
                          iWorkingTexturesCt);
   INDEX iWTCt = 0;
-  FOREACHINLIST( CBcgTexture, wt_ListNode, theApp.m_WorkingTextures, it_wt)
+  for (auto& it_wt : theApp.m_WorkingTextures)
   {
     char strWTName[ 128];
     sprintf( strWTName, "Working texture %02d", iWTCt);
@@ -1005,11 +999,11 @@ void CAppPrefs::WriteToIniFile()
   }
   
   // And now for patches....
-  INDEX iWorkingPatchesCt = theApp.m_WorkingPatches.Count();
+  INDEX iWorkingPatchesCt = theApp.m_WorkingPatches.size();
   theApp.WriteProfileInt( L"Modeler prefs", L"Modeler working patches count",
                          iWorkingPatchesCt);
   INDEX iWPCt = 0;
-  FOREACHINLIST( CWorkingPatch, wp_ListNode, theApp.m_WorkingPatches, it_wp)
+  for (auto& it_wp : theApp.m_WorkingPatches)
   {
     char strWPName[ 128];
     sprintf( strWPName, "Working patch %02d", iWPCt);
@@ -1021,9 +1015,10 @@ void CAppPrefs::WriteToIniFile()
 int CModelerApp::Run() 
 {
   int iResult;
-  CTSTREAM_BEGIN {
-    iResult=QMfcApp::run(this);
-  } CTSTREAM_END;
+  CTStream::ExecuteWithStreamHandling([this, &iResult]
+    {
+      iResult=QMfcApp::run(this);
+    });
   delete qApp;
   return iResult;
 }

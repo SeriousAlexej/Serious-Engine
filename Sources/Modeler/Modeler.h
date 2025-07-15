@@ -36,7 +36,6 @@ class CBcgTexture
 public:
   CBcgTexture();
   ~CBcgTexture();
-  CListNode wt_ListNode;
   CTextureObject wt_toTexture;
   CTextureDataPtr wt_TextureData;
   CTFileName wt_FileName;
@@ -46,7 +45,6 @@ public:
 class CWorkingPatch
 {
 public:
-  CListNode wp_ListNode;
   CTextureDataPtr wp_TextureData;
   CTFileName wp_FileName;
 };
@@ -112,21 +110,21 @@ public:
   BOOL m_bChangeDisplayModeInProgress;
 	// for lamp model
   CModelDataPtr m_pLampModelData;
-	CModelObjectPtr m_LampModelObject;
+  CModelObject* m_LampModelObject;
   CTextureDataPtr m_ptdLamp;
   // for collision box
   CTextureDataPtr m_ptdCollisionBoxTexture;
 	CModelDataPtr m_pCollisionBoxModelData;
-	CModelObjectPtr m_pCollisionBoxModelObject;
+	CModelObject* m_pCollisionBoxModelObject;
   // for floor
   CTextureDataPtr m_ptdFloorTexture;
 	CModelDataPtr m_pFloorModelData;
-	CModelObjectPtr m_pFloorModelObject;
+	CModelObject* m_pFloorModelObject;
   CDocTemplate *m_pdtModelDocTemplate;
   // List head for holding working textures
-  CListHead m_WorkingTextures;
+  std::vector<std::unique_ptr<CBcgTexture>> m_WorkingTextures;
   // List head for holding working patches
-  CListHead m_WorkingPatches;
+  std::vector<std::unique_ptr<CWorkingPatch>> m_WorkingPatches;
   // Only instance of CAppPrefs holding preferences data for modeler application
   class CAppPrefs m_Preferences;
   // Application's Croteam font data

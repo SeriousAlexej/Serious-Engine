@@ -31,27 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <QMfcApp>
 
 #define ENGINE_INTERNAL 1
-#include <SeriousEngineCppAPI/EngineGUI.h>
-
-class CWinAppQt : public CWinApp {
-public:
-  struct ModalGuard {
-    ModalGuard()
-    {
-      if (auto* app = dynamic_cast<CWinAppQt*>(AfxGetApp()))
-        app->m_showing_modal_dialog = true;
-    }
-    ~ModalGuard()
-    {
-      if (auto* app = dynamic_cast<CWinAppQt*>(AfxGetApp()))
-        app->m_showing_modal_dialog = false;
-    }
-  };
-
-protected:
-  bool m_showing_modal_dialog;
-};
-
+#include <EngineGUI/EngineGUI.h>
 #include "Modeler.h"
 
 #pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='x86' publicKeyToken='6595b64144ccf1df' language='*'\"")

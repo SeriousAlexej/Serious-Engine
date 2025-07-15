@@ -60,7 +60,7 @@ void CPatchPalette::DoDataExchange(CDataExchange* pDX)
 	    GetDlgItem( IDC_PATCH_NAME_T)->EnableWindow( TRUE);
 	    GetDlgItem( IDC_PATCH_STRETCH_T)->EnableWindow( TRUE);
       CModelPatch &mp = pDoc->m_emEditModel.edm_md.md_mpPatches[ pModelerView->m_iActivePatchBitIndex];
-      m_strPatchFile = mp.mp_toTexture.GetName().FileName();      
+      m_strPatchFile = mp.mp_toTexture.GetName()->FileName();      
       m_PatchName = mp.mp_strName;
       m_fStretch = mp.mp_fStretch;
     }
@@ -111,7 +111,7 @@ void CPatchPalette::DoDataExchange(CDataExchange* pDX)
     {
       CModelPatch &mp = pDoc->m_emEditModel.edm_md.md_mpPatches[ pModelerView->m_iActivePatchBitIndex];
       pDoc->m_emEditModel.SetPatchStretch(pModelerView->m_iActivePatchBitIndex, m_fStretch);
-      mp.mp_strName = CStringA(m_PatchName);
+      mp.mp_strName = static_cast<const char*>(CStringA(m_PatchName));
       pDoc->m_emEditModel.edm_md.md_bPreparedForRendering = FALSE;
       pDoc->SetModifiedFlag();
     }

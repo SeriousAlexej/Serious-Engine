@@ -52,9 +52,9 @@ void CStainsComboBox::Refresh()
 
   ResetContent();
   
-  if( !pApp->m_WorkingPatches.IsEmpty())
+  if( !pApp->m_WorkingPatches.empty())
   {
-    FOREACHINLIST( CWorkingPatch, wp_ListNode, pApp->m_WorkingPatches, it)
+    for (auto& it : pApp->m_WorkingPatches)
     {
       AddString( CString(it->wp_FileName.FileName()));
     }

@@ -93,7 +93,7 @@ ModelScript ReadFromFile(const CTFileName& filename)
 {
   const CTString strFile = _fnmApplicationPath + filename;
   std::ifstream file;
-  file.open(strFile.str_String, std::ios_base::in);
+  file.open(strFile, std::ios_base::in);
   if (!file.is_open())
     throw "Failed to open script!";
 
@@ -417,7 +417,7 @@ void SaveToFile(const ModelScript& script, const CTFileName& filename)
 {
   const CTString strFile = _fnmApplicationPath + filename;
   std::ofstream file;
-  file.open(strFile.str_String, std::ios_base::out | std::ios_base::trunc);
+  file.open(strFile, std::ios_base::out | std::ios_base::trunc);
   if (!file.is_open())
     throw "Failed to save script!";
 
@@ -428,12 +428,12 @@ void SaveToFile(const ModelScript& script, const CTFileName& filename)
     if (lastDir == dir)
       return;
     lastDir = dir;
-    file << "DIRECTORY " << dir.str_String << '\n';
+    file << "DIRECTORY " << dir << '\n';
   };
   auto write_file = [&](const CTFileName& f, const char* tag = "")
   {
     const CTString fnm = static_cast<CTString>(f.FileName() + f.FileExt());
-    file << tag << ' ' << fnm.str_String << '\n';
+    file << tag << ' ' << fnm << '\n';
   };
 
   file << "TEXTURE_DIM " << script.m_textureScale(1) << ' ' << script.m_textureScale(2) << '\n';

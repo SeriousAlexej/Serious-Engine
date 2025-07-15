@@ -176,7 +176,7 @@ $(Qt_dir)\bin\windeployqt.exe $(SolutionDir)..\Bin_1.10\QtSolutions_MFCMigration
       <OutputFile>Debug/SeriousModeler.exe</OutputFile>
       <AdditionalDependencies>SeriousEngineCAPI.lib;htmlhelp.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5Widgetsd.lib;Qt5WinExtrasd.lib;QtSolutions_MFCMigrationFrameworkd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateMapFile>true</GenerateMapFile>
-      <AdditionalLibraryDirectories>$(SolutionDir)Engine\$(Configuration)\;$(SolutionDir)EngineGUI\$(Configuration)\;$(SolutionDir)qtwinmigrateBuild\$(Configuration)\;$(Qt_dir)\lib\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)SeriousEngineCAPI\Release\;$(SolutionDir)Engine\$(Configuration)\;$(SolutionDir)EngineGUI\$(Configuration)\;$(SolutionDir)qtwinmigrateBuild\$(Configuration)\;$(Qt_dir)\lib\</AdditionalLibraryDirectories>
     </Link>
     <CustomBuildStep>
       <Command>copy Debug\$(TargetName).exe $(SolutionDir)..\Bin_1.10\Debug\ &gt;nul

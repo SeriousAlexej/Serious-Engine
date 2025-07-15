@@ -109,8 +109,8 @@ void CPaletteDialog::DoDataExchange(CDataExchange* pDX)
   {
     if( pModelerView != NULL)
     {
-      pModelerView->m_ModelObject.SetColorName( pModelerView->m_iChoosedColor, 
-                                                CTString(CStringA(m_ColorName)));
+      CTString cn = static_cast<const char*>(CStringA(m_ColorName));
+      pModelerView->m_ModelObject.SetColorName( pModelerView->m_iChoosedColor, cn);
       pModelerView->GetDocument()->SetModifiedFlag();
     }
   }

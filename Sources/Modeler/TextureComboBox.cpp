@@ -30,7 +30,6 @@ static char THIS_FILE[] = __FILE__;
 
 CTextureComboBox::CTextureComboBox()
 {
-  m_ptdSelectedTexture = NULL;
 }
 
 CTextureComboBox::~CTextureComboBox()
@@ -55,18 +54,18 @@ BOOL CTextureComboBox::OnIdle(LONG lCount)
   if( pModelerView == NULL)
   {
     // document closed but we had texture on last idle 
-    if( m_ptdSelectedTexture != NULL)
+    if( m_ptdSelectedTexture)
     {
       ResetContent();
       AddString( L"None available");
       SetCurSel( 0);
-      m_ptdSelectedTexture = NULL;
+      m_ptdSelectedTexture.Reset();
     }
     return TRUE;
   }
 
   CModelerDoc *pDoc = (CModelerDoc *) pModelerView->GetDocument();
-  INDEX ctTextures = pDoc->m_emEditModel.edm_WorkingSkins.Count();
+  INDEX ctTextures = pDoc->m_emEditModel.edm_WorkingSkins.size();
   // if count of textures changed or model has different texture, reflect change
   if( (GetCount() != ctTextures) || (pModelerView->m_ptdiTextureDataInfo->tdi_TextureData != m_ptdSelectedTexture) )
   {
@@ -75,18 +74,18 @@ BOOL CTextureComboBox::OnIdle(LONG lCount)
       ResetContent();
       AddString( L"None available");
       SetCurSel( 0);
-      m_ptdSelectedTexture = NULL;
+      m_ptdSelectedTexture.Reset();
       return TRUE;
     }
     // remove combo entries, add working textures and select current one
     m_ptdSelectedTexture = pModelerView->m_ptdiTextureDataInfo->tdi_TextureData;
     ResetContent();
     INDEX iTexture=0;
-    FOREACHINLIST( CTextureDataInfo, tdi_ListNode, pDoc->m_emEditModel.edm_WorkingSkins, it)
+    for (auto& it : pDoc->m_emEditModel.edm_WorkingSkins)
     {
       int iAddedAs = AddString( CString(it->tdi_FileName.FileName()));
-      SetItemDataPtr( iAddedAs, &it.Current());
-      if( pModelerView->m_ptdiTextureDataInfo == &it.Current())
+      SetItemDataPtr( iAddedAs, it.get());
+      if( pModelerView->m_ptdiTextureDataInfo == it.get())
       {
         SetCurSel( iTexture);
       }
