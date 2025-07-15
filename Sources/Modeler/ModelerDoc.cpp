@@ -300,7 +300,7 @@ void CModelerDoc::OnFileAddTexture()
   CDynamicArray_CTFileName afnTextures;
   CTString pn = static_cast<const char*>(CStringA(GetPathName()));
   CTFileName fnDocName = pn;
-  theApp.WriteProfileString( L"Scape", L"Add texture directory", CString(fnDocName.FileDir()));
+  theApp.WriteProfileString( L"Modeler prefs", L"Add texture directory", CString(fnDocName.FileDir()));
   _EngineGUI.FileRequester( "Choose textures to add", FILTER_TEX FILTER_END,
     "Add texture directory", "Textures\\", fnDocName.FileName()+".tex", &afnTextures);
   MEX mexWidth, mexHeight;

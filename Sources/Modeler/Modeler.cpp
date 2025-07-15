@@ -174,39 +174,39 @@ CBcgTexture::~CBcgTexture()
 
 CModelerApp::~CModelerApp()
 {
-  if( m_pLampModelData != NULL)
+  if( m_pLampModelData)
   {
     _pModelStock_Release( *m_pLampModelData);
     delete m_LampModelObject;
   }
   
-  if( m_pCollisionBoxModelData != NULL)
+  if( m_pCollisionBoxModelData)
   {
     _pModelStock_Release( *m_pCollisionBoxModelData);
     delete m_pCollisionBoxModelObject;
     m_pCollisionBoxModelObject = NULL;
   }
 
-  if( m_pFloorModelData != NULL)
+  if( m_pFloorModelData)
   {
     _pModelStock_Release( *m_pFloorModelData);
     delete m_pFloorModelObject;
     m_pFloorModelObject = NULL;
   }
   
-  if( m_ptdCollisionBoxTexture != NULL)
+  if( m_ptdCollisionBoxTexture)
   {
     _pTextureStock_Release( *m_ptdCollisionBoxTexture);
     m_ptdCollisionBoxTexture.Reset();
   }
 
-  if( m_ptdLamp != NULL)
+  if( m_ptdLamp )
   {
     _pTextureStock_Release( *m_ptdLamp);
     m_ptdLamp.Reset();
   }
   
-  if( m_ptdFloorTexture != NULL)
+  if( m_ptdFloorTexture )
   {
     _pTextureStock_Release( *m_ptdFloorTexture);
     m_ptdFloorTexture.Reset();
@@ -215,7 +215,7 @@ CModelerApp::~CModelerApp()
 
   for (auto& litTex : m_WorkingTextures)
   {
-    ASSERT( litTex->wt_TextureData != NULL);
+    ASSERT( litTex->wt_TextureData);
     _pTextureStock_Release( *litTex->wt_TextureData);
   }
   m_WorkingTextures.clear();
@@ -399,14 +399,14 @@ BOOL CModelerApp::SubInitInstance()
       m_pCollisionBoxModelObject = NULL;
     }
     // if we loaded collision box's texture
-    if( m_ptdCollisionBoxTexture != NULL) {
+    if( m_ptdCollisionBoxTexture) {
       // release it and
       _pTextureStock_Release( *m_ptdCollisionBoxTexture);
       m_ptdCollisionBoxTexture.Reset();
     }
 
     // if we loaded lamp's texture
-    if( m_ptdLamp != NULL) {
+    if( m_ptdLamp) {
       // release it and
       _pTextureStock_Release( *m_ptdLamp);
       m_ptdLamp.Reset();
@@ -419,7 +419,7 @@ BOOL CModelerApp::SubInitInstance()
       m_pFloorModelObject = NULL;
     }
     // if we loaded floor's texture
-    if( m_ptdFloorTexture != NULL) {
+    if( m_ptdFloorTexture) {
       // release it and
       _pTextureStock_Release( *m_ptdFloorTexture);
       m_ptdFloorTexture.Reset();

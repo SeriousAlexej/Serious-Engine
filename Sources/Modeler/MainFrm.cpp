@@ -17,7 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 //
 
 #include "stdafx.h"
-#include <Engine/Templates/Stock_CTextureData.h>
+#include <SeriousEngineCAPI/Templates/Stock_CTextureData.h>
 
 #ifdef _DEBUG
 #undef new
@@ -25,9 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif
-
-ENGINE_API extern INDEX snd_iFormat;
-
 
 /////////////////////////////////////////////////////////////////////////////
 // CMainFrame
@@ -614,7 +611,7 @@ void CMainFrame::OnFileCreateTexture()
   {
     pDoc = pView->GetDocument();
     // setup create texture directory
-    theApp.WriteProfileString(L"Scape", CString(KEY_NAME_CREATE_TEXTURE_DIR), 
+    theApp.WriteProfileString(L"Modeler prefs", CString(KEY_NAME_CREATE_TEXTURE_DIR), 
       CString(_fnmApplicationPath+pDoc->GetModelDirectory()));
   }
   // call create texture dialog
@@ -759,14 +756,14 @@ void CMainFrame::EnableSound(void)
   if( _bSoundEnabled || !theApp.m_Preferences.ap_bAllowSoundLock) return;
   _bSoundEnabled = TRUE;
   snd_iFormat = Clamp( snd_iFormat, (INDEX)CSoundLibrary::SF_NONE, (INDEX)CSoundLibrary::SF_44100_16);  
-  _pSound->SetFormat( (enum CSoundLibrary::SoundFormat)snd_iFormat);
+  _pSound_SetFormat( (enum CSoundLibrary::SoundFormat)snd_iFormat);
 }
 
 void CMainFrame::DisableSound(void) 
 {
   //if( !_bSoundEnabled) return;
   _bSoundEnabled = FALSE;
-  _pSound->SetFormat( CSoundLibrary::SF_NONE);
+  _pSound_SetFormat( CSoundLibrary::SF_NONE);
 }
 
 void CMainFrame::OnCancelMode() 
@@ -783,46 +780,38 @@ void CMainFrame::OnInitMenu(CMenu* pMenu)
 void CMainFrame::OnStainsAdd() 
 {
   // call file requester for opening documents
-  CDynamicArray<CTFileName> afnWorkingStains;
+  CDynamicArray_CTFileName afnWorkingStains;
   _EngineGUI.FileRequester( "Choose textures to add", FILTER_TEX FILTER_END,
     "Working textures directory", "Textures\\", "", &afnWorkingStains);
   // insert selected textures
   FOREACHINDYNAMICARRAY( afnWorkingStains, CTFileName, itStain)
   {
     // add new working texture
-    theApp.AddModelerWorkingPatch( itStain.Current());
+    theApp.AddModelerWorkingPatch( *itStain.Current());
   }
   m_StainsComboBox.Refresh();
 }
 
 void CMainFrame::OnStainsRemove() 
 {
-  CWorkingPatch *pWP = NULL;
   int iSelected = m_StainsComboBox.GetCurSel();
-
-  if( iSelected != CB_ERR)
+  if (iSelected == CB_ERR)
   {
-    INDEX iCt = 0;
-    FOREACHINLIST( CWorkingPatch, wp_ListNode, theApp.m_WorkingPatches, it)
-    {
-      if( iCt == iSelected)
-      {
-        pWP = &it.Current();
-      }
-      iCt ++;
-    }
+    ASSERT(false);
+    return;
   }
-  ASSERT(pWP != NULL);
 
-  pWP->wp_ListNode.Remove();
-  _pTextureStock->Release( pWP->wp_TextureData);
-  delete pWP;
+  CWorkingPatch* pWP = theApp.m_WorkingPatches[iSelected].get();
+
+  _pTextureStock_Release( *pWP->wp_TextureData);
+
+  theApp.m_WorkingPatches.erase(theApp.m_WorkingPatches.begin() + iSelected);
   m_StainsComboBox.Refresh();
 }
 
 void CMainFrame::OnUpdateStainsRemove(CCmdUI* pCmdUI) 
 {
-  pCmdUI->Enable( !theApp.m_WorkingPatches.IsEmpty());
+  pCmdUI->Enable( !theApp.m_WorkingPatches.empty());
 }
 
 void CMainFrame::OnViewPatchesPalette() 
@@ -945,7 +934,7 @@ BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
       static CPoint ptLast;
       CPoint ptNow;
       GetCursorPos( &ptNow);
-      CTimerValue tvNow = _pTimer->GetHighPrecisionTimer();
+      CTimerValue tvNow = _pTimer_GetHighPrecisionTimer();
       FLOAT tmDelta = (tvNow-tvLast).GetSeconds();
       if( tmDelta<0.5f && abs(ptNow.x-ptLast.x)<5 && abs(ptNow.y-ptLast.y)<5)
       {
@@ -1056,10 +1045,10 @@ void CMainFrame::OnHelpFinder()
 
 void CMainFrame::OnTessellateLess() 
 {
-  _pShell->SetINDEX( "gap_bForceTruform", 1); // make sure truform is enabled for all models
-  INDEX iTruform = _pShell->GetINDEX( "gap_iTruformLevel");
-  iTruform = Clamp( iTruform-1L, 0L, _pGfx->gl_iMaxTessellationLevel);
-  _pShell->SetINDEX( "gap_iTruformLevel", iTruform);
+  _pShell_SetINDEX( "gap_bForceTruform", 1); // make sure truform is enabled for all models
+  INDEX iTruform = _pShell_GetINDEX( "gap_iTruformLevel");
+  iTruform = Clamp<INDEX>( iTruform-1L, 0L, _pGfx_gl_iMaxTessellationLevel());
+  _pShell_SetINDEX( "gap_iTruformLevel", iTruform);
   CTString strVar;
   strVar.PrintF( "Tessellation level = %d", iTruform);
   m_wndStatusBar.SetPaneText( STATUS_LINE_PANE, CString(strVar));
@@ -1067,10 +1056,10 @@ void CMainFrame::OnTessellateLess()
 
 void CMainFrame::OnTessellateMore() 
 {
-  _pShell->SetINDEX( "gap_bForceTruform", 1); // make sure truform is enabled for all models
-  INDEX iTruform = _pShell->GetINDEX( "gap_iTruformLevel");
-  iTruform = Clamp( iTruform+1L, 0L, _pGfx->gl_iMaxTessellationLevel);
-  _pShell->SetINDEX( "gap_iTruformLevel", iTruform);
+  _pShell_SetINDEX( "gap_bForceTruform", 1); // make sure truform is enabled for all models
+  INDEX iTruform = _pShell_GetINDEX( "gap_iTruformLevel");
+  iTruform = Clamp<INDEX>( iTruform+1L, 0L, _pGfx_gl_iMaxTessellationLevel());
+  _pShell_SetINDEX( "gap_iTruformLevel", iTruform);
   CTString strVar;
   strVar.PrintF( "Tessellation level = %d", iTruform);
   m_wndStatusBar.SetPaneText( STATUS_LINE_PANE, CString(strVar));

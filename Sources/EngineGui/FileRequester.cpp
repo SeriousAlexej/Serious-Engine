@@ -225,7 +225,7 @@ CTFileName CEngineGUI::FileRequester(
   CString strRequestInDirectory(_fnmApplicationPath+strDefaultDir);
   if( pchrRegistry != NULL)
   {
-    strRequestInDirectory = AfxGetApp()->GetProfileString(L"Scape", CString(pchrRegistry), 
+    strRequestInDirectory = AfxGetApp()->GetProfileString(L"Modeler prefs", CString(pchrRegistry), 
       CString(_fnmApplicationPath+strDefaultDir));
   }
 
@@ -298,7 +298,7 @@ CTFileName CEngineGUI::FileRequester(
       chrFiles[ ofnRequestFiles.nFileOffset-1] = 0;
       if( pchrRegistry != NULL)
       {
-        AfxGetApp()->WriteProfileString(L"Scape", CString(pchrRegistry), CString(chrFiles));
+        AfxGetApp()->WriteProfileString(L"Modeler prefs", CString(pchrRegistry), CString(chrFiles));
       }
       CTFileName fnDirectory = CTString( chrFiles) + "\\";
 
@@ -336,7 +336,7 @@ CTFileName CEngineGUI::FileRequester(
       strChooseFilePath.SetAt( ofnRequestFiles.nFileOffset, 0);
       if( pchrRegistry != NULL)
       {
-        AfxGetApp()->WriteProfileString(L"Scape", CString(pchrRegistry), strChooseFilePath);
+        AfxGetApp()->WriteProfileString(L"Modeler prefs", CString(pchrRegistry), strChooseFilePath);
       }
       CTFileName fnResult = CTString( chrFiles);
       try
