@@ -85,7 +85,8 @@ BOOL CDlgMarkLinkedSurfaces::OnInitDialog()
   ModelMipInfo &mmi = pDoc->m_emEditModel.edm_md.md_MipInfos[ pDoc->m_iCurrentMip];
   for( INDEX iSurface=0; iSurface<mmi.mmpi_MappingSurfaces.Count(); iSurface++)
   {
-    MappingSurface &ms = mmi.mmpi_MappingSurfaces[ iSurface];
+    MappingSurfacePtr pms = mmi.mmpi_MappingSurfaces[ iSurface];
+    MappingSurface& ms = *pms;
     CTString strListEntry;
     strListEntry.PrintF("%.02d %s (%d)", iSurface, ms.ms_Name, ms.ms_aiPolygons.Count());
     int iAddedAs = m_listSurfaces.AddString( CString(strListEntry));

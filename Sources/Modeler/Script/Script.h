@@ -16,6 +16,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef SCRIPT_H
 #define SCRIPT_H
 
+#include <SeriousEngineCppAPI/Base/FileName.h>
+
 #include <optional>
 #include <string>
 #include <vector>

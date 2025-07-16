@@ -93,10 +93,10 @@ void CDlgInfoPgGlobal::SetGlobalPageFromView(CModelerView* pModelerView)
   m_colorSpecular.SetColor(pDoc->m_emEditModel.edm_md.md_colSpecular);
   m_colorBump.SetColor(pDoc->m_emEditModel.edm_md.md_colBump);
 
-  m_strDifuse = pModelerView->m_ModelObject.mo_toTexture.GetName();
-  m_strReflections = pModelerView->m_ModelObject.mo_toReflection.GetName();
-  m_strSpecular = pModelerView->m_ModelObject.mo_toSpecular.GetName();
-  m_strBump = pModelerView->m_ModelObject.mo_toBump.GetName();
+  m_strDifuse = *pModelerView->m_ModelObject.mo_toTexture.GetName();
+  m_strReflections = *pModelerView->m_ModelObject.mo_toReflection.GetName();
+  m_strSpecular = *pModelerView->m_ModelObject.mo_toSpecular.GetName();
+  m_strBump = *pModelerView->m_ModelObject.mo_toBump.GetName();
 
   if( m_strDifuse == "") m_strDifuse = "<none>";
   if( m_strReflections == "") m_strReflections = "<none>";

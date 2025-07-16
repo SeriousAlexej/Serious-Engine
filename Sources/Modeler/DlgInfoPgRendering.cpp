@@ -90,7 +90,8 @@ void CDlgInfoPgRendering::DoDataExchange(CDataExchange* pDX)
     ModelMipInfo &mmi = pDoc->m_emEditModel.edm_md.md_MipInfos[ pDoc->m_iCurrentMip];
     for( INDEX iSurface=0; iSurface<mmi.mmpi_MappingSurfaces.Count(); iSurface++)
     {
-      MappingSurface &ms = mmi.mmpi_MappingSurfaces[ iSurface];
+      MappingSurfacePtr pms = mmi.mmpi_MappingSurfaces[ iSurface];
+      MappingSurface& ms = *pms;
       // skip non selected surfaces
       if( !(ms.ms_ulRenderingFlags&SRF_SELECTED)) continue;
       strFirstName = ms.ms_Name;
@@ -246,7 +247,8 @@ void CDlgInfoPgRendering::DoDataExchange(CDataExchange* pDX)
     ModelMipInfo &mmi = pDoc->m_emEditModel.edm_md.md_MipInfos[ pDoc->m_iCurrentMip];
     for( INDEX iSurface=0; iSurface<mmi.mmpi_MappingSurfaces.Count(); iSurface++)
     {
-      MappingSurface &ms = mmi.mmpi_MappingSurfaces[ iSurface];
+      MappingSurfacePtr pms = mmi.mmpi_MappingSurfaces[ iSurface];
+      MappingSurface& ms = *pms;
       ULONG ulFlagsBefore = ms.ms_ulRenderingFlags;
       // skip non selected surfaces
       if( !(ms.ms_ulRenderingFlags&SRF_SELECTED)) continue;

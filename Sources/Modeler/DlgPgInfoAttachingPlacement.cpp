@@ -79,8 +79,8 @@ void CDlgPgInfoAttachingPlacement::SetPlacementReferenceVertex(INDEX iCenter, IN
   CModelerDoc* pDoc = pModelerView->GetDocument();
   CModelData *pMD = &pDoc->m_emEditModel.edm_md;
 
-  pMD->md_aampAttachedPosition.Lock();
-  CAttachedModelPosition &amp = pMD->md_aampAttachedPosition[ m_iActivePlacement];
+  CAttachedModelPositionPtr pamp = pMD->md_aampAttachedPosition[ m_iActivePlacement];
+  CAttachedModelPosition& amp = *pamp;
 
   // --------- Set axis-defining vertices, but swap if owerlaping
   // Center vertex
@@ -122,8 +122,6 @@ void CDlgPgInfoAttachingPlacement::SetPlacementReferenceVertex(INDEX iCenter, IN
     }
     amp.amp_iUpVertex = iUp;
   }
-
-  pMD->md_aampAttachedPosition.Unlock();
 
   theApp.m_chGlobal.MarkChanged();
   pDoc->ClearAttachments();
@@ -192,7 +190,7 @@ void CDlgPgInfoAttachingPlacement::DoDataExchange(CDataExchange* pDX)
   CModelData *pMD = &pDoc->m_emEditModel.edm_md;
 
   const bool hasBoneTriangleMapping = !pDoc->m_emEditModel.m_boneTriangleMapping.empty();
-  INDEX ctPositions = pDoc->m_emEditModel.edm_aamAttachedModels.Count();
+  INDEX ctPositions = pDoc->m_emEditModel.edm_aamAttachedModels.size();
   if( (m_iActivePlacement == -1) && ( ctPositions != 0) ) m_iActivePlacement = 0;
   if( m_iActivePlacement >= ctPositions)
   {
@@ -234,39 +232,33 @@ void CDlgPgInfoAttachingPlacement::DoDataExchange(CDataExchange* pDX)
     
     if( bAttachmentExists)
     {
-      pMD->md_aampAttachedPosition.Lock();
-      pDoc->m_emEditModel.edm_aamAttachedModels.Lock();
-
-      CPlacement3D plCurrent = pMD->md_aampAttachedPosition[ m_iActivePlacement].amp_plRelativePlacement;
-	    m_fHeading	= DegAngle( plCurrent.pl_OrientationAngle(1));
-	    m_fPitch	= DegAngle( plCurrent.pl_OrientationAngle(2));
+      CPlacement3D plCurrent = pMD->md_aampAttachedPosition[ m_iActivePlacement]->amp_plRelativePlacement;
+      m_fHeading	= DegAngle( plCurrent.pl_OrientationAngle(1));
+      m_fPitch	= DegAngle( plCurrent.pl_OrientationAngle(2));
       m_fBanking  = DegAngle( plCurrent.pl_OrientationAngle(3));
-	    m_fXOffset	= plCurrent.pl_PositionVector(1);
-	    m_fYOffset	= plCurrent.pl_PositionVector(2);
-	    m_fZOffset	= plCurrent.pl_PositionVector(3);
+      m_fXOffset	= plCurrent.pl_PositionVector(1);
+      m_fYOffset	= plCurrent.pl_PositionVector(2);
+      m_fZOffset	= plCurrent.pl_PositionVector(3);
 
-      CAttachedModel *pam = &pDoc->m_emEditModel.edm_aamAttachedModels[ m_iActivePlacement];
+      CAttachedModel* pam = pDoc->m_emEditModel.edm_aamAttachedModels[ m_iActivePlacement].get();
       m_strName  = pam->am_strName;
       m_strAttachingModel = pam->am_moAttachedModel.GetName();
       char achrLine[ 256];
       sprintf( achrLine, "center:%d, front:%d, up:%d",
-	pMD->md_aampAttachedPosition[ m_iActivePlacement].amp_iCenterVertex,
-	pMD->md_aampAttachedPosition[ m_iActivePlacement].amp_iFrontVertex,
-	pMD->md_aampAttachedPosition[ m_iActivePlacement].amp_iUpVertex);
+      pMD->md_aampAttachedPosition[ m_iActivePlacement]->amp_iCenterVertex,
+      pMD->md_aampAttachedPosition[ m_iActivePlacement]->amp_iFrontVertex,
+      pMD->md_aampAttachedPosition[ m_iActivePlacement]->amp_iUpVertex);
       m_strAttachingVertices = achrLine;
       sprintf( achrLine, "%d.", m_iActivePlacement);
       m_strPlacementIndex = achrLine;
 
       m_bIsVisible =
-	pDoc->m_emEditModel.edm_aamAttachedModels[ m_iActivePlacement].am_bVisible != 0;
-
-      pDoc->m_emEditModel.edm_aamAttachedModels.Unlock();
-      pMD->md_aampAttachedPosition.Unlock();
+        pDoc->m_emEditModel.edm_aamAttachedModels[ m_iActivePlacement]->am_bVisible != 0;
 
       if( IsWindow( m_comboAttachmentModelAnimation.m_hWnd))
       {
-	m_comboAttachmentModelAnimation.EnableWindow( m_bIsVisible);
-	FillAttachmentModelAnimationCombo();
+        m_comboAttachmentModelAnimation.EnableWindow( m_bIsVisible);
+        FillAttachmentModelAnimationCombo();
       }
 
       // mark that the values have been updated to reflect the state of the view
@@ -274,40 +266,36 @@ void CDlgPgInfoAttachingPlacement::DoDataExchange(CDataExchange* pDX)
     }
   }
 
-	//{{AFX_DATA_MAP(CDlgPgInfoAttachingPlacement)
-	DDX_Control(pDX, IDC_ATTACHMENT_MODEL_ANIMATION_COMBO, m_comboAttachmentModelAnimation);
-	DDX_Text(pDX, IDC_ATTACHING_PLACEMENT_BANKING, m_fBanking);
-	DDX_Text(pDX, IDC_ATTACHING_PLACEMENT_HEADING, m_fHeading);
-	DDX_Text(pDX, IDC_ATTACHING_PLACEMENT_PITCH, m_fPitch);
-	DDX_Text(pDX, IDC_ATTACHING_PLACEMENT_X_OFFSET, m_fXOffset);
-	DDX_Text(pDX, IDC_ATTACHING_PLACEMENT_Y_OFFSET, m_fYOffset);
-	DDX_Text(pDX, IDC_ATTACHING_PLACEMENT_Z_OFFSET, m_fZOffset);
-	DDX_Text(pDX, IDC_ATTACHING_PLACEMENT_NAME, m_strName);
-	DDX_Text(pDX, IDC_ATTACHING_MODEL_T, m_strAttachingModel);
-	DDX_Text(pDX, IDC_ATTACHING_VERTICES, m_strAttachingVertices);
-	DDX_Text(pDX, IDC_ATTACHING_PLACEMENT_INDEX_T, m_strPlacementIndex);
-	DDX_Check(pDX, IDC_IS_VISIBLE, m_bIsVisible);
-	//}}AFX_DATA_MAP
+  //{{AFX_DATA_MAP(CDlgPgInfoAttachingPlacement)
+  DDX_Control(pDX, IDC_ATTACHMENT_MODEL_ANIMATION_COMBO, m_comboAttachmentModelAnimation);
+  DDX_Text(pDX, IDC_ATTACHING_PLACEMENT_BANKING, m_fBanking);
+  DDX_Text(pDX, IDC_ATTACHING_PLACEMENT_HEADING, m_fHeading);
+  DDX_Text(pDX, IDC_ATTACHING_PLACEMENT_PITCH, m_fPitch);
+  DDX_Text(pDX, IDC_ATTACHING_PLACEMENT_X_OFFSET, m_fXOffset);
+  DDX_Text(pDX, IDC_ATTACHING_PLACEMENT_Y_OFFSET, m_fYOffset);
+  DDX_Text(pDX, IDC_ATTACHING_PLACEMENT_Z_OFFSET, m_fZOffset);
+  DDX_Text(pDX, IDC_ATTACHING_PLACEMENT_NAME, m_strName);
+  DDX_Text(pDX, IDC_ATTACHING_MODEL_T, m_strAttachingModel);
+  DDX_Text(pDX, IDC_ATTACHING_VERTICES, m_strAttachingVertices);
+  DDX_Text(pDX, IDC_ATTACHING_PLACEMENT_INDEX_T, m_strPlacementIndex);
+  DDX_Check(pDX, IDC_IS_VISIBLE, m_bIsVisible);
+  //}}AFX_DATA_MAP
   // if transfering data from dialog to document
 
   if( pDX->m_bSaveAndValidate)
   {
     if( m_iActivePlacement == -1) return;
-    pMD->md_aampAttachedPosition.Lock();
-    pDoc->m_emEditModel.edm_aamAttachedModels.Lock();
 
     CPlacement3D plCurrent;
-	  plCurrent.pl_OrientationAngle(1) = AngleDeg( m_fHeading);
-	  plCurrent.pl_OrientationAngle(2) = AngleDeg( m_fPitch);
+    plCurrent.pl_OrientationAngle(1) = AngleDeg( m_fHeading);
+    plCurrent.pl_OrientationAngle(2) = AngleDeg( m_fPitch);
     plCurrent.pl_OrientationAngle(3) = AngleDeg( m_fBanking);
-	  plCurrent.pl_PositionVector(1) = m_fXOffset;
-	  plCurrent.pl_PositionVector(2) = m_fYOffset;
-	  plCurrent.pl_PositionVector(3) = m_fZOffset;
-    pMD->md_aampAttachedPosition[ m_iActivePlacement].amp_plRelativePlacement = plCurrent;
-    pDoc->m_emEditModel.edm_aamAttachedModels[ m_iActivePlacement].am_strName = CStringA(m_strName);
-    pDoc->m_emEditModel.edm_aamAttachedModels[ m_iActivePlacement].am_bVisible = m_bIsVisible;
-    pDoc->m_emEditModel.edm_aamAttachedModels.Unlock();
-    pMD->md_aampAttachedPosition.Unlock();
+    plCurrent.pl_PositionVector(1) = m_fXOffset;
+    plCurrent.pl_PositionVector(2) = m_fYOffset;
+    plCurrent.pl_PositionVector(3) = m_fZOffset;
+    pMD->md_aampAttachedPosition[ m_iActivePlacement]->amp_plRelativePlacement = plCurrent;
+    pDoc->m_emEditModel.edm_aamAttachedModels[ m_iActivePlacement]->am_strName = static_cast<const char*>(CStringA(m_strName));
+    pDoc->m_emEditModel.edm_aamAttachedModels[ m_iActivePlacement]->am_bVisible = m_bIsVisible;
 
     pDoc->ClearAttachments();
     pDoc->SetupAttachments();
@@ -399,10 +387,10 @@ BOOL CDlgPgInfoAttachingPlacement::BrowseAttachement( CAttachedModel *pam)
   CModelerDoc* pDoc = pModelerView->GetDocument();
 
   CTFileName fnOldModel = pam->am_moAttachedModel.GetName();
-  CTFileName fnModel = _EngineGUI.FileRequester( "Select model to attach",
-				  FILTER_MDL FILTER_END, "Attaching models directory",
-				  _fnmApplicationPath + fnOldModel.FileDir(),
-				  fnOldModel.FileName()+fnOldModel.FileExt());
+  CTFileName fnModel = _EngineGUI.FileRequester("Select model to attach",
+    FILTER_MDL FILTER_END, "Attaching models directory",
+    _fnmApplicationPath + fnOldModel.FileDir(),
+    fnOldModel.FileName()+fnOldModel.FileExt());
   if( fnModel == "") return FALSE;
 
   try
@@ -432,12 +420,12 @@ void CDlgPgInfoAttachingPlacement::OnAddAttachingPlacement()
   if(pModelerView == NULL) return;
   CModelerDoc* pDoc = pModelerView->GetDocument();
   CModelData *pMD = &pDoc->m_emEditModel.edm_md;
-  CAttachedModelPosition *ampModelPosition = pMD->md_aampAttachedPosition.New();
-  CAttachedModel *pAttachedModel = pDoc->m_emEditModel.edm_aamAttachedModels.New();
+  CAttachedModelPositionPtr ampModelPosition = pMD->md_aampAttachedPosition.New();
+  CAttachedModel *pAttachedModel = pDoc->m_emEditModel.edm_aamAttachedModels.emplace_back(std::make_unique<CAttachedModel>()).get();
   if( !BrowseAttachement( pAttachedModel))
   {
-    pMD->md_aampAttachedPosition.Delete( ampModelPosition);
-    pDoc->m_emEditModel.edm_aamAttachedModels.Delete( pAttachedModel);
+    pMD->md_aampAttachedPosition.Delete( *ampModelPosition);
+    pDoc->m_emEditModel.edm_aamAttachedModels.pop_back();
     return;
   }
   pAttachedModel->am_strName = pAttachedModel->am_moAttachedModel.GetName().FileName();
@@ -453,9 +441,7 @@ void CDlgPgInfoAttachingPlacement::OnBrowseModel()
 
   if( m_iActivePlacement != -1)
   {
-    pDoc->m_emEditModel.edm_aamAttachedModels.Lock();
-    BrowseAttachement( &pDoc->m_emEditModel.edm_aamAttachedModels[ m_iActivePlacement]);
-    pDoc->m_emEditModel.edm_aamAttachedModels.Unlock();
+    BrowseAttachement( pDoc->m_emEditModel.edm_aamAttachedModels[ m_iActivePlacement].get());
   }
 }
 
@@ -476,7 +462,7 @@ void CDlgPgInfoAttachingPlacement::OnNextAttachingPlacement()
   ASSERT( pDoc != NULL);
   if( pDoc == NULL) return;
   CModelData *pMD = &pDoc->m_emEditModel.edm_md;
-  if( m_iActivePlacement < pDoc->m_emEditModel.edm_aamAttachedModels.Count()-1)
+  if( m_iActivePlacement < pDoc->m_emEditModel.edm_aamAttachedModels.size()-1)
   {
     m_iActivePlacement += 1;
     UpdateData(FALSE);
@@ -492,33 +478,27 @@ void CDlgPgInfoAttachingPlacement::OnRemoveAttachingPlacement()
   if( pDoc == NULL) return;
   CModelData *pMD = &pDoc->m_emEditModel.edm_md;
 
-  pMD->md_aampAttachedPosition.Lock();
-  pDoc->m_emEditModel.edm_aamAttachedModels.Lock();
-
   // get currently active placement from edit model
   CAttachedModel *pamAttachedModel =
-    &pDoc->m_emEditModel.edm_aamAttachedModels[ m_iActivePlacement];
+    pDoc->m_emEditModel.edm_aamAttachedModels[ m_iActivePlacement].get();
   // and from model data
-  CAttachedModelPosition *pampModelPosition =
-    &pMD->md_aampAttachedPosition[ m_iActivePlacement];
-
-  pDoc->m_emEditModel.edm_aamAttachedModels.Unlock();
-  pMD->md_aampAttachedPosition.Unlock();
+  CAttachedModelPositionPtr pampModelPosition =
+    pMD->md_aampAttachedPosition[ m_iActivePlacement];
 
   pDoc->ClearAttachments();
 
-  pDoc->m_emEditModel.edm_aamAttachedModels.Delete( pamAttachedModel);
-  pMD->md_aampAttachedPosition.Delete( pampModelPosition);
+  pDoc->m_emEditModel.edm_aamAttachedModels.erase(pDoc->m_emEditModel.edm_aamAttachedModels.begin() + m_iActivePlacement);
+  pMD->md_aampAttachedPosition.Delete( *pampModelPosition);
 
   pDoc->SetupAttachments();
 
-  if( pDoc->m_emEditModel.edm_aamAttachedModels.Count() == 0)
+  if( pDoc->m_emEditModel.edm_aamAttachedModels.empty())
   {
     m_iActivePlacement = -1;
   }
-  if( m_iActivePlacement == pDoc->m_emEditModel.edm_aamAttachedModels.Count())
+  if( m_iActivePlacement == pDoc->m_emEditModel.edm_aamAttachedModels.size())
   {
-    m_iActivePlacement = pDoc->m_emEditModel.edm_aamAttachedModels.Count()-1;
+    m_iActivePlacement = pDoc->m_emEditModel.edm_aamAttachedModels.size()-1;
   }
   UpdateData(FALSE);
   pDoc->SetModifiedFlag();
@@ -535,11 +515,9 @@ void CDlgPgInfoAttachingPlacement::FillAttachmentModelAnimationCombo()
 
   ASSERT( m_iActivePlacement < pDoc->m_emEditModel.edm_aamAttachedModels.Count());
   // obtain info about active attached model
-  pDoc->m_emEditModel.edm_aamAttachedModels.Lock();
-  CAttachedModel *pamAttachedModel = &pDoc->m_emEditModel.edm_aamAttachedModels[ m_iActivePlacement];
-  pDoc->m_emEditModel.edm_aamAttachedModels.Unlock();
+  CAttachedModel *pamAttachedModel = pDoc->m_emEditModel.edm_aamAttachedModels[ m_iActivePlacement].get();
 
-  CModelData *pMD = (CModelData *) pamAttachedModel->am_moAttachedModel.GetData();
+  CModelDataPtr pMD = pamAttachedModel->am_moAttachedModel.GetData();
   ASSERT(pMD != NULL);
 
   for( INDEX iAnim=0; iAnim<pMD->GetAnimsCt(); iAnim++)
@@ -560,11 +538,9 @@ void CDlgPgInfoAttachingPlacement::OnSelchangeAttachmentModelAnimationCombo()
   INDEX iCombo = m_comboAttachmentModelAnimation.GetCurSel();
   if( iCombo != CB_ERR)
   {
-    pDoc->m_emEditModel.edm_aamAttachedModels.Lock();
     CAttachedModel *pamAttachedModel =
-      &pDoc->m_emEditModel.edm_aamAttachedModels[ m_iActivePlacement];
+      pDoc->m_emEditModel.edm_aamAttachedModels[ m_iActivePlacement].get();
     pamAttachedModel->am_iAnimation = iCombo;
-    pDoc->m_emEditModel.edm_aamAttachedModels.Unlock();
   }
   pDoc->ClearAttachments();
   pDoc->SetupAttachments();
@@ -579,12 +555,10 @@ void CDlgPgInfoAttachingPlacement::OnIsVisible()
   ASSERT( pDoc != NULL);
   if( pDoc == NULL) return;
 
-  pDoc->m_emEditModel.edm_aamAttachedModels.Lock();
   CAttachedModel *pamAttachedModel =
-    &pDoc->m_emEditModel.edm_aamAttachedModels[ m_iActivePlacement];
+    pDoc->m_emEditModel.edm_aamAttachedModels[ m_iActivePlacement].get();
   pamAttachedModel->am_bVisible = !pamAttachedModel->am_bVisible;
 
-  pDoc->m_emEditModel.edm_aamAttachedModels.Unlock();
   pDoc->ClearAttachments();
   pDoc->SetupAttachments();
   pDoc->SetModifiedFlag();

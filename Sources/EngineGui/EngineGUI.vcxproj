@@ -118,7 +118,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <OutputFile>Release\EngineEX.dll</OutputFile>
-      <ImportLibrary>.\Release\EngineGUI.lib</ImportLibrary>
+      <ImportLibrary>.\Release\EngineEX.lib</ImportLibrary>
       <AdditionalLibraryDirectories>$(SolutionDir)assimpBuild\code\$(Configuration)\;$(SolutionDir)assimpBuild\contrib\zlib\$(Configuration)\;$(SolutionDir)assimpBuild\contrib\irrXML\$(Configuration)\;$(SolutionDir)SeriousEngineCAPI\Release\;$(SolutionDir)Engine\$(Configuration)\;$(SolutionDir)qtwinmigrateBuild\$(Configuration)\;$(Qt_dir)\lib\</AdditionalLibraryDirectories>
       <AdditionalDependencies>SeriousEngineCAPI.lib;assimp.lib;irrXML.lib;zlibstatic.lib;Qt5Core.lib;Qt5Gui.lib;Qt5Widgets.lib;Qt5WinExtras.lib;QtSolutions_MFCMigrationFramework.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
@@ -170,7 +170,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <OutputFile>Debug/EngineEXD.dll</OutputFile>
-      <ImportLibrary>.\Debug\EngineGUID.lib</ImportLibrary>
+      <ImportLibrary>.\Debug\EngineEXD.lib</ImportLibrary>
       <MapExports>true</MapExports>
       <AdditionalLibraryDirectories>$(SolutionDir)assimpBuild\code\$(Configuration)\;$(SolutionDir)assimpBuild\contrib\zlib\$(Configuration)\;$(SolutionDir)assimpBuild\contrib\irrXML\$(Configuration)\;$(SolutionDir)SeriousEngineCAPI\Release\;$(SolutionDir)Engine\$(Configuration)\;$(SolutionDir)qtwinmigrateBuild\$(Configuration)\;$(Qt_dir)\lib\</AdditionalLibraryDirectories>
       <AdditionalDependencies>SeriousEngineCAPI.lib;assimpd.lib;irrXMLd.lib;zlibstaticd.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5Widgetsd.lib;Qt5WinExtrasd.lib;QtSolutions_MFCMigrationFrameworkd.lib;%(AdditionalDependencies)</AdditionalDependencies>

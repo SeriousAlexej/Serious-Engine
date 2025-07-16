@@ -49,8 +49,8 @@ public:
 	CDlgCreateSpecularTexture(CWnd* pParent = NULL);   // standard constructor
   FLOAT GetFactorForPercentage( INDEX iSlider);
   void CreateTexture( CTFileName fnTexture, FLOAT fExp);
-  void DrawGraph( CDrawPort *pdp, FLOAT fExp);
-  void DrawPreview( CDrawPort *pdp, FLOAT fExp);
+  void DrawGraph( CDrawPortPtr pdp, FLOAT fExp);
+  void DrawPreview( CDrawPortPtr pdp, FLOAT fExp);
   void RenderGraph(void);
   void RenderPreview(void);
 

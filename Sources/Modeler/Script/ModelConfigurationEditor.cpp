@@ -19,9 +19,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "ModelConfigurationEditor.h.moc"
 #include "AnglePicker.h"
 
-#include <Engine/Models/ImportedMesh.h>
-#include <Engine/Models/ImportedSkeleton.h>
-#include <Engine/Models/ImportedSkeletalAnimation.h>
+#include <EngineGUI/ImportedMesh.h>
+#include <EngineGUI/ImportedSkeleton.h>
+#include <EngineGUI/ImportedSkeletalAnimation.h>
 
 #include <QMessageBox>
 #include <QMenu>
@@ -124,8 +124,8 @@ void ModelConfigurationEditor::_SortFrames()
 
   std::sort(currAnim.m_frames.begin(), currAnim.m_frames.end(), [this](const CTFileName& lhs, const CTFileName& rhs)
     {
-      std::string lhsFile = lhs.FileName();
-      std::string rhsFile = rhs.FileName();
+      std::string lhsFile = static_cast<const char*>(lhs.FileName());
+      std::string rhsFile = static_cast<const char*>(rhs.FileName());
       for (auto* p_str : { &lhsFile, &rhsFile })
         std::transform(p_str->begin(), p_str->end(), p_str->begin(), [](unsigned char c) { return std::tolower(c); });
       if (m_reverseSort)
@@ -142,7 +142,7 @@ void ModelConfigurationEditor::_FillFrames()
   auto& currAnim = m_script.m_animations[mp_ui->listAnims->currentRow()];
   mp_ui->listFrames->clear();
   for (const auto& frame : currAnim.m_frames)
-    mp_ui->listFrames->addItem(frame.str_String);
+    mp_ui->listFrames->addItem(static_cast<const char*>(frame));
 }
 
 void ModelConfigurationEditor::_FillAnims()
@@ -156,7 +156,7 @@ void ModelConfigurationEditor::_FillMips()
 {
   mp_ui->listMips->clear();
   for (const auto& mip : m_script.m_mipModels)
-    mp_ui->listMips->addItem(mip.str_String);
+    mp_ui->listMips->addItem(static_cast<const char*>(mip));
 
   if (!m_script.m_skeleton.has_value())
     _FillSkeleton();
@@ -176,13 +176,13 @@ void ModelConfigurationEditor::_FillSkeleton()
   const CTFileName* p_skeleton = &m_script.m_mipModels.front();
   if (m_script.m_skeleton.has_value())
     p_skeleton = &(*m_script.m_skeleton);
-  QString label = QString(p_skeleton->FileName().str_String) + p_skeleton->FileExt().str_String;
+  QString label = QString(static_cast<const char*>(p_skeleton->FileName())) + static_cast<const char*>(p_skeleton->FileExt());
   if (!m_script.m_skeleton.has_value())
     label = "(from mip 0, " + label + ')';
   QSignalBlocker block(mp_ui->comboSkeleton);
   mp_ui->comboSkeleton->clear();
   mp_ui->comboSkeleton->addItem(label, g_label);
-  mp_ui->comboSkeleton->setToolTip(p_skeleton->str_String);
+  mp_ui->comboSkeleton->setToolTip(static_cast<const char*>(*p_skeleton));
   mp_ui->comboSkeleton->addItem("(browse)", g_browse);
   mp_ui->comboSkeleton->addItem("(none)", g_none);
   mp_ui->comboSkeleton->setCurrentIndex(mp_ui->comboSkeleton->findData(g_label));
@@ -196,8 +196,8 @@ void ModelConfigurationEditor::_FillRefSkeleton()
   if (currAnim.m_optRefSkeleton.has_value())
   {
     const auto& skel = *currAnim.m_optRefSkeleton;
-    mp_ui->comboReferenceSkeleton->addItem(QString(skel.FileName().str_String) + skel.FileExt().str_String, g_label);
-    mp_ui->comboReferenceSkeleton->setToolTip(skel.str_String);
+    mp_ui->comboReferenceSkeleton->addItem(QString(static_cast<const char*>(skel.FileName())) + static_cast<const char*>(skel.FileExt()), g_label);
+    mp_ui->comboReferenceSkeleton->setToolTip(static_cast<const char*>(skel));
   }
   mp_ui->comboReferenceSkeleton->addItem("(browse)", g_browse);
   mp_ui->comboReferenceSkeleton->addItem("(none)", g_none);
@@ -210,8 +210,8 @@ void ModelConfigurationEditor::_FillSkelAnimFile()
   const auto& src = currAnim.m_frames.front();
   QSignalBlocker block(mp_ui->comboSourceFile);
   mp_ui->comboSourceFile->clear();
-  mp_ui->comboSourceFile->addItem(QString(src.FileName().str_String) + src.FileExt().str_String, g_label);
-  mp_ui->comboSourceFile->setToolTip(src.str_String);
+  mp_ui->comboSourceFile->addItem(QString(static_cast<const char*>(src.FileName())) + static_cast<const char*>(src.FileExt()), g_label);
+  mp_ui->comboSourceFile->setToolTip(static_cast<const char*>(src));
   mp_ui->comboSourceFile->addItem("(browse)", g_browse);
   mp_ui->comboSourceFile->setCurrentIndex(mp_ui->comboSourceFile->findData(g_label));
 }
@@ -543,7 +543,7 @@ void ModelConfigurationEditor::_OnPickSkeleton(int index)
     auto fileFilter = _EngineGUI.GetListOf3DFormats();
     const auto newSkeleton = _EngineGUI.FileRequester("Select Skeleton",
       fileFilter.data(),
-      nullptr, currSkelDir.str_String);
+      nullptr, currSkelDir);
 
     if (newSkeleton != "")
     {
@@ -602,7 +602,7 @@ void ModelConfigurationEditor::_OnPickRefSkeleton(int index)
     auto fileFilter = _EngineGUI.GetListOf3DFormats();
     const auto newSkeleton = _EngineGUI.FileRequester("Select Skeleton",
       fileFilter.data(),
-      nullptr, currDir.str_String);
+      nullptr, currDir);
 
     if (newSkeleton != "")
     {
@@ -640,7 +640,7 @@ void ModelConfigurationEditor::_AnalyzeTransform()
       mx(row, col) = m_uiTransform[row - 1][col - 1]->value();
 
   // mx is a rotation matrix if det(mx) = 1, mxT = mx^-1 (ie mxT * mx = 1)
-  if (std::abs(Determinant(mx) - 1.0f) < 0.001f)
+  if (std::abs(mx.Determinant() - 1.0f) < 0.001f)
   {
     FLOATmatrix3D mxt;
     for (int row = 1; row <= 3; ++row)
@@ -669,7 +669,7 @@ ModelConfigurationEditor::TFileAndAnims ModelConfigurationEditor::_PickFileWithA
   auto fileFilter = _EngineGUI.GetListOf3DFormats();
   const auto newSrc = _EngineGUI.FileRequester("Select animation file",
     fileFilter.data(),
-    nullptr, defaultDir.str_String);
+    nullptr, defaultDir);
 
   if (newSrc == "")
     return { {}, {} };
@@ -691,11 +691,11 @@ ModelConfigurationEditor::TFileAndAnims ModelConfigurationEditor::_PickFileWithA
 
 std::vector<ModelConfigurationEditor::TFileAndAnims> ModelConfigurationEditor::_PickFilesWithAnimations(const CTFileName& defaultDir)
 {
-  CDynamicArray<CTFileName> newAnimsDynArr;
+  CDynamicArray_CTFileName newAnimsDynArr;
   auto fileFilter = _EngineGUI.GetListOf3DFormats();
   _EngineGUI.FileRequester("Select animation file(s)",
     fileFilter.data(),
-    nullptr, defaultDir.str_String, "", &newAnimsDynArr);
+    nullptr, defaultDir, "", &newAnimsDynArr);
 
   if (newAnimsDynArr.Count() == 0)
     return {};
@@ -704,18 +704,18 @@ std::vector<ModelConfigurationEditor::TFileAndAnims> ModelConfigurationEditor::_
   FOREACHINDYNAMICARRAY(newAnimsDynArr, CTFileName, itFile)
   {
     const auto& animFile = itFile.Current();
-    if (!ImportedSkeleton::ContainsSkeleton(animFile))
+    if (!ImportedSkeleton::ContainsSkeleton(*animFile))
     {
-      QMessageBox::warning(this, "Warning", QString("'%1' contains no skeleton!").arg(animFile.str_String));
+      QMessageBox::warning(this, "Warning", QString("'%1' contains no skeleton!").arg(static_cast<const char*>(*animFile)));
       continue;
     }
-    const auto anims = ImportedSkeletalAnimation::GetAnimationsInFile(animFile);
+    const auto anims = ImportedSkeletalAnimation::GetAnimationsInFile(*animFile);
     if (anims.empty())
     {
-      QMessageBox::warning(this, "Warning", QString("'%1' contains no animations!").arg(animFile.str_String));
+      QMessageBox::warning(this, "Warning", QString("'%1' contains no animations!").arg(static_cast<const char*>(*animFile)));
       continue;
     }
-    filesAndAnims.push_back({ animFile, anims });
+    filesAndAnims.push_back({ *animFile, anims });
   }
 
   return filesAndAnims;
@@ -723,11 +723,11 @@ std::vector<ModelConfigurationEditor::TFileAndAnims> ModelConfigurationEditor::_
 
 std::vector<CTFileName> ModelConfigurationEditor::_PickFrames(const CTFileName& defaultDir)
 {
-  CDynamicArray<CTFileName> newFramesDynArr;
+  CDynamicArray_CTFileName newFramesDynArr;
   auto fileFilter = _EngineGUI.GetListOf3DFormats();
   _EngineGUI.FileRequester("Select frames",
     fileFilter.data(),
-    nullptr, defaultDir.str_String, "", &newFramesDynArr);
+    nullptr, defaultDir, "", &newFramesDynArr);
 
   if (newFramesDynArr.Count() == 0)
     return {};
@@ -735,7 +735,7 @@ std::vector<CTFileName> ModelConfigurationEditor::_PickFrames(const CTFileName& 
   std::vector<CTFileName> newFrames;
   newFrames.reserve(newFramesDynArr.Count());
   FOREACHINDYNAMICARRAY(newFramesDynArr, CTFileName, itFrame)
-  { newFrames.push_back(itFrame.Current()); }
+  { newFrames.push_back(*itFrame.Current()); }
 
   if (newFrames.size() > 1 && std::any_of(newFrames.begin() + 1, newFrames.end(), [&](const CTFileName& f)
     { return f.FileDir() != newFrames.front().FileDir(); }))

@@ -79,7 +79,7 @@ void CDlgInfoPgMip::SetMipPageFromView(CModelerView* pModelerView)
   m_strModelDistance = value;
   sprintf( value, "%.3f", pModelerView->m_fCurrentMipFactor);
   m_strCurrentMipFactor = value;
-  sprintf( value, "%.3f", pDoc->m_emEditModel.edm_md.md_MipSwitchFactors[iMipModel]);
+  sprintf( value, "%.3f", pDoc->m_emEditModel.edm_md.md_MipSwitchFactors(iMipModel));
   m_strModelMipSwitchFactor = value;
 
   ModelMipInfo *pMMIFirst = &pDoc->m_emEditModel.edm_md.md_MipInfos[ iMipModel];

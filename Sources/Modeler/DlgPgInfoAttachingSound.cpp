@@ -51,7 +51,7 @@ void CDlgPgInfoAttachingSound::DoDataExchange(CDataExchange* pDX)
   CModelerView *pModelerView = CModelerView::GetActiveView();
   if(pModelerView == NULL) return;
   CModelerDoc* pDoc = pModelerView->GetDocument();  
-  CAttachedSound &asSound = pDoc->m_emEditModel.edm_aasAttachedSounds[pModelerView->m_ModelObject.GetAnim()];
+  CAttachedSound &asSound = *pDoc->m_emEditModel.edm_aasAttachedSounds[pModelerView->m_ModelObject.GetAnim()];
 
   // if transfering data from document to dialog
   if( !pDX->m_bSaveAndValidate)
@@ -78,7 +78,8 @@ void CDlgPgInfoAttachingSound::DoDataExchange(CDataExchange* pDX)
   {
     if( m_strAttachedSound != "<No sound>")
     {
-      asSound.as_fnAttachedSound = CTString( CStringA(m_strAttachedSound));
+      CTString as = static_cast<const char*>(CStringA(m_strAttachedSound));
+      asSound.as_fnAttachedSound = as;
       asSound.as_bLooping = m_bLooping;
       asSound.as_bPlaying = m_bPlaying;
       asSound.as_fDelay = m_fDelay;
@@ -119,7 +120,7 @@ void CDlgPgInfoAttachingSound::OnBrowseSound()
   CModelerView *pModelerView = CModelerView::GetActiveView();
   if( pModelerView == NULL) return;
   CModelerDoc* pDoc = pModelerView->GetDocument();  
-  CAttachedSound &asSound = pDoc->m_emEditModel.edm_aasAttachedSounds[pModelerView->m_ModelObject.GetAnim()];
+  CAttachedSound &asSound = *pDoc->m_emEditModel.edm_aasAttachedSounds[pModelerView->m_ModelObject.GetAnim()];
 
   // request sound
   CTFileName fnNewSound = _EngineGUI.FileRequester(
@@ -140,7 +141,7 @@ void CDlgPgInfoAttachingSound::OnAttachingSoundNone()
   CModelerView *pModelerView = CModelerView::GetActiveView();
   if( pModelerView == NULL) return;
   CModelerDoc* pDoc = pModelerView->GetDocument();  
-  CAttachedSound &asSound = pDoc->m_emEditModel.edm_aasAttachedSounds[pModelerView->m_ModelObject.GetAnim()];
+  CAttachedSound &asSound = *pDoc->m_emEditModel.edm_aasAttachedSounds[pModelerView->m_ModelObject.GetAnim()];
   asSound.as_fnAttachedSound = CTString("");
   pDoc->SetModifiedFlag();
   pDoc->UpdateAllViews( NULL);

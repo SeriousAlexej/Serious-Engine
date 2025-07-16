@@ -222,7 +222,7 @@ CModelerApp::~CModelerApp()
 
   for (auto& litPatch : m_WorkingPatches)
   {
-    CTextureData *pTD = litPatch->wp_TextureData;
+    CTextureDataPtr pTD = litPatch->wp_TextureData;
     _pTextureStock_Release( *litPatch->wp_TextureData);
   }
   m_WorkingPatches.clear();

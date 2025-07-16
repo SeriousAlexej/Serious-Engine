@@ -59,7 +59,7 @@ public:
 	CDlgCreateReflectionTexture(CWnd* pParent = NULL);   // standard constructor
   void CreateReflectionTexture_t( CTFileName fnTexture);  // throw char *
   void PutPicture(CWnd &wnd, CTextureObject &to, INDEX iwin);
-  void DrawPreview( CDrawPort *pdp);
+  void DrawPreview( CDrawPortPtr pdp);
   void RenderPreview(void);
   void AutoSetTextures( CTFileName fnFile);
 

@@ -17,7 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 //
 
 #include "stdafx.h"
-#include <Engine/Templates/Stock_CTextureData.h>
+#include <SeriousEngineCAPI/Templates/Stock_CTextureData.h>
 
 #ifdef _DEBUG
 #undef new
@@ -131,7 +131,7 @@ void CDlgPreferences::DoDataExchange(CDataExchange* pDX)
 	  m_Prefs.ap_fDefaultBanking = m_fDefaultBanking;
 	  m_Prefs.ap_fDefaultFOW = m_fDefaultFOW;
 
-    if( !theApp.m_WorkingTextures.IsEmpty())
+    if( !theApp.m_WorkingTextures.empty())
     {
       m_Prefs.ap_DefaultWinBcgTexture = 
         ((CBcgTexture *) m_ComboWinBcgTexture.GetItemDataPtr( 
@@ -160,7 +160,7 @@ void CDlgPreferences::DoDataExchange(CDataExchange* pDX)
       }
       if( iOldGfxApi!=theApp.m_iApi)
       {
-        _pGfx->ResetDisplayMode((enum GfxAPIType) theApp.m_iApi);
+        _pGfx_ResetDisplayMode((GfxAPIType) theApp.m_iApi);
       }
     }
   }
@@ -212,7 +212,7 @@ void CDlgPreferences::InitTextureCombos()
   
   m_ComboWinBcgTexture.ResetContent();
   INDEX iChoosedWinBcg = 0;
-  if( theApp.m_WorkingTextures.IsEmpty())
+  if( theApp.m_WorkingTextures.empty())
   {
     m_ComboWinBcgTexture.AddString( L"None available");
     m_ComboWinBcgTexture.EnableWindow( FALSE);
@@ -220,14 +220,14 @@ void CDlgPreferences::InitTextureCombos()
   else
   {
     m_ComboWinBcgTexture.EnableWindow( TRUE);
-    INDEX iTexCt = 0;      
-    FOREACHINLIST( CBcgTexture, wt_ListNode, theApp.m_WorkingTextures, it_wt)
+    INDEX iTexCt = 0;
+    for (auto& it_wt : theApp.m_WorkingTextures)
     {
       if( it_wt->wt_FileName == m_Prefs.ap_DefaultWinBcgTexture)
         iChoosedWinBcg = iTexCt;
       
       iIndex = m_ComboWinBcgTexture.AddString( CString(it_wt->wt_FileName.FileName()));
-      m_ComboWinBcgTexture.SetItemDataPtr( iIndex, &it_wt.Current());
+      m_ComboWinBcgTexture.SetItemDataPtr( iIndex, it_wt.get());
       iTexCt ++;
     }
   }
@@ -237,14 +237,14 @@ void CDlgPreferences::InitTextureCombos()
 void CDlgPreferences::OnAddWorkingTexture() 
 {
   // call file requester for opening documents
-  CDynamicArray<CTFileName> afnWorkingTextures;
+  CDynamicArray_CTFileName afnWorkingTextures;
   _EngineGUI.FileRequester( "Choose textures to add", FILTER_TEX FILTER_END,
     "Working textures directory", "Textures\\", "", &afnWorkingTextures);
   // insert selected textures
   FOREACHINDYNAMICARRAY( afnWorkingTextures, CTFileName, itTexture)
   {
     // add new working texture
-    theApp.AddModelerWorkingTexture( itTexture.Current());
+    theApp.AddModelerWorkingTexture( *itTexture.Current());
   }
   if( afnWorkingTextures.Count() != 0)
   {
@@ -260,7 +260,7 @@ void CDlgPreferences::OnAddWorkingTexture()
 
 void CDlgPreferences::OnRemoveWorkingTexture() 
 {
-  if( theApp.m_WorkingTextures.Count() == 0)
+  if( theApp.m_WorkingTextures.empty())
   {
     return;
   }
@@ -268,11 +268,12 @@ void CDlgPreferences::OnRemoveWorkingTexture()
   INDEX cur_sel = m_ComboWinBcgTexture.GetCurSel();
   if( cur_sel != LB_ERR)
   {
-    CBcgTexture *pWT = (CBcgTexture *) m_ComboWinBcgTexture.GetItemDataPtr( cur_sel);
-    pWT->wt_ListNode.Remove();
-    
-    _pTextureStock->Release( pWT->wt_TextureData);
-    delete pWT;
+    CBcgTexture *pWT = (CBcgTexture *) m_ComboWinBcgTexture.GetItemDataPtr( cur_sel);    
+    _pTextureStock_Release( *pWT->wt_TextureData);
+    theApp.m_WorkingTextures.erase(
+      std::remove_if(theApp.m_WorkingTextures.begin(), theApp.m_WorkingTextures.end(),
+        [=](const auto& p) { return p.get() == pWT; }),
+      theApp.m_WorkingTextures.end());
     UpdateData( FALSE);
   }
   InitTextureCombos();

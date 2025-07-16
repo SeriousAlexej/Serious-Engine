@@ -133,7 +133,8 @@ void CDlgPgCollision::DoDataExchange(CDataExchange* pDX)
       }
       default:
       {
-        ASSERTALWAYS( "None of collision dimensions are the same and that can't be.");
+        // None of collision dimensions are the same and that can't be
+        break;
       }
     }
     // mark that the values have been updated to reflect the state of the view
@@ -189,7 +190,8 @@ void CDlgPgCollision::DoDataExchange(CDataExchange* pDX)
         }
         default:
         {
-          ASSERTALWAYS( "Illegal value found in collision dimensions equality radio.");
+          // Illegal value found in collision dimensions equality radio
+          break;
         }
       }
       // set collision equality value
@@ -200,7 +202,8 @@ void CDlgPgCollision::DoDataExchange(CDataExchange* pDX)
     }
 
     // set name of curently selected collision box
-    pDoc->m_emEditModel.SetCollisionBoxName( CTString( CStringA(m_strCollisionBoxName)) );
+    CTString cbn = static_cast<const char*>(CStringA(m_strCollisionBoxName));
+    pDoc->m_emEditModel.SetCollisionBoxName( cbn );
     
     // get collision min and max vectors
     FLOAT3D vMinCollisionBox;

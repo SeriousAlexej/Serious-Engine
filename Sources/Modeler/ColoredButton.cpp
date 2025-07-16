@@ -242,7 +242,7 @@ void CColoredButton::OnMouseMove(UINT nFlags, CPoint point)
     ColorToComponents();
     SLONG slResult = m_ubComponents[ m_iColorIndex][m_iComponentIndex];
     slResult += ptCurrent.x-m_ptCenter.x;
-    slResult = Min(Max(slResult,0L), 255L);
+    slResult = Min(Max(slResult,0), 255);
     m_ubComponents[ m_iColorIndex][m_iComponentIndex] = UBYTE( slResult);
 
     COLOR colResult;

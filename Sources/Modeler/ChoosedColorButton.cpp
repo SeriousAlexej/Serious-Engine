@@ -53,11 +53,11 @@ void CChoosedColorButton::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
   CModelerView *pModelerView = CModelerView::GetActiveView();
   if( pModelerView == NULL)
   {
-    CBrush *MyBrush = &CBrush();
+    CBrush MyBrush;
     ASSERT( MyBrush->CreateHatchBrush(HS_DIAGCROSS, 0x00777777) != FALSE);
 
     pDC->FillSolidRect( &lpDrawItemStruct->rcItem, 0x00bbbbbb);
-    pDC->FillRect( &lpDrawItemStruct->rcItem, MyBrush);
+    pDC->FillRect( &lpDrawItemStruct->rcItem, &MyBrush);
     pDC->DrawText( CString("none"), &lpDrawItemStruct->rcItem, 
                    DT_SINGLELINE | DT_CENTER | DT_VCENTER);
   }
