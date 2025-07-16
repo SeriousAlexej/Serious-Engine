@@ -15,21 +15,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "stdafx.h"
 
-#include <Engine/Models/ModelObject.h>
-#include <Engine/Models/ModelData.h>
-#include <Engine/Models/ImportedMesh.h>
-#include <Engine/Models/ImportedSkeleton.h>
-#include <Engine/Models/ImportedSkeletalAnimation.h>
-#include <Engine/Math/Geometry.inl>
-#include <Engine/Models/Model_internal.h>
-#include <Engine/Base/Stream.h>
-#include <Engine/Base/ListIterator.inl>
-#include <Engine/Models/Normals.h>
-#include <Engine/Graphics/DrawPort.h>
+#include <SeriousEngineCppAPI/Models/ModelObject.h>
+#include <SeriousEngineCppAPI/Models/ModelData.h>
+#include <EngineGUI/ImportedMesh.h>
+#include <EngineGUI/ImportedSkeleton.h>
+#include <EngineGUI/ImportedSkeletalAnimation.h>
+#include <SeriousEngineCppAPI/Math/Geometry.inl>
+#include <SeriousEngineCppAPI/Models/Model_internal.h>
+#include <SeriousEngineCppAPI/Base/Stream.h>
+#include <SeriousEngineCppAPI/Base/ListIterator.h>
+#include <SeriousEngineCppAPI/Models/Normals.h>
+#include <SeriousEngineCppAPI/Graphics/DrawPort.h>
 
-#include <Engine/Templates/StaticArray.cpp>
-#include <Engine/Templates/DynamicArray.cpp>
-#include <Engine/Templates/Stock_CTextureData.h>
+#include <SeriousEngineCppAPI/Templates/StaticArray.h>
+#include <SeriousEngineCppAPI/Templates/DynamicArray.h>
+#include <SeriousEngineCAPI/Templates/Stock_CTextureData.h>
 
 #include "EditModel.h"
 #include "MipMaker.h"
@@ -48,6 +48,11 @@ std::string _MakePrintable(std::string s)
   return s;
 }
 
+std::string _MakePrintable(const char* s)
+{
+  return _MakePrintable(std::string(s));
+}
+
 // print #define <animation name> lines for all animations into given file
 void ExportAnimationNames_t(CAnimData& animData, CTStream* ostrFile, CTString strAnimationPrefix) // throw char *
 {
@@ -56,7 +61,7 @@ void ExportAnimationNames_t(CAnimData& animData, CTStream* ostrFile, CTString st
   for (INDEX iAnimation = 0; iAnimation < animData.ad_NumberOfAnims; iAnimation++)
   {
     // prepare one #define line (add prefix)
-    sprintf(chrLine, "#define %s%s %d", strAnimationPrefix, _MakePrintable(animData.ad_Anims[iAnimation].oa_Name).c_str(),
+    sprintf(chrLine, "#define %s%s %d", static_cast<const char*>(strAnimationPrefix), _MakePrintable(animData.ad_Anims(iAnimation)->oa_Name).c_str(),
       iAnimation);
     // put it into file
     ostrFile->PutLine_t(chrLine);
@@ -94,7 +99,6 @@ void CThumbnailSettings::Read_t( CTStream *strFile)
   *strFile>>ts_InkColor;
   *strFile>>ts_IsWinBcgTexture;
   *strFile>>ts_WinBcgTextureName;
-  ts_RenderPrefs.Read_t( strFile);
 }
 
 void CThumbnailSettings::Write_t( CTStream *strFile)
@@ -112,7 +116,6 @@ void CThumbnailSettings::Write_t( CTStream *strFile)
   *strFile<<ts_InkColor;
   *strFile<<ts_IsWinBcgTexture;
   *strFile<<ts_WinBcgTextureName;
-  ts_RenderPrefs.Write_t( strFile);
 }
 
 CEditModel::CEditModel()
@@ -123,12 +126,9 @@ CEditModel::CEditModel()
 
 CEditModel::~CEditModel()
 {
-  FORDELETELIST( CTextureDataInfo, tdi_ListNode, edm_WorkingSkins, litDel3)
-  {
-    ASSERT( litDel3->tdi_TextureData != NULL);
-    _pTextureStock->Release( litDel3->tdi_TextureData);
-    delete &litDel3.Current();
-  }
+  for (auto& lit : edm_WorkingSkins)
+    _pTextureStock_Release(*lit->tdi_TextureData);
+  edm_WorkingSkins.clear();
 }
 
 CProgressRoutines::CProgressRoutines()
@@ -155,13 +155,13 @@ void CEditModel::CreateBoneTriangles(ImportedMesh& mesh, const ImportedSkeleton&
 
     size_t boneIndex = mesh.m_weightBones.size();
     if (found_pos == mesh.m_weightBones.end())
-      mesh.m_weightBones.push_back({ boneName, InverseMatrix(bone.GetAbsoluteTransform()) });
+      mesh.m_weightBones.push_back({ boneName, bone.GetAbsoluteTransform().InverseMatrix() });
     else
       boneIndex = std::distance(mesh.m_weightBones.begin(), found_pos);
 
     const auto& weightBone = mesh.m_weightBones.at(boneIndex);
 
-    const FLOATmatrix4D boneTransform = InverseMatrix(weightBone.m_offset);
+    const FLOATmatrix4D boneTransform = weightBone.m_offset.InverseMatrix();
     FLOAT4D v0(0.0f, 0.0f, 0.0f, 1.0f);
     FLOAT4D v1(0.0f, 0.25f / stretch, 0.0f, 1.0f);
     FLOAT4D v2(0.0f, 0.0f, -0.25f / stretch, 1.0f);
@@ -208,13 +208,12 @@ std::vector<CEditModel::FrameGenerator> CEditModel::LoadFrameGenerators(
   std::vector<CEditModel::FrameGenerator> frames;
 
   // clears possible animations
-  edm_md.CAnimData::Clear();
-  edm_md.ad_NumberOfAnims = static_cast<INDEX>(animations.size());
-  edm_md.ad_Anims = new COneAnim[animations.size()];
+  edm_md.CreateAnimationsRaw(static_cast<INDEX>(animations.size()));
   size_t i = 0;
   for (const auto& anim : animations)
   {
-    auto& one_anim = edm_md.ad_Anims[i++];
+    auto pAnim = edm_md.ad_Anims(i++);
+    auto& one_anim = *pAnim;
     strcpy(&one_anim.oa_Name[0], anim.m_name.substr(0, NAME_SIZE - 1).c_str());
 
     if (anim.m_type == ModelScript::Animation::Type::Skeletal)
@@ -235,7 +234,7 @@ std::vector<CEditModel::FrameGenerator> CEditModel::LoadFrameGenerators(
 
       one_anim.oa_NumberOfFrames = importedAnimation->m_frames.size();
       one_anim.oa_SecsPerFrame = importedAnimation->m_duration / importedAnimation->m_frames.size();
-      one_anim.oa_FrameIndices = (INDEX*)AllocMemory(one_anim.oa_NumberOfFrames * sizeof(INDEX));
+      one_anim.oa_FrameIndices = (INDEX*)AllocMemory_(one_anim.oa_NumberOfFrames * sizeof(INDEX));
 
       for (size_t frameIndex = 0; frameIndex < importedAnimation->m_frames.size(); ++frameIndex)
       {
@@ -258,7 +257,7 @@ std::vector<CEditModel::FrameGenerator> CEditModel::LoadFrameGenerators(
         one_anim.oa_SecsPerFrame = (*anim.m_optDuration) / anim.m_frames.size();
       else
         one_anim.oa_SecsPerFrame = 0.1f;
-      one_anim.oa_FrameIndices = (INDEX*)AllocMemory(one_anim.oa_NumberOfFrames * sizeof(INDEX));
+      one_anim.oa_FrameIndices = (INDEX*)AllocMemory_(one_anim.oa_NumberOfFrames * sizeof(INDEX));
 
       INDEX iFrame = 0;
       for (const auto& frame_filename : anim.m_frames)
@@ -292,7 +291,7 @@ void CEditModel::LoadModelAnimationData_t(
   const ImportedSkeleton& skeleton,
   const FLOATmatrix3D &mStretch)
 {
-  struct VertexNeighbors { CStaticStackArray<INDEX> vp_aiNeighbors; };
+  using VertexNeighbors = std::vector<INDEX>;
 
   FLOATaabbox3D OneFrameBB;
   FLOATaabbox3D AllFramesBB;
@@ -357,7 +356,7 @@ void CEditModel::LoadModelAnimationData_t(
       avVertices.emplace_back(vVtx);
     }
     // remember this frame's Bounding Box
-    edm_md.md_FrameInfos[iO3D].mfi_Box = OneFrameBB;
+    edm_md.md_FrameInfos[iO3D]->mfi_Box = OneFrameBB;
     // make union with Bounding Box of all frames
     AllFramesBB |= OneFrameBB;
     // load next frame
@@ -373,8 +372,7 @@ void CEditModel::LoadModelAnimationData_t(
   if( edm_md.md_Stretch(3) == 0.0f) edm_md.md_Stretch(3) = 1.0f;
 
   // build links from vertices to polygons
-  CStaticArray<VertexNeighbors> avnVertices;
-  avnVertices.New( edm_md.md_VerticesCt);
+  std::vector<VertexNeighbors> avnVertices(edm_md.md_VerticesCt);
 
   // loop thru polygons
   for (const auto& triangle : baseMesh.m_triangles)
@@ -383,12 +381,12 @@ void CEditModel::LoadModelAnimationData_t(
     INDEX iVtx1 = triangle.ct_iVtx[1];
     INDEX iVtx2 = triangle.ct_iVtx[2];
     // add neighbor vertices for each of this vertices
-    avnVertices[iVtx0].vp_aiNeighbors.Push() = iVtx2;
-    avnVertices[iVtx0].vp_aiNeighbors.Push() = iVtx1;
-    avnVertices[iVtx1].vp_aiNeighbors.Push() = iVtx0;
-    avnVertices[iVtx1].vp_aiNeighbors.Push() = iVtx2;
-    avnVertices[iVtx2].vp_aiNeighbors.Push() = iVtx1;
-    avnVertices[iVtx2].vp_aiNeighbors.Push() = iVtx0;
+    avnVertices[iVtx0].push_back(iVtx2);
+    avnVertices[iVtx0].push_back(iVtx1);
+    avnVertices[iVtx1].push_back(iVtx0);
+    avnVertices[iVtx1].push_back(iVtx2);
+    avnVertices[iVtx2].push_back(iVtx1);
+    avnVertices[iVtx2].push_back(iVtx0);
   }
   // vertex->polygons links created
 
@@ -427,12 +425,12 @@ void CEditModel::LoadModelAnimationData_t(
     {
       FLOAT3D &vVtx = avVertices[iFVtx];
       if( edm_md.md_Flags & MF_COMPRESSED_16BIT) {
-        edm_md.md_FrameVertices16[iFVtx].mfv_SWPoint = SWPOINT3D(
+        edm_md.md_FrameVertices16[iFVtx]->mfv_SWPoint = SWPOINT3D(
           FloatToInt( (vVtx(1) - vCenter(1)) * f1oStretchX),
           FloatToInt( (vVtx(2) - vCenter(2)) * f1oStretchY),
           FloatToInt( (vVtx(3) - vCenter(3)) * f1oStretchZ) );
       } else {                                                              
-        edm_md.md_FrameVertices8[iFVtx].mfv_SBPoint = SBPOINT3D(           
+        edm_md.md_FrameVertices8[iFVtx]->mfv_SBPoint = SBPOINT3D(           
           FloatToInt( (vVtx(1) - vCenter(1)) * f1oStretchX),
           FloatToInt( (vVtx(2) - vCenter(2)) * f1oStretchY),
           FloatToInt( (vVtx(3) - vCenter(3)) * f1oStretchZ) );
@@ -443,9 +441,9 @@ void CEditModel::LoadModelAnimationData_t(
       FLOAT3D vSum( 0.0f, 0.0f, 0.0f);
       INDEX iFrOffset = edm_md.md_VerticesCt * iFr;
       VertexNeighbors &vnCurr = avnVertices[iVtx];
-      for( INDEX iNVtx=0; iNVtx<vnCurr.vp_aiNeighbors.Count(); iNVtx+=2) { // loop thru neighbors
-        INDEX iPrev = vnCurr.vp_aiNeighbors[iNVtx+0];
-        INDEX iNext = vnCurr.vp_aiNeighbors[iNVtx+1];
+      for( size_t iNVtx=0; iNVtx<vnCurr.size(); iNVtx+=2) { // loop thru neighbors
+        INDEX iPrev = vnCurr[iNVtx+0];
+        INDEX iNext = vnCurr[iNVtx+1];
         FLOAT3D v0  = avVertices[iPrev+iFrOffset] - vVtx;
         FLOAT3D v1  = avVertices[iNext+iFrOffset] - vVtx;
         v0.Normalize();
@@ -465,10 +463,10 @@ void CEditModel::LoadModelAnimationData_t(
 
       // save compressed gouraud normal
       if( edm_md.md_Flags & MF_COMPRESSED_16BIT) {
-        CompressNormal_HQ( vSum, edm_md.md_FrameVertices16[iFVtx].mfv_ubNormH,
-                                 edm_md.md_FrameVertices16[iFVtx].mfv_ubNormP);
+        CompressNormal_HQ( vSum, edm_md.md_FrameVertices16[iFVtx]->mfv_ubNormH,
+                                 edm_md.md_FrameVertices16[iFVtx]->mfv_ubNormP);
       } else {
-        edm_md.md_FrameVertices8[iFVtx].mfv_NormIndex = (UBYTE)GouraudNormal(vSum);
+        edm_md.md_FrameVertices8[iFVtx]->mfv_NormIndex = (UBYTE)GouraudNormal(vSum);
       }
 
       // advance to next vertex in model
@@ -507,7 +505,7 @@ void CEditModel::SaveIncludeFile_t( CTFileName fnFileName, CTString strDefinePre
   char line[ 1024];
   INDEX i;
 
-  strmHFile.Create_t( fnFileName, CTStream::CM_TEXT);
+  strmHFile.Create_t( fnFileName);
   strcpy( line, strDefinePrefix);
   strupr( line);
   strDefinePrefix = CTString( line);
@@ -528,7 +526,7 @@ void CEditModel::SaveIncludeFile_t( CTFileName fnFileName, CTString strDefinePre
   {
     if( edm_md.md_ColorNames[ i] != "")
     {
-      sprintf( line, "#define %s_PART_%s ((1L) << %d)\n", strDefinePrefix, _MakePrintable(edm_md.md_ColorNames[ i].str_String).c_str(), i);
+      sprintf( line, "#define %s_PART_%s ((1L) << %d)\n", static_cast<const char*>(strDefinePrefix), _MakePrintable(edm_md.md_ColorNames[ i]).c_str(), i);
       strmHFile.Write_t( line, strlen( line));
     }
   }
@@ -540,7 +538,7 @@ void CEditModel::SaveIncludeFile_t( CTFileName fnFileName, CTString strDefinePre
     CTString strPatchName = edm_md.md_mpPatches[ iPatch].mp_strName;
     if( strPatchName != "")
     {
-      sprintf( line, "#define %s_PATCH_%s %d\n", strDefinePrefix, _MakePrintable(strPatchName.str_String).c_str(), i);
+      sprintf( line, "#define %s_PATCH_%s %d\n", static_cast<const char*>(strDefinePrefix), _MakePrintable(strPatchName).c_str(), i);
       strmHFile.Write_t( line, strlen( line));
     }
   }
@@ -548,57 +546,55 @@ void CEditModel::SaveIncludeFile_t( CTFileName fnFileName, CTString strDefinePre
   sprintf( line, "\n// Names of collision boxes\n");
   strmHFile.Write_t( line, strlen( line));
 
-  edm_md.md_acbCollisionBox.Lock();
   // save all collision boxes
   for( INDEX iCollisionBox=0; iCollisionBox<edm_md.md_acbCollisionBox.Count(); iCollisionBox++)
   {
     // prepare collision box name as define
-    sprintf( line, "#define %s_COLLISION_BOX_%s %d\n", strDefinePrefix, _MakePrintable(GetCollisionBoxName( iCollisionBox).str_String).c_str(),
+    sprintf( line, "#define %s_COLLISION_BOX_%s %d\n", static_cast<const char*>(strDefinePrefix), _MakePrintable(GetCollisionBoxName( iCollisionBox)).c_str(),
       iCollisionBox);
     strmHFile.Write_t( line, strlen( line));
   }
-  edm_md.md_acbCollisionBox.Unlock();
 
   // save all attaching positions
   sprintf( line, "\n// Attaching position names\n");
   strmHFile.Write_t( line, strlen( line));
   INDEX iAttachingPlcement = 0;
-  FOREACHINDYNAMICARRAY(edm_aamAttachedModels, CAttachedModel, itam)
+  for (auto& itam : edm_aamAttachedModels)
   {
-    sprintf( line, "#define %s_ATTACHMENT_%s %d\n", strDefinePrefix, _MakePrintable(itam->am_strName.str_String).c_str(), iAttachingPlcement);
+    sprintf( line, "#define %s_ATTACHMENT_%s %d\n", static_cast<const char*>(strDefinePrefix), _MakePrintable(itam->am_strName).c_str(), iAttachingPlcement);
     strmHFile.Write_t( line, strlen( line));
     iAttachingPlcement++;
   }
   sprintf( line, "\n// Sound names\n");
   strmHFile.Write_t( line, strlen( line));
 
-  for( INDEX iSound=0; iSound<edm_aasAttachedSounds.Count(); iSound++)
+  for( size_t iSound=0; iSound<edm_aasAttachedSounds.size(); iSound++)
   {
-    if( edm_aasAttachedSounds[iSound].as_fnAttachedSound != "")
+    if( edm_aasAttachedSounds[iSound]->as_fnAttachedSound != "")
     {
       CTString strLooping;
-      if( edm_aasAttachedSounds[iSound].as_bLooping) strLooping = "L";
+      if( edm_aasAttachedSounds[iSound]->as_bLooping) strLooping = "L";
       else                                           strLooping = "NL";
 
       CTString strDelay = "";
-      if( edm_aasAttachedSounds[iSound].as_fDelay == 0.0f)
+      if( edm_aasAttachedSounds[iSound]->as_fDelay == 0.0f)
         strDelay = "0.0f";
       else
-        strDelay.PrintF( "%gf", edm_aasAttachedSounds[iSound].as_fDelay);
+        strDelay.PrintF( "%gf", edm_aasAttachedSounds[iSound]->as_fDelay);
 
       CAnimInfo aiInfo;
       edm_md.GetAnimInfo( iSound, aiInfo);
 
       CTString strWithQuotes;
-      strWithQuotes.PrintF( "\"%s\",", CTString(edm_aasAttachedSounds[iSound].as_fnAttachedSound));
+      strWithQuotes.PrintF( "\"%s\",", CTString(edm_aasAttachedSounds[iSound]->as_fnAttachedSound));
 
       sprintf( line, "//sound SOUND_%s_%-16s %-32s // %s, %s, %s\n",
-        strDefinePrefix,
+        static_cast<const char*>(strDefinePrefix),
         _MakePrintable(aiInfo.ai_AnimName).c_str(),
-        strWithQuotes,
-        strAnimationPrefix+aiInfo.ai_AnimName,
-        strLooping,
-        strDelay);
+        static_cast<const char*>(strWithQuotes),
+        static_cast<const char*>(strAnimationPrefix+aiInfo.ai_AnimName),
+        static_cast<const char*>(strLooping),
+        static_cast<const char*>(strDelay));
       strmHFile.Write_t( line, strlen( line));
     }
   }
@@ -613,14 +609,21 @@ void CEditModel::Save_t( CTFileName fnFileName) // throw char *
   edm_md.Save_t( fnMdlFileName);
 
   CTFileName fnHFileName = fnFileName.FileDir() + fnFileName.FileName() + ".h";
-  CTString strPrefix = _MakePrintable(fnFileName.FileName().str_String).c_str();
-  if (strPrefix.Length()>0 && !isalpha(strPrefix[0]) && strPrefix[0]!='_') {
+  CTString strPrefix = _MakePrintable(fnFileName.FileName()).c_str();
+  if (strPrefix.Length()>0 && !isalpha(static_cast<const char*>(strPrefix)[0]) && static_cast<const char*>(strPrefix)[0]!='_') {
     strPrefix="_"+strPrefix;
   }
   SaveIncludeFile_t( fnHFileName, strPrefix);
 
   CTFileName fnIniFileName = fnFileName.FileDir() + fnFileName.FileName() + ".ini";
-  CSerial::Save_t( fnIniFileName);
+  // open a stream
+  CTFileStream ostrFile;
+  ostrFile.Create_t(fnIniFileName);
+  // write object to stream
+  Write_t(&ostrFile);
+  // if still here (no exceptions raised)
+  // remember new filename
+  ser_FileName = fnIniFileName;
 }
 
 // overloaded load function
@@ -633,7 +636,7 @@ void CEditModel::Load_t( CTFileName fnFileName)
   // try to load ini file
   try
   {
-    CSerial::Load_t( fnIniFileName);
+    Load_t_base( fnIniFileName);
   }
   catch(char *strError)
   {
@@ -643,28 +646,69 @@ void CEditModel::Load_t( CTFileName fnFileName)
   }
 }
 
+void CEditModel::MarkUsed()
+{
+  ser_ctUsed++;
+}
+
+void CEditModel::MarkUnused()
+{
+  ser_ctUsed--;
+}
+
+BOOL CEditModel::IsUsed()
+{
+  return ser_ctUsed > 0;
+}
+
+INDEX CEditModel::GetUsedCount()
+{
+  return ser_ctUsed;
+}
+
+void CEditModel::MarkChanged()
+{
+  ch_LastChangeTime = _pTimer_CurrentTick();
+}
+
+void CEditModel::Load_t_base(const CTFileName fnFileName)  // throw char *
+{
+  ASSERT(!IsUsed());
+  // mark that you have changed
+  MarkChanged();
+
+  // open a stream
+  CTFileStream istrFile;
+  istrFile.Open_t(fnFileName);
+  // read object from stream
+  Read_t(&istrFile);
+  // if still here (no exceptions raised)
+  // remember filename
+  ser_FileName = fnFileName;
+}
+
 CTextureDataInfo *CEditModel::AddTexture_t(const CTFileName &fnFileName, const MEX mexWidth,
                             const MEX mexHeight)
 {
-  CTextureDataInfo *pNewTDI = new CTextureDataInfo;
+  auto pNewTDI = std::make_unique<CTextureDataInfo>();
   pNewTDI->tdi_FileName = fnFileName;
 
   try
   {
-    pNewTDI->tdi_TextureData = _pTextureStock->Obtain_t( pNewTDI->tdi_FileName);
+    pNewTDI->tdi_TextureData = _pTextureStock_Obtain_t( pNewTDI->tdi_FileName);
   }
   catch(char *strError)
   {
     (void) strError;
-    delete pNewTDI;
     return NULL;
   }
 
   // reload the texture
   pNewTDI->tdi_TextureData->Reload();
 
-  edm_WorkingSkins.AddTail( pNewTDI->tdi_ListNode);
-  return pNewTDI;
+  auto* rawPtr = pNewTDI.get();
+  edm_WorkingSkins.emplace_back(std::move(pNewTDI));
+  return rawPtr;
 }
 
 CAttachedModel::CAttachedModel(void)
@@ -769,8 +813,9 @@ void CAttachedSound::Write_t(CTStream *strFile)
 void CEditModel::CreateEmptyAttachingSounds( void)
 {
   ASSERT( edm_md.GetAnimsCt() > 0);
-  edm_aasAttachedSounds.Clear();
-  edm_aasAttachedSounds.New( edm_md.GetAnimsCt());
+  edm_aasAttachedSounds.clear();
+  for (INDEX i = 0; i < edm_md.GetAnimsCt(); ++i)
+    edm_aasAttachedSounds.emplace_back(std::make_unique<CAttachedSound>());
 }
 
 void CEditModel::Read_t( CTStream *pFile) // throw char *
@@ -824,14 +869,14 @@ void CEditModel::Read_t( CTStream *pFile) // throw char *
     INDEX ctToSkip = ctSavedModels - ctToLoad;
 
     // add attached models
-    edm_aamAttachedModels.Clear();
+    edm_aamAttachedModels.clear();
     if( ctToLoad != 0)
     {
-      edm_aamAttachedModels.New( ctSavedModels);
       // read all attached models
-      FOREACHINDYNAMICARRAY(edm_aamAttachedModels, CAttachedModel, itam)
+      for (INDEX i = 0; i < ctSavedModels; ++i)
       {
-        itam->Read_t(pFile);
+        edm_aamAttachedModels.emplace_back(std::make_unique<CAttachedModel>());
+        edm_aamAttachedModels.back()->Read_t(pFile);
       }
     }
 
@@ -846,7 +891,7 @@ void CEditModel::Read_t( CTStream *pFile) // throw char *
   {
     (void) strError;
     // clear attached models
-    edm_aamAttachedModels.Clear();
+    edm_aamAttachedModels.clear();
     edm_md.md_aampAttachedPosition.Clear();
   }
 
@@ -857,13 +902,13 @@ void CEditModel::Read_t( CTStream *pFile) // throw char *
     pFile->ExpectID_t( CChunkID( "ATSD"));
     INDEX ctAttachedSounds;
     *pFile >> ctAttachedSounds;
-    INDEX ctExisting = edm_aasAttachedSounds.Count();
+    INDEX ctExisting = edm_aasAttachedSounds.size();
     INDEX ctToRead = ClampUp( ctAttachedSounds, ctExisting);
 
     // read all saved attached sounds
     for( INDEX iSound=0; iSound<ctToRead; iSound++)
     {
-      CAttachedSound &as = edm_aasAttachedSounds[ iSound];
+      CAttachedSound &as = *edm_aasAttachedSounds[ iSound];
       as.Read_t(pFile);
     }
 
@@ -923,11 +968,11 @@ void CEditModel::Read_t( CTStream *pFile) // throw char *
       m_boneTriangleMapping.clear();
       INDEX boneCount = 0;
       *pFile >> boneCount;
-      for (size_t i = 0; i < boneCount; ++i)
+      for (INDEX i = 0; i < boneCount; ++i)
       {
         CTString boneName;
         *pFile >> boneName;
-        auto& triangle = m_boneTriangleMapping[boneName.str_String];
+        auto& triangle = m_boneTriangleMapping[static_cast<const char*>(boneName)];
         *pFile >> triangle[0] >> triangle[1] >> triangle[2];
       }
     }
@@ -938,33 +983,27 @@ void CEditModel::Write_t( CTStream *pFile) // throw char *
 {
   pFile->WriteID_t( CChunkID( "WTEX"));
 
-  INDEX iWorkingTexturesCt = edm_WorkingSkins.Count();
+  INDEX iWorkingTexturesCt = edm_WorkingSkins.size();
   *pFile << iWorkingTexturesCt;
 
-  FOREACHINLIST( CTextureDataInfo, tdi_ListNode, edm_WorkingSkins, it)
-  {
+  for (auto& it : edm_WorkingSkins)
     *pFile << it->tdi_FileName;
-  }
 
   // CEditModel class has no patches in new patch data format
 
   pFile->WriteID_t( CChunkID( "ATTM"));
-  INDEX ctAttachedModels = edm_aamAttachedModels.Count();
+  INDEX ctAttachedModels = edm_aamAttachedModels.size();
   *pFile << ctAttachedModels;
   // write all attached models
-  FOREACHINDYNAMICARRAY(edm_aamAttachedModels, CAttachedModel, itam)
-  {
+  for (auto& itam : edm_aamAttachedModels)
     itam->Write_t(pFile);
-  }
 
   pFile->WriteID_t( CChunkID( "ATSD"));
-  INDEX ctAttachedSounds = edm_aasAttachedSounds.Count();
+  INDEX ctAttachedSounds = edm_aasAttachedSounds.size();
   *pFile << ctAttachedSounds;
   // write all attached models
-  FOREACHINSTATICARRAY(edm_aasAttachedSounds, CAttachedSound, itas)
-  {
+  for (auto& itas : edm_aasAttachedSounds)
     itas->Write_t(pFile);
-  }
 
   // save last taken thumbnail settings
   pFile->WriteID_t( CChunkID( "TBST"));
@@ -1105,7 +1144,7 @@ void CEditModel::LoadFromScript_t(CTFileName &fnScriptName) // throw char *
     (void)strError;
   }
 
-  if (edm_aasAttachedSounds.Count() == 0)
+  if (edm_aasAttachedSounds.empty())
     CreateEmptyAttachingSounds();
 }
 
@@ -1125,7 +1164,7 @@ void CEditModel::NewModel(const ImportedMesh& mesh)
   {
     // copy vertex coordinates into md_MainMipVertices array so we colud make
     // mip-models later (we will search original coordinates in this array)
-    edm_md.md_MainMipVertices[ i] = mesh.m_vertices[i];
+    *edm_md.md_MainMipVertices[ i] = mesh.m_vertices[i];
     edm_md.md_VertexMipMask[i] = 0L; // mark to all vertices that they don't exist in any mip-model
   }
 
@@ -1141,12 +1180,10 @@ void CEditModel::NewModel(const ImportedMesh& mesh)
  */
 void CEditModel::AddMipModel(const ImportedMesh& mesh)
 {
-  INDEX i, j;
-
   // this is mask for vertices in current mip level
   ULONG mip_vtx_mask = (1L) << edm_md.md_MipCt;
 
-  struct ModelMipInfo *pmmpi = &edm_md.md_MipInfos[ edm_md.md_MipCt]; // point to mip model that we will create
+  ModelMipInfo *pmmpi = &edm_md.md_MipInfos[ edm_md.md_MipCt]; // point to mip model that we will create
 
   // for each vertex
   for( INDEX iVertex=0; iVertex<edm_md.md_VerticesCt; iVertex++)
@@ -1164,7 +1201,7 @@ void CEditModel::AddMipModel(const ImportedMesh& mesh)
    * mask value showing that it exists in this mip-model.
    */
   std::vector<INDEX> verticesRemap(mesh.m_vertices.size(), 0);
-  for( i=0; i<o3dvct; i++)
+  for(INDEX i=0; i<o3dvct; i++)
   {
     INDEX same_index = -1;
 
@@ -1174,10 +1211,10 @@ void CEditModel::AddMipModel(const ImportedMesh& mesh)
     }
     else
     {
-      for (j = 0; j < edm_md.md_VerticesCt; j++)
+      for (INDEX j = 0; j < edm_md.md_VerticesCt; j++)
       {
-        FLOAT3D vVertex = mesh.m_vertices[i];
-        FLOAT fAbsoluteDistance = Abs((vVertex - edm_md.md_MainMipVertices[j]).Length());
+        const FLOAT3D& vVertex = mesh.m_vertices[i];
+        FLOAT fAbsoluteDistance = Abs((vVertex - *edm_md.md_MainMipVertices[j]).Length());
         if (fAbsoluteDistance < MAX_ALLOWED_DISTANCE)
         {
           same_index = j; // mark that this vertex's remap is found
@@ -1217,9 +1254,10 @@ void CEditModel::AddMipModel(const ImportedMesh& mesh)
    * Then we will create array for mapping surfaces and set their names
    */
   pmmpi->mmpi_MappingSurfaces.New(mesh.m_materials.size());  // create array for mapping surfaces
-  for( i=0; i<mesh.m_materials.size(); i++)
+  for(size_t i=0; i<mesh.m_materials.size(); i++)
   {
-    MappingSurface &ms = pmmpi->mmpi_MappingSurfaces[ i];
+    MappingSurfacePtr pms = pmmpi->mmpi_MappingSurfaces[ i];
+    auto& ms = *pms;
     ms.ms_ulOnColor = PC_ALLWAYS_ON;              // set default ON and OFF masking colors
     ms.ms_ulOffColor = PC_ALLWAYS_OFF;
     ms.ms_Name = CTFileName( mesh.m_materials[i].cm_strName);
@@ -1247,7 +1285,7 @@ void CEditModel::AddMipModel(const ImportedMesh& mesh)
     {
       size_t operator()(const VertexRemap& v) const
       {
-        size_t result = FLOAT2D::Hasher()(v.uv);
+        size_t result = FLOAT2DHasher()(v.uv);
         HashCombine(result, v.material);
         HashCombine(result, v.global);
         return result;
@@ -1289,11 +1327,11 @@ void CEditModel::AddMipModel(const ImportedMesh& mesh)
     uv_coord(1) *= edm_md.md_Width / 1024.0f;
     uv_coord(2) *= edm_md.md_Height / 1024.0f;
 
-    pmmpi->mmpi_TextureVertices[i].mtv_UVW = FLOAT3D(uv_coord(1), uv_coord(2), 0.0f);
+    pmmpi->mmpi_TextureVertices[i]->mtv_UVW = FLOAT3D(uv_coord(1), uv_coord(2), 0.0f);
     MEX2D mexUV;
-    mexUV(1) = MEX_METERS(pmmpi->mmpi_TextureVertices[i].mtv_UVW(1));
-    mexUV(2) = MEX_METERS(pmmpi->mmpi_TextureVertices[i].mtv_UVW(2));
-    pmmpi->mmpi_TextureVertices[i].mtv_UV = mexUV;
+    mexUV(1) = MEX_METERS(pmmpi->mmpi_TextureVertices[i]->mtv_UVW(1));
+    mexUV(2) = MEX_METERS(pmmpi->mmpi_TextureVertices[i]->mtv_UVW(2));
+    pmmpi->mmpi_TextureVertices[i]->mtv_UV = mexUV;
   }
 
   /*
@@ -1301,16 +1339,16 @@ void CEditModel::AddMipModel(const ImportedMesh& mesh)
    * texture and transformed vertex ptrs)
    */
   INDEX mpvct = 0;
-  for (i = 0; i < pmmpi->mmpi_PolygonsCt; i++)        // loop all model polygons
+  for (INDEX i = 0; i < pmmpi->mmpi_PolygonsCt; i++)        // loop all model polygons
   {
     const auto& triangle = mesh.m_triangles[i];
-    struct ModelPolygon* pmp = &pmmpi->mmpi_Polygons[i];    // ptr to activ model polygon
+    ModelPolygonPtr pmp = pmmpi->mmpi_Polygons[i];    // ptr to activ model polygon
     pmp->mp_Surface = triangle.ct_iMaterial; // copy surface index
     pmp->mp_ColorAndAlpha =
       mesh.m_materials[triangle.ct_iMaterial].cm_colColor | CT_OPAQUE; // copy surface color, set no alpha
 
     pmp->mp_PolygonVertices.New(3); // create array for them
-    for (j = 0; j < 3; j++)        // fill data for this polygon's vertices
+    for (INDEX j = 0; j < 3; j++)        // fill data for this polygon's vertices
     {
       /*
        * Here we really remap one mip models's vertex in a way that we set its transformed
@@ -1318,11 +1356,11 @@ void CEditModel::AddMipModel(const ImportedMesh& mesh)
        */
       INDEX o3d_vertex = triangle.ct_iVtx[j];
 
-      pmp->mp_PolygonVertices[j].mpv_ptvTransformedVertex =
-        &edm_md.md_TransformedVertices[verticesRemap[o3d_vertex]];
+      pmp->mp_PolygonVertices[j]->mpv_ptvTransformedVertex =
+        *edm_md.md_TransformedVertices[verticesRemap[o3d_vertex]];
 
-      pmp->mp_PolygonVertices[j].mpv_ptvTextureVertex =
-        &pmmpi->mmpi_TextureVertices[texCoordsRemap[mpvct++]];
+      pmp->mp_PolygonVertices[j]->mpv_ptvTextureVertex =
+        *pmmpi->mmpi_TextureVertices[texCoordsRemap[mpvct++]];
     }
   }
 
@@ -1377,7 +1415,7 @@ void CEditModel::CreateMipModels_t(const ImportedMesh& baseMesh, INDEX iVertexRe
 
   if( ProgresRoutines.SetProgressMessage != NULL)
     ProgresRoutines.SetProgressMessage( "Calculating mip models ...");
-  INDEX ctVerticesInRestFrame = mmMipModel.mm_amvVertices.Count();
+  INDEX ctVerticesInRestFrame = mmMipModel.mm_amvVertices.size();
   if( ProgresRoutines.SetProgressRange != NULL)
     ProgresRoutines.SetProgressRange(ctVerticesInRestFrame);
   // create maximum 32 mip models
@@ -1390,7 +1428,7 @@ void CEditModel::CreateMipModels_t(const ImportedMesh& baseMesh, INDEX iVertexRe
       break;
     }
     if( ProgresRoutines.SetProgressState != NULL)
-      ProgresRoutines.SetProgressState(ctVerticesInRestFrame - mmMipModel.mm_amvVertices.Count());
+      ProgresRoutines.SetProgressState(ctVerticesInRestFrame - mmMipModel.mm_amvVertices.size());
     AddMipModel(mmMipModel.GetMesh());
   }
   ProgresRoutines.SetProgressState(ctVerticesInRestFrame);
@@ -1421,7 +1459,7 @@ void CEditModel::UpdateMipModels_t(CTFileName &fnScriptName) // throw char *
     ImportedMesh mesh(mip, mStretch);
     if (script.m_defaultUVChannel < mesh.m_uvs.size())
       mesh.m_defaultUVChannel = script.m_defaultUVChannel;
-    if (edm_md.md_VerticesCt < mesh.m_vertices.size())
+    if (edm_md.md_VerticesCt < static_cast<INDEX>(mesh.m_vertices.size()))
       ThrowF_t(
         "It is unlikely that mip-model \"%s\" is valid.\n"
         "It contains more vertices than main mip-model so it can't be mip-model.",
@@ -1435,27 +1473,30 @@ void CEditModel::UpdateMipModels_t(CTFileName &fnScriptName) // throw char *
 /*
  * Draws given surface in wire frame
  */
-void CEditModel::DrawWireSurface( CDrawPort *pDP, INDEX iCurrentMip, INDEX iCurrentSurface,
+void CEditModel::DrawWireSurface( CDrawPortPtr pDP, INDEX iCurrentMip, INDEX iCurrentSurface,
                                   FLOAT fMagnifyFactor, PIX offx, PIX offy,
                                   COLOR clrVisible, COLOR clrInvisible)
 {
   FLOAT3D f3dTr0, f3dTr1, f3dTr2;
-  struct ModelTextureVertex *pVtx0, *pVtx1;
+  ModelTextureVertexPtr pVtx0, pVtx1;
 
   // for each polygon
   for( INDEX iPoly=0; iPoly<edm_md.md_MipInfos[iCurrentMip].mmpi_PolygonsCt; iPoly++)
   {
-    struct ModelPolygon *pPoly = &edm_md.md_MipInfos[iCurrentMip].mmpi_Polygons[iPoly];
+    ModelPolygonPtr pPoly = edm_md.md_MipInfos[iCurrentMip].mmpi_Polygons[iPoly];
     if( pPoly->mp_Surface == iCurrentSurface)
     { // readout poly vertices
-      f3dTr0(1) = (FLOAT)pPoly->mp_PolygonVertices[0].mpv_ptvTextureVertex->mtv_UV(1);
-      f3dTr0(2) = (FLOAT)pPoly->mp_PolygonVertices[0].mpv_ptvTextureVertex->mtv_UV(2);
+      ModelTextureVertexPtr mtv0(pPoly->mp_PolygonVertices[0]->mpv_ptvTextureVertex);
+      f3dTr0(1) = (FLOAT)mtv0->mtv_UV(1);
+      f3dTr0(2) = (FLOAT)mtv0->mtv_UV(2);
       f3dTr0(3) = 0.0f;
-      f3dTr1(1) = (FLOAT)pPoly->mp_PolygonVertices[1].mpv_ptvTextureVertex->mtv_UV(1);
-      f3dTr1(2) = (FLOAT)pPoly->mp_PolygonVertices[1].mpv_ptvTextureVertex->mtv_UV(2);
+      ModelTextureVertexPtr mtv1(pPoly->mp_PolygonVertices[1]->mpv_ptvTextureVertex);
+      f3dTr1(1) = (FLOAT)mtv1->mtv_UV(1);
+      f3dTr1(2) = (FLOAT)mtv1->mtv_UV(2);
       f3dTr1(3) = 0.0f;
-      f3dTr2(1) = (FLOAT)pPoly->mp_PolygonVertices[2].mpv_ptvTextureVertex->mtv_UV(1);
-      f3dTr2(2) = (FLOAT)pPoly->mp_PolygonVertices[2].mpv_ptvTextureVertex->mtv_UV(2);
+      ModelTextureVertexPtr mtv2(pPoly->mp_PolygonVertices[2]->mpv_ptvTextureVertex);
+      f3dTr2(1) = (FLOAT)mtv2->mtv_UV(1);
+      f3dTr2(2) = (FLOAT)mtv2->mtv_UV(2);
       f3dTr2(3) = 0.0f;
 
       // determine line visibility
@@ -1472,8 +1513,8 @@ void CEditModel::DrawWireSurface( CDrawPort *pDP, INDEX iCurrentMip, INDEX iCurr
       // draw lines
       PIX pixX0, pixY0, pixX1, pixY1;
       for( INDEX iVtx=0; iVtx<pPoly->mp_PolygonVertices.Count()-1; iVtx++) {
-        pVtx0 = pPoly->mp_PolygonVertices[iVtx+0].mpv_ptvTextureVertex;
-        pVtx1 = pPoly->mp_PolygonVertices[iVtx+1].mpv_ptvTextureVertex;
+        pVtx0 = pPoly->mp_PolygonVertices[iVtx+0]->mpv_ptvTextureVertex;
+        pVtx1 = pPoly->mp_PolygonVertices[iVtx+1]->mpv_ptvTextureVertex;
         pixX0 = (PIX)(pVtx0->mtv_UV(1) * fMagnifyFactor) - offx;
         pixY0 = (PIX)(pVtx0->mtv_UV(2) * fMagnifyFactor) - offy;
         pixX1 = (PIX)(pVtx1->mtv_UV(1) * fMagnifyFactor) - offx;
@@ -1481,7 +1522,7 @@ void CEditModel::DrawWireSurface( CDrawPort *pDP, INDEX iCurrentMip, INDEX iCurr
         pDP->DrawLine( pixX0, pixY0, pixX1, pixY1, clrWire|CT_OPAQUE, ulLineType);
       }
       // draw last line
-      pVtx0 = pPoly->mp_PolygonVertices[0].mpv_ptvTextureVertex;
+      pVtx0 = pPoly->mp_PolygonVertices[0]->mpv_ptvTextureVertex;
       pixX0 = (PIX)(pVtx0->mtv_UV(1) * fMagnifyFactor) - offx;
       pixY0 = (PIX)(pVtx0->mtv_UV(2) * fMagnifyFactor) - offy;
       pDP->DrawLine( pixX0, pixY0, pixX1, pixY1, clrWire|CT_OPAQUE, ulLineType);
@@ -1493,27 +1534,30 @@ void CEditModel::DrawWireSurface( CDrawPort *pDP, INDEX iCurrentMip, INDEX iCurr
 /*
  * Flat fills given surface
  */
-void CEditModel::DrawFilledSurface( CDrawPort *pDP, INDEX iCurrentMip, INDEX iCurrentSurface,
+void CEditModel::DrawFilledSurface( CDrawPortPtr pDP, INDEX iCurrentMip, INDEX iCurrentSurface,
                                     FLOAT fMagnifyFactor, PIX offx, PIX offy,
                                     COLOR clrVisible, COLOR clrInvisible)
 {
   FLOAT3D f3dTr0, f3dTr1, f3dTr2;
-  struct ModelTextureVertex *pVtx0, *pVtx1, *pVtx2;
+  ModelTextureVertexPtr pVtx0, pVtx1, pVtx2;
 
   // for each polygon
   for( INDEX iPoly=0; iPoly<edm_md.md_MipInfos[iCurrentMip].mmpi_PolygonsCt; iPoly++)
   {
-    struct ModelPolygon *pPoly = &edm_md.md_MipInfos[iCurrentMip].mmpi_Polygons[iPoly];
+    ModelPolygonPtr pPoly = edm_md.md_MipInfos[iCurrentMip].mmpi_Polygons[iPoly];
     if( pPoly->mp_Surface == iCurrentSurface)
     { // readout poly vertices
-      f3dTr0(1) = (FLOAT)pPoly->mp_PolygonVertices[0].mpv_ptvTextureVertex->mtv_UV(1);
-      f3dTr0(2) = (FLOAT)pPoly->mp_PolygonVertices[0].mpv_ptvTextureVertex->mtv_UV(2);
+      ModelTextureVertexPtr mtv0(pPoly->mp_PolygonVertices[0]->mpv_ptvTextureVertex);
+      f3dTr0(1) = (FLOAT)mtv0->mtv_UV(1);
+      f3dTr0(2) = (FLOAT)mtv0->mtv_UV(2);
       f3dTr0(3) = 0.0f;
-      f3dTr1(1) = (FLOAT)pPoly->mp_PolygonVertices[1].mpv_ptvTextureVertex->mtv_UV(1);
-      f3dTr1(2) = (FLOAT)pPoly->mp_PolygonVertices[1].mpv_ptvTextureVertex->mtv_UV(2);
+      ModelTextureVertexPtr mtv1(pPoly->mp_PolygonVertices[1]->mpv_ptvTextureVertex);
+      f3dTr1(1) = (FLOAT)mtv1->mtv_UV(1);
+      f3dTr1(2) = (FLOAT)mtv1->mtv_UV(2);
       f3dTr1(3) = 0.0f;
-      f3dTr2(1) = (FLOAT)pPoly->mp_PolygonVertices[2].mpv_ptvTextureVertex->mtv_UV(1);
-      f3dTr2(2) = (FLOAT)pPoly->mp_PolygonVertices[2].mpv_ptvTextureVertex->mtv_UV(2);
+      ModelTextureVertexPtr mtv2(pPoly->mp_PolygonVertices[2]->mpv_ptvTextureVertex);
+      f3dTr2(1) = (FLOAT)mtv2->mtv_UV(1);
+      f3dTr2(2) = (FLOAT)mtv2->mtv_UV(2);
       f3dTr2(3) = 0.0f;
 
       // determine poly visibility
@@ -1524,12 +1568,12 @@ void CEditModel::DrawFilledSurface( CDrawPort *pDP, INDEX iCurrentMip, INDEX iCu
 
       // draw traingle(s) fan
       pDP->InitTexture( NULL);
-      pVtx0 = pPoly->mp_PolygonVertices[0].mpv_ptvTextureVertex;
+      pVtx0 = pPoly->mp_PolygonVertices[0]->mpv_ptvTextureVertex;
       PIX pixX0 = (PIX)(pVtx0->mtv_UV(1) * fMagnifyFactor) - offx;
       PIX pixY0 = (PIX)(pVtx0->mtv_UV(2) * fMagnifyFactor) - offy;
       for( INDEX iVtx=1; iVtx<pPoly->mp_PolygonVertices.Count()-1; iVtx++) {
-        pVtx1 = pPoly->mp_PolygonVertices[iVtx+0].mpv_ptvTextureVertex;
-        pVtx2 = pPoly->mp_PolygonVertices[iVtx+1].mpv_ptvTextureVertex;
+        pVtx1 = pPoly->mp_PolygonVertices[iVtx+0]->mpv_ptvTextureVertex;
+        pVtx2 = pPoly->mp_PolygonVertices[iVtx+1]->mpv_ptvTextureVertex;
         PIX pixX1 = (PIX)(pVtx1->mtv_UV(1) * fMagnifyFactor) - offx;
         PIX pixY1 = (PIX)(pVtx1->mtv_UV(2) * fMagnifyFactor) - offy;
         PIX pixX2 = (PIX)(pVtx2->mtv_UV(1) * fMagnifyFactor) - offx;
@@ -1546,7 +1590,7 @@ void CEditModel::DrawFilledSurface( CDrawPort *pDP, INDEX iCurrentMip, INDEX iCu
 /*
  * Prints surface numbers
  */
-void CEditModel::PrintSurfaceNumbers( CDrawPort *pDP, CFontData *pFont,
+void CEditModel::PrintSurfaceNumbers( CDrawPortPtr pDP, CFontDataPtr pFont,
      INDEX iCurrentMip, FLOAT fMagnifyFactor, PIX offx, PIX offy, COLOR clrInk)
 {
   char achrLine[ 256];
@@ -1555,19 +1599,19 @@ void CEditModel::PrintSurfaceNumbers( CDrawPort *pDP, CFontData *pFont,
   pDP->FillZBuffer( ZBUF_BACK);
 
   // get mip model ptr
-  struct ModelMipInfo *pMMI = &edm_md.md_MipInfos[ iCurrentMip];
+  ModelMipInfo *pMMI = &edm_md.md_MipInfos[ iCurrentMip];
 
 
   // for all surfaces
   for( INDEX iSurf=0;iSurf<pMMI->mmpi_MappingSurfaces.Count(); iSurf++)
   {
-    MappingSurface *pms= &pMMI->mmpi_MappingSurfaces[iSurf];
+    MappingSurfacePtr pms= pMMI->mmpi_MappingSurfaces[iSurf];
     MEXaabbox2D boxSurface;
     // for each texture vertex in surface
     for(INDEX iSurfaceTextureVertex=0; iSurfaceTextureVertex<pms->ms_aiTextureVertices.Count(); iSurfaceTextureVertex++)
     {
       INDEX iGlobalTextureVertex = pms->ms_aiTextureVertices[iSurfaceTextureVertex];
-      ModelTextureVertex *pmtv = &pMMI->mmpi_TextureVertices[iGlobalTextureVertex];
+      ModelTextureVertexPtr pmtv = pMMI->mmpi_TextureVertices[iGlobalTextureVertex];
       boxSurface |= pmtv->mtv_UV;
     }
    
@@ -1591,12 +1635,12 @@ void CEditModel::ExportSurfaceNumbersAndNames( CTFileName fnFile)
 {
   CTString strExport;
   // get mip model ptr
-  struct ModelMipInfo *pMMI = &edm_md.md_MipInfos[ 0];
+  ModelMipInfo *pMMI = &edm_md.md_MipInfos[ 0];
 
   // for all surfaces
   for( INDEX iSurf=0; iSurf<pMMI->mmpi_MappingSurfaces.Count(); iSurf++)
   {
-    MappingSurface *pms= &pMMI->mmpi_MappingSurfaces[iSurf];
+    MappingSurfacePtr pms= pMMI->mmpi_MappingSurfaces[iSurf];
     CTString strExportLine;
     strExportLine.PrintF( "%d) %s\n", iSurf, pms->ms_Name);
     strExport+=strExportLine;
@@ -1618,8 +1662,8 @@ void CEditModel::ExportSurfaceNumbersAndNames( CTFileName fnFile)
  */
 const char *CEditModel::GetSurfaceName(INDEX iCurrentMip, INDEX iCurrentSurface)
 {
-  struct MappingSurface *pSurface;
-  pSurface = &edm_md.md_MipInfos[ iCurrentMip].mmpi_MappingSurfaces[ iCurrentSurface];
+  MappingSurfacePtr pSurface;
+  pSurface = edm_md.md_MipInfos[ iCurrentMip].mmpi_MappingSurfaces[ iCurrentSurface];
   return( pSurface->ms_Name);
 }
 //--------------------------------------------------------------------------------------------
@@ -1631,8 +1675,8 @@ BOOL CEditModel::GetFirstEmptyPatchIndex( INDEX &iMaskBit)
   iMaskBit = 0;
   for( INDEX iPatch=0; iPatch<MAX_TEXTUREPATCHES; iPatch++)
   {
-    CTextureData *pTD = (CTextureData *) edm_md.md_mpPatches[ iPatch].mp_toTexture.GetData();
-    if( pTD == NULL)
+    CTextureDataPtr pTD = edm_md.md_mpPatches[ iPatch].mp_toTexture.GetData();
+    if( !pTD)
     {
       iMaskBit = iPatch;
       return TRUE;
@@ -1649,8 +1693,8 @@ BOOL CEditModel::GetFirstValidPatchIndex( INDEX &iMaskBit)
   iMaskBit = 0;
   for( INDEX iPatch=0; iPatch<MAX_TEXTUREPATCHES; iPatch++)
   {
-    CTextureData *pTD = (CTextureData *) edm_md.md_mpPatches[ iPatch].mp_toTexture.GetData();
-    if( pTD != NULL)
+    CTextureDataPtr pTD = edm_md.md_mpPatches[ iPatch].mp_toTexture.GetData();
+    if( pTD)
     {
       iMaskBit = iPatch;
       return TRUE;
@@ -1700,8 +1744,8 @@ void CEditModel::GetNextValidPatchIndex( INDEX &iMaskBit)
  */
 void CEditModel::MovePatchRelative( INDEX iMaskBit, MEX2D mexOffset)
 {
-  CTFileName fnPatch = edm_md.md_mpPatches[ iMaskBit].mp_toTexture.GetName();
-  if( fnPatch == "") return;
+  CTFileNamePtr fnPatch = edm_md.md_mpPatches[ iMaskBit].mp_toTexture.GetName();
+  if( *fnPatch == "") return;
   edm_md.md_mpPatches[ iMaskBit].mp_mexPosition += mexOffset;
   CalculatePatchesPerPolygon();
 }
@@ -1711,8 +1755,8 @@ void CEditModel::MovePatchRelative( INDEX iMaskBit, MEX2D mexOffset)
  */
 void CEditModel::SetPatchStretch( INDEX iMaskBit, FLOAT fNewStretch)
 {
-  CTFileName fnPatch = edm_md.md_mpPatches[ iMaskBit].mp_toTexture.GetName();
-  if( fnPatch == "") return;
+  CTFileNamePtr fnPatch = edm_md.md_mpPatches[ iMaskBit].mp_toTexture.GetName();
+  if( *fnPatch == "") return;
   edm_md.md_mpPatches[ iMaskBit].mp_fStretch = fNewStretch;
   CalculatePatchesPerPolygon();
 }
@@ -1764,7 +1808,7 @@ INDEX CEditModel::CountPatches(void)
   INDEX iResult = 0;
   for(INDEX iPatch=0; iPatch<MAX_TEXTUREPATCHES; iPatch++)
   {
-    if( edm_md.md_mpPatches[ iPatch].mp_toTexture.GetName() != "")
+    if( *edm_md.md_mpPatches[ iPatch].mp_toTexture.GetName() != "")
     {
       iResult++;
     }
@@ -1777,7 +1821,7 @@ ULONG CEditModel::GetExistingPatchesMask(void)
   ULONG ulResult = 0;
   for(INDEX iPatch=0; iPatch<MAX_TEXTUREPATCHES; iPatch++)
   {
-    if( edm_md.md_mpPatches[ iPatch].mp_toTexture.GetName() != "")
+    if( *edm_md.md_mpPatches[ iPatch].mp_toTexture.GetName() != "")
     {
       ulResult |= 1UL << iPatch;
     }
@@ -1806,16 +1850,14 @@ void CEditModel::CalculatePatchesPerPolygon(void)
       for(INDEX iPatch=0; iPatch<MAX_TEXTUREPATCHES; iPatch++)
       {
         // if patch exists
-        if( edm_md.md_mpPatches[ iPatch].mp_toTexture.GetName() != "")
+        if( *edm_md.md_mpPatches[ iPatch].mp_toTexture.GetName() != "")
         {
           // allocate temporary array of indices for each polygon in mip model
-          CStaticArray<INDEX> aiPolygons;
-          aiPolygons.New( pMMI->mmpi_PolygonsCt);
+          std::vector<INDEX> aiPolygons(pMMI->mmpi_PolygonsCt);
           // clear counter of occupied polygons
           INDEX ctOccupiedPolygons = 0;
           // get patch occupying box
-          CTextureData *pTD = (CTextureData *) edm_md.md_mpPatches[ iPatch].mp_toTexture.GetData();
-          ASSERT( pTD != NULL);
+          CTextureDataPtr pTD = edm_md.md_mpPatches[ iPatch].mp_toTexture.GetData();
           MEX2D mex2dPosition = edm_md.md_mpPatches[ iPatch].mp_mexPosition;
           FLOAT fStretch = edm_md.md_mpPatches[ iPatch].mp_fStretch;
           MEXaabbox2D boxPatch = MEXaabbox2D(
@@ -1824,12 +1866,12 @@ void CEditModel::CalculatePatchesPerPolygon(void)
           // for each polygon
           for(INDEX iPolygon=0; iPolygon<pMMI->mmpi_PolygonsCt; iPolygon++)
           {
-            ModelPolygon *pMP = &pMMI->mmpi_Polygons[iPolygon];
+            ModelPolygonPtr pMP = pMMI->mmpi_Polygons[iPolygon];
             // for all vertices in polygon
             MEXaabbox2D boxMapping;
             for( INDEX iVertex=0; iVertex<pMP->mp_PolygonVertices.Count(); iVertex++)
             {
-              ModelTextureVertex *pMTV = pMP->mp_PolygonVertices[iVertex].mpv_ptvTextureVertex;
+              ModelTextureVertexPtr pMTV = pMP->mp_PolygonVertices[iVertex]->mpv_ptvTextureVertex;
               // calculate bounding box of mapping coordinates
               boxMapping |= MEXaabbox2D(pMTV->mtv_UV);
             }
@@ -1844,10 +1886,10 @@ void CEditModel::CalculatePatchesPerPolygon(void)
           if( ctOccupiedPolygons != 0)
           {
             // copy temporary array of polygon indices to mip model's array of polygon indices
-            pMMI->mmpi_aPolygonsPerPatch[ iExistingPatch].ppp_iPolygons.New( ctOccupiedPolygons);
+            pMMI->mmpi_aPolygonsPerPatch[ iExistingPatch]->ppp_iPolygons.New( ctOccupiedPolygons);
             for( INDEX iOccupied=0; iOccupied<ctOccupiedPolygons; iOccupied++)
             {
-              pMMI->mmpi_aPolygonsPerPatch[ iExistingPatch].ppp_iPolygons[iOccupied] =
+              pMMI->mmpi_aPolygonsPerPatch[ iExistingPatch]->ppp_iPolygons[iOccupied] =
                 aiPolygons[ iOccupied];
             }
           }
@@ -1874,8 +1916,9 @@ void CEditModel::WriteMipSettings_t( CTStream *ostrFile, INDEX iMip)
   // write count
   (*ostrFile) << iSurfacesCt;
   // for all surfaces
-  FOREACHINSTATICARRAY(edm_md.md_MipInfos[ iMip].mmpi_MappingSurfaces, MappingSurface, itSurface)
+  for (INDEX i = 0; i < iSurfacesCt; ++i)
   {
+    auto itSurface = edm_md.md_MipInfos[iMip].mmpi_MappingSurfaces[i];
     // write setings for current surface
     itSurface->WriteSettings_t( ostrFile);
   }
@@ -1905,7 +1948,8 @@ void CEditModel::ReadMipSettings_t(CTStream *istrFile, INDEX iMip)
     // for all surfaces in given mip
     for( INDEX i=0; i<edm_md.md_MipInfos[ iMip].mmpi_MappingSurfaces.Count(); i++)
     {
-      MappingSurface &ms = edm_md.md_MipInfos[ iMip].mmpi_MappingSurfaces[ i];
+      MappingSurfacePtr pms = edm_md.md_MipInfos[ iMip].mmpi_MappingSurfaces[ i];
+      auto& ms = *pms;
       // are these surfaces the same?
       if( ms == msTmp)
       {
@@ -1932,7 +1976,7 @@ void CEditModel::SaveMapping_t( CTFileName fnFileName, INDEX iMip /*=-1*/)
   CTFileStream strmMappingFile;
 
   // create file
-  strmMappingFile.Create_t( fnFileName, CTStream::CM_BINARY);
+  strmMappingFile.Create_t( fnFileName);
   // write file ID
   strmMappingFile.WriteID_t( CChunkID( "MPNG"));
   // write version
@@ -1957,17 +2001,17 @@ void CEditModel::SaveMapping_t( CTFileName fnFileName, INDEX iMip /*=-1*/)
   }
 
   // save attached sounds
-  strmMappingFile<<edm_aasAttachedSounds.Count();
-  for( INDEX iSound=0; iSound<edm_aasAttachedSounds.Count(); iSound++)
+  strmMappingFile<<edm_aasAttachedSounds.size();
+  for(size_t iSound=0; iSound<edm_aasAttachedSounds.size(); iSound++)
   {
-    edm_aasAttachedSounds[iSound].Write_t( &strmMappingFile);
+    edm_aasAttachedSounds[iSound]->Write_t( &strmMappingFile);
   }
 
   // save attached models
-  INDEX ctAttachmentPositions = edm_aamAttachedModels.Count();
+  INDEX ctAttachmentPositions = edm_aamAttachedModels.size();
   ASSERT( edm_md.md_aampAttachedPosition.Count() == ctAttachmentPositions);
   strmMappingFile<<ctAttachmentPositions;
-  FOREACHINDYNAMICARRAY(edm_aamAttachedModels, CAttachedModel, itam)
+  for (auto& itam : edm_aamAttachedModels)
   {
     itam->Write_t( &strmMappingFile);
   }
@@ -2095,30 +2139,30 @@ void CEditModel::LoadMapping_t( CTFileName fnFileName, INDEX iMip /*=-1*/)
     INDEX ctSounds;
     strmMappingFile>>ctSounds;
     ASSERT(ctSounds > 0);
-    edm_aasAttachedSounds.Clear();
-    edm_aasAttachedSounds.New( ctSounds);
-    for( INDEX iSound=0; iSound<edm_aasAttachedSounds.Count(); iSound++)
+    edm_aasAttachedSounds.clear();
+    for( INDEX iSound=0; iSound< ctSounds; iSound++)
     {
-      edm_aasAttachedSounds[iSound].Read_t( &strmMappingFile);
+      edm_aasAttachedSounds.emplace_back(std::make_unique<CAttachedSound>())->Read_t(&strmMappingFile);
     }
     // if number of animations does not match number of sounds saved in map file, reset sounds
     if(ctSounds != edm_md.GetAnimsCt())
     {
-      edm_aasAttachedSounds.Clear();
-      edm_aasAttachedSounds.New( edm_md.GetAnimsCt());
+      edm_aasAttachedSounds.clear();
+      for (INDEX iSound = 0; iSound < edm_md.GetAnimsCt(); iSound++)
+        edm_aasAttachedSounds.emplace_back(std::make_unique<CAttachedSound>());
     }
 
     // load attached models
     INDEX ctAttachmentPositions;
     strmMappingFile>>ctAttachmentPositions;
-    edm_aamAttachedModels.Clear();
+    edm_aamAttachedModels.clear();
     edm_md.md_aampAttachedPosition.Clear();
     if( ctAttachmentPositions != 0)
     {
-      edm_aamAttachedModels.New(ctAttachmentPositions);
       edm_md.md_aampAttachedPosition.New(ctAttachmentPositions);
-      FOREACHINDYNAMICARRAY(edm_aamAttachedModels, CAttachedModel, itam)
+      for (INDEX i = 0; i < ctAttachmentPositions; ++i)
       {
+        auto& itam = edm_aamAttachedModels.emplace_back(std::make_unique<CAttachedModel>());
         try
         {
           itam->Read_t( &strmMappingFile);
@@ -2126,7 +2170,7 @@ void CEditModel::LoadMapping_t( CTFileName fnFileName, INDEX iMip /*=-1*/)
         catch( char *strError)
         {
           (void) strError;
-          edm_aamAttachedModels.Clear();
+          edm_aamAttachedModels.clear();
           edm_md.md_aampAttachedPosition.Clear();
           ThrowF_t( "Error ocured while reading attahment model, maybe model does"
                     " not exist.");
@@ -2187,9 +2231,7 @@ void CEditModel::DeleteCurrentCollisionBox(void)
   // if we have more than 1 collision box
   if( ctCollisionBoxes != 1)
   {
-    edm_md.md_acbCollisionBox.Lock();
-    edm_md.md_acbCollisionBox.Delete( &edm_md.md_acbCollisionBox[ edm_iActiveCollisionBox]);
-    edm_md.md_acbCollisionBox.Unlock();
+    edm_md.md_acbCollisionBox.Delete( *edm_md.md_acbCollisionBox[ edm_iActiveCollisionBox]);
     // if this was last collision box
     if( edm_iActiveCollisionBox == (ctCollisionBoxes-1) )
     {
@@ -2221,10 +2263,8 @@ void CEditModel::ActivateNextCollisionBox(void)
 
 void CEditModel::SetCollisionBox(FLOAT3D vMin, FLOAT3D vMax)
 {
-  edm_md.md_acbCollisionBox.Lock();
-  edm_md.md_acbCollisionBox[ edm_iActiveCollisionBox].mcb_vCollisionBoxMin = vMin;
-  edm_md.md_acbCollisionBox[ edm_iActiveCollisionBox].mcb_vCollisionBoxMax = vMax;
-  edm_md.md_acbCollisionBox.Unlock();
+  edm_md.md_acbCollisionBox[ edm_iActiveCollisionBox]->mcb_vCollisionBoxMin = vMin;
+  edm_md.md_acbCollisionBox[ edm_iActiveCollisionBox]->mcb_vCollisionBoxMax = vMax;
   CorrectCollisionBoxSize();
 }
 
@@ -2238,38 +2278,31 @@ CTString CEditModel::GetCollisionBoxName(INDEX iCollisionBox)
     iCollisionBox = ctCollisionBoxes-1;
   }
   CTString strCollisionBoxName;
-  edm_md.md_acbCollisionBox.Lock();
-  strCollisionBoxName = edm_md.md_acbCollisionBox[ iCollisionBox].mcb_strName;
-  edm_md.md_acbCollisionBox.Unlock();
+  strCollisionBoxName = edm_md.md_acbCollisionBox[ iCollisionBox]->mcb_strName;
   return strCollisionBoxName;
 }
 
 CTString CEditModel::GetCollisionBoxName(void)
 {
   CTString strCollisionBoxName;
-  edm_md.md_acbCollisionBox.Lock();
-  strCollisionBoxName = edm_md.md_acbCollisionBox[ edm_iActiveCollisionBox].mcb_strName;
-  edm_md.md_acbCollisionBox.Unlock();
+  strCollisionBoxName = edm_md.md_acbCollisionBox[ edm_iActiveCollisionBox]->mcb_strName;
   return strCollisionBoxName;
 }
 
 void CEditModel::SetCollisionBoxName(CTString strNewName)
 {
-  edm_md.md_acbCollisionBox.Lock();
-  edm_md.md_acbCollisionBox[ edm_iActiveCollisionBox].mcb_strName = strNewName;
-  edm_md.md_acbCollisionBox.Unlock();
+  edm_md.md_acbCollisionBox[ edm_iActiveCollisionBox]->mcb_strName = strNewName;
 }
 
 void CEditModel::CorrectCollisionBoxSize(void)
 {
   // no correction needed if colliding as cube
   if( edm_md.md_bCollideAsCube) return;
-  edm_md.md_acbCollisionBox.Lock();
   // get equality radio initial value
   INDEX iEqualityType = GetCollisionBoxDimensionEquality();
   // get min and max vectors of currently active collision box
-  FLOAT3D vMin = edm_md.md_acbCollisionBox[ edm_iActiveCollisionBox].mcb_vCollisionBoxMin;
-  FLOAT3D vMax = edm_md.md_acbCollisionBox[ edm_iActiveCollisionBox].mcb_vCollisionBoxMax;
+  FLOAT3D vMin = edm_md.md_acbCollisionBox[ edm_iActiveCollisionBox]->mcb_vCollisionBoxMin;
+  FLOAT3D vMax = edm_md.md_acbCollisionBox[ edm_iActiveCollisionBox]->mcb_vCollisionBoxMax;
   FLOAT3D vOldCenter;
 
   vOldCenter(1) = (vMax(1)+vMin(1))/2.0f;
@@ -2319,7 +2352,8 @@ void CEditModel::CorrectCollisionBoxSize(void)
     }
     default:
     {
-      ASSERTALWAYS( "Invalid collision box dimension equality value found.");
+      // Invalid collision box dimension equality value found
+      break;
     }
   }
   // set new, corrected max vector
@@ -2332,25 +2366,18 @@ void CEditModel::CorrectCollisionBoxSize(void)
   vNewMax(2) = vMin(2)+vCorrectedDiagonale(2);
   vNewMax(3) = vOldCenter(3)+vCorrectedDiagonale(3)/2.0f;
 
-  edm_md.md_acbCollisionBox[ edm_iActiveCollisionBox].mcb_vCollisionBoxMin = vNewMin;
-  edm_md.md_acbCollisionBox[ edm_iActiveCollisionBox].mcb_vCollisionBoxMax = vNewMax;
-  edm_md.md_acbCollisionBox.Unlock();
+  edm_md.md_acbCollisionBox[ edm_iActiveCollisionBox]->mcb_vCollisionBoxMin = vNewMin;
+  edm_md.md_acbCollisionBox[ edm_iActiveCollisionBox]->mcb_vCollisionBoxMax = vNewMax;
 }
 //---------------------------------------------------------------------------------------------
 // collision box handling functions
-FLOAT3D &CEditModel::GetCollisionBoxMin(void)
+FLOAT3D CEditModel::GetCollisionBoxMin(void)
 {
-  edm_md.md_acbCollisionBox.Lock();
-  FLOAT3D &vMin = edm_md.md_acbCollisionBox[edm_iActiveCollisionBox].mcb_vCollisionBoxMin;
-  edm_md.md_acbCollisionBox.Unlock();
-  return vMin;
+  return edm_md.md_acbCollisionBox[edm_iActiveCollisionBox]->mcb_vCollisionBoxMin;
 };
-FLOAT3D &CEditModel::GetCollisionBoxMax(void)
+FLOAT3D CEditModel::GetCollisionBoxMax(void)
 {
-  edm_md.md_acbCollisionBox.Lock();
-  FLOAT3D &vMax = edm_md.md_acbCollisionBox[edm_iActiveCollisionBox].mcb_vCollisionBoxMax;
-  edm_md.md_acbCollisionBox.Unlock();
-  return vMax;
+  return edm_md.md_acbCollisionBox[edm_iActiveCollisionBox]->mcb_vCollisionBoxMax;
 };
 
 // returns HEIGHT_EQ_WIDTH, LENGHT_EQ_WIDTH or LENGHT_EQ_HEIGHT
@@ -2361,9 +2388,7 @@ INDEX CEditModel::GetCollisionBoxDimensionEquality()
 // set new collision box equality value
 void CEditModel::SetCollisionBoxDimensionEquality( INDEX iNewDimEqType)
 {
-  edm_md.md_acbCollisionBox.Lock();
-  edm_md.md_acbCollisionBox[edm_iActiveCollisionBox].mcb_iCollisionBoxDimensionEquality =
+  edm_md.md_acbCollisionBox[edm_iActiveCollisionBox]->mcb_iCollisionBoxDimensionEquality =
     iNewDimEqType;
-  edm_md.md_acbCollisionBox.Unlock();
   CorrectCollisionBoxSize();
 };

@@ -94,7 +94,7 @@ static UINT indicators[] =
 
 /////////////////////////////////////////////////////////////////////////////
 // sets message for modeler's "new progress dialog"
-void SetProgressMessage( char *strMessage)
+void SetProgressMessage(const char *strMessage)
 {
 	CMainFrame* pMainFrame = STATIC_DOWNCAST(CMainFrame, AfxGetMainWnd());
   pMainFrame->m_NewProgress.m_strNewMessage = CTString( strMessage);

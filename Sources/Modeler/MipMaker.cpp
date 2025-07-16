@@ -101,17 +101,6 @@ ImportedMesh CMipModel::GetMesh()
     iMaterial ++;
   }
 
-  struct FLOAT2DHasher
-  {
-    size_t operator()(const FLOAT2D& v) const
-    {
-      size_t result = 0;
-      for (size_t i = 1; i <= 2; ++i)
-        HashCombine<FLOAT>(result, v(i));
-      return result;
-    }
-  };
-
   std::unordered_map<FLOAT2D, INDEX, FLOAT2DHasher> texCoordsRemap;
 
   // add polygons to object 3d
@@ -147,7 +136,7 @@ ImportedMesh CMipModel::GetMesh()
     }
     while( pmpvPolygonVertex != itPolygon->mp_pmpvFirstPolygonVertex);
     // add current polygon splitted to triangles
-    for (size_t i = 2; i < ctPolygonVertices; ++i)
+    for (INDEX i = 2; i < ctPolygonVertices; ++i)
     {
       ImportedMesh::Triangle triangle;
       triangle.ct_iVtx[0] = aivVertices[0];
@@ -437,7 +426,7 @@ void CMipModel::RemoveUnusedVertices(void)
   // create a new array with as much vertices as we have counted in last pass
   std::vector<std::unique_ptr<CMipVertex>> amvxNew;
   amvxNew.reserve(ctUsedVertices);
-  for (size_t i = 0; i < ctUsedVertices; ++i)
+  for (INDEX i = 0; i < ctUsedVertices; ++i)
     amvxNew.emplace_back(std::make_unique<CMipVertex>());
   INDEX pmvxUsed = 0;
 
@@ -480,7 +469,8 @@ void CMipModel::RemoveUnusedVertices(void)
 
 BOOL CMipModel::CreateMipModel_t(INDEX ctVerticesToRemove, INDEX iSurfacePreservingFactor)
 {
-  if( ctVerticesToRemove>mm_amvVertices.size()) return FALSE;
+  if( ctVerticesToRemove > static_cast<INDEX>(mm_amvVertices.size()))
+    return FALSE;
 
   for( INDEX ctRemoved = 0; ctRemoved<ctVerticesToRemove; ctRemoved++)
   {

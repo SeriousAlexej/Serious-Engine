@@ -659,7 +659,7 @@ void CModelerView::RenderView( CDrawPortPtr pDrawPort)
     m_iCurrentFrame = m_ModelObject.GetFrame();
 
     INDEX iAnim = m_ModelObject.GetAnim();
-    CAttachedSound &asSound = pDoc->m_emEditModel.edm_aasAttachedSounds[iAnim];
+    CAttachedSound &asSound = *pDoc->m_emEditModel.edm_aasAttachedSounds[iAnim];
     TIME tmAnimLen = m_ModelObject.GetAnimLength(iAnim);
     TIME tmPassed = m_ModelObject.GetPassedTime();
     

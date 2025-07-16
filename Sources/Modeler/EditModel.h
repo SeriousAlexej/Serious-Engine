@@ -24,7 +24,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <SeriousEngineCppAPI/Base/FileName.h>
 #include <SeriousEngineCppAPI/Math/Vector.h>
 #include <SeriousEngineCppAPI/Math/Matrix.h>
-#include <SeriousEngineCppAPI/Templates/StaticArray.h>
 #include <SeriousEngineCppAPI/Models/RenderModel.h>
 
 #include "Script/Script.h"
@@ -45,7 +44,7 @@ class CProgressRoutines
 {
 public:
   CProgressRoutines();
-  void (*SetProgressMessage)( char *strMessage);      // sets message for modeler's "new progress dialog"
+  void (*SetProgressMessage)(const char *strMessage);      // sets message for modeler's "new progress dialog"
   void (*SetProgressRange)( INDEX iProgresSteps);     // sets range of modeler's "new progress dialog"
   void (*SetProgressState)( INDEX iCurrentStep);      // sets current modeler's "new progress dialog" state
 };
@@ -55,7 +54,6 @@ extern CProgressRoutines ProgresRoutines;
 class CTextureDataInfo
 {
 public:
-  CListNode tdi_ListNode;
   CTextureDataPtr tdi_TextureData;
   CTFileName tdi_FileName;
 };
@@ -133,18 +131,26 @@ private:
 public:
   using TBoneToTriangle = std::map<std::string, std::array<INDEX, 3>>;
 
+  INDEX ser_ctUsed = 0;         // use count
+  CTFileName ser_FileName;  // last file name loaded
+  TIME ch_LastChangeTime = TIME(-1);
+
+  void MarkUsed();
+  void MarkUnused();
+  BOOL IsUsed();
+  INDEX GetUsedCount();
+  void MarkChanged();
+
 public:
 	CEditModel();																		// default contructor
 	~CEditModel();																	// default destructor
   CModelData edm_md;															// edited model data
   TBoneToTriangle m_boneTriangleMapping; // If bone triangles were generated, this map shall contain triangle indices for each bone
   INDEX m_boneTriangleMappingGeneration = 0;
-  std::vector<CAttachedModel> edm_aamAttachedModels;// array of attached models
-  std::vector<CAttachedSound> edm_aasAttachedSounds;// array of attached sounds
+  std::vector<std::unique_ptr<CAttachedModel>> edm_aamAttachedModels;// array of attached models
+  std::vector<std::unique_ptr<CAttachedSound>> edm_aasAttachedSounds;// array of attached sounds
   CThumbnailSettings edm_tsThumbnailSettings;     // remembered parameters for taking thumbnail
-  CListHead edm_WorkingSkins;	                // list of file names and texture data objects
-  CListHead edm_UndoList;                         // list containing structures used for undo operation
-  CListHead edm_RedoList;                         // list containing structures used for redo operation
+  std::vector<std::unique_ptr<CTextureDataInfo>> edm_WorkingSkins; // list of file names and texture data objects
   INDEX edm_Action;                               // type of last mapping change action (used by undo/redo)
   CTFileName edm_fnSpecularTexture;               // names of textures saved in ini file
   CTFileName edm_fnReflectionTexture;
@@ -160,11 +166,11 @@ public:
   // updates mip models configuration, looses their mapping !
   void UpdateMipModels_t(CTFileName &fnScriptName); // throw char *
   void CreateMipModels_t(const ImportedMesh& baseMesh, INDEX iVertexRemoveRate, INDEX iSurfacePreservingFactor);
-  void DrawWireSurface( CDrawPort *pDP, INDEX iCurrentMip, INDEX iCurrentSurface,
+  void DrawWireSurface( CDrawPortPtr pDP, INDEX iCurrentMip, INDEX iCurrentSurface,
        FLOAT fMagnifyFactor, PIX offx, PIX offy, COLOR clrVisible, COLOR clrInvisible); // draws given surface in wire frame
-  void DrawFilledSurface( CDrawPort *pDP, INDEX iCurrentMip, INDEX iCurrentSurface,
+  void DrawFilledSurface( CDrawPortPtr pDP, INDEX iCurrentMip, INDEX iCurrentSurface,
        FLOAT fMagnifyFactor, PIX offx, PIX offy, COLOR clrVisible, COLOR clrInvisible); // fills given surface with color
-  void PrintSurfaceNumbers( CDrawPort *pDP, CFontData *pFont, INDEX iCurrentMip,
+  void PrintSurfaceNumbers( CDrawPortPtr pDP, CFontDataPtr pFont, INDEX iCurrentMip,
        FLOAT fMagnifyFactor, PIX offx, PIX offy, COLOR clrInk); // prints surface numbers
   void ExportSurfaceNumbersAndNames( CTFileName fnFile);
   // add one texture to list of working textures
@@ -187,8 +193,8 @@ public:
   MEX GetWidth(){ return edm_md.md_Width;};         // Returns allowed width for model's texture
   MEX GetHeight(){ return edm_md.md_Height;};       // Returns allowed height for model's texture
   // collision box handling functions
-  FLOAT3D &GetCollisionBoxMin(void);
-  FLOAT3D &GetCollisionBoxMax(void);
+  FLOAT3D GetCollisionBoxMin(void);
+  FLOAT3D GetCollisionBoxMax(void);
   void AddCollisionBox(void);
   void DeleteCurrentCollisionBox(void);
   INDEX GetActiveCollisionBoxIndex(void) { return edm_iActiveCollisionBox;};
@@ -205,6 +211,7 @@ public:
   void SetCollisionBoxDimensionEquality( INDEX iNewDimEqType);
   // overloaded load function
 	void Load_t( CTFileName fnFileName); // throw char *
+  void Load_t_base(const CTFileName fnFileName);
   // overloaded save function
 	void Save_t( CTFileName fnFileName); // throw char *
   // exports .h file (#define ......)

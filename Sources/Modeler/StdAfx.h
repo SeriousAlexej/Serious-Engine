@@ -34,4 +34,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <EngineGUI/EngineGUI.h>
 #include "Modeler.h"
 
+struct FLOAT2DHasher
+{
+  size_t operator()(const FLOAT2D& v) const
+  {
+    size_t result = 0;
+    for (size_t i = 1; i <= 2; ++i)
+      HashCombine<FLOAT>(result, v(i));
+    return result;
+  }
+};
+
 #pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='x86' publicKeyToken='6595b64144ccf1df' language='*'\"")
