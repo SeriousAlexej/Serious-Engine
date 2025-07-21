@@ -15,7 +15,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "StdH.h"
 #include "ImportedMesh.h"
-#include <SeriousEngineCAPI/Templates/Stock_CTextureData.h>
+#include <SeriousEngineCppAPI/Templates/Stock_CTextureData.h>
 #include <SeriousEngineCAPI/Base/Memory.h>
 
 #include <QImageReader>
@@ -457,21 +457,13 @@ void CEngineGUI::GetFullScreenModeFromRegistry( CTString strSectionName, CDispla
   strResult.ScanF( "%d x %d x %d", &dm.dm_pixSizeI, &dm.dm_pixSizeJ, &dm.dm_ddDepth);
   if( dm.dm_ddDepth<DD_DEFAULT || dm.dm_ddDepth>DD_32BIT) dm.dm_ddDepth = DD_DEFAULT;
   strResult = static_cast<const char*>(CStringA(AfxGetApp()->GetProfileString( CString(strSectionName), L"Full screen API", L"OpenGL")));
-#ifdef SE1_D3D
   gat = (strResult=="Direct3D") ? GAT_D3D : GAT_OGL;
-#else // SE1_D3D
-  gat = GAT_OGL;
-#endif // SE1_D3D
 }
 
 void CEngineGUI::SetFullScreenModeToRegistry( CTString strSectionName, const CDisplayMode& dm, GfxAPIType gat)
 {
   CTString strDM( 0, "%d x %d x %d", dm.dm_pixSizeI, dm.dm_pixSizeJ, dm.dm_ddDepth);
-#ifdef SE1_D3D
   CTString strGAT = (gat==GAT_D3D) ? "Direct3D" : "OpenGL";
-#else // SE1_D3D
-  CTString strGAT = "OpenGL";
-#endif // SE1_D3D
   AfxGetApp()->WriteProfileString(CString(strSectionName), L"Full screen mode", CString(strDM));
   AfxGetApp()->WriteProfileString(CString(strSectionName), L"Full screen API", CString(strGAT));
 }

@@ -55,7 +55,7 @@ void CDlgMarkLinkedSurfaces::DoDataExchange(CDataExchange* pDX)
     // for all surfaces added to list of surfaces
     for( INDEX iEntry=0; iEntry<m_listSurfaces.GetCount(); iEntry++)
     {
-      MappingSurface *pms = (MappingSurface*)m_listSurfaces.GetItemData( iEntry);
+      MappingSurfacePtr pms = (MappingSurface_*)m_listSurfaces.GetItemData( iEntry);
       if( m_listSurfaces.GetCheck(iEntry)==1) pms->ms_ulRenderingFlags |=  SRF_SELECTED;
       else                                    pms->ms_ulRenderingFlags &= ~SRF_SELECTED;
     }
@@ -88,9 +88,9 @@ BOOL CDlgMarkLinkedSurfaces::OnInitDialog()
     MappingSurfacePtr pms = mmi.mmpi_MappingSurfaces[ iSurface];
     MappingSurface& ms = *pms;
     CTString strListEntry;
-    strListEntry.PrintF("%.02d %s (%d)", iSurface, ms.ms_Name, ms.ms_aiPolygons.Count());
+    strListEntry.PrintF("%.02d %s (%d)", iSurface, static_cast<const char*>(ms.ms_Name), ms.ms_aiPolygons.Count());
     int iAddedAs = m_listSurfaces.AddString( CString(strListEntry));
-    m_listSurfaces.SetItemData( iAddedAs, (ULONG) &ms);
+    m_listSurfaces.SetItemData( iAddedAs, (ULONG) ms.C_Handle());
     if( ms.ms_ulRenderingFlags&SRF_SELECTED) m_listSurfaces.SetCheck( iAddedAs, 1);
     else m_listSurfaces.SetCheck( iAddedAs, 0);
   }

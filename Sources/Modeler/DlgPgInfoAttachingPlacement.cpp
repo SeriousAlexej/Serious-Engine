@@ -462,7 +462,7 @@ void CDlgPgInfoAttachingPlacement::OnNextAttachingPlacement()
   ASSERT( pDoc != NULL);
   if( pDoc == NULL) return;
   CModelData *pMD = &pDoc->m_emEditModel.edm_md;
-  if( m_iActivePlacement < pDoc->m_emEditModel.edm_aamAttachedModels.size()-1)
+  if( m_iActivePlacement < static_cast<INDEX>(pDoc->m_emEditModel.edm_aamAttachedModels.size()-1))
   {
     m_iActivePlacement += 1;
     UpdateData(FALSE);

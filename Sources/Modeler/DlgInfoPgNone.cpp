@@ -59,7 +59,7 @@ END_MESSAGE_MAP()
 BOOL CDlgInfoPgNone::OnIdle(LONG lCount)
 {
   // refresh info frame size
-  ((CMainFrame *)( theApp.m_pMainWnd))->m_pInfoFrame->SetSizes();
+  //((CMainFrame *)( theApp.m_pMainWnd))->m_pInfoFrame->SetSizes();
   return TRUE;
 }
 

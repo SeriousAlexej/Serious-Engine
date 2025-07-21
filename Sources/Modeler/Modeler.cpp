@@ -21,8 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "Script/ModelConfigurationEditor.h"
 #include "Script/ScriptIO.h"
 
-#include <SeriousEngineCAPI/Templates/Stock_CModelData.h>
-#include <SeriousEngineCAPI/Templates/Stock_CTextureData.h>
+#include <SeriousEngineCppAPI/Templates/Stock_CModelData.h>
+#include <SeriousEngineCppAPI/Templates/Stock_CTextureData.h>
 
 #include <QtWin>
 #include <QIcon>

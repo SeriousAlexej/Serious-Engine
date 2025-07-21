@@ -167,7 +167,7 @@ BOOL CDlgInfoPgMip::OnIdle(LONG lCount)
   }
 
   // refresh info frame size
-  ((CMainFrame *)( theApp.m_pMainWnd))->m_pInfoFrame->SetSizes();
+  //((CMainFrame *)( theApp.m_pMainWnd))->m_pInfoFrame->SetSizes();
   return TRUE;
 }
 

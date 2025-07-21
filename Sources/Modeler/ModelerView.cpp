@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "Script/ScriptIO.h"
 
 #include <EngineGUI/ImportedMesh.h>
-#include <SeriousEngineCAPI/Templates/Stock_CTextureData.h>
+#include <SeriousEngineCppAPI/Templates/Stock_CTextureData.h>
 
 #ifdef _DEBUG
 #undef new

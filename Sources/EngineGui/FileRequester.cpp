@@ -15,7 +15,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "stdh.h"
 #include <GroBrowser/GroBrowser.h>
-#include <SeriousEngineCAPI/Templates/Stock_CTextureData.h>
+#include <SeriousEngineCppAPI/Templates/Stock_CTextureData.h>
 
 #include <QApplication>
 #include <QWinWidget>
@@ -275,7 +275,8 @@ CTFileName CEngineGUI::FileRequester(
         for (const auto& file : files)
         {
           const auto file_path = file.toLocal8Bit();
-          (*pafnSelectedFiles->New()) = CTString(file_path.constData());
+          CTFileNamePtr pfnSelectedFile = pafnSelectedFiles->New();
+          *pfnSelectedFile = CTString(file_path.constData());
         }
 
         AfxSetResourceHandle((HINSTANCE)hOldResource);
@@ -316,7 +317,7 @@ CTFileName CEngineGUI::FileRequester(
           CTFileName fnSource = fnDirectory + CTString( chrFiles + iOffset);
           // remove application path
           fnSource.RemoveApplicationPath_t();
-          CTFileName *pfnSelectedFile = pafnSelectedFiles->New();
+          CTFileNamePtr pfnSelectedFile = pafnSelectedFiles->New();
           *pfnSelectedFile = fnSource;
         }
         catch( char *strError)

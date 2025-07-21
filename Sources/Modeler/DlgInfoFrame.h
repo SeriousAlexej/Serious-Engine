@@ -26,7 +26,7 @@ class CDlgInfoFrame : public CMiniFrameWnd
 public:
 	CDlgInfoFrame();
   ~CDlgInfoFrame();
-  void SetSizes();
+  //void SetSizes();
 
 // Attributes
 public:

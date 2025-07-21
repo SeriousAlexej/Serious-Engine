@@ -166,7 +166,7 @@ BOOL CDlgInfoPgAnim::OnIdle(LONG lCount)
   ASSERT(pModelerView != NULL);
 
   // refresh info frame size
-  ((CMainFrame *)( theApp.m_pMainWnd))->m_pInfoFrame->SetSizes();
+  //((CMainFrame *)( theApp.m_pMainWnd))->m_pInfoFrame->SetSizes();
   UpdateData(FALSE);
   return TRUE;
 }

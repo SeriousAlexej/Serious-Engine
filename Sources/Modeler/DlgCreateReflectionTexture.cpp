@@ -124,10 +124,6 @@ CDlgCreateReflectionTexture::CDlgCreateReflectionTexture(CWnd* pParent /*=NULL*/
   m_colorAmbient.m_pwndParentDialog = this;
 
   m_colorAmbient.SetColor( 0x030303FF);
-  for (INDEX iwin=0; iwin<7; iwin++) {
-    m_apdp[iwin].Reset();
-    m_apvp[iwin].Reset();
-  }
   
   m_bCustomWindowsCreated = FALSE;
 

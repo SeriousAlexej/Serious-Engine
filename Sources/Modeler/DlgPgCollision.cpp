@@ -83,7 +83,7 @@ void CDlgPgCollision::DoDataExchange(CDataExchange* pDX)
     sprintf( achrString, "%d.", pDoc->m_emEditModel.GetActiveCollisionBoxIndex());
     m_strCollisionBoxIndex = achrString;
     // get name of curently selected collision box
-    sprintf( achrString, "%s", pDoc->m_emEditModel.GetCollisionBoxName());
+    sprintf( achrString, "%s", static_cast<const char*>(pDoc->m_emEditModel.GetCollisionBoxName()));
     m_strCollisionBoxName = achrString;
 
     // enable all controls

@@ -294,7 +294,7 @@ void ModelConfigurationEditor::_OnFrameUp()
 {
   auto& currAnim = m_script.m_animations[mp_ui->listAnims->currentRow()];
   const int currItem = mp_ui->listFrames->currentRow();
-  if (currItem < 1 || currItem >= currAnim.m_frames.size())
+  if (currItem < 1 || currItem >= static_cast<int>(currAnim.m_frames.size()))
     return;
   std::swap(currAnim.m_frames[currItem - 1], currAnim.m_frames[currItem]);
   _FillFrames();
@@ -305,7 +305,7 @@ void ModelConfigurationEditor::_OnFrameDown()
 {
   auto& currAnim = m_script.m_animations[mp_ui->listAnims->currentRow()];
   const int currItem = mp_ui->listFrames->currentRow();
-  if (currItem < 0 || currItem + 1 >= currAnim.m_frames.size())
+  if (currItem < 0 || currItem + 1 >= static_cast<int>(currAnim.m_frames.size()))
     return;
   std::swap(currAnim.m_frames[currItem + 1], currAnim.m_frames[currItem]);
   _FillFrames();
@@ -316,7 +316,7 @@ void ModelConfigurationEditor::_OnFrameDuplicate()
 {
   auto& currAnim = m_script.m_animations[mp_ui->listAnims->currentRow()];
   const int currItem = mp_ui->listFrames->currentRow();
-  if (currItem < 0 || currItem >= currAnim.m_frames.size())
+  if (currItem < 0 || currItem >= static_cast<int>(currAnim.m_frames.size()))
     return;
   currAnim.m_frames.insert(currAnim.m_frames.begin() + currItem + 1, currAnim.m_frames[currItem]);
   _FillFrames();
@@ -327,7 +327,7 @@ void ModelConfigurationEditor::_OnFrameDelete()
 {
   auto& currAnim = m_script.m_animations[mp_ui->listAnims->currentRow()];
   const int currItem = mp_ui->listFrames->currentRow();
-  if (currItem < 0 || currItem >= currAnim.m_frames.size())
+  if (currItem < 0 || currItem >= static_cast<int>(currAnim.m_frames.size()))
     return;
   currAnim.m_frames.erase(currAnim.m_frames.begin() + currItem);
   _FillFrames();
@@ -337,7 +337,7 @@ void ModelConfigurationEditor::_OnFrameDelete()
 void ModelConfigurationEditor::_OnAnimUp()
 {
   const int currItem = mp_ui->listAnims->currentRow();
-  if (currItem < 1 || currItem >= m_script.m_animations.size())
+  if (currItem < 1 || currItem >= static_cast<int>(m_script.m_animations.size()))
     return;
   std::swap(m_script.m_animations[currItem - 1], m_script.m_animations[currItem]);
   _FillAnims();
@@ -347,7 +347,7 @@ void ModelConfigurationEditor::_OnAnimUp()
 void ModelConfigurationEditor::_OnAnimDown()
 {
   const int currItem = mp_ui->listAnims->currentRow();
-  if (currItem < 0 || currItem + 1 >= m_script.m_animations.size())
+  if (currItem < 0 || currItem + 1 >= static_cast<int>(m_script.m_animations.size()))
     return;
   std::swap(m_script.m_animations[currItem + 1], m_script.m_animations[currItem]);
   _FillAnims();
@@ -357,7 +357,7 @@ void ModelConfigurationEditor::_OnAnimDown()
 void ModelConfigurationEditor::_OnAnimDelete()
 {
   const int currItem = mp_ui->listAnims->currentRow();
-  if (currItem < 0 || currItem >= m_script.m_animations.size())
+  if (currItem < 0 || currItem >= static_cast<int>(m_script.m_animations.size()))
     return;
   m_script.m_animations.erase(m_script.m_animations.begin() + currItem);
   _FillAnims();
@@ -367,7 +367,7 @@ void ModelConfigurationEditor::_OnAnimDelete()
 void ModelConfigurationEditor::_OnMipUp()
 {
   const int currItem = mp_ui->listMips->currentRow();
-  if (currItem < 1 || currItem >= m_script.m_mipModels.size())
+  if (currItem < 1 || currItem >= static_cast<int>(m_script.m_mipModels.size()))
     return;
   std::swap(m_script.m_mipModels[currItem - 1], m_script.m_mipModels[currItem]);
   _FillMips();
@@ -377,7 +377,7 @@ void ModelConfigurationEditor::_OnMipUp()
 void ModelConfigurationEditor::_OnMipDown()
 {
   const int currItem = mp_ui->listMips->currentRow();
-  if (currItem < 0 || currItem + 1 >= m_script.m_mipModels.size())
+  if (currItem < 0 || currItem + 1 >= static_cast<int>(m_script.m_mipModels.size()))
     return;
   std::swap(m_script.m_mipModels[currItem + 1], m_script.m_mipModels[currItem]);
   _FillMips();
@@ -387,11 +387,11 @@ void ModelConfigurationEditor::_OnMipDown()
 void ModelConfigurationEditor::_OnMipDelete()
 {
   const int currItem = mp_ui->listMips->currentRow();
-  if (currItem < 0 || currItem >= m_script.m_mipModels.size())
+  if (currItem < 0 || currItem >= static_cast<int>(m_script.m_mipModels.size()))
     return;
   m_script.m_mipModels.erase(m_script.m_mipModels.begin() + currItem);
   _FillMips();
-  mp_ui->listMips->setCurrentRow(currItem < m_script.m_mipModels.size() ? currItem : currItem - 1, QItemSelectionModel::Rows | QItemSelectionModel::ClearAndSelect);
+  mp_ui->listMips->setCurrentRow(currItem < static_cast<int>(m_script.m_mipModels.size()) ? currItem : currItem - 1, QItemSelectionModel::Rows | QItemSelectionModel::ClearAndSelect);
 }
 
 void ModelConfigurationEditor::_OnPickMips()
@@ -420,7 +420,7 @@ void ModelConfigurationEditor::_OnMipSelected(QListWidgetItem* current, QListWid
   Q_UNUSED(prev);
   const bool has_selection = current != nullptr;
   mp_ui->buttonMipUp->setEnabled(has_selection && mp_ui->listMips->row(current) > 0);
-  mp_ui->buttonMipDown->setEnabled(has_selection && mp_ui->listMips->row(current) + 1 < m_script.m_mipModels.size());
+  mp_ui->buttonMipDown->setEnabled(has_selection && mp_ui->listMips->row(current) + 1 < static_cast<int>(m_script.m_mipModels.size()));
   mp_ui->buttonMipDelete->setEnabled(has_selection && m_script.m_mipModels.size() > 1);
 }
 
@@ -433,7 +433,7 @@ void ModelConfigurationEditor::_OnAnimSelected(QListWidgetItem* current, QListWi
 
   const bool has_selection = current != nullptr;
   mp_ui->buttonAnimUp->setEnabled(has_selection && mp_ui->listAnims->row(current) > 0);
-  mp_ui->buttonAnimDown->setEnabled(has_selection && mp_ui->listAnims->row(current) + 1 < m_script.m_animations.size());
+  mp_ui->buttonAnimDown->setEnabled(has_selection && mp_ui->listAnims->row(current) + 1 < static_cast<int>(m_script.m_animations.size()));
   mp_ui->buttonAnimDelete->setEnabled(has_selection && m_script.m_animations.size() > 1);
   if (!has_selection)
   {
@@ -452,7 +452,7 @@ void ModelConfigurationEditor::_OnFrameSelected(QListWidgetItem* current, QListW
   auto& currAnim = m_script.m_animations[mp_ui->listAnims->currentRow()];
   const bool has_selection = current != nullptr;
   mp_ui->buttonFrameUp->setEnabled(has_selection && mp_ui->listFrames->row(current) > 0);
-  mp_ui->buttonFrameDown->setEnabled(has_selection && mp_ui->listFrames->row(current) + 1 < currAnim.m_frames.size());
+  mp_ui->buttonFrameDown->setEnabled(has_selection && mp_ui->listFrames->row(current) + 1 < static_cast<int>(currAnim.m_frames.size()));
   mp_ui->buttonFrameDuplicate->setEnabled(has_selection);
   mp_ui->buttonFrameDelete->setEnabled(has_selection && currAnim.m_frames.size() > 1);
 }

@@ -172,11 +172,9 @@ CDlgSelectMode::CDlgSelectMode( CDisplayMode &dm, enum GfxAPIType &gfxAPI,
   case GAT_OGL:
     m_strCurrentDriver = "OpenGL";
     break;
-#ifdef SE1_D3D
   case GAT_D3D:
     m_strCurrentDriver = "Direct3D";
     break;
-#endif // SE1_D3D
   default:
     m_strCurrentDriver = "none";
     break;
@@ -258,11 +256,9 @@ void CDlgSelectMode::DoDataExchange(CDataExchange* pDX)
     i = m_ctrlDriverCombo.AddString( L"OpenGL");
     m_ctrlDriverCombo.SetItemData( i, (INDEX)GAT_OGL);
     if( *m_pGfxAPI==GAT_OGL) iSelect = i;
-#ifdef SE1_D3D
     i = m_ctrlDriverCombo.AddString( L"Direct3D");
     m_ctrlDriverCombo.SetItemData( i, (INDEX)GAT_D3D);
     if( *m_pGfxAPI==GAT_D3D) iSelect = i;
-#endif // SE1_D3D
     // set old driver to be default
     m_ctrlDriverCombo.SetCurSel( iSelect);
   

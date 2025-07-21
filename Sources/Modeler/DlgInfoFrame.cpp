@@ -115,9 +115,9 @@ BOOL CDlgInfoFrame::PreTranslateMessage(MSG* pMsg)
 void CDlgInfoFrame::OnSize(UINT nType, int cx, int cy) 
 {
   CMiniFrameWnd::OnSize(nType, cx, cy);
-  SetSizes();
+  //SetSizes();
 }
-
+/*
 void CDlgInfoFrame::SetSizes() 
 {
   return;
@@ -168,3 +168,4 @@ void CDlgInfoFrame::SetSizes()
                     m_PageWidth-PAGE_SUB_WIDTH, m_PageHeight-PAGE_SUB_HEIGHT);
   pPage->MoveWindow( rectPage);
 }
+*/

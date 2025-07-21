@@ -29,7 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <SeriousEngineCppAPI/Templates/StaticArray.h>
 #include <SeriousEngineCppAPI/Templates/DynamicArray.h>
-#include <SeriousEngineCAPI/Templates/Stock_CTextureData.h>
+#include <SeriousEngineCppAPI/Templates/Stock_CTextureData.h>
 
 #include "EditModel.h"
 #include "MipMaker.h"
