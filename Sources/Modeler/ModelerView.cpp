@@ -1170,7 +1170,7 @@ void CModelerView::OnInitialUpdate()
   CModelerDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
 
-  m_ModelObject.SetData( &pDoc->m_emEditModel.edm_md);
+  m_ModelObject.SetData( pDoc->m_emEditModel.edm_md);
   m_ModelObject.SetAnim( 0);
 
   m_iActivePatchBitIndex = 0;

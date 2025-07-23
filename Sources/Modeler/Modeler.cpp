@@ -355,7 +355,7 @@ BOOL CModelerApp::SubInitInstance()
     DECLARE_CTFILENAME( fnLampName, "Models\\Editor\\Lamp.mdl");
     m_pLampModelData = _pModelStock_Obtain_t( fnLampName);
     m_LampModelObject = new CModelObject;
-    m_LampModelObject->SetData(m_pLampModelData);
+    m_LampModelObject->SetData(*m_pLampModelData);
     m_LampModelObject->SetAnim( 0);
     // load lamp's texture
     DECLARE_CTFILENAME( fnLampTex, "Models\\Editor\\SpotLight.tex");
@@ -366,7 +366,7 @@ BOOL CModelerApp::SubInitInstance()
     DECLARE_CTFILENAME( fnCollisionBox, "Models\\Editor\\CollisionBox.mdl");
     m_pCollisionBoxModelData = _pModelStock_Obtain_t( fnCollisionBox);
     m_pCollisionBoxModelObject = new CModelObject;
-    m_pCollisionBoxModelObject->SetData(m_pCollisionBoxModelData);
+    m_pCollisionBoxModelObject->SetData(*m_pCollisionBoxModelData);
     m_pCollisionBoxModelObject->SetAnim( 0);
     // load collision box's texture
     DECLARE_CTFILENAME( fnCollisionBoxTex, "Models\\Editor\\CollisionBox.tex");
@@ -377,7 +377,7 @@ BOOL CModelerApp::SubInitInstance()
     DECLARE_CTFILENAME( fnFloor, "Models\\Editor\\Floor.mdl");
     m_pFloorModelData = _pModelStock_Obtain_t( fnFloor);
     m_pFloorModelObject = new CModelObject;
-    m_pFloorModelObject->SetData(m_pFloorModelData);
+    m_pFloorModelObject->SetData(*m_pFloorModelData);
     m_pFloorModelObject->SetAnim( 0);
     // load collision box's texture
     DECLARE_CTFILENAME( fnFloorTex, "Models\\Editor\\Floor.tex");

@@ -389,7 +389,7 @@ void CModelerDoc::SetupAttachments( void)
         CAttachmentModelObjectPtr pamo = pmvView->m_ModelObject.AddAttachmentModel( iAttachment);
         CModelDataPtr pMD = pamAttachedModel->am_moAttachedModel.GetData();
         ASSERT(pMD != NULL);
-        pamo->amo_moModelObject.SetData( pMD);
+        pamo->amo_moModelObject.SetData( *pMD);
         pamo->amo_moModelObject.AutoSetTextures();
         pamo->amo_moModelObject.AutoSetAttachments();
         pamo->amo_moModelObject.StartAnim( itam->am_iAnimation);
