@@ -38,9 +38,8 @@ struct FLOAT2DHasher
 {
   size_t operator()(const FLOAT2D& v) const
   {
-    size_t result = 0;
-    for (size_t i = 1; i <= 2; ++i)
-      HashCombine<FLOAT>(result, v(i));
+    size_t result = std::hash<FLOAT>()(v(1));
+    HashCombine<FLOAT>(result, v(2));
     return result;
   }
 };
