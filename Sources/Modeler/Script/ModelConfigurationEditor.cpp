@@ -331,7 +331,7 @@ void ModelConfigurationEditor::_OnFrameDelete()
     return;
   currAnim.m_frames.erase(currAnim.m_frames.begin() + currItem);
   _FillFrames();
-  mp_ui->listFrames->setCurrentRow(currItem < currAnim.m_frames.size() ? currItem : currItem - 1, QItemSelectionModel::Rows | QItemSelectionModel::ClearAndSelect);
+  mp_ui->listFrames->setCurrentRow(currItem < static_cast<int>(currAnim.m_frames.size()) ? currItem : currItem - 1, QItemSelectionModel::Rows | QItemSelectionModel::ClearAndSelect);
 }
 
 void ModelConfigurationEditor::_OnAnimUp()
@@ -361,7 +361,7 @@ void ModelConfigurationEditor::_OnAnimDelete()
     return;
   m_script.m_animations.erase(m_script.m_animations.begin() + currItem);
   _FillAnims();
-  mp_ui->listAnims->setCurrentRow(currItem < m_script.m_animations.size() ? currItem : currItem - 1, QItemSelectionModel::Rows | QItemSelectionModel::ClearAndSelect);
+  mp_ui->listAnims->setCurrentRow(currItem < static_cast<int>(m_script.m_animations.size()) ? currItem : currItem - 1, QItemSelectionModel::Rows | QItemSelectionModel::ClearAndSelect);
 }
 
 void ModelConfigurationEditor::_OnMipUp()
