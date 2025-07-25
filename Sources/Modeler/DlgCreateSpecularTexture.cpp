@@ -218,7 +218,7 @@ void CDlgCreateSpecularTexture::DrawPreview( CDrawPortPtr pdp, FLOAT fExp)
     PIXaabbox2D screenBox = PIXaabbox2D( PIX2D(0,0), PIX2D(pdp->GetWidth(), pdp->GetHeight()) );
     //pdp->PutTexture( &m_moModel.mo_toSpecular, screenBox);
     //return;
-    pdp->PutTexture( &m_toBackground, screenBox);
+    pdp->PutTexture( m_toBackground, screenBox);
     pdp->FillZBuffer( ZBUF_BACK);
 
     CRenderModel rmRenderModel;

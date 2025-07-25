@@ -392,7 +392,7 @@ void CDlgCreateReflectionTexture::DrawPreview( CDrawPortPtr pdp)
     //pdp->PutTexture( &m_moModel.mo_toReflection, screenBox);
     //return;
     if( m_toBackground.GetData()) {
-      pdp->PutTexture( &m_toBackground, screenBox);
+      pdp->PutTexture( m_toBackground, screenBox);
     } else {
       pdp->Fill( C_BLACK|CT_OPAQUE);
     }
@@ -441,7 +441,7 @@ void CDlgCreateReflectionTexture::PutPicture(CWnd &wnd, CTextureObject &to, INDE
   if( pdp && (pdp->Lock()) ) {
     if( to.GetData()) {
       PIXaabbox2D screenBox = PIXaabbox2D( PIX2D(0,0), PIX2D(pdp->GetWidth(), pdp->GetHeight()) );
-      pdp->PutTexture( &to, screenBox);
+      pdp->PutTexture( to, screenBox);
     } else {
       pdp->Fill( C_BLACK|CT_OPAQUE);
     }

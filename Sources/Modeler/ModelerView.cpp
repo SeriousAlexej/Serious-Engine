@@ -419,7 +419,7 @@ void CModelerView::ClearBcg( COLOR color, CDrawPortPtr pDrawPort)
     PIXaabbox2D screenBox;
     screenBox = PIXaabbox2D( PIX2D(0,0),
                              PIX2D(pDrawPort->GetWidth(), pDrawPort->GetHeight()) );
-    pDrawPort->PutTexture( ptoValid, screenBox);
+    pDrawPort->PutTexture( *ptoValid, screenBox);
   }
   else
   {
@@ -546,6 +546,7 @@ std::list<CRenderModel> _armRenderModels;
 void CModelerView::RenderAxisOfAllAttachments(CPerspectiveProjection3D &prProjection,
                                               CPlacement3D &plParent, CModelObject &mo)
 {
+  INDEX pushedCount = 1;
   // create render model structure of parent
   CRenderModel *prmParent = &_armRenderModels.emplace_back();
   CAnyProjection3D apr;
@@ -559,6 +560,7 @@ void CModelerView::RenderAxisOfAllAttachments(CPerspectiveProjection3D &prProjec
   FOREACHINLIST( CAttachmentModelObject, amo_lnInMain, mo.mo_lhAttachments, itamo)
   {
     // create new render model structure
+    ++pushedCount;
     itamo->amo_prm = _armRenderModels.emplace_back();
     // obtain attachment's data
     mo.CreateAttachment(*prmParent, *itamo);
@@ -579,7 +581,8 @@ void CModelerView::RenderAxisOfAllAttachments(CPerspectiveProjection3D &prProjec
     RenderAxis( prProjection, plChild, fSize);
   }
   // all done
-  _armRenderModels.clear();
+  while (pushedCount--)
+    _armRenderModels.pop_back();
 }
 
 
@@ -952,7 +955,7 @@ void CModelerView::RenderView( CDrawPortPtr pDrawPort)
       if( !m_bTileMappingBCG)
       {
         MEXaabbox2D boxTexture(MEX2D(0,0), MEX2D(mexWidth-1, mexHeight-1));
-        pDrawPort->PutTexture(&m_ModelObject.mo_toTexture, boxScreen, boxTexture);
+        pDrawPort->PutTexture(m_ModelObject.mo_toTexture, boxScreen, boxTexture);
       }
       else
       {
@@ -967,7 +970,7 @@ void CModelerView::RenderView( CDrawPortPtr pDrawPort)
         MEX mexU1 = MEX(mexU0+pixSizeI*fMexOverPix);
         MEX mexV1 = MEX(mexV0+pixSizeJ*fMexOverPix);
 
-        pDrawPort->PutTexture( &m_ModelObject.mo_toTexture,
+        pDrawPort->PutTexture( m_ModelObject.mo_toTexture,
                                PIXaabbox2D(PIX2D(0,0), PIX2D( pixSizeI, pixSizeJ)),
                                MEXaabbox2D(MEX2D( mexU0, mexV0), MEX2D( mexU1, mexV1)));
       }
@@ -1001,7 +1004,7 @@ void CModelerView::RenderView( CDrawPortPtr pDrawPort)
           PIX pixPatchVMax = (PIX) ((mexPatchV+ptdPatch->GetHeight()*pMD->md_mpPatches[iMaskBit].mp_fStretch) * m_MagnifyFactor - m_offy);
           PIXaabbox2D screenBox =  
             PIXaabbox2D( PIX2D(pixPatchUMin, pixPatchVMin),PIX2D(pixPatchUMax, pixPatchVMax));
-          pDrawPort->PutTexture( &pMD->md_mpPatches[iMaskBit].mp_toTexture, screenBox);
+          pDrawPort->PutTexture( pMD->md_mpPatches[iMaskBit].mp_toTexture, screenBox);
         }
       }
     }

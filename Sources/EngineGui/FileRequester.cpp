@@ -171,7 +171,7 @@ UINT APIENTRY FileOpenRequesterHook( HWND hdlg, UINT uiMsg, WPARAM wParam,	LPARA
         {
           CTextureObject toPreview;
           toPreview.SetData( *pTextureData);
-          _pDrawPort->PutTexture( &toPreview, rectPict);
+          _pDrawPort->PutTexture( toPreview, rectPict);
           CWnd::FromHandle( GetDlgItem( hdlg, IDC_THUMBNAIL_DESCRIPTION))->SetWindowText( 
             CString(pTextureData->GetDescription()));
           // release the texture

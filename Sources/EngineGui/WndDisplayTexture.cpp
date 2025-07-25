@@ -142,7 +142,7 @@ void CWndDisplayTexture::OnPaint()
       PIXaabbox2D rectPict = PIXaabbox2D( PIX2D( m_pixWinOffsetU, m_pixWinOffsetV),
                                           PIX2D( m_pixWinOffsetU+m_pixWinWidth, m_pixWinOffsetV+m_pixWinHeight));
       // draw texture
-      m_pDrawPort->PutTexture( &m_toTexture, rectPict);
+      m_pDrawPort->PutTexture( m_toTexture, rectPict);
     } 
 
     // draw line on left mouse move

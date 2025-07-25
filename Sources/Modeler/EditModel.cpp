@@ -1642,7 +1642,7 @@ void CEditModel::ExportSurfaceNumbersAndNames( CTFileName fnFile)
   {
     MappingSurfacePtr pms= pMMI->mmpi_MappingSurfaces[iSurf];
     CTString strExportLine;
-    strExportLine.PrintF( "%d) %s\n", iSurf, pms->ms_Name);
+    strExportLine.PrintF( "%d) %s\n", iSurf, static_cast<const char*>(pms->ms_Name));
     strExport+=strExportLine;
   }
 
