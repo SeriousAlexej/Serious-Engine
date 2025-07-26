@@ -678,9 +678,9 @@ void CModelerView::RenderView( CDrawPortPtr pDrawPort)
           pDoc->m_soSoundObject.Stop();
           pDoc->m_soSoundObject.SetVolume( SL_VOLUME_MAX, SL_VOLUME_MAX);
           if( asSound.as_bLooping)
-            pDoc->m_soSoundObject.Play_t( asSound.as_fnAttachedSound, SOF_LOOP);
+            pDoc->m_soSoundObject.Play_t( asSound.as_fnAttachedSound, SOF_NONGAME | SOF_LOOP);
           else
-            pDoc->m_soSoundObject.Play_t( asSound.as_fnAttachedSound, 0);
+            pDoc->m_soSoundObject.Play_t( asSound.as_fnAttachedSound, SOF_NONGAME);
           _bSoundPlayed = TRUE;
         }
         catch( char *strError)
