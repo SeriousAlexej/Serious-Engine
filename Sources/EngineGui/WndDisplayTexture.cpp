@@ -81,7 +81,7 @@ void CWndDisplayTexture::OnPaint()
   }
 
   // get texture data
-  CTextureDataPtr pTD = (CTextureData*)m_toTexture.GetData().get();
+  CTextureDataPtr pTD = m_toTexture.GetData();
   BOOL bAlphaChannel = FALSE;
   // if there is a valid drawport, and the drawport can be locked
   if( m_pDrawPort && m_pDrawPort->Lock())

@@ -586,7 +586,7 @@ void CEditModel::SaveIncludeFile_t( CTFileName fnFileName, CTString strDefinePre
       edm_md.GetAnimInfo( iSound, aiInfo);
 
       CTString strWithQuotes;
-      strWithQuotes.PrintF( "\"%s\",", CTString(edm_aasAttachedSounds[iSound]->as_fnAttachedSound));
+      strWithQuotes.PrintF( "\"%s\",", static_cast<const char*>(CTString(edm_aasAttachedSounds[iSound]->as_fnAttachedSound)));
 
       sprintf( line, "//sound SOUND_%s_%-16s %-32s // %s, %s, %s\n",
         static_cast<const char*>(strDefinePrefix),
