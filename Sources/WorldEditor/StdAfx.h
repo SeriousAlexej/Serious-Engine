@@ -34,9 +34,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define ENGINE_INTERNAL 1
 #include <EngineGUI/EngineGUI.h>
-#include <Engine/GameShell.h>
-#include <Engine/Base/ChangeableRT.h>
-#include <Engine/Base/UpdateableRT.h>
+#include <SeriousEngineCppAPI/GameShell.h>
+#include <SeriousEngineCppAPI/Base/ChangeableRT.h>
+#include <SeriousEngineCppAPI/Base/UpdateableRT.h>
 #include <Engine/Terrain/Terrain.h>
 #include <Engine/Terrain/TerrainMisc.h>
 
