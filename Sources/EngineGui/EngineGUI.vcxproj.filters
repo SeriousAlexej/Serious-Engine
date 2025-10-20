@@ -69,6 +69,12 @@
     <ClCompile Include="ImportedSkeleton.cpp">
       <Filter>Source Files\Mesh</Filter>
     </ClCompile>
+    <ClCompile Include="Object3D_IO.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureMapping_Utils.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DlgChooseTextureType.h">
@@ -111,6 +117,12 @@
       <Filter>Header Files\Mesh</Filter>
     </ClInclude>
     <ClInclude Include="ImportedSkeleton.h">
+      <Filter>Header Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Object3D_IO.h">
+      <Filter>Header Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureMapping_Utils.h">
       <Filter>Header Files\Mesh</Filter>
     </ClInclude>
   </ItemGroup>

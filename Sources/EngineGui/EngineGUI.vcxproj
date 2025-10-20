@@ -198,12 +198,14 @@
     <ClCompile Include="ImportedMesh.cpp" />
     <ClCompile Include="ImportedSkeletalAnimation.cpp" />
     <ClCompile Include="ImportedSkeleton.cpp" />
+    <ClCompile Include="Object3D_IO.cpp" />
     <ClCompile Include="StdH.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">StdH.h</PrecompiledHeaderFile>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">StdH.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="TextureMapping_Utils.cpp" />
     <ClCompile Include="WndDisplayTexture.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -226,8 +228,10 @@
     <ClInclude Include="ImportedMesh.h" />
     <ClInclude Include="ImportedSkeletalAnimation.h" />
     <ClInclude Include="ImportedSkeleton.h" />
+    <ClInclude Include="Object3D_IO.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="StdH.h" />
+    <ClInclude Include="TextureMapping_Utils.h" />
     <ClInclude Include="WndDisplayTexture.h" />
   </ItemGroup>
   <ItemGroup>
