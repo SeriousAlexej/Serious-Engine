@@ -32,8 +32,8 @@ public:
   CWnd m_wndTexture;
   BOOL m_bCustomWindowCreated;
 
-  CDrawPort *m_pdp;
-  CViewPort *m_pvp;
+  CDrawPortPtr m_pdp;
+  CViewPortPtr m_pvp;
 
   CDlgGenerateFBM(CWnd* pParent = NULL);   // standard constructor
 

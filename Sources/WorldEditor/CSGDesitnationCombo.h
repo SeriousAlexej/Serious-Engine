@@ -28,10 +28,10 @@ class CCSGDesitnationCombo : public CComboBox
 public:
   CCSGDesitnationCombo();
   BOOL OnIdle(LONG lCount);
-  void SelectBrushEntity( CEntity *penBrush);
+  void SelectBrushEntity( CEntityPtr penBrush);
 
   CTString m_strLastSelectedName;
-  CEntity *GetSelectedBrushEntity(void);
+  CEntityPtr GetSelectedBrushEntity(void);
   
   CUpdateableRT m_udComboEntries;
   CWorldEditorDoc *m_pLastDoc;

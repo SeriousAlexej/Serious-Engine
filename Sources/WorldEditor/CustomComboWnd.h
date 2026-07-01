@@ -43,9 +43,9 @@ public:
 
 // Attributes
 public:
-  CDynamicContainer<CComboLine> m_dcComboLines;
-  CDrawPort *m_pDrawPort;
-  CViewPort *m_pViewPort;
+  std::vector<std::unique_ptr<CComboLine>> m_dcComboLines;
+  CDrawPortPtr m_pDrawPort;
+  CViewPortPtr m_pViewPort;
   int m_iTimerID;
   void (*m_pOnSelect)(INDEX iSelected);
 

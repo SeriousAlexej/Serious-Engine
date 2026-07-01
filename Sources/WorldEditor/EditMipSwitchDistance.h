@@ -31,7 +31,7 @@ class CEditMipSwitchDistance : public CEdit
 public:
   BOOL OnIdle(LONG lCount);
 	CEditMipSwitchDistance();
-  CBrushMip *m_pbrmBrushMipSelected;
+  CBrushMipPtr m_pbrmBrushMipSelected;
   FLOAT m_fLastValue;
 
 // Attributes

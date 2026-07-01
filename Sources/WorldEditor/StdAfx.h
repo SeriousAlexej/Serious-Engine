@@ -37,8 +37,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <SeriousEngineCppAPI/GameShell.h>
 #include <SeriousEngineCppAPI/Base/ChangeableRT.h>
 #include <SeriousEngineCppAPI/Base/UpdateableRT.h>
-#include <Engine/Terrain/Terrain.h>
-#include <Engine/Terrain/TerrainMisc.h>
+#include <SeriousEngineCppAPI/Terrain/Terrain.h>
+#include <SeriousEngineCppAPI/Terrain/TerrainMisc.h>
 
 #include "WorldEditor.h"
 

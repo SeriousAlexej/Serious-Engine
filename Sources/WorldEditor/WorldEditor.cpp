@@ -2118,12 +2118,6 @@ int CWorldEditorApp::ExitInstance()
     _pTextureStock->Release( m_ptdActiveTexture);
   }
 
-  /*
-  FORDELETELIST( CDisplayMode, dm_Node, m_AvailableModes, litDM)
-  {
-    delete &litDM.Current();
-  } */
-
   FORDELETELIST( CPrimitiveInHistoryBuffer, pihb_lnNode, theApp.m_lhPrimitiveHistory, itPrim)
   {
     delete &itPrim.Current();

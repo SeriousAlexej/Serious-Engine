@@ -35,8 +35,8 @@ public:
   CTString m_strTexture;
   COleDataSource m_DataSource;
 
-  CViewPort *m_pViewPort;
-  CDrawPort *m_pDrawPort;
+  CViewPortPtr m_pViewPort;
+  CDrawPortPtr m_pDrawPort;
  
 // Operations
 public:

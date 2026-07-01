@@ -30,30 +30,28 @@ class CPropertyID
 {
 public:
   inline CPropertyID( CTString strName, CEntityProperty::PropertyType eptType,
-                      CEntityProperty *penpProperty, CAnimData *padAnimData)
+                      CEntityPropertyPtr penpProperty, CAnimDataPtr padAnimData)
   {
     pid_strName = strName;
     pid_eptType = eptType;
     pid_penpProperty = penpProperty;
     if( eptType == CEntityProperty::EPT_ANIMATION) pid_padAnimData = padAnimData;
-    else                                           pid_padAnimData = NULL;
-    if( penpProperty != NULL) 
+    else                                           pid_padAnimData.Reset();
+    if( penpProperty) 
       pid_chrShortcutKey = penpProperty->ep_chShortcut;
     else
       pid_chrShortcutKey = 0;
   };
-  // node for linking
-  CListNode pid_lnNode;
   // descriptive name of this property
   CTString pid_strName;
   // shortcut key for this property
   char pid_chrShortcutKey;
   // name of anim data object (if any)
-  CAnimData *pid_padAnimData;
+  CAnimDataPtr pid_padAnimData;
   // property type
   CEntityProperty::PropertyType pid_eptType;
   // property ptr
-  CEntityProperty *pid_penpProperty;
+  CEntityPropertyPtr pid_penpProperty;
 };
 
 class CPropertyComboBox : public CComboBox
@@ -71,7 +69,7 @@ public:
   // ptr to parent dialog
   CPropertyComboBar *m_pDialog;
   // list head for holding intersected properties
-  CListHead m_lhProperties;
+  std::vector<std::unique_ptr<CPropertyID>> m_lhProperties;
   CUpdateableRT m_udComboEntries;
   INDEX m_iLastMode;
   CWorldEditorDoc *m_pLastDoc;
@@ -81,7 +79,7 @@ public:
   // sets ptr to parent dialog
   void SetDialogPtr( CPropertyComboBar *pDialog);
   // adds intersecting properties of given entity into m_lhProperties list
-  void JoinProperties( CEntity *penEntity, BOOL bIntersect);
+  void JoinProperties( CEntityPtr penEntity, BOOL bIntersect);
 
 // Overrides
 	// ClassWizard generated virtual function overrides

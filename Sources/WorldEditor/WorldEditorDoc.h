@@ -64,8 +64,7 @@ enum CSGType
 
 class CUndo
 {
-public:  
-  CListNode m_lnListNode;
+public:
   CTFileName m_fnmUndoFile;     // name of temporary file used for undo/redo
   /* Constructor. */
   CUndo(void);    // throw char * 
@@ -81,13 +80,13 @@ protected: // create from serialization only
 
 // Attributes
 public:
-  CDynamicContainer<CTerrainUndo> m_dcTerrainUndo;
+  std::vector<std::unique_ptr<CTerrainUndo>> m_dcTerrainUndo;
   INDEX m_iCurrentTerrainUndo;
   BOOL m_bAskedToCheckOut;
   SLONG m_slDisplaceTexTime;
   INDEX m_iMirror;
   INDEX m_iTexture;
-  CTerrain *m_ptrSelectedTerrain;
+  CTerrainPtr m_ptrSelectedTerrain;
   CTextureObject m_toBackdropUp;
   CTextureObject m_toBackdropFt;
   CTextureObject m_toBackdropRt;
@@ -113,9 +112,9 @@ public:
   enum CSGType m_csgtPreLastUsedCSGOperation;
   enum CSGType m_csgtLastUsedCSGOperation;
   // list head for undo
-  CListHead m_lhUndo;
+  std::vector<std::unique_ptr<CUndo>> m_lhUndo;
   // list head for redo
-  CListHead m_lhRedo;
+  std::vector<std::unique_ptr<CUndo>> m_lhRedo;
   BOOL m_absoluteRotation;
   BOOL m_bAutoSnap;
   BOOL m_bOrientationIcons;
@@ -127,22 +126,22 @@ public:
   CPlacement3D m_plLastPlacement;
   CPlacement3D m_plMouseMove;   // used for continous mouse editting
   CWorld m_woWorld;
-  CWorld *m_pwoSecondLayer;   // world for holding second layer
-  CEntity *m_penPrimitive;
+  std::unique_ptr<CWorld> m_pwoSecondLayer;   // world for holding second layer
+  CEntityPtr m_penPrimitive;
   // index for holding pre CSG mode
   INDEX m_iPreCSGMode;
   INDEX m_iMode;
 
   // volume selection
-  CDynamicContainer<CEntity> m_cenEntitiesSelectedByVolume;
+  CDynamicContainer_CEntity m_cenEntitiesSelectedByVolume;
   INDEX m_iSelectedEntityInVolume;
   // selections
   NewEntitySelection m_selEntitySelection;
   CBrushSectorSelection m_selSectorSelection;
   CBrushVertexSelection m_selVertexSelection;
-  CStaticArray<DOUBLE3D> m_avStartDragVertices;
+  std::vector<DOUBLE3D> m_avStartDragVertices;
   CBrushPolygonSelection m_selPolygonSelection;
-  CStaticArray<CPlacement3D> m_aSelectedEntityPlacements;
+  std::vector<CPlacement3D> m_aSelectedEntityPlacements;
   CBrushPolygon *m_pbpoLastCentered;
 
   CChangeableRT m_chSelections;
@@ -180,7 +179,7 @@ public:
   void CreateStaircasesPrimitive(void);
   void CreateSpherePrimitive(void);
   void CreateTerrainPrimitive(void);
-  void CreateTerrainObject3D( CImageInfo *piiDisplace, INDEX iSlicesX, INDEX iSlicesZ, INDEX iMip);
+  void CreateTerrainObject3D( CImageInfoPtr piiDisplace, INDEX iSlicesX, INDEX iSlicesZ, INDEX iMip);
   void CreatePrimitive(void);
   // apply auto colorize function
   void ApplyAutoColorize(void);
@@ -216,7 +215,7 @@ public:
   // does "snap to grid" for primitive values
   void SnapPrimitiveValuesToGrid(void);
   // saves curent state of the world as tail of give undo/redo list
-  void SaveWorldIntoUndoRedoList( CListHead &lhList);
+  void SaveWorldIntoUndoRedoList(std::vector<std::unique_ptr<CUndo>>& lhList);
   // restores last operation from given undo/redo object
   void LoadWorldFromUndoRedoList( CUndo *pUndoRedo);
   // remembers last operation into undo buffer

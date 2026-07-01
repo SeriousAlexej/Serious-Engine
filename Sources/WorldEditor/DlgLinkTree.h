@@ -29,8 +29,8 @@ class CDlgLinkTree : public CDialog
 {
 // Construction
 public:
-	CDlgLinkTree(CEntity *pen, CPoint pt, BOOL bWhoTargets, BOOL bPropertyNames, CWnd* pParent = NULL);
-  void AddEntityPtrsRecursiv(CEntity *pen, HTREEITEM hParent, CTString strPropertyName);
+	CDlgLinkTree(CEntityPtr pen, CPoint pt, BOOL bWhoTargets, BOOL bPropertyNames, CWnd* pParent = NULL);
+  void AddEntityPtrsRecursiv(CEntityPtr pen, HTREEITEM hParent, CTString strPropertyName);
   void ExpandTree(HTREEITEM pItem, BOOL bExpand, INDEX iMaxLevel=-1, BOOL bNoNextSibling=FALSE);
   void ExpandRecursivly(HTREEITEM pItem, BOOL bExpand, BOOL bNoNextSibling);
   void CalculateOccupiedSpace(HTREEITEM hItem, CRect &rect);
@@ -38,7 +38,7 @@ public:
   void SetNewWindowOrigin(void);
   void InitializeTree(void);
   CPoint m_pt;
-  CEntity *m_pen;
+  CEntityPtr m_pen;
   HTREEITEM m_HitItem;
   CPoint m_ptLastMouse;
   CPoint m_ptMouseDown;

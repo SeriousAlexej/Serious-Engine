@@ -31,7 +31,7 @@ private:
 	DECLARE_DYNCREATE(CDlgPgTexture)
 
 	bool m_dirty = true;
-	CWorld* mp_last_world = nullptr;
+	CWorldPtr mp_last_world;
 
 // Construction
 public:

@@ -45,8 +45,8 @@ public:
   INDEX m_iStartingFrame;
   INDEX m_iSelectedFrame;
   CDlgLightAnimationEditor *m_pParentDlg;
-  CDrawPort *m_pDrawPort;
-  CViewPort *m_pViewPort;
+  CDrawPortPtr m_pDrawPort;
+  CViewPortPtr m_pViewPort;
 
 // Operations
 public:

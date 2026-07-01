@@ -33,8 +33,8 @@ public:
 public:
   INDEX m_iSelectedColor;
 
-  CDrawPort *m_pDrawPort;
-  CViewPort *m_pViewPort;
+  CDrawPortPtr m_pDrawPort;
+  CViewPortPtr m_pViewPort;
 
 // Operations
 public:

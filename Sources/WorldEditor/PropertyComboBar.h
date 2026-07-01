@@ -39,9 +39,9 @@ public:
   void SetIntersectingFileName();
   void SelectAxisRadio(CWnd *pwndToSelect);
   void SetColorPropertyToEntities( COLOR colNewColor);
-  void SetFirstValidEmptyTargetProperty(CEntity *penTarget);
-  void ClearAllTargets(CEntity *penClicked);
-  void SelectProperty(CEntityProperty *penpToMatch);
+  void SetFirstValidEmptyTargetProperty(CEntityPtr penTarget);
+  void ClearAllTargets(CEntityPtr penClicked);
+  void SelectProperty(CEntityPropertyPtr penpToMatch);
 // Attributes
 public:
   CSize m_Size;
@@ -117,7 +117,7 @@ public:
 public:
   virtual CSize CalcDynamicLayout( int nLength, DWORD dwMode );
   void SetIntersectingEntityClassName(void);
-  CEntity *GetSelectedEntityPtr(void);
+  CEntityPtr GetSelectedEntityPtr(void);
 
 	// Generated message map functions
 	//{{AFX_MSG(CPropertyComboBar)

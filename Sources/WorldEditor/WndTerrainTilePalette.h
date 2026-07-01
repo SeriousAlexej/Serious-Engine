@@ -33,12 +33,12 @@ public:
 
 // Attributes
 public:
-  CTextureData *m_ptd;
-  CDrawPort *m_pDrawPort;
-  CViewPort *m_pViewPort;
+  CTextureDataPtr m_ptd;
+  CDrawPortPtr m_pDrawPort;
+  CViewPortPtr m_pViewPort;
   INDEX m_ctPaletteTilesH;
   INDEX m_ctTilesPerRaw;
-  CDynamicContainer<CTileInfo> m_dcTileInfo;
+  std::vector<std::unique_ptr<CTileInfo>> m_dcTileInfo;
   INDEX m_iTimerID;
 
 // Operations
@@ -54,7 +54,7 @@ public:
 // Implementation
 public:
 	virtual ~CWndTerrainTilePalette();
-  BOOL Initialize(PIX pixX, PIX pixY, CTextureData *ptd, BOOL bCenter=TRUE);
+  BOOL Initialize(PIX pixX, PIX pixY, CTextureDataPtr ptd, BOOL bCenter=TRUE);
   PIXaabbox2D GetTileBBox( INDEX iTile);
 
 	// Generated message map functions

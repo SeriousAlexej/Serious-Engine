@@ -36,17 +36,17 @@ public:
 	CDlgBrowseByClass(CWnd* pParent = NULL, bool for_picking = false, std::function<bool(CEntity*)>&& filter = nullptr);   // standard constructor
 	~CDlgBrowseByClass();
   BOOL Create(UINT nIDTemplate, CWnd* pParentWnd = nullptr) override;
-  void AddEntity( CEntity *pen);
+  void AddEntity( CEntityPtr pen);
   void FillListWithEntities(void);
   void InitializePluggins(void);
   void InitializeListColumns(void);
-  CTString GetItemValue(CEntity *pen, INDEX iColumn, BOOL &bNumber);
-  CDynamicContainer<class CEntity> *GetCurrentContainer(void);
+  CTString GetItemValue(CEntityPtr pen, INDEX iColumn, BOOL &bNumber);
+  CDynamicContainer_CEntity* GetCurrentContainer(void);
 
   BOOL m_bCenterSelected;
 	const bool m_for_picking;
 	std::function<bool(CEntity*)> m_filter;
-	CEntity* m_selected_entity;
+	CEntityPtr m_selected_entity;
 
 // Dialog Data
 	//{{AFX_DATA(CDlgBrowseByClass)

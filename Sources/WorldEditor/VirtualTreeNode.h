@@ -37,14 +37,13 @@ public:
 class CVirtualTreeNode {
 public:
   BOOL vtn_bIsDirectory;              // set if this is directory
-  CListNode vtn_lnInDirectory;
-  CListHead vtn_lhChildren;           // valid if this is a directory
+  std::vector<std::unique_ptr<CVirtualTreeNode>> vtn_lhChildren; // valid if this is a directory
   CVirtualTreeNode *vnt_pvtnParent;   // NULL if this is root
   ULONG vtn_Handle;                   // internaly use ULONG, later cast to HTREEITEM
   INDEX vtn_itIconType;               // INDEX of representing icon in list of icons
   enum BrowsingMode vtn_bmBrowsingMode;// how to display items - as icons, text, ...
   BOOL vtn_bSelected;                 // (if item) is this item curently selected
-  CTextureData *vtn_pTextureData;     // here we will load textures or thumb nails 
+  CTextureDataPtr vtn_pTextureData;     // here we will load textures or thumb nails 
   CTString vtn_strName;               // (if directory) name in virtual tree
   CTFileName vtn_fnItem;              // (if item) file name
 

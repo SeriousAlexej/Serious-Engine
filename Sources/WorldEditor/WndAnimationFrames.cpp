@@ -35,8 +35,6 @@ static char THIS_FILE[] = __FILE__;
 
 CWndAnimationFrames::CWndAnimationFrames()
 {
-  m_pDrawPort = NULL;
-  m_pViewPort = NULL;
   m_iSelectedFrame = 0;
   m_iStartingFrame = 0;
   m_iFramesInLine = 0;
@@ -65,7 +63,7 @@ BOOL CWndAnimationFrames::IsSelectedFrameKeyFrame(void)
   // get curently selected light animation combo member
   INDEX iLightAnimation = m_pParentDlg->GetSelectedLightAnimation();
   // get animation data
-  CAnimData *pAD = m_pParentDlg->m_padAnimData;
+  CAnimDataPtr& pAD = m_pParentDlg->m_padAnimData;
   // obtain information about animation
   CAnimInfo aiInfo;
   pAD->GetAnimInfo(iLightAnimation, aiInfo);
@@ -84,17 +82,17 @@ void CWndAnimationFrames::OnPaint()
   CPaintDC dc(this); // device context for painting
   }
 
-  if( (m_pViewPort == NULL) && (m_pDrawPort == NULL) )
+  if( (!m_pViewPort) && (!m_pDrawPort) )
   {
     // initialize canvas for active texture button
-    _pGfx->CreateWindowCanvas( m_hWnd, &m_pViewPort, &m_pDrawPort);
+    _pGfx_CreateWindowCanvas( m_hWnd, m_pViewPort, m_pDrawPort);
   }
 
   // calculate how many frames we have in one line
   m_iFramesInLine = m_pDrawPort->GetWidth()/FRAME_BOX_WIDTH;
 
   // if there is a valid drawport, and the drawport can be locked
-  if( (m_pDrawPort != NULL) && (m_pDrawPort->Lock()) )
+  if( (m_pDrawPort) && (m_pDrawPort->Lock()) )
   {
     // clear window background
     m_pDrawPort->Fill( C_GRAY | CT_OPAQUE);
@@ -102,7 +100,7 @@ void CWndAnimationFrames::OnPaint()
     // get curently selected light animation combo member
     INDEX iLightAnimation = m_pParentDlg->GetSelectedLightAnimation();
     // get animation data
-    CAnimData *pAD = m_pParentDlg->m_padAnimData;
+    CAnimDataPtr& pAD = m_pParentDlg->m_padAnimData;
     // obtain information about animation
     CAnimInfo aiInfo;
     pAD->GetAnimInfo(iLightAnimation, aiInfo);
@@ -153,7 +151,7 @@ void CWndAnimationFrames::OnPaint()
     // unlock the drawport
     m_pDrawPort->Unlock();
     // if there is a valid viewport
-    if (m_pViewPort!=NULL)
+    if (!m_pViewPort)
     {
       // swap it
       m_pViewPort->SwapBuffers();
@@ -168,7 +166,7 @@ BOOL CWndAnimationFrames::IsFrameVisible(INDEX iFrame)
   // obtain information about animation
   CAnimInfo aiInfo;
   // get animation data
-  CAnimData *pAD = m_pParentDlg->m_padAnimData;
+  CAnimDataPtr& pAD = m_pParentDlg->m_padAnimData;
   pAD->GetAnimInfo(iLightAnimation, aiInfo);
   if( (iFrame>=m_iStartingFrame) && 
       (iFrame<(m_iStartingFrame+m_iFramesInLine)) &&
@@ -187,7 +185,7 @@ void CWndAnimationFrames::DeleteSelectedFrame( void)
   // get curently selected light animation combo member
   INDEX iLightAnimation = m_pParentDlg->GetSelectedLightAnimation();
   // get animation data
-  CAnimData *pAD = m_pParentDlg->m_padAnimData;
+  CAnimDataPtr& pAD = m_pParentDlg->m_padAnimData;
   // obtain information about animation
   CAnimInfo aiInfo;
   pAD->GetAnimInfo(iLightAnimation, aiInfo);
@@ -227,7 +225,7 @@ void CWndAnimationFrames::OnLButtonDown(UINT nFlags, CPoint point)
   // get curently selected light animation combo member
   INDEX iLightAnimation = m_pParentDlg->GetSelectedLightAnimation();
   // get animation data
-  CAnimData *pAD = m_pParentDlg->m_padAnimData;
+  CAnimDataPtr& pAD = m_pParentDlg->m_padAnimData;
   COLORREF newFrameColor = CLRF_CLR( pAD->GetFrame(iLightAnimation, iFrame));
   if( MyChooseColor( newFrameColor, *m_pParentDlg) )
   {
@@ -268,7 +266,7 @@ void CWndAnimationFrames::ScrollRight(void)
   // obtain information about animation
   CAnimInfo aiInfo;
   // get animation data
-  CAnimData *pAD = m_pParentDlg->m_padAnimData;
+  CAnimDataPtr& pAD = m_pParentDlg->m_padAnimData;
   pAD->GetAnimInfo(iLightAnimation, aiInfo);
   // calculate possible new starting frame
   INDEX iNewLastDisplayedFrame = m_iStartingFrame+1+m_iFramesInLine;
@@ -306,7 +304,7 @@ void CWndAnimationFrames::ScrollPgRight()
   // obtain information about animation
   CAnimInfo aiInfo;
   // get animation data
-  CAnimData *pAD = m_pParentDlg->m_padAnimData;
+  CAnimDataPtr& pAD = m_pParentDlg->m_padAnimData;
   pAD->GetAnimInfo(iLightAnimation, aiInfo);
   // calculate possible new starting frame
   INDEX iNewStart = m_iStartingFrame+m_iFramesInLine;
@@ -325,12 +323,11 @@ void CWndAnimationFrames::OnDestroy()
 {
 	CWnd::OnDestroy();
 	
-  if( m_pViewPort != NULL)
+  if( m_pViewPort)
   {
-    _pGfx->DestroyWindowCanvas( m_pViewPort);
-    m_pViewPort = NULL;
+    _pGfx_DestroyWindowCanvas( m_pViewPort);
   }
 
-  m_pViewPort = NULL;
-  m_pDrawPort = NULL;
+  m_pViewPort.Reset();
+  m_pDrawPort.Reset();
 }

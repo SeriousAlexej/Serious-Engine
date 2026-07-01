@@ -99,7 +99,7 @@ public:
   InputAction m_iaLastInputAction;
   BOOL m_bTestGameOn;
 
-  CBrushMip *m_pbmToSetMipSwitch;
+  CBrushMipPtr m_pbmToSetMipSwitch;
   COleDataSource m_DataSource;  // to enable drag and drop
   CTimerValue m_tvLastTime;     // last time view was refreshed
   CViewPrefs m_vpViewPrefs;     // current rendering preferences
@@ -114,7 +114,7 @@ public:
   BOOL m_bWeDeselectedFirstPolygon;
   BOOL m_bWeDeselectedFirstSector;
   CPoint m_ptMouseDown;         // mouse position at mouse down time
-  CStaticStackArray<PIX2D> m_avpixLaso; // coordinates for laso
+  CStaticStackArray_PIX2D m_avpixLaso; // coordinates for laso
   BOOL m_bRequestVtxClickSelect;    // if vertex select test requested from renderer
   BOOL m_bRequestVtxLassoSelect;    // if vertex laso select test requested from renderer
   BOOL m_bRequestEntityLassoSelect; // if vertex laso select test requested from renderer
@@ -127,7 +127,7 @@ public:
   FLOAT m_fpixGridSteep;        // steep in float pixels f of grid line
   FLOAT3D m_f3dRotationOrigin;  // used as rotation origin while changing mapping coordinates
   FLOATplane3D m_plTranslationPlane;  // plane used for polgon mapping translation
-  CBrushPolygon *m_pbpoTranslationPlane;
+  CBrushPolygonPtr m_pbpoTranslationPlane;
   // current grid in meters
   FLOAT m_fGridInMeters;
   FLOAT m_fGridX;
@@ -136,8 +136,8 @@ public:
   
   BOOL m_bEntityHitedOnContext;
   CPlacement3D m_plEntityHitOnContext;
-  CEntity *m_penEntityHitOnContext;
-  CBrushPolygon *m_pbpoRightClickedPolygon;
+  CEntityPtr m_penEntityHitOnContext;
+  CBrushPolygonPtr m_pbpoRightClickedPolygon;
   CTString m_strTerrainDataPaneText;
 
   // index of vertice on primitive base that user is currently dragging
@@ -155,8 +155,8 @@ public:
 
   // values for primitive are remembered here when LMB is pressed (for latere continous moving)
   CValuesForPrimitive m_VFPMouseDown;
-  CDrawPort *m_pdpDrawPort;
-  CViewPort *m_pvpViewPort;
+  CDrawPortPtr m_pdpDrawPort;
+  CViewPortPtr m_pvpViewPort;
   COleDropTarget m_DropTarget;
 
 	CTFileName m_fnWinBcgTexture;
@@ -171,26 +171,26 @@ public:
 	void AdjustGizmoProjection(CAnyProjection3D& proj);
 	std::optional<std::pair<GizmoAxis, FLOAT2D>> HoveredAxis();
   // obtain draw port
-  inline CDrawPort *GetDrawPort( void) {
+  inline CDrawPortPtr GetDrawPort( void) {
     if( theApp.m_bChangeDisplayModeInProgress)
-      return NULL;
+      return {};
     else
       return m_pdpDrawPort;
   };
   // obtain view port
-  inline CViewPort *GetViewPort( void)
+  inline CViewPortPtr GetViewPort( void)
   {
     if( theApp.m_bChangeDisplayModeInProgress)
-      return NULL;
+      return {};
     else
       return m_pvpViewPort;
   };
   void GetToolTipText( char *pToolTipText);
   // renders one picture
-  void RenderView( CDrawPort *pDP);
+  void RenderView( CDrawPortPtr pDP);
   // obtain information about what was hit with mouse
   CCastRay GetMouseHitInformation( CPoint point, BOOL bHitPortals = FALSE,
-    BOOL bHitModels = TRUE, BOOL bHitFields = TRUE, CEntity *penSourceEntity = NULL, BOOL bHitBrushes=TRUE);
+		BOOL bHitModels = TRUE, BOOL bHitFields = TRUE, CEntityPtr penSourceEntity = {}, BOOL bHitBrushes = TRUE);
   FLOAT3D GetMouseHitOnPlane( CPoint point, const FLOATplane3D &plPlane);
   // Start and stop functions that are called for start moving/rotating 
   void ToggleHittedPolygon( CCastRay &crRayHit);
@@ -225,29 +225,29 @@ public:
   CPlacement3D GetMouseInWorldPlacement(void);
 
   void CreatePrimitiveCalledFromPopup();
-  void RenderBackdropTexture(CDrawPort *pDP,FLOAT3D v0, FLOAT3D v1, FLOAT3D v2, FLOAT3D v3,
+  void RenderBackdropTexture(CDrawPortPtr pDP,FLOAT3D v0, FLOAT3D v1, FLOAT3D v2, FLOAT3D v3,
                              CTextureObject &to);
   void OnAlignPrimitive(void);
   void CenterSelected(void);
   void AllignBox( FLOATaabbox3D bbox);
-  void AllignPolygon( CBrushPolygon *pbpo);
+  void AllignPolygon( CBrushPolygonPtr pbpo);
   void EditCopy( BOOL bAlternative);
-  void CopyMapping(CBrushPolygon *pbpo);
-  void PasteMappingOnOnePolygon(CBrushPolygon *pbpo, BOOL bAsProjected);
-  void PasteMapping(CBrushPolygon *pbpo, BOOL bAsProjected);
+  void CopyMapping(CBrushPolygonPtr pbpo);
+  void PasteMappingOnOnePolygon(CBrushPolygonPtr pbpo, BOOL bAsProjected);
+  void PasteMapping(CBrushPolygonPtr pbpo, BOOL bAsProjected);
   void PasteOneLayerMapping(INDEX iLayer, CMappingDefinition &md,
-    FLOATplane3D &pl, CBrushPolygon *pbpo, BOOL bAsProjected);
-  void PasteTexture( CBrushPolygon *pbpoPolygon);
-  void CopySectorAmbient( CBrushSector *pbscSector);
-  void PasteSectorAmbient( CBrushSector *pbscSector);
+    FLOATplane3D &pl, CBrushPolygonPtr pbpo, BOOL bAsProjected);
+  void PasteTexture( CBrushPolygonPtr pbpoPolygon);
+  void CopySectorAmbient( CBrushSectorPtr pbscSector);
+  void PasteSectorAmbient( CBrushSectorPtr pbscSector);
   void StorePolygonSelection(CBrushPolygonSelection &selPolygons,
-                                               CDynamicContainer<CBrushPolygon> &dcPolygons);
+                                               CDynamicContainer_CBrushPolygon &dcPolygons);
   void RestorePolygonSelection(CBrushPolygonSelection &selPolygons,
-                                                 CDynamicContainer<CBrushPolygon> &dcPolygons);
-  void DiscardShadows( CEntity *penEntity);
-  void DiscardShadows( CBrushSector *pbscSector);
-  void DiscardShadows( CBrushPolygon *pbpoPolygon);
-  void ApplyDefaultMapping(CBrushPolygon *pbpo, BOOL bRotation, BOOL bOffset, BOOL bStretch);
+                                                 CDynamicContainer_CBrushPolygon &dcPolygons);
+  void DiscardShadows( CEntityPtr penEntity);
+  void DiscardShadows( CBrushSectorPtr pbscSector);
+  void DiscardShadows( CBrushPolygonPtr pbpoPolygon);
+  void ApplyDefaultMapping(CBrushPolygonPtr pbpo, BOOL bRotation, BOOL bOffset, BOOL bStretch);
 
   // get current brush mip of current csg target brush
   CBrushMip *GetCurrentBrushMip(void);
@@ -270,20 +270,20 @@ public:
   FLOAT3D Get3DCoordinateFrom2D( POINT &pt);
   POINT Get2DCoordinateFrom3D( FLOAT3D vPoint);
   BOOL IsCutEnabled(CTString &strError);
-  void SelectAllTargetsOfEntity(CEntity *pen);
+  void SelectAllTargetsOfEntity(CEntityPtr pen);
   void SelectAllTargetsOfSelectedEntities(void);
   BOOL IsSelectClonesOnContextEnabled( void);
   BOOL IsSelectOfSameClassOnContextEnabled( void);
   void ApplyFreeModeControls( CPlacement3D &pl, ANGLE3D &a, FLOAT &fSpeedMultiplier, BOOL bPrescan);
   void PumpWindowsMessagesInFreeMode(BOOL &bRunning, FLOAT &fSpeedMultiplier);
-  void SelectWhoTargets( CDynamicContainer<CEntity> &dcTargetedEntities);
+  void SelectWhoTargets( CDynamicContainer_CEntity &dcTargetedEntities);
 	void OnRemainSelectedByOrientation(BOOL bBothSides);
   void OnDropMarker(CPlacement3D plMarker);
   // functions for mapping fitting
-  void AutoFitMapping(CBrushPolygon *pbpo, BOOL bInvert=FALSE, BOOL bFitBoth=FALSE);
+  void AutoFitMapping(CBrushPolygonPtr pbpo, BOOL bInvert=FALSE, BOOL bFitBoth=FALSE);
   void AutoFitMappingOnPolygon(CBrushPolygon &bpo, BOOL bInvert=FALSE, BOOL bFitBoth=FALSE);
-  void SetAsCsgTarget(CEntity *pen);
-  void ShowLinkTree(CEntity *pen, BOOL bWhoTargets=FALSE, BOOL bPropertyNames=FALSE);
+  void SetAsCsgTarget(CEntityPtr pen);
+  void ShowLinkTree(CEntityPtr pen, BOOL bWhoTargets=FALSE, BOOL bPropertyNames=FALSE);
   BOOL SaveAutoTexture(FLOATaabbox3D boxBrush, CTFileName &fnTex);
   void AutoApplyTexture(FLOATaabbox3D boxBrush, CTFileName &fnTex);
   void AutoApplyTextureOntoPolygon(CBrushPolygon &bpo, FLOATaabbox3D boxBrush, CTFileName &fnTex);
@@ -371,7 +371,7 @@ public:
 	afx_msg void OnCopyTexture();
 	afx_msg void OnPasteTexture();
 	afx_msg void OnCenterEntity();
-	afx_msg void OnCenterEntity(CEntity* entity);
+	afx_msg void OnCenterEntity(CEntityPtr entity);
 	afx_msg void OnFunction();
 	afx_msg void OnUpdateCenterEntity(CCmdUI* pCmdUI);
 	afx_msg void OnDropMarker();

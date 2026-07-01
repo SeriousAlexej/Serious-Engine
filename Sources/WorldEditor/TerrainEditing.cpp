@@ -21,9 +21,9 @@ UWORD *_puwBuffer=NULL;
 Rect _rect;
 PIX _srcExtraW=0;
 PIX _srcExtraH=0;
-CTextureData *_ptdBrush=NULL;
-CTextureData *_ptdDistributionRandomNoise=NULL;
-CTextureData *_ptdContinousRandomNoise=NULL;
+CTextureDataPtr _ptdBrush;
+CTextureDataPtr _ptdDistributionRandomNoise;
+CTextureDataPtr _ptdContinousRandomNoise;
 UWORD *_puwNoiseTarget=NULL;
 PIX _pixNoiseTargetW=0;
 PIX _pixNoiseTargetH=0;
@@ -493,7 +493,7 @@ BOOL SetupContinousNoiseTexture( void)
 {
   try
   {
-    _ptdContinousRandomNoise=_pTextureStock->Obtain_t( theApp.m_fnContinousNoiseTexture);
+    _ptdContinousRandomNoise=_pTextureStock_Obtain_t( theApp.m_fnContinousNoiseTexture);
     _ptdContinousRandomNoise->Force(TEX_STATIC|TEX_CONSTANT);
   }
   catch( char *strError)

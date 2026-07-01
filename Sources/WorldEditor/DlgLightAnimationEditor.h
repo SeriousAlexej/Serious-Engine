@@ -35,7 +35,7 @@ public:
 
   BOOL m_bChanged;
   BOOL m_bCustomWindowsCreated;
-  CAnimData *m_padAnimData;
+  CAnimDataPtr m_padAnimData;
   CWndAnimationFrames m_wndAnimationFrames;
   CWndTestAnimation m_wndTestAnimation;
   void InitLightAnimationCombo(void);

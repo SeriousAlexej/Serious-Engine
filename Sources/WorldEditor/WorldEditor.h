@@ -35,7 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 extern FLOAT _fLastMipBrushingOptionUsed;
 extern INDEX wed_iMaxFPSActive;
-extern struct GameGUI_interface *_pGameGUI;
+extern GameGUI_interface *_pGameGUI;
 
 extern UINT _uiMessengerMsg;
 extern UINT _uiMessengerForcePopup;
@@ -45,12 +45,12 @@ class CWorldEditorDoc;
 class CWorldEditorView;
 class CVirtualTreeNode;
 
-extern CEntity *GetTerrainEntity(void);
-extern CTerrain *GetTerrain(void);
-extern CTerrainLayer *GetLayer(void);
+extern CEntityPtr GetTerrainEntity(void);
+extern CTerrainPtr GetTerrain(void);
+extern CTerrainLayerPtr GetLayer(void);
 extern void SelectLayer(INDEX iLayer);
 extern INDEX GetLayerIndex(void);
-extern CTerrainLayer *GetLayer(INDEX iLayer);
+extern CTerrainLayerPtr GetLayer(INDEX iLayer);
 
 #define ALLOW_TERRAINS 1
 
@@ -98,7 +98,7 @@ public:
   enum CSGType vfp_csgtCSGOperation;
   // global parameters
   enum PrimitiveType vfp_ptPrimitiveType;
-  CStaticArray<DOUBLE3D> vfp_avVerticesOnBaseOfPrimitive;
+  std::vector<DOUBLE3D> vfp_avVerticesOnBaseOfPrimitive;
   CObject3D vfp_o3dPrimitive;
   CPlacement3D vfp_plPrimitive;
   enum TriangularisationType vfp_ttTriangularisationType;
@@ -197,13 +197,6 @@ public:
   void WriteToIniFile(CTString strPrimitiveType);
   void Read_t(CTStream &strmFile);
   void Write_t(CTStream &strmFile);
-};
-
-// for linking of primitive into primitive history list
-class CPrimitiveInHistoryBuffer {
-public:
-  CListNode pihb_lnNode;
-  CValuesForPrimitive pihb_vfpPrimitive;
 };
 
 // Class used for holding global modeler's preferences
@@ -323,11 +316,11 @@ class CWorldEditorApp : public CWinAppQt
 {
 private:
   CWorldEditorDoc *m_pLastActivatedDocument;
-  std::function<void(CEntity*)> m_selection_stealer;
+  std::function<void(CEntityPtr)> m_selection_stealer;
 public:
 // Atributes
   FLOAT3D m_vLastTerrainHit;
-  CEntity *m_penLastTerrainHit;
+  CEntityPtr m_penLastTerrainHit;
   FLOAT m_fCurrentTerrainBrush;
   FLOAT m_fTerrainBrushPressure;
   FLOAT m_iTerrainEditMode;
@@ -362,9 +355,9 @@ public:
 
   CPlacement3D m_plClipboard1;
   CPlacement3D m_plClipboard2;
-  
-  CBrushPolygon *m_pbpoClipboardPolygon;
-  CBrushPolygon *m_pbpoPolygonWithDeafultValues;
+
+  CBrushPolygonPtr m_pbpoClipboardPolygon;
+  CBrushPolygonPtr m_pbpoPolygonWithDeafultValues;
   CTFileName m_fnClassForDropMarker;
   // flag is set while changing display mode
   BOOL m_bChangeDisplayModeInProgress;
@@ -416,57 +409,55 @@ public:
   CMultiDocTemplate* m_pDocTemplate;
   // Only instance of CAppPrefs holding preferences
   class CAppPrefs m_Preferences;
-  // List head for holding available modes/resolutions
-  CListHead m_AvailableModes;
   // error texture
-  CTextureData *m_ptdError;
-  CTextureObject *m_ptoError;
+  CTextureDataPtr m_ptdError;
+  CTextureObjectPtr m_ptoError;
   // icons tray texture
-  CTextureData *m_ptdIconsTray;
+  CTextureDataPtr m_ptdIconsTray;
   // default texture for primitives
-  CTextureData *m_ptdActiveTexture;
+  CTextureDataPtr m_ptdActiveTexture;
   // view icons texture
-  CTextureData *m_pViewIconsTD;
+  CTextureDataPtr m_pViewIconsTD;
   // window background texture
 	CTFileName m_fnWinBcgTexture;
   // application font
-  CFontData *m_pfntSystem;
+  CFontDataPtr m_pfntSystem;
   // application's windows font
   CFont m_Font;
   CFont m_FixedFont;
   // for holding entity selection marker model
-  CTextureData *m_ptdEntityMarkerTexture;
-	CModelData *m_pEntityMarkerModelData;
-	CModelObject *m_pEntityMarkerModelObject;
-  CTextureData* m_gizmo_texture;
-  CModelData* m_axis_data = nullptr;
-  CModelObject* m_axis_model = nullptr;
-  CModelData* m_axis_selected_data = nullptr;
-  CModelObject* m_axis_model_selected = nullptr;
-  CModelData* m_ring_data = nullptr;
-  CModelObject* m_ring_model = nullptr;
-  CModelData* m_ring_selected_data = nullptr;
-  CModelObject* m_ring_model_selected = nullptr;
+  CTextureDataPtr m_ptdEntityMarkerTexture;
+	CModelDataPtr m_pEntityMarkerModelData;
+	CModelObjectPtr m_pEntityMarkerModelObject;
+  CTextureDataPtr m_gizmo_texture;
+  CModelDataPtr m_axis_data;
+  CModelObjectPtr m_axis_model;
+  CModelDataPtr m_axis_selected_data;
+  CModelObjectPtr m_axis_model_selected;
+  CModelDataPtr m_ring_data;
+  CModelObjectPtr m_ring_model;
+  CModelDataPtr m_ring_selected_data;
+  CModelObjectPtr m_ring_model_selected;
   // for holding portal selection marker model
-  CTextureData *m_ptdPortalMarkerTexture;
-	CModelData *m_pPortalMarkerModelData;
-	CModelObject *m_pPortalMarkerModelObject;
+  CTextureDataPtr m_ptdPortalMarkerTexture;
+	CModelDataPtr m_pPortalMarkerModelData;
+	CModelObjectPtr m_pPortalMarkerModelObject;
   // for holding empty brush model
-  CTextureData *m_ptdEmptyBrushTexture;
-	CModelData *m_pEmptyBrushModelData;
-	CModelObject *m_pEmptyBrushModelObject;
+  CTextureDataPtr m_ptdEmptyBrushTexture;
+	CModelDataPtr m_pEmptyBrushModelData;
+	CModelObjectPtr m_pEmptyBrushModelObject;
   // for holding range sphere model
-  CTextureData *m_ptdRangeSphereTexture;
-	CModelData *m_pRangeSphereModelData;
-	CModelObject *m_pRangeSphereModelObject;
+  CTextureDataPtr m_ptdRangeSphereTexture;
+	CModelDataPtr m_pRangeSphereModelData;
+	CModelObjectPtr m_pRangeSphereModelObject;
   // for holding angle3D model
-  CTextureData *m_ptdAngle3DTexture;
-	CModelData *m_pAngle3DModelData;
-	CModelObject *m_pAngle3DModelObject;
+  CTextureDataPtr m_ptdAngle3DTexture;
+	CModelDataPtr m_pAngle3DModelData;
+	CModelObjectPtr m_pAngle3DModelObject;
   // for holding bounding box model
-  CTextureData *m_ptdBoundingBoxTexture;
-	CModelData *m_pBoundingBoxModelData;
-	CModelObject *m_pBoundingBoxModelObject;
+  CTextureDataPtr m_ptdBoundingBoxTexture;
+	CModelDataPtr m_pBoundingBoxModelData;
+	CModelObjectPtr m_pBoundingBoxModelObject;
 
   // variables for full screen display mode
 	CDisplayMode m_dmFullScreen;
@@ -498,7 +489,7 @@ public:
   // default values for terrain primitives
   CValuesForPrimitive m_vfpTerrain;
   // for linking primitives
-  CListHead m_lhPrimitiveHistory;  
+  std::vector<std::unique_ptr<CValuesForPrimitive>> m_lhPrimitiveHistory;
   // obtain currently active view
   CWorldEditorDoc *GetActiveDocument(void);
   // obtain currently active view
@@ -512,15 +503,14 @@ public:
 	~CWorldEditorApp();
 
   void AddToRecentFileList(LPCTSTR lpszPathName) override;
-  void InstallOneTimeSelectionStealer(std::function<void(CEntity*)>&& selection_stealer, void* source);
-  const std::function<void(CEntity*)>& GetSelectionStealer() const;
+  void InstallOneTimeSelectionStealer(std::function<void(CEntityPtr)>&& selection_stealer, void* source);
+  const std::function<void(CEntityPtr)>& GetSelectionStealer() const;
 	void MyParseCommandLine(void);
 	BOOL SubInitInstance(void);
   void OnFileNew();
-  CEntity *CreateWorldBaseEntity(CWorld &woWorld, BOOL bZoning, CPlacement3D pl=CPlacement3D(FLOAT3D(0,0,0),ANGLE3D(0,0,0)));
-  BOOL Add3DObject(CWorldEditorDoc *pDoc, CEntity *penwb, CTFileName fnFile, BOOL bAdd);
+  CEntityPtr CreateWorldBaseEntity(CWorld &woWorld, BOOL bZoning, CPlacement3D pl=CPlacement3D(FLOAT3D(0,0,0),ANGLE3D(0,0,0)));
+  BOOL Add3DObject(CWorldEditorDoc *pDoc, CEntityPtr penwb, CTFileName fnFile, BOOL bAdd);
   INDEX Insert3DObjects(CWorldEditorDoc *pDoc);
-  CDisplayMode *GetStartModePtr( CTString strStartMode);
   CWorldEditorDoc *GetLastActivatedDocument(void);
   void ActivateDocument(CWorldEditorDoc *pDocToActivate);
   void RefreshAllDocuments( void);
@@ -593,7 +583,7 @@ public:
 inline BOOL CValuesForPrimitive::operator==(const CValuesForPrimitive &vfpToCompare)
 {
   return (
-    (vfp_avVerticesOnBaseOfPrimitive.Count() == vfpToCompare.vfp_avVerticesOnBaseOfPrimitive.Count() ) &&
+    (vfp_avVerticesOnBaseOfPrimitive.size() == vfpToCompare.vfp_avVerticesOnBaseOfPrimitive.size() ) &&
     (vfp_ptPrimitiveType == vfpToCompare.vfp_ptPrimitiveType) &&
     (vfp_plPrimitive == vfpToCompare.vfp_plPrimitive) &&
     (vfp_ttTriangularisationType == vfpToCompare.vfp_ttTriangularisationType) &&

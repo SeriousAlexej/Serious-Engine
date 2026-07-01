@@ -33,9 +33,9 @@ public:
 
 // Attributes
 public:
-  CTextureData *m_ptd;
-  CDrawPort *m_pDrawPort;
-  CViewPort *m_pViewPort;
+  CTextureDataPtr m_ptd;
+  CDrawPortPtr m_pDrawPort;
+  CViewPortPtr m_pViewPort;
   CTString m_strText1;
   CTString m_strText2;
   PIXaabbox2D m_boxTexture;

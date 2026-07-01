@@ -35,8 +35,8 @@ public:
   CAnimObject m_aoAnimObject;
   CDlgLightAnimationEditor *m_pParentDlg;
   int m_iTimerID;
-  CDrawPort *m_pDrawPort;
-  CViewPort *m_pViewPort;
+  CDrawPortPtr m_pDrawPort;
+  CViewPortPtr m_pViewPort;
 
 // Operations
 public:

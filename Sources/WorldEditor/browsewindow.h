@@ -38,7 +38,6 @@ public:
   INDEX m_iLastHittedItem;
   BOOL m_bDirectoryOpen;    // If directory is opened (valid)
   CBrowser *m_pBrowser;
-  CListHead m_IconsList;
   INDEX m_IconsInLine;
   INDEX m_IconsInColumn;
   INDEX m_IconsVisible;
@@ -73,8 +72,8 @@ public:
 	void OnContextMenu( CPoint point);
   void GetToolTipText( char *pToolTipText);
 
-  CDrawPort *m_pDrawPort;
-  CViewPort *m_pViewPort;
+  CDrawPortPtr m_pDrawPort;
+  CViewPortPtr m_pViewPort;
 	
   // Generated message map functions
 	//{{AFX_MSG(CBrowseWindow)

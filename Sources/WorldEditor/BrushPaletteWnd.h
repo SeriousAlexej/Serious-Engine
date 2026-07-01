@@ -33,8 +33,8 @@ public:
 
 // Attributes
 public:
-  CDrawPort *m_pDrawPort;
-  CViewPort *m_pViewPort;
+  CDrawPortPtr m_pDrawPort;
+  CViewPortPtr m_pViewPort;
   int m_iTimerID;
 
 // Operations
