@@ -32,18 +32,16 @@ static char THIS_FILE[] = __FILE__;
 
 CBrushPaletteWnd::CBrushPaletteWnd()
 {
-  m_pDrawPort = NULL;
-  m_pViewPort = NULL;
   // mark that timer is not yet started
   m_iTimerID = -1;
 }
 
 CBrushPaletteWnd::~CBrushPaletteWnd()
 {
-  if( m_pViewPort != NULL)
+  if( m_pViewPort)
   {
-    _pGfx->DestroyWindowCanvas( m_pViewPort);
-    m_pViewPort = NULL;
+    _pGfx_DestroyWindowCanvas( m_pViewPort);
+    m_pViewPort.Reset();
   }
 }
 
@@ -99,7 +97,7 @@ void CBrushPaletteWnd::OnPaint()
   ScreenToClient( &ptMouse);
 
   // if there is a valid drawport, and the drawport can be locked
-  if( (m_pDrawPort != NULL) && (m_pDrawPort->Lock()) )
+  if( m_pDrawPort && (m_pDrawPort->Lock()) )
   {
     CWorldEditorView *pWorldEditorView = theApp.GetActiveView();
     ASSERT( pWorldEditorView != NULL);
@@ -114,7 +112,7 @@ void CBrushPaletteWnd::OnPaint()
       PIXaabbox2D boxBrush = GetBrushBBox( iBrush);
       RenderBrushShape( iBrush, boxBrush, m_pDrawPort);
 
-      TIME tm=_pTimer->GetRealTimeTick();
+      TIME tm=_pTimer_GetRealTimeTick();
       // if we are drawing selected brush
       if(iBrush==theApp.m_fCurrentTerrainBrush)
       {
@@ -147,7 +145,7 @@ void CBrushPaletteWnd::OnPaint()
     m_pDrawPort->Unlock();
 
     // if there is a valid viewport
-    if (m_pViewPort!=NULL)
+    if (m_pViewPort)
     {
       m_pViewPort->SwapBuffers();
     }

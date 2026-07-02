@@ -27,9 +27,9 @@ class EventHub : public QObject
 public:
   static EventHub& instance();
 
-  Q_SIGNAL void CurrentEntitySelectionChanged(const std::set<CEntity*>&);
-  Q_SIGNAL void PropertyChanged(const std::set<CEntity*>&, CPropertyID*, BasePropertyTreeItem*);
-  Q_SIGNAL void EntityPicked(CEntity*);
+  Q_SIGNAL void CurrentEntitySelectionChanged(const std::set<CEntity_*>&);
+  Q_SIGNAL void PropertyChanged(const std::set<CEntity_*>&, CPropertyID*, BasePropertyTreeItem*);
+  Q_SIGNAL void EntityPicked(CEntity_*);
   Q_SIGNAL void SelectionStealerInstalled(void*);
 };
 

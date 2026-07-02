@@ -316,7 +316,7 @@ class CWorldEditorApp : public CWinAppQt
 {
 private:
   CWorldEditorDoc *m_pLastActivatedDocument;
-  std::function<void(CEntityPtr)> m_selection_stealer;
+  std::function<void(CEntity_*)> m_selection_stealer;
 public:
 // Atributes
   FLOAT3D m_vLastTerrainHit;
@@ -503,8 +503,8 @@ public:
 	~CWorldEditorApp();
 
   void AddToRecentFileList(LPCTSTR lpszPathName) override;
-  void InstallOneTimeSelectionStealer(std::function<void(CEntityPtr)>&& selection_stealer, void* source);
-  const std::function<void(CEntityPtr)>& GetSelectionStealer() const;
+  void InstallOneTimeSelectionStealer(std::function<void(CEntity_*)>&& selection_stealer, void* source);
+  const std::function<void(CEntity_*)>& GetSelectionStealer() const;
 	void MyParseCommandLine(void);
 	BOOL SubInitInstance(void);
   void OnFileNew();

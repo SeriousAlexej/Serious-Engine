@@ -55,7 +55,7 @@ public:
 public:
   // calculate given line box in pixels
   PIXaabbox2D GetLineBBox( INDEX iLine);
-  void RenderOneLine( INDEX iLine, PIXaabbox2D rectLine, CDrawPort *pdp, COLOR colFill);
+  void RenderOneLine( INDEX iLine, PIXaabbox2D rectLine, CDrawPortPtr pdp, COLOR colFill);
   void GetComboLineSize(PIX &pixMaxWidth, PIX &pixMaxHeight);
   BOOL Initialize(FLOAT *pfResult, void (*pOnSelect)(INDEX iSelected),
     PIX pixX, PIX pixY, BOOL bDown=FALSE);

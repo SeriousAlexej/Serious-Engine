@@ -32,7 +32,7 @@ void BasePropertyTreeItem::Clear()
   m_childItems.clear();
 }
 
-bool BasePropertyTreeItem::EntityPresentInHierarchy(CEntity* entity) const
+bool BasePropertyTreeItem::EntityPresentInHierarchy(CEntity_* entity) const
 {
   if (m_parentItem)
     return m_parentItem->EntityPresentInHierarchy(entity);
@@ -46,7 +46,7 @@ void BasePropertyTreeItem::appendChild(std::unique_ptr<BasePropertyTreeItem>&& i
 
 BasePropertyTreeItem *BasePropertyTreeItem::child(int row)
 {
-  if (row < 0 || row >= m_childItems.size())
+  if (row < 0 || row >= static_cast<int>(m_childItems.size()))
     return nullptr;
   return m_childItems.at(row).get();
 }

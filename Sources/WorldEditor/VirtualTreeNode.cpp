@@ -19,17 +19,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 CVirtualTreeNode::CVirtualTreeNode()
 {
-  vtn_pTextureData = NULL;
+  vnt_pvtnParent = nullptr;
   vtn_bmBrowsingMode = BM_ICONS_MEDIUM;
   vtn_bSelected = FALSE;
 }
 
 CVirtualTreeNode::~CVirtualTreeNode()
 {
-  FORDELETELIST( CVirtualTreeNode, vtn_lnInDirectory, vtn_lhChildren, litDel)
-  {
-    delete &litDel.Current();
-  }
+  vtn_lhChildren.clear();
 }
 
 INDEX _iTabs=0;
@@ -46,7 +43,7 @@ void CVirtualTreeNode::Dump(CTStream *pFile)
     pFile->PutLine_t(strDirectory);
     _iTabs++;
     
-    FOREACHINLIST(CVirtualTreeNode, vtn_lnInDirectory, vtn_lhChildren, it)
+    for (auto& it : vtn_lhChildren)
     {
       it->Dump(pFile);
     }
@@ -60,13 +57,8 @@ void CVirtualTreeNode::Dump(CTStream *pFile)
   }
 }
 
-void CVirtualTreeNode::Read_t( CTStream *pFile, CVirtualTreeNode* pParent)
+void CVirtualTreeNode::Read_t( CTStream *pFile)
 {
-  if( pParent != NULL)
-  {
-    pParent->vtn_lhChildren.AddTail( vtn_lnInDirectory);
-  }
-  vnt_pvtnParent = pParent;
   pFile->Read_t( &vtn_bIsDirectory, sizeof(BOOL));
   
   if( vtn_bIsDirectory)
@@ -78,8 +70,11 @@ void CVirtualTreeNode::Read_t( CTStream *pFile, CVirtualTreeNode* pParent)
     pFile->Read_t( &iDirEntries, sizeof(INDEX));
     for( INDEX i=0; i<iDirEntries; i++)
     {
-      CVirtualTreeNode *pVTN = new CVirtualTreeNode;
-      pVTN->Read_t( pFile, this);
+      auto pVTNNew = std::make_unique<CVirtualTreeNode>();
+      auto* pVTNewRaw = pVTNNew.get();
+      vtn_lhChildren.push_back(std::move(pVTNNew));
+      pVTNewRaw->vnt_pvtnParent = this;
+      pVTNewRaw->Read_t(pFile);
     }
   }
   else
@@ -98,9 +93,9 @@ void CVirtualTreeNode::Write_t( CTStream *pFile)
     pFile->Write_t( &vtn_itIconType, sizeof(INDEX));
     pFile->Write_t( &vtn_bmBrowsingMode, sizeof(INDEX));
     *pFile << vtn_strName;
-    INDEX iDirEntries = vtn_lhChildren.Count();
+    INDEX iDirEntries = vtn_lhChildren.size();
     pFile->Write_t( &iDirEntries, sizeof(INDEX));
-    FOREACHINLIST(CVirtualTreeNode, vtn_lnInDirectory, vtn_lhChildren, it)
+    for (auto& it : vtn_lhChildren)
     {
       it->Write_t( pFile);
     }
@@ -115,18 +110,14 @@ void CVirtualTreeNode::Write_t( CTStream *pFile)
 
 void CVirtualTreeNode::MakeRoot(void)
 {
-  FORDELETELIST( CVirtualTreeNode, vtn_lnInDirectory, vtn_lhChildren, litDel)
-  {
-    delete &litDel.Current();
-  }
-  
+  vtn_lhChildren.clear();
   vtn_bIsDirectory=TRUE;
   vnt_pvtnParent=NULL;
   vtn_Handle=NULL;
   vtn_itIconType=0;
   vtn_bmBrowsingMode=BM_ICONS_MEDIUM;
   vtn_bSelected=FALSE;
-  vtn_pTextureData=NULL;
+  vtn_pTextureData.Reset();
   vtn_strName="VRT not loaded";
   vtn_fnItem=CTString("");
 }
@@ -136,7 +127,11 @@ void CVirtualTreeNode::MoveToDirectory(CVirtualTreeNode *pVTNDst)
   ASSERT( vnt_pvtnParent!=NULL);
   if( vnt_pvtnParent==NULL) return;
 
+  vnt_pvtnParent->vtn_lhChildren.erase(
+    std::remove_if(vnt_pvtnParent->vtn_lhChildren.begin(), vnt_pvtnParent->vtn_lhChildren.end(),
+      [=](auto& p) { if (p.get() == this) { p.release(); return true; } return false; }),
+    vnt_pvtnParent->vtn_lhChildren.end());
+
   vnt_pvtnParent=pVTNDst;
-  vtn_lnInDirectory.Remove();
-  pVTNDst->vtn_lhChildren.AddTail( vtn_lnInDirectory);
+  vnt_pvtnParent->vtn_lhChildren.push_back(std::unique_ptr<CVirtualTreeNode>(this));
 }

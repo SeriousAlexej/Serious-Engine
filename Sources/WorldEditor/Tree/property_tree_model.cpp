@@ -28,25 +28,26 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 namespace
 {
-  void _JoinProperties(std::list<std::unique_ptr<CPropertyID>>& properties, CEntity* penEntity, bool intersect)
+  void _JoinProperties(std::list<std::unique_ptr<CPropertyID>>& properties, CEntity_* penEntity_, bool intersect)
   {
+    CEntityPtr penEntity(penEntity_);
     // if we should add all of this entity's properties (if this is first entity)
     if (!intersect)
     {
-      CDLLEntityClass* pdecDLLClass = penEntity->GetClass()->ec_pdecDLLClass;
-      for (; pdecDLLClass != nullptr; pdecDLLClass = pdecDLLClass->dec_pdecBase)
+      CDLLEntityClassPtr pdecDLLClass = penEntity->GetClass()->ec_pdecDLLClass;
+      for (; pdecDLLClass; pdecDLLClass = pdecDLLClass->dec_pdecBase())
       {
         for (INDEX iProperty = 0; iProperty < pdecDLLClass->dec_ctProperties; iProperty++)
         {
-          CEntityProperty& epProperty = pdecDLLClass->dec_aepProperties[iProperty];
+          CEntityPropertyPtr epProperty = pdecDLLClass->dec_aepProperties(iProperty);
           // dont add properties with no name
-          if (epProperty.ep_strName != CTString(""))
+          if (epProperty->ep_strName != CTString(""))
           {
-            CAnimData* pAD = nullptr;
-            if (epProperty.ep_eptType == CEntityProperty::EPT_ANIMATION)
-              pAD = penEntity->GetAnimData(epProperty.ep_slOffset);
+            CAnimDataPtr pAD;
+            if (epProperty->ep_eptType == CEntityProperty::EPT_ANIMATION)
+              pAD = penEntity->GetAnimData(epProperty->ep_slOffset);
 
-            properties.push_back(std::make_unique<CPropertyID>(epProperty.ep_strName, epProperty.ep_eptType, &epProperty, pAD));
+            properties.push_back(std::make_unique<CPropertyID>(epProperty->ep_strName, epProperty->ep_eptType, epProperty, pAD));
           }
         }
       }
@@ -63,17 +64,17 @@ namespace
         bool same_found = false;
         bool keep_looking = true;
 
-        CDLLEntityClass* pdecDLLClass = penEntity->GetClass()->ec_pdecDLLClass;
-        for (; keep_looking && pdecDLLClass; pdecDLLClass = pdecDLLClass->dec_pdecBase)
+        CDLLEntityClassPtr pdecDLLClass = penEntity->GetClass()->ec_pdecDLLClass;
+        for (; keep_looking && pdecDLLClass; pdecDLLClass = pdecDLLClass->dec_pdecBase())
         {
           for (INDEX iProperty = 0; iProperty < pdecDLLClass->dec_ctProperties; iProperty++)
           {
-            CEntityProperty& epProperty = pdecDLLClass->dec_aepProperties[iProperty];
-            CAnimData* pAD = nullptr;
-            if (epProperty.ep_eptType == CEntityProperty::EPT_ANIMATION)
-              pAD = penEntity->GetAnimData(epProperty.ep_slOffset);
+            CEntityPropertyPtr epProperty = pdecDLLClass->dec_aepProperties(iProperty);
+            CAnimDataPtr pAD;
+            if (epProperty->ep_eptType == CEntityProperty::EPT_ANIMATION)
+              pAD = penEntity->GetAnimData(epProperty->ep_slOffset);
 
-            CPropertyID PropertyID(epProperty.ep_strName, epProperty.ep_eptType, &epProperty, pAD);
+            CPropertyID PropertyID(epProperty->ep_strName, epProperty->ep_eptType, epProperty, pAD);
 
             // is this property same as one we are investigating
             if ((strCurrentName == PropertyID.pid_strName) &&
@@ -110,7 +111,7 @@ namespace
     }
   }
 
-  std::list<std::unique_ptr<CPropertyID>> _CollectProperties(const std::set<CEntity*>& entities)
+  std::list<std::unique_ptr<CPropertyID>> _CollectProperties(const std::set<CEntity_*>& entities)
   {
     std::list<std::unique_ptr<CPropertyID>> properties;
     if (!entities.empty())
@@ -121,14 +122,14 @@ namespace
       for (++cur_it; cur_it != entities.end(); ++cur_it)
         _JoinProperties(properties, *cur_it, true);
 
-      properties.push_back(std::make_unique<CPropertyID>("Spawn flags", CEntityProperty::EPT_SPAWNFLAGS, nullptr, nullptr));
-      properties.push_back(std::make_unique<CPropertyID>("Parent", CEntityProperty::EPT_PARENT, nullptr, nullptr));
+      properties.push_back(std::make_unique<CPropertyID>("Spawn flags", CEntityProperty::EPT_SPAWNFLAGS, CEntityPropertyPtr{}, CAnimDataPtr{}));
+      properties.push_back(std::make_unique<CPropertyID>("Parent", CEntityProperty::EPT_PARENT, CEntityPropertyPtr{}, CAnimDataPtr{}));
     }
     properties.sort([](const std::unique_ptr<CPropertyID>& lhs, const std::unique_ptr<CPropertyID>& rhs)
       {
         return std::lexicographical_compare(
-          lhs->pid_strName.str_String, lhs->pid_strName.str_String + lhs->pid_strName.Length(),
-          rhs->pid_strName.str_String, rhs->pid_strName.str_String + rhs->pid_strName.Length());
+          static_cast<const char*>(lhs->pid_strName), static_cast<const char*>(lhs->pid_strName) + lhs->pid_strName.Length(),
+          static_cast<const char*>(rhs->pid_strName), static_cast<const char*>(rhs->pid_strName) + rhs->pid_strName.Length());
       });
     return properties;
   }
@@ -232,7 +233,7 @@ CPropertyID* PropertyTreeModel::GetSelectedProperty(const QModelIndexList& model
   return nullptr;
 }
 
-void PropertyTreeModel::OnEntityPicked(CEntity* picked_entity, const QModelIndexList& model_indices)
+void PropertyTreeModel::OnEntityPicked(CEntity_* picked_entity, const QModelIndexList& model_indices)
 {
   for (QModelIndex index : model_indices)
   {
@@ -274,7 +275,7 @@ void PropertyTreeModel::_AppendItem(std::unique_ptr<BasePropertyTreeItem>&& item
   parent.appendChild(std::move(item));
 }
 
-void PropertyTreeModel::Fill(const std::set<CEntity*>& curr_selection)
+void PropertyTreeModel::Fill(const std::set<CEntity_*>& curr_selection)
 {
   Clear();
   if (curr_selection.empty())
@@ -284,7 +285,7 @@ void PropertyTreeModel::Fill(const std::set<CEntity*>& curr_selection)
   _AddEntityProperties(root_index, curr_selection);
 }
 
-void PropertyTreeModel::_AddEntityProperties(const QModelIndex& parent, const std::set<CEntity*>& entities)
+void PropertyTreeModel::_AddEntityProperties(const QModelIndex& parent, const std::set<CEntity_*>& entities)
 {
   BasePropertyTreeItem* parent_item = mp_header_item.get();
   if (parent.isValid())
@@ -298,7 +299,7 @@ void PropertyTreeModel::_AddEntityProperties(const QModelIndex& parent, const st
   _FillSubProperties(index(starting_row, 0, parent), entities);
 }
 
-void PropertyTreeModel::_FillSubProperties(const QModelIndex& parent, const std::set<CEntity*>& entities)
+void PropertyTreeModel::_FillSubProperties(const QModelIndex& parent, const std::set<CEntity_*>& entities)
 {
   BasePropertyTreeItem* parent_item = static_cast<BasePropertyTreeItem*>(parent.internalPointer());
 
@@ -313,7 +314,7 @@ void PropertyTreeModel::_FillSubProperties(const QModelIndex& parent, const std:
     std::unique_ptr<CPropertyID>& property = *it;
     if (UIPropertyFactory::Instance().HasFactoryFor(property->pid_eptType))
     {
-      std::unique_ptr<BaseEntityPropertyTreeItem> new_item(UIPropertyFactory::Instance().GetFactoryFor(property->pid_eptType, property->pid_strName.str_String)(parent_item));
+      std::unique_ptr<BaseEntityPropertyTreeItem> new_item(UIPropertyFactory::Instance().GetFactoryFor(property->pid_eptType, static_cast<const char*>(property->pid_strName))(parent_item));
       if (property->pid_eptType == CEntityProperty::EPT_PARENT || property->pid_eptType == CEntityProperty::EPT_ENTITYPTR)
         pointer_properties.push_back(new_item.get());
 
@@ -359,17 +360,20 @@ void PropertyTreeModel::_FillSubProperties(const QModelIndex& parent, const std:
   }
 }
 
-CEntity* PropertyTreeModel::_GetPointerEntity(BaseEntityPropertyTreeItem* entity_item) const
+CEntity_* PropertyTreeModel::_GetPointerEntity(BaseEntityPropertyTreeItem* entity_item) const
 {
-  CEntity* pointed_entity = nullptr;
+  CEntity_* pointed_entity = nullptr;
+  CEntityPtr first_entity(*entity_item->m_entities.begin());
   if (entity_item->mp_property->pid_eptType == CEntityProperty::EPT_PARENT)
   {
-    pointed_entity = (*entity_item->m_entities.begin())->GetParent();
-  }
-  else {
-    CEntityProperty* actual_property = (*entity_item->m_entities.begin())->PropertyForName(entity_item->mp_property->pid_strName);
+    pointed_entity = first_entity->GetParent();
+  } else {
+    CEntityPropertyPtr actual_property = first_entity->PropertyForName(entity_item->mp_property->pid_strName);
     if (actual_property)
-      pointed_entity = ENTITYPROPERTY((*entity_item->m_entities.begin()), actual_property->ep_slOffset, CEntityPointer).ep_pen;
+    {
+      CEntityPointer pointer(ENTITY_PROPERTY(first_entity, actual_property->ep_slOffset, CEntityPointer_), false);
+      pointed_entity = pointer.ep_pen();
+    }
   }
   return pointed_entity;
 }
@@ -384,7 +388,7 @@ void PropertyTreeModel::_FillSubTree(BaseEntityPropertyTreeItem* entity_item)
     entity_item->Clear();
   }
 
-  CEntity* entity_to_fill = _GetPointerEntity(entity_item);
+  CEntity_* entity_to_fill = _GetPointerEntity(entity_item);
   if (entity_to_fill && !entity_item->EntityPresentInHierarchy(entity_to_fill))
     _FillSubProperties(prop_index, { entity_to_fill });
 }

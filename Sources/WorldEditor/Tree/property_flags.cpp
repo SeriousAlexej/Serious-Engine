@@ -29,16 +29,18 @@ public:
   QWidget* CreateEditor(QWidget* parent) override final
   {
     m_flags.clear();
-    auto* actual_property = (*m_entities.begin())->PropertyForName(mp_property->pid_strName);
-    auto* enum_type = actual_property->ep_pepetEnumType;
+    CEntity entity(*m_entities.begin(), false);
+    CEntityPropertyPtr actual_property = entity.PropertyForName(mp_property->pid_strName);
+    CEntityPropertyEnumTypePtr enum_type = actual_property->ep_pepetEnumType;
 
     auto* editor = new CheckListWidget(parent);
     for (int i = 0; i < enum_type->epet_ctValues; ++i)
     {
-      if (enum_type->epet_aepevValues[i].epev_strName != "")
+      const auto enum_value = enum_type->epet_aepevValues(i);
+      if (enum_value.epev_strName != "")
       {
-        ULONG bit_value = (1UL) << enum_type->epet_aepevValues[i].epev_iValue;
-        _AddFlag(editor, QString::fromLocal8Bit(enum_type->epet_aepevValues[i].epev_strName), bit_value);
+        ULONG bit_value = (1UL) << enum_value.epev_iValue;
+        _AddFlag(editor, QString::fromLocal8Bit(enum_value.epev_strName), bit_value);
       }
     }
 
@@ -55,11 +57,12 @@ public:
             bits_to_set |= static_cast<ULONG>(flag->data().toUInt());
         }
 
-        for (auto* entity : m_entities)
+        for (auto* entity_ : m_entities)
         {
+          CEntityPtr entity(entity_);
           entity->End();
-          auto* actual_property = entity->PropertyForName(mp_property->pid_strName);
-          auto& flags = ENTITYPROPERTY(entity, actual_property->ep_slOffset, ULONG);
+          CEntityPropertyPtr actual_property = entity->PropertyForName(mp_property->pid_strName);
+          auto& flags = *ENTITY_PROPERTY(entity, actual_property->ep_slOffset, ULONG);
           flags &= bits_to_clear;
           flags |= bits_to_set;
           entity->Initialize();
@@ -97,12 +100,14 @@ private:
   Qt::CheckState _GetFlagState(ULONG flag) const
   {
     auto it = m_entities.begin();
-    auto* actual_property = (*it)->PropertyForName(mp_property->pid_strName);
-    const bool flag_is_set = ENTITYPROPERTY((*it), actual_property->ep_slOffset, ULONG) & flag;
+    CEntityPtr entity(*it);
+    CEntityPropertyPtr actual_property = entity->PropertyForName(mp_property->pid_strName);
+    const bool flag_is_set = (*ENTITY_PROPERTY(entity, actual_property->ep_slOffset, ULONG)) & flag;
     for (++it; it != m_entities.end(); ++it)
     {
-      auto* actual_property = (*it)->PropertyForName(mp_property->pid_strName);
-      const bool curr_flag = ENTITYPROPERTY((*it), actual_property->ep_slOffset, ULONG) & flag;
+      CEntityPtr entity(*it);
+      CEntityPropertyPtr actual_property = entity->PropertyForName(mp_property->pid_strName);
+      const bool curr_flag = (*ENTITY_PROPERTY(entity, actual_property->ep_slOffset, ULONG)) & flag;
       if (curr_flag != flag_is_set)
         return Qt::PartiallyChecked;
     }

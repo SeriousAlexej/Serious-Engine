@@ -104,7 +104,7 @@ public:
     appendChild(std::make_unique<AABBox_SubItem>(this, "Z"));
 
     QObject::connect(&EventHub::instance(), &EventHub::PropertyChanged, this,
-      [this](const std::set<CEntity*>&, CPropertyID*, BasePropertyTreeItem* source)
+      [this](const std::set<CEntity_*>&, CPropertyID*, BasePropertyTreeItem* source)
       {
         if (source == this && !ValueIsCommonForAllEntities())
         {

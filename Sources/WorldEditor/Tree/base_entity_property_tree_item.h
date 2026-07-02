@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "EventHub.h"
 
 #include <set>
+#include <type_traits>
 
 #define IMPL_GENERIC_PROPERTY_FUNCTIONS_IMPL(TPropType, FirstValue)\
 bool ValueIsCommonForAllEntities() const override final\
@@ -36,7 +37,7 @@ QString _GetTypeName() const override final\
   return #TPropType ;\
 }\
 private:\
-const TPropType& _CurrentPropValue() const\
+TPropType _CurrentPropValue() const\
 {\
   return _CurrentPropValueT<TPropType>();\
 }\
@@ -57,8 +58,8 @@ public:
   virtual bool     ValueIsCommonForAllEntities() const = 0;
   virtual void     SetFirstValueToAllEntities() = 0;
   virtual QWidget* CreateEditor(QWidget* parent) = 0;
-  virtual void     OnEntityPicked(CEntity* picked_entity);
-  bool             EntityPresentInHierarchy(CEntity* entity) const override final;
+  virtual void     OnEntityPicked(CEntity_* picked_entity);
+  bool             EntityPresentInHierarchy(CEntity_* entity) const override final;
 
 protected:
   virtual QString _GetTypeName() const = 0;
@@ -69,33 +70,68 @@ protected:
   bool _ValueIsCommonForAllEntities() const
   {
     auto beg_it = m_entities.begin();
+    CEntityPtr beg_ent(*beg_it);
     auto cur_it = beg_it;
-    CEntityProperty* beg_actual_property = (*beg_it)->PropertyForName(mp_property->pid_strName);
+    CEntityPropertyPtr beg_actual_property = beg_ent->PropertyForName(mp_property->pid_strName);
     for (++cur_it; cur_it != m_entities.end(); ++cur_it)
     {
-      CEntityProperty* cur_actual_property = (*cur_it)->PropertyForName(mp_property->pid_strName);
-      if (ENTITYPROPERTY((*cur_it), cur_actual_property->ep_slOffset, TPropType) !=
-          ENTITYPROPERTY((*beg_it), beg_actual_property->ep_slOffset, TPropType))
-        return false;
+      CEntityPtr cur_ent(*cur_it);
+      CEntityPropertyPtr cur_actual_property = cur_ent->PropertyForName(mp_property->pid_strName);
+
+      if constexpr (requires { &TPropType::C_Handle; })
+      { // complex type
+        using TPropTypeHandle = std::invoke_result_t<decltype(&TPropType::C_Handle), TPropType>;
+        if (TPropType(ENTITY_PROPERTY(cur_ent, cur_actual_property->ep_slOffset, TPropTypeHandle), false) !=
+            TPropType(ENTITY_PROPERTY(beg_ent, beg_actual_property->ep_slOffset, TPropTypeHandle), false))
+          return false;
+      } else {
+        // simple type
+        if (*ENTITY_PROPERTY(cur_ent, cur_actual_property->ep_slOffset, TPropType) !=
+            *ENTITY_PROPERTY(beg_ent, beg_actual_property->ep_slOffset, TPropType))
+          return false;
+      }
     }
     return true;
   }
 
   template<typename TPropType>
-  const TPropType& _CurrentPropValueT() const
+  TPropType _CurrentPropValueT() const
   {
-    CEntityProperty* actual_property = (*m_entities.begin())->PropertyForName(mp_property->pid_strName);
-    return ENTITYPROPERTY((*m_entities.begin()), actual_property->ep_slOffset, TPropType);
+    CEntityPtr beg_ent(*m_entities.begin());
+    CEntityPropertyPtr actual_property = beg_ent->PropertyForName(mp_property->pid_strName);
+
+    if constexpr (requires { &TPropType::C_Handle; })
+    {
+      // complex type
+      using TPropTypeHandle = std::invoke_result_t<decltype(&TPropType::C_Handle), TPropType>;
+      return TPropType(ENTITY_PROPERTY(beg_ent, actual_property->ep_slOffset, TPropTypeHandle), false);
+    } else {
+      // simple type
+      return *ENTITY_PROPERTY(beg_ent, actual_property->ep_slOffset, TPropType);
+    }
   }
 
   template<typename TPropType>
   void _WritePropertyT(const TPropType& prop_value)
   {
-    for (auto* entity : m_entities)
+    for (auto* entity_ : m_entities)
     {
+      CEntityPtr entity(entity_);
       entity->End();
-      CEntityProperty* actual_property = entity->PropertyForName(mp_property->pid_strName);
-      ENTITYPROPERTY(entity, actual_property->ep_slOffset, TPropType) = prop_value;
+      CEntityPropertyPtr actual_property = entity->PropertyForName(mp_property->pid_strName);
+
+      if constexpr (requires { &TPropType::C_Handle; })
+      {
+        // complex type
+        using TPropTypeHandle = std::invoke_result_t<decltype(&TPropType::C_Handle), TPropType>;
+        TPropType prop(ENTITY_PROPERTY(entity, actual_property->ep_slOffset, TPropTypeHandle), false);
+        prop = prop_value;
+      }
+      else {
+        // simple type
+        *ENTITY_PROPERTY(entity, actual_property->ep_slOffset, TPropType) = prop_value;
+      }
+
       entity->Initialize();
     }
 
@@ -115,10 +151,10 @@ protected:
 
 private:
   friend class PropertyTreeModel;
-  void _SetEntitiesAndProperty(const std::set<CEntity*>& entities, std::unique_ptr<CPropertyID>&& prop);
+  void _SetEntitiesAndProperty(const std::set<CEntity_*>& entities, std::unique_ptr<CPropertyID>&& prop);
 
 protected:
-  std::set<CEntity*>           m_entities;
+  std::set<CEntity_*>          m_entities;
   std::unique_ptr<CPropertyID> mp_property;
 };
 

@@ -50,16 +50,14 @@ CColorPaletteWnd::CColorPaletteWnd()
   m_iSelectedColor = -1;
 
   _pcolColorToSet = NULL;
-  m_pDrawPort = NULL;
-  m_pViewPort = NULL;
 }
 
 CColorPaletteWnd::~CColorPaletteWnd()
 {
-  if( m_pViewPort != NULL)
+  if( m_pViewPort )
   {
-    _pGfx->DestroyWindowCanvas( m_pViewPort);
-    m_pViewPort = NULL;
+    _pGfx_DestroyWindowCanvas( m_pViewPort);
+    m_pViewPort.Reset();
   }
 }
 
@@ -106,7 +104,7 @@ void CColorPaletteWnd::OnPaint()
   }
 
   // if there is a valid drawport, and the drawport can be locked
-  if( (m_pDrawPort != NULL) && (m_pDrawPort->Lock()) )
+  if( m_pDrawPort && (m_pDrawPort->Lock()) )
   {
     CWorldEditorView *pWorldEditorView = theApp.GetActiveView();
     ASSERT( pWorldEditorView != NULL);
@@ -141,7 +139,7 @@ void CColorPaletteWnd::OnPaint()
     m_pDrawPort->Unlock();
 
     // if there is a valid viewport
-    if (m_pViewPort!=NULL)
+    if (m_pViewPort)
     {
       m_pViewPort->SwapBuffers();
     }

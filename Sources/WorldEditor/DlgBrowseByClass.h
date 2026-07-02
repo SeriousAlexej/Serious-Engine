@@ -33,10 +33,10 @@ class CDlgBrowseByClass final : public CDialog
 {
 // Construction
 public:
-	CDlgBrowseByClass(CWnd* pParent = NULL, bool for_picking = false, std::function<bool(CEntity*)>&& filter = nullptr);   // standard constructor
+	CDlgBrowseByClass(CWnd* pParent = NULL, bool for_picking = false, std::function<bool(CEntity_*)>&& filter = nullptr);   // standard constructor
 	~CDlgBrowseByClass();
   BOOL Create(UINT nIDTemplate, CWnd* pParentWnd = nullptr) override;
-  void AddEntity( CEntityPtr pen);
+  void AddEntity( CEntity_* pen);
   void FillListWithEntities(void);
   void InitializePluggins(void);
   void InitializeListColumns(void);
@@ -45,7 +45,7 @@ public:
 
   BOOL m_bCenterSelected;
 	const bool m_for_picking;
-	std::function<bool(CEntity*)> m_filter;
+	std::function<bool(CEntity_*)> m_filter;
 	CEntityPtr m_selected_entity;
 
 // Dialog Data
@@ -99,7 +99,7 @@ private:
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 
-  bool _EntityMatchesStringFilter(const CEntity* entity) const;
+  bool _EntityMatchesStringFilter(CEntityPtr entity) const;
 
 private:
   UINT_PTR m_filter_timer = 0;

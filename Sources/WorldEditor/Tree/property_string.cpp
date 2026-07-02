@@ -41,7 +41,7 @@ public:
   {
     auto* editor = new QLineEdit(parent);
     editor->setStyleSheet(g_lineedit_style);
-    editor->setText(QString::fromLocal8Bit(_CurrentPropValue().str_String));
+    editor->setText(QString::fromLocal8Bit(static_cast<const char*>(_CurrentPropValue())));
 
     QObject::connect(editor, &QLineEdit::editingFinished, this, [this, editor]
       {

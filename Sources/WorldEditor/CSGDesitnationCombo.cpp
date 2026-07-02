@@ -62,11 +62,11 @@ BOOL CCSGDesitnationCombo::OnIdle(LONG lCount)
       ((pDoc == NULL) && (m_pLastDoc != NULL)) ||
       ((pDoc != NULL) && !pDoc->m_chDocument.IsUpToDate( m_udComboEntries)) )
   {
-    CEntity *penPreviouslySelectedEntity = NULL;
+    CEntity_* penPreviouslySelectedEntity = NULL;
     INDEX iCurrentSelection = GetCurSel();
     if( iCurrentSelection != CB_ERR)
     {
-      penPreviouslySelectedEntity = (CEntity *) GetItemData( iCurrentSelection);
+      penPreviouslySelectedEntity = (CEntity_*) GetItemData( iCurrentSelection);
     }
     // remove all combo entries
     ResetContent();
@@ -93,15 +93,15 @@ BOOL CCSGDesitnationCombo::OnIdle(LONG lCount)
           if( strEntityName != "")
           {
             // add it to CSG destination combo
-            INDEX iComboEntry = AddString( CString(strEntityName));
+            INDEX iComboEntry = AddString( CString(static_cast<const char*>(strEntityName)));
             // set item's data as ptr to current entity
-            SetItemData( iComboEntry, (ULONG)(&*iten));
+            SetItemData( iComboEntry, (ULONG)(iten.Current().get_handle()));
             // try to select previously selected combo entry
             if( strEntityName == m_strLastSelectedName)
             {
               iSelectedEntryByName = iComboEntry;
             }
-            if( &iten.Current() == penPreviouslySelectedEntity)
+            if( iten.Current().get_handle() == penPreviouslySelectedEntity)
             {
               iSelectedEntryByPtr = iComboEntry;
             }
@@ -119,13 +119,13 @@ BOOL CCSGDesitnationCombo::OnIdle(LONG lCount)
   return TRUE;
 }
 
-void CCSGDesitnationCombo::SelectBrushEntity( CEntity *penBrush)
+void CCSGDesitnationCombo::SelectBrushEntity( CEntityPtr penBrush)
 {
   // loop all entries in combo box
   for( INDEX i=0; i<GetCount(); i++)
   {
     // if this is searched brush entity
-    if( ((CEntity *) GetItemData( i)) == penBrush)
+    if( ((CEntity_*) GetItemData( i)) == penBrush.get_handle())
     {
       // select it
       SetCurSel( i);
@@ -135,7 +135,7 @@ void CCSGDesitnationCombo::SelectBrushEntity( CEntity *penBrush)
   }
 }
 
-CEntity *CCSGDesitnationCombo::GetSelectedBrushEntity(void)
+CEntityPtr CCSGDesitnationCombo::GetSelectedBrushEntity(void)
 {
   // assure valid brush entity ptr
   OnIdle( 0);
@@ -143,15 +143,15 @@ CEntity *CCSGDesitnationCombo::GetSelectedBrushEntity(void)
   INDEX iCurrentSelection = GetCurSel();
   if( iCurrentSelection == CB_ERR)
   {
-    return NULL;
+    return {};
   }
-  return (CEntity *) GetItemData( iCurrentSelection);
+  return (CEntity_*) GetItemData( iCurrentSelection);
 }
 
 void CCSGDesitnationCombo::OnSelchange() 
 {
-  CEntity *penSelected = GetSelectedBrushEntity();
-  if( penSelected != NULL)
+  CEntityPtr penSelected = GetSelectedBrushEntity();
+  if( penSelected )
   {
     m_strLastSelectedName = penSelected->GetName();
   }

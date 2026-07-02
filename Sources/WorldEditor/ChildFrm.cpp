@@ -27,7 +27,6 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 extern INDEX wed_bSaveTestGameFirstTime = TRUE;
-ENGINE_API extern INDEX snd_iFormat;
 
 /////////////////////////////////////////////////////////////////////////////
 // CChildFrame
@@ -445,21 +444,21 @@ void CChildFrame::TestGame( BOOL bFullScreen)
   _wrpWorldRenderPrefs = pPerspectiveView->m_vpViewPrefs.m_wrpWorldRenderPrefs;
   _mrpModelRenderPrefs = pPerspectiveView->m_vpViewPrefs.m_mrpModelRenderPrefs;
   _wrpWorldRenderPrefs.SetShadowsType( pPerspectiveView->GetChildFrame()->m_stShadowType);
-  _wrpWorldRenderPrefs.SetSelectedEntityModel( theApp.m_pEntityMarkerModelObject);
-  _wrpWorldRenderPrefs.SetSelectedPortalModel( theApp.m_pPortalMarkerModelObject);
-  _wrpWorldRenderPrefs.SetEmptyBrushModel( theApp.m_pEmptyBrushModelObject);
+  _wrpWorldRenderPrefs.SetSelectedEntityModel( theApp.m_pEntityMarkerModelObject.get_handle());
+  _wrpWorldRenderPrefs.SetSelectedPortalModel( theApp.m_pPortalMarkerModelObject.get_handle());
+  _wrpWorldRenderPrefs.SetEmptyBrushModel( theApp.m_pEmptyBrushModelObject.get_handle());
   _wrpWorldRenderPrefs.SetTextureLayerOn( theApp.m_bTexture1, 0);
   _wrpWorldRenderPrefs.SetTextureLayerOn( theApp.m_bTexture2, 1);
   _wrpWorldRenderPrefs.SetTextureLayerOn( theApp.m_bTexture3, 2);
   _wrpWorldRenderPrefs.DisableVisTweaks(FALSE);
 
-  _wrpWorldRenderPrefs.SetSelectedEntityModel( theApp.m_pEntityMarkerModelObject);
-  _wrpWorldRenderPrefs.SetSelectedPortalModel( theApp.m_pPortalMarkerModelObject);
-  _wrpWorldRenderPrefs.SetEmptyBrushModel( theApp.m_pEmptyBrushModelObject);
+  _wrpWorldRenderPrefs.SetSelectedEntityModel( theApp.m_pEntityMarkerModelObject.get_handle());
+  _wrpWorldRenderPrefs.SetSelectedPortalModel( theApp.m_pPortalMarkerModelObject.get_handle());
+  _wrpWorldRenderPrefs.SetEmptyBrushModel( theApp.m_pEmptyBrushModelObject.get_handle());
 
   // prepare test game view/draw ports
-  CViewPort *pvp = pPerspectiveView->m_pvpViewPort;
-  CDrawPort *pdp = pPerspectiveView->m_pdpDrawPort;
+  CViewPortPtr pvp = pPerspectiveView->m_pvpViewPort;
+  CDrawPortPtr pdp = pPerspectiveView->m_pdpDrawPort;
   pdp->SetOverlappedRendering(FALSE); // we are not rendering scene over already rendered scene (used for CSG layer)
 
   // if full screen mode is required
@@ -476,7 +475,7 @@ void CChildFrame::TestGame( BOOL bFullScreen)
     const GfxAPIType gat  = theApp.m_gatFullScreen;
     // set OpenGL fullscreen (before window)
     if( gat==GAT_OGL) {
-      const BOOL bRes = _pGfx->SetDisplayMode( gat, 0, pixSizeI, pixSizeJ, dd);
+      const BOOL bRes = _pGfx_SetDisplayMode( gat, 0, pixSizeI, pixSizeJ, dd);
       if( !bRes) {
         WarningMessage( "Unable to setup full screen display.");
         return;
@@ -513,7 +512,7 @@ void CChildFrame::TestGame( BOOL bFullScreen)
     // didn't make it?
     ASSERT( hWndFullScreen!=NULL);
     if( hWndFullScreen==NULL) {
-      if( gat==GAT_OGL) _pGfx->ResetDisplayMode( (enum GfxAPIType)theApp.m_iApi);
+      if( gat==GAT_OGL) _pGfx_ResetDisplayMode( (enum GfxAPIType)theApp.m_iApi);
       WarningMessage( "Unable to setup window for full screen display.");
       return;
     }
@@ -529,7 +528,7 @@ void CChildFrame::TestGame( BOOL bFullScreen)
     // set Direct3D full screen (after window)
 #ifdef SE1_D3D
     if( gat==GAT_D3D) {
-      const BOOL bRes = _pGfx->SetDisplayMode( gat, 0, pixSizeI, pixSizeJ, dd);
+      const BOOL bRes = _pGfx_SetDisplayMode( gat, 0, pixSizeI, pixSizeJ, dd);
       if( !bRes) {
         WarningMessage( "Unable to setup full screen display.");
         ::DestroyWindow( hWndFullScreen);
@@ -539,10 +538,10 @@ void CChildFrame::TestGame( BOOL bFullScreen)
     }
 #endif // SE1_D3D
     // create canvas
-    _pGfx->CreateWindowCanvas( hWndFullScreen, &pvp, &pdp);
+    _pGfx_CreateWindowCanvas( hWndFullScreen, pvp, pdp);
     // initial screen fill and swap, just to get context running
     BOOL bSuccess = FALSE;
-    if( pdp!=NULL && pdp->Lock()) {
+    if( pdp && pdp->Lock()) {
       pdp->Fill(C_dGREEN|CT_OPAQUE);
       pdp->Unlock();
       pvp->SwapBuffers();
@@ -551,7 +550,7 @@ void CChildFrame::TestGame( BOOL bFullScreen)
     // must succeed!
     ASSERT( bSuccess);
     if( !bSuccess) {
-      _pGfx->ResetDisplayMode( (enum GfxAPIType)theApp.m_iApi);
+      _pGfx_ResetDisplayMode( (enum GfxAPIType)theApp.m_iApi);
       WarningMessage( "Unable to setup canvas for full screen display.");
       return;
     }
@@ -559,7 +558,7 @@ void CChildFrame::TestGame( BOOL bFullScreen)
 
   // enable sound
   snd_iFormat = Clamp( snd_iFormat, (INDEX)CSoundLibrary::SF_NONE, (INDEX)CSoundLibrary::SF_44100_16);
-  _pSound->SetFormat( (enum CSoundLibrary::SoundFormat)snd_iFormat, TRUE);
+  _pSound_SetFormat( (enum CSoundLibrary::SoundFormat)snd_iFormat, TRUE);
 
   // run quick test game
   extern BOOL _bInOnDraw; 
@@ -568,11 +567,11 @@ void CChildFrame::TestGame( BOOL bFullScreen)
   _bInOnDraw = FALSE;
 
   // disable sound
-  _pSound->SetFormat( CSoundLibrary::SF_NONE);
+  _pSound_SetFormat( CSoundLibrary::SF_NONE);
 
   // restore default display mode and close test full screen window
   if( hWndFullScreen!=NULL) {
-    _pGfx->ResetDisplayMode( (enum GfxAPIType)theApp.m_iApi);
+    _pGfx_ResetDisplayMode( (enum GfxAPIType)theApp.m_iApi);
     ::DestroyWindow( hWndFullScreen);
     SE_UpdateWindowHandle( pMainFrame->m_hWnd);
   }
@@ -726,7 +725,7 @@ void CChildFrame::OnTimer(UINT nIDEvent)
 void CChildFrame::OnAutoMipLeveling() 
 {
   // remember current time as time when last mip brushing option has been used
-  _fLastMipBrushingOptionUsed = _pTimer->GetRealTimeTick();
+  _fLastMipBrushingOptionUsed = _pTimer_GetRealTimeTick();
   // get view
   CWorldEditorView *pWEDView = (CWorldEditorView *) m_wndSplitter.GetPane( 0, 0);
   m_bAutoMipBrushingOn = !m_bAutoMipBrushingOn;

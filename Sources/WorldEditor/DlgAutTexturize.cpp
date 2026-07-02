@@ -101,7 +101,7 @@ BOOL CDlgAutTexturize::OnInitDialog()
   {
     CTString strSize;
     strSize.PrintF("%dx%d pixels", 1<<iW, 1<<iW);
-    m_ctrPretenderTextureSize.AddString( CString(strSize));
+    m_ctrPretenderTextureSize.AddString( CString(static_cast<const char*>(strSize)));
   }
   INDEX iSelected=6;
   iSelected=AfxGetApp()->GetProfileInt( L"World editor", L"Pretender resolution", iSelected);

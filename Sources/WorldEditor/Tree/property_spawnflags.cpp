@@ -62,8 +62,9 @@ public:
             bits_to_set |= static_cast<ULONG>(flag->data().toUInt());
         }
 
-        for (auto* entity : m_entities)
+        for (auto* entity_ : m_entities)
         {
+          CEntityPtr entity(entity_);
           entity->SetSpawnFlags(entity->GetSpawnFlags() & bits_to_clear);
           entity->SetSpawnFlags(entity->GetSpawnFlags() | bits_to_set);
         }
@@ -100,10 +101,12 @@ private:
   Qt::CheckState _GetFlagState(ULONG flag) const
   {
     auto it = m_entities.begin();
-    const bool flag_is_set = (*it)->GetSpawnFlags() & flag;
+    CEntity entity(*it, false);
+    const bool flag_is_set = entity.GetSpawnFlags() & flag;
     for (++it; it != m_entities.end(); ++it)
     {
-      const bool curr_flag = (*it)->GetSpawnFlags() & flag;
+      CEntity entity(*it, false);
+      const bool curr_flag = entity.GetSpawnFlags() & flag;
       if (curr_flag != flag_is_set)
         return Qt::PartiallyChecked;
     }

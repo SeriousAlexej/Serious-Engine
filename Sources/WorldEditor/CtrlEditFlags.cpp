@@ -201,7 +201,7 @@ void CCtrlEditFlags::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
     RECT rectText=GetRectForArea(8);
     CTString strCTBankNo;
     strCTBankNo.PrintF("%d",m_iCurrentBank);
-    CString strBankNo=strCTBankNo;
+    CString strBankNo=static_cast<const char*>(strCTBankNo);
     pDC->SetBkMode( TRANSPARENT);
     pDC->SetTextAlign(TA_CENTER);
     pDC->ExtTextOut( (rectText.left+rectText.right)/2, rectText.top, ETO_CLIPPED, &rectText, strBankNo, 1, NULL);
@@ -255,7 +255,7 @@ int CCtrlEditFlags::OnToolHitTest( CPoint point, TOOLINFO* pTI ) const
 
   CTString strToolTip=GetTipForArea(iArea);
   pTI->lpszText = (wchar_t *)malloc( sizeof(wchar_t) * (strlen(strToolTip)+1));
-  wcscpy( pTI->lpszText, CString(strToolTip));
+  wcscpy( pTI->lpszText, CString(static_cast<const char*>(strToolTip)));
   RECT rectToolTip;
   rectToolTip.left = 50;
   rectToolTip.right = 60;

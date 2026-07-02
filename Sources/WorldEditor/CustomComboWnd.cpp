@@ -47,18 +47,16 @@ CCustomComboWnd::CCustomComboWnd()
 {
   m_pfResult=NULL;
   m_pOnSelect=NULL;
-  m_pDrawPort = NULL;
-  m_pViewPort = NULL;
   // mark that timer is not yet started
   m_iTimerID = -1;
 }
 
-PIX GetFixedTextWidth( const CTString &strText, CFontData *pfd)
+PIX GetFixedTextWidth( const CTString &strText, CFontDataPtr pfd)
 {
   return strText.Length()*pfd->fd_pixCharWidth;
 }
 
-PIX GetFixedTextHeight( CFontData *pfd)
+PIX GetFixedTextHeight( CFontDataPtr pfd)
 {
   return pfd->fd_pixCharHeight;
 }
@@ -67,7 +65,7 @@ void CCustomComboWnd::GetComboLineSize(PIX &pixMaxWidth, PIX &pixMaxHeight)
 {
   pixMaxWidth=0;
   pixMaxHeight=GetFixedTextHeight(_pfdConsoleFont)+SPACING_V;
-  FOREACHINDYNAMICCONTAINER(m_dcComboLines, CComboLine, itcl)
+  for (auto& itcl : m_dcComboLines)
   {
     CComboLine &cl=*itcl;
     PIX pixIconW=cl.cl_boxIcon.Max()(1)-cl.cl_boxIcon.Min()(1);
@@ -80,10 +78,10 @@ void CCustomComboWnd::GetComboLineSize(PIX &pixMaxWidth, PIX &pixMaxHeight)
 
 CCustomComboWnd::~CCustomComboWnd()
 {
-  if( m_pViewPort != NULL)
+  if( m_pViewPort )
   {
-    _pGfx->DestroyWindowCanvas( m_pViewPort);
-    m_pViewPort = NULL;
+    _pGfx_DestroyWindowCanvas( m_pViewPort);
+    m_pViewPort.Reset();
   }
 }
 
@@ -131,7 +129,7 @@ void CCustomComboWnd::OnPaint()
   ScreenToClient( &ptMouse);
 
   // if there is a valid drawport, and the drawport can be locked
-  if( (m_pDrawPort != NULL) && (m_pDrawPort->Lock()) )
+  if( m_pDrawPort && (m_pDrawPort->Lock()) )
   {
     CWorldEditorView *pWorldEditorView = theApp.GetActiveView();
     ASSERT( pWorldEditorView != NULL);
@@ -140,7 +138,7 @@ void CCustomComboWnd::OnPaint()
     // erase z-buffer
     m_pDrawPort->FillZBuffer(ZBUF_BACK);
     // for all lines
-    for( INDEX iLine=0; iLine<m_dcComboLines.Count(); iLine++)
+    for( INDEX iLine=0; iLine<static_cast<INDEX>(m_dcComboLines.size()); iLine++)
     {
       // get current line's box in pixels inside window
       PIXaabbox2D boxLine = GetLineBBox( iLine);
@@ -167,7 +165,7 @@ void CCustomComboWnd::OnPaint()
     m_pDrawPort->Unlock();
 
     // if there is a valid viewport
-    if (m_pViewPort!=NULL)
+    if (m_pViewPort)
     {
       m_pViewPort->SwapBuffers();
     }
@@ -185,7 +183,7 @@ BOOL CCustomComboWnd::Initialize(FLOAT *pfResult, void (*pOnSelect)(INDEX iSelec
   rectWindow.bottom = pixY;
   PIX pixWidth, pixHeight;
   GetComboLineSize(pixWidth, pixHeight);
-  pixHeight=pixHeight*m_dcComboLines.Count()-1;
+  pixHeight=pixHeight*m_dcComboLines.size()-1;
   rectWindow.right = rectWindow.left + pixWidth;
   if( bDown)
   {
@@ -217,37 +215,37 @@ BOOL CCustomComboWnd::Initialize(FLOAT *pfResult, void (*pOnSelect)(INDEX iSelec
       AfxMessageBox( L"Error: Failed to create custom combo!");
       return FALSE;
     }
-    _pGfx->CreateWindowCanvas( m_hWnd, &m_pViewPort, &m_pDrawPort);
+    _pGfx_CreateWindowCanvas( m_hWnd, m_pViewPort, m_pDrawPort);
   }
   return TRUE;
 }
 
 INDEX CCustomComboWnd::InsertItem(CTString strText, CTFileName fnmIcons/*=""*/, MEXaabbox2D boxIcon/*=dummy box*/)
 {
-  CComboLine *pcl=new(CComboLine);
+  auto pcl = std::make_unique<CComboLine>();
   pcl->cl_fnmTexture=fnmIcons;
   pcl->cl_boxIcon=boxIcon;
   pcl->cl_strText=strText;
-  m_dcComboLines.Add(pcl);
-  INDEX iCount=m_dcComboLines.Count();
-  pcl->cl_ulValue=iCount-1;
+  INDEX iCount=m_dcComboLines.size();
+  pcl->cl_ulValue=iCount;
   pcl->cl_colText=C_YELLOW|CT_OPAQUE;
-  return iCount-1;
+  m_dcComboLines.push_back(std::move(pcl));
+  return iCount;
 }
 
 void CCustomComboWnd::SetItemValue(INDEX iItem, ULONG ulValue)
 {
-  m_dcComboLines[iItem].cl_ulValue=ulValue;
+  m_dcComboLines[iItem]->cl_ulValue=ulValue;
 }
 
 void CCustomComboWnd::SetItemColor(INDEX iItem, COLOR col)
 {
-  m_dcComboLines[iItem].cl_colText=col;
+  m_dcComboLines[iItem]->cl_colText=col;
 }
 
-void CCustomComboWnd::RenderOneLine( INDEX iLine, PIXaabbox2D rectLine, CDrawPort *pdp, COLOR colFill)
+void CCustomComboWnd::RenderOneLine( INDEX iLine, PIXaabbox2D rectLine, CDrawPortPtr pdp, COLOR colFill)
 {
-  CComboLine &cl=m_dcComboLines[iLine];
+  CComboLine &cl=*m_dcComboLines[iLine];
   pdp->Fill(rectLine.Min()(1)-1, rectLine.Min()(2)-1, 
                           rectLine.Max()(1)-rectLine.Min()(1)+1, rectLine.Max()(2)-rectLine.Min()(2)+1,
                           colFill);
@@ -259,7 +257,7 @@ void CCustomComboWnd::RenderOneLine( INDEX iLine, PIXaabbox2D rectLine, CDrawPor
       to.SetData_t(cl.cl_fnmTexture);
       PIXaabbox2D rectIcon=PIXaabbox2D( rectLine.Min()+PIX2D(SPACING_H/2,SPACING_V/2),
         PIX2D(rectLine.Min()+cl.cl_boxIcon.Size())-PIX2D(SPACING_H/2,SPACING_V/2));
-      pdp->PutTexture( &to, rectIcon, cl.cl_boxIcon);
+      pdp->PutTexture( to, rectIcon, cl.cl_boxIcon);
     }
     catch(char *strError)
     {
@@ -325,13 +323,13 @@ void CCustomComboWnd::OnLButtonUp(UINT nFlags, CPoint point)
   PIXaabbox2D boxPoint( PIX2D( point.x, point.y), PIX2D(point.x, point.y) );
 
   // for all lines
-  for( INDEX iLine=0; iLine<m_dcComboLines.Count(); iLine++)
+  for( INDEX iLine=0; iLine<static_cast<INDEX>(m_dcComboLines.size()); iLine++)
   {
     if( (GetLineBBox( iLine) & boxPoint) == boxPoint)
     {
       if(m_pfResult!=NULL)
       {
-        *m_pfResult= m_dcComboLines[iLine].cl_ulValue;
+        *m_pfResult= m_dcComboLines[iLine]->cl_ulValue;
         // destroy combo
         DestroyWindow();
         DeleteTempMap();
@@ -340,7 +338,7 @@ void CCustomComboWnd::OnLButtonUp(UINT nFlags, CPoint point)
       if(m_pOnSelect!=NULL)
       {
         void (*pOnSelect)(INDEX iSelected)=m_pOnSelect;
-        INDEX iValue=m_dcComboLines[iLine].cl_ulValue;
+        INDEX iValue=m_dcComboLines[iLine]->cl_ulValue;
         // destroy combo
         DestroyWindow();
         DeleteTempMap();

@@ -29,8 +29,6 @@ static char THIS_FILE[] = __FILE__;
 /////////////////////////////////////////////////////////////////////////////
 // CDlgSelectByName dialog
 
-#define ENTITYPROPERTY(thisptr, offset, type) (*((type *)(((UBYTE *)thisptr)+offset)))     
-
 CDlgSelectByName::CDlgSelectByName( CWorldEditorDoc *pDoc, CWnd* pParent /*=NULL*/)
 	: CDialog(CDlgSelectByName::IDD, pParent)
 {

@@ -67,27 +67,28 @@ CTFileName CCtrlBrowseFile::GetIntersectingFile()
   CTFileName fnIntersectingFile;
   CTFileNameNoDep fnIntersectingFileNoDep;
   // for each of the selected entities
-  for (CEntity* iten : pDoc->m_selEntitySelection)
+  for (CEntity_* iten_ : pDoc->m_selEntitySelection)
   {
+    CEntityPtr iten(iten_);
     // obtain property ptr
-    CEntityProperty *pepProperty = iten->PropertyForName( ppidProperty->pid_strName);
+    CEntityPropertyPtr pepProperty = iten->PropertyForName( ppidProperty->pid_strName);
     // if this is first entity in dynamic container
     if( pDoc->m_selEntitySelection.GetFirstInSelection() == iten)
     {
       if( m_bFileNameNoDep)
       {
-        fnIntersectingFileNoDep = ENTITYPROPERTY( &*iten, pepProperty->ep_slOffset, CTFileNameNoDep);
+        fnIntersectingFileNoDep = CTFileNameNoDep(ENTITY_PROPERTY( iten, pepProperty->ep_slOffset, CTString_), false);
       }
       else
       {
-        fnIntersectingFile = ENTITYPROPERTY( &*iten, pepProperty->ep_slOffset, CTFileName);
+        fnIntersectingFile = CTFileName(ENTITY_PROPERTY( iten, pepProperty->ep_slOffset, CTFileName_), false);
       }
     }
     else
     {
       if( m_bFileNameNoDep)
       {
-        CTFileNameNoDep fnCurrentFileNoDep = ENTITYPROPERTY( &*iten, pepProperty->ep_slOffset, CTFileNameNoDep);
+        CTFileNameNoDep fnCurrentFileNoDep(ENTITY_PROPERTY( iten, pepProperty->ep_slOffset, CTString_), false);
         if( fnCurrentFileNoDep != fnIntersectingFileNoDep)
         {
           fnIntersectingFileNoDep = CTString("");
@@ -96,7 +97,7 @@ CTFileName CCtrlBrowseFile::GetIntersectingFile()
       }
       else
       {
-        CTFileName fnCurrentFile = ENTITYPROPERTY( &*iten, pepProperty->ep_slOffset, CTFileName);
+        CTFileName fnCurrentFile(ENTITY_PROPERTY( iten, pepProperty->ep_slOffset, CTFileName_), false);
         if( fnCurrentFile != fnIntersectingFile)
         {
           fnIntersectingFile = CTString("");
@@ -170,21 +171,23 @@ void CCtrlBrowseFile::OnClicked()
   if( fnChoosedFile == "") return;
 
   // for each of the selected entities
-  for (CEntity* iten : pDoc->m_selEntitySelection)
+  for (CEntity_* iten_ : pDoc->m_selEntitySelection)
   {
+    CEntityPtr iten(iten_);
     // obtain property ptr
-    CEntityProperty *penpProperty = iten->PropertyForName( ppidProperty->pid_strName);
+    CEntityPropertyPtr penpProperty = iten->PropertyForName( ppidProperty->pid_strName);
     // discard old entity settings
     iten->End();
     // set new file name value
     if( m_bFileNameNoDep)
     {
-      ENTITYPROPERTY( &*iten, penpProperty->ep_slOffset, CTFileNameNoDep) =
-        (CTFileNameNoDep) fnChoosedFile;
+      CTFileNameNoDep prop(ENTITY_PROPERTY(iten, penpProperty->ep_slOffset, CTString_), false);
+      prop = (CTFileNameNoDep) fnChoosedFile;
     }
     else
     {
-      ENTITYPROPERTY( &*iten, penpProperty->ep_slOffset, CTFileName) = fnChoosedFile;
+      CTFileName prop(ENTITY_PROPERTY(iten, penpProperty->ep_slOffset, CTFileName_), false);
+      prop = fnChoosedFile;
     }
     // apply new entity settings
     iten->Initialize();

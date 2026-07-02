@@ -102,10 +102,11 @@ private:
     return Qt::Unchecked;
   }
 
-  INDEX _GetAmmo(CEntity* entity) const
+  INDEX _GetAmmo(CEntity_* entity_) const
   {
-    CEntityProperty* actual_property = entity->PropertyForName(mp_property->pid_strName);
-    return ENTITYPROPERTY(entity, actual_property->ep_slOffset, INDEX);
+    CEntityPtr entity(entity_);
+    CEntityPropertyPtr actual_property = entity->PropertyForName(mp_property->pid_strName);
+    return *ENTITY_PROPERTY(entity, actual_property->ep_slOffset, INDEX);
   }
 
 private:

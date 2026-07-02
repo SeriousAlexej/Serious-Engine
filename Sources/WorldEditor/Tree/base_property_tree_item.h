@@ -31,7 +31,7 @@ public:
     virtual QVariant      data(int column, int role) const = 0;
 
     void                  Clear();
-    virtual bool          EntityPresentInHierarchy(CEntity* entity) const;
+    virtual bool          EntityPresentInHierarchy(CEntity_* entity) const;
 
     void                  appendChild(std::unique_ptr<BasePropertyTreeItem>&& child);
     BasePropertyTreeItem* parentItem();

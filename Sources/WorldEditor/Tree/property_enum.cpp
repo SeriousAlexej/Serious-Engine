@@ -44,11 +44,15 @@ public:
     auto* editor = new QComboBox(parent);
     editor->setStyleSheet(g_combo_style);
 
-    CEntityProperty* actual_property = (*m_entities.begin())->PropertyForName(mp_property->pid_strName);
-    CEntityPropertyEnumType* enum_type = actual_property->ep_pepetEnumType;
+    CEntity entity(*m_entities.begin(), false);
+    CEntityPropertyPtr actual_property = entity.PropertyForName(mp_property->pid_strName);
+    CEntityPropertyEnumTypePtr enum_type = actual_property->ep_pepetEnumType;
 
     for (INDEX i = 0; i < enum_type->epet_ctValues; ++i)
-      editor->addItem(enum_type->epet_aepevValues[i].epev_strName, enum_type->epet_aepevValues[i].epev_iValue);
+    {
+      const auto enum_value = enum_type->epet_aepevValues(i);
+      editor->addItem(enum_value.epev_strName, enum_value.epev_iValue);
+    }
     editor->setCurrentIndex(editor->findData(_CurrentPropValue()));
 
     editor->setFocusPolicy(Qt::FocusPolicy::StrongFocus);

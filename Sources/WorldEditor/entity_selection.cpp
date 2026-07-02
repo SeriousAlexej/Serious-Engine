@@ -32,16 +32,17 @@ size_t NewEntitySelection::Count() const
 
 BOOL NewEntitySelection::IsSelected(const CEntity& entity) const
 {
-  return entity.IsSelected(ENF_SELECTED);
+  return entity.IsSelected();
 }
 
-void NewEntitySelection::Select(const std::set<CEntity*>& entities)
+void NewEntitySelection::Select(const std::set<CEntity_*>& entities)
 {
-  for (auto* entity : entities)
+  for (auto* entity_ : entities)
   {
-    if (!entity->IsSelected(ENF_SELECTED))
+    CEntityPtr entity = entity_;
+    if (!entity->IsSelected())
     {
-      entity->Select(ENF_SELECTED);
+      entity->Select();
       m_entities.insert(entity);
     } else {
       ASSERTALWAYS("Object already selected!");
@@ -52,10 +53,10 @@ void NewEntitySelection::Select(const std::set<CEntity*>& entities)
 
 void NewEntitySelection::Select(CEntity& entity)
 {
-  if (!entity.IsSelected(ENF_SELECTED))
+  if (!entity.IsSelected())
   {
-    entity.Select(ENF_SELECTED);
-    m_entities.insert(&entity);
+    entity.Select();
+    m_entities.insert(entity);
     Notify();
   } else {
     ASSERTALWAYS("Object already selected!");
@@ -64,27 +65,30 @@ void NewEntitySelection::Select(CEntity& entity)
 
 void NewEntitySelection::Deselect(CEntity& entity)
 {
-  if (entity.IsSelected(ENF_SELECTED))
+  if (entity.IsSelected())
   {
-    entity.Deselect(ENF_SELECTED);
-    m_entities.erase(&entity);
+    entity.Deselect();
+    m_entities.erase(entity);
     Notify();
   } else {
     ASSERTALWAYS("Object is not selected!");
   }
 }
 
-CEntity* NewEntitySelection::GetFirstInSelection() const
+CEntityPtr NewEntitySelection::GetFirstInSelection() const
 {
   if (m_entities.empty())
-    return nullptr;
+    return {};
   return *m_entities.begin();
 }
 
 void NewEntitySelection::Clear()
 {
-  for (auto* entity : m_entities)
-    entity->Deselect(ENF_SELECTED);
+  for (auto* entity_ : m_entities)
+  {
+    CEntityPtr entity = entity_;
+    entity->Deselect();
+  }
   m_entities.clear();
   Notify();
 }
@@ -93,8 +97,9 @@ void NewEntitySelection::DestroyEntities(CWorld& world)
 {
   // must be in 24bit mode when managing entities
   CSetFPUPrecision FPUPrecision(FPT_24BIT);
-  for (auto* entity : m_entities)
+  for (auto* entity_ : m_entities)
   {
+    CEntityPtr entity = entity_;
     if (entity->IsTargetable())
       world.UntargetEntity(entity);
     entity->Destroy();
@@ -103,11 +108,11 @@ void NewEntitySelection::DestroyEntities(CWorld& world)
   Notify();
 }
 
-void NewEntitySelection::ConvertToCTContainer(CDynamicContainer<CEntity>& output_container) const
+void NewEntitySelection::ConvertToCTContainer(CDynamicContainer_CEntity& output_container) const
 {
   output_container.Clear();
-  for (auto* entity : m_entities)
-    output_container.Add(entity);
+  for (auto* entity_ : m_entities)
+    output_container.Add(entity_);
 }
 
 void NewEntitySelection::ConvertFromCTSelection(CEntitySelection& input_selection)
@@ -116,9 +121,9 @@ void NewEntitySelection::ConvertFromCTSelection(CEntitySelection& input_selectio
   //m_entities.clear();
   FOREACHINDYNAMICCONTAINER(input_selection, CEntity, iten)
   {
-    m_entities.insert(iten);
+    m_entities.insert(iten.Current());
   }
-  input_selection.CDynamicContainer<CEntity>::Clear();
+  input_selection.CDynamicContainer_CEntity::Clear();
   Notify();
 }
 
@@ -127,27 +132,27 @@ void NewEntitySelection::Notify() const
   EventHub::instance().CurrentEntitySelectionChanged(m_entities);
 }
 
-const std::set<CEntity*>& NewEntitySelection::Set() const
+const std::set<CEntity_*>& NewEntitySelection::Set() const
 {
   return m_entities;
 }
 
-std::set<CEntity*>::iterator NewEntitySelection::begin()
+std::set<CEntity_*>::iterator NewEntitySelection::begin()
 {
   return m_entities.begin();
 }
 
-std::set<CEntity*>::iterator NewEntitySelection::end()
+std::set<CEntity_*>::iterator NewEntitySelection::end()
 {
   return m_entities.end();
 }
 
-std::set<CEntity*>::const_iterator NewEntitySelection::cbegin() const
+std::set<CEntity_*>::const_iterator NewEntitySelection::cbegin() const
 {
   return m_entities.cbegin();
 }
 
-std::set<CEntity*>::const_iterator NewEntitySelection::cend() const
+std::set<CEntity_*>::const_iterator NewEntitySelection::cend() const
 {
   return m_entities.cend();
 }
