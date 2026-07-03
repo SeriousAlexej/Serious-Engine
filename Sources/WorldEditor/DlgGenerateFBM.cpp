@@ -52,8 +52,6 @@ CDlgGenerateFBM::CDlgGenerateFBM(CWnd* pParent /*=NULL*/)
 	//}}AFX_DATA_INIT
 
   m_bCustomWindowCreated = FALSE;
-  m_pdp=NULL;
-  m_pvp=NULL;
 
   _iFBMOctaves=theApp.m_iFBMOctaves;
   _fFBMHighFrequencyStep=theApp.m_fFBMHighFrequencyStep;
@@ -138,7 +136,7 @@ BOOL CreateFBMTexture(PIX pixW, PIX pixH, CTFileName fnFBMFile)
   ii.ii_Width=pixW;
   ii.ii_Height=pixH;
   ii.ii_BitsPerPixel=32;
-  ii.ii_Picture=(UBYTE*) AllocMemory(ii.ii_Width*ii.ii_Height*sizeof(COLOR));
+  ii.ii_Picture=(UBYTE*) AllocMemory_(ii.ii_Width*ii.ii_Height*sizeof(COLOR));
   COLOR *pcol=(COLOR *)ii.ii_Picture;
 
   // convert buffer to equalized color map
@@ -167,10 +165,10 @@ BOOL CreateFBMTexture(PIX pixW, PIX pixH, CTFileName fnFBMFile)
   {
     (void) strError;
     WarningMessage("Unable to create FBM preview texture!");
-    FreeMemory( pafFBM);
+    FreeMemory_( pafFBM);
     return FALSE;
   }
-  FreeMemory( pafFBM);
+  FreeMemory_( pafFBM);
   return TRUE;
 }
 
@@ -193,11 +191,11 @@ void CDlgGenerateFBM::OnPaint()
   }
 
   // ******** Render preview texture
-  if (m_pdp==NULL)
+  if (!m_pdp)
   {
-    _pGfx->CreateWindowCanvas( m_wndTexture.m_hWnd, &m_pvp, &m_pdp);
+    _pGfx_CreateWindowCanvas( m_wndTexture.m_hWnd, m_pvp, m_pdp);
   }
-  if( (m_pdp!=NULL) && (m_pdp->Lock()) )
+  if( m_pdp && (m_pdp->Lock()) )
   {
     PIX pixW=256;
     PIX pixH=256;
@@ -209,9 +207,9 @@ void CDlgGenerateFBM::OnPaint()
       {
         CTextureObject to;
         to.SetData_t(fnFBMFile);
-        CTextureData *ptd=(CTextureData *)to.GetData();
+        CTextureDataPtr ptd=to.GetData();
         ptd->Reload();
-        m_pdp->PutTexture( &to, PIXaabbox2D(PIX2D(0,0),PIX2D(m_pdp->GetWidth(),m_pdp->GetHeight())));
+        m_pdp->PutTexture( to, PIXaabbox2D(PIX2D(0,0),PIX2D(m_pdp->GetWidth(),m_pdp->GetHeight())));
       }
       catch( char *strError)
       {
@@ -221,7 +219,7 @@ void CDlgGenerateFBM::OnPaint()
       m_pdp->Unlock();
     }
   }
-  if (m_pvp!=NULL)
+  if (m_pvp)
   {
     m_pvp->SwapBuffers();
   }

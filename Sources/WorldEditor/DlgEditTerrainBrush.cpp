@@ -94,7 +94,7 @@ void CDlgEditTerrainBrush::OnImportTerrainBrush()
   if( fnBrush== "") return;
 
   CImageInfo ii;
-  ii.LoadAnyGfxFormat_t( fnBrush);
+  _EngineGUI.LoadAnyGfxFormat_t(ii, fnBrush);
   // both dimension must be potentions of 2
   if( (ii.ii_Width  == 1<<((int)Log2( (FLOAT)ii.ii_Width))) &&
       (ii.ii_Height == 1<<((int)Log2( (FLOAT)ii.ii_Height))) )

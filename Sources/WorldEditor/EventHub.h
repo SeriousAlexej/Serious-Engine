@@ -19,7 +19,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <vector>
 
-class CEntity;
+struct CEntity_;
+Q_DECLARE_OPAQUE_POINTER(CEntity_*)
+Q_DECLARE_METATYPE(CEntity_*)
 
 class EventHub : public QObject
 {

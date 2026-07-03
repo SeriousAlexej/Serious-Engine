@@ -154,10 +154,10 @@ void CDlgFilterPolygonSelection::DoDataExchange(CDataExchange* pDX)
     ADD_TO_FLAG_MASK( ulTexMask, ulTexValue, IDC_REFLECTIVE2,   BPTF_REFLECTION);
     ADD_TO_FLAG_MASK( ulTexMask, ulTexValue, IDC_AFTER_SHADOW2, BPTF_AFTERSHADOW);
 
-    CDynamicContainer<CBrushPolygon> dcPolygons;
+    CDynamicContainer_CBrushPolygon dcPolygons;
     {FOREACHINDYNAMICCONTAINER( pDoc->m_selPolygonSelection, CBrushPolygon, itbpo)
     {
-      dcPolygons.Add( itbpo);
+      dcPolygons.Add( itbpo.Current());
     }}
 
     INDEX iClusterItem = m_ctrlClusterSizeCombo.GetCurSel();
@@ -166,17 +166,19 @@ void CDlgFilterPolygonSelection::DoDataExchange(CDataExchange* pDX)
     // for each of the dynamic container
     {FOREACHINDYNAMICCONTAINER( dcPolygons, CBrushPolygon, itbpo)
     {
-      CBrushPolygon &bpo= *itbpo;
+      auto pbpo = *itbpo;
+      CBrushPolygon &bpo= *pbpo;
       BOOL bDeselect = ((bpo.bpo_ulFlags & ulMask) != ulValue) ||
-          ((bpo.bpo_abptTextures[pDoc->m_iTexture].s.bpt_ubFlags & ulTexMask) != ulTexValue) ||
+          ((bpo.bpo_abptTextures[pDoc->m_iTexture].bpt_ubFlags & ulTexMask) != ulTexValue) ||
           ((iClusterItem != CB_ERR) && (iClusterItem-4 != bpo.bpo_bppProperties.bpp_sbShadowClusterSize)) ||
           ((iSurface != CB_ERR) && (iSurface!=bpo.bpo_bppProperties.bpp_ubSurfaceType)) ||
           ((iMemoryItem != CB_ERR) && ((1<<(16-iMemoryItem))*BYTES_PER_TEXEL != bpo.bpo_smShadowMap.GetShadowSize())) ||
           (m_ctrlMultiplyColor.IsColorValid() &&
-          (m_ctrlMultiplyColor.GetColor()!=bpo.bpo_abptTextures[pDoc->m_iTexture].s.bpt_colColor));
+          (m_ctrlMultiplyColor.GetColor()!=bpo.bpo_abptTextures[pDoc->m_iTexture].bpt_colColor));
       if( !bDeselect)
       {
-        FLOATplane3D &pl=bpo.bpo_pbplPlane->bpl_plAbsolute;
+        CBrushPlanePtr plane(bpo.bpo_pbplPlane);
+        FLOATplane3D &pl= plane->bpl_plAbsolute;
         ANGLE3D ang;
         DirectionVectorToAngles(pl, ang);
         if(ang(1)<m_fMinH || ang(1)>m_fMaxH) bDeselect=TRUE;
@@ -260,7 +262,7 @@ BOOL CDlgFilterPolygonSelection::OnInitDialog()
   // add all available surfaces
   for(INDEX iSurface=0; iSurface<MAX_UBYTE; iSurface++)
   {
-    strFrictionName = pDoc->m_woWorld.wo_astSurfaceTypes[iSurface].st_strName;
+    strFrictionName = pDoc->m_woWorld.wo_astSurfaceTypes[iSurface]->st_strName;
     if( strFrictionName == "") break;
     INDEX iAddedAs = m_ctrFilterPolygonSurface.AddString( CString(strFrictionName));
   }

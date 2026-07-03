@@ -86,17 +86,17 @@ void CDlgPgSector::DoDataExchange(CDataExchange* pDX)
     m_comboContentType.ResetContent();
     for(INDEX iContentType=0; iContentType<MAX_UBYTE; iContentType++)
     {
-      CTString &strContent = pDoc->m_woWorld.wo_actContentTypes[iContentType].ct_strName;
+      CTString strContent = pDoc->m_woWorld.wo_actContentTypes[iContentType]->ct_strName;
       if( strContent == "") break;
-      m_comboContentType.AddString( CString(strContent));
+      m_comboContentType.AddString( CString(static_cast<const char*>(strContent)));
     }
 
     m_comboEnvironmentType.ResetContent();
     for(INDEX iEnvironmentType=0; iEnvironmentType<MAX_UBYTE; iEnvironmentType++)
     {
-      CTString &strEnvironment = pDoc->m_woWorld.wo_aetEnvironmentTypes[iEnvironmentType].et_strName;
+      CTString strEnvironment = pDoc->m_woWorld.wo_aetEnvironmentTypes[iEnvironmentType]->et_strName;
       if( strEnvironment == "") break;
-      m_comboEnvironmentType.AddString( CString(strEnvironment));
+      m_comboEnvironmentType.AddString( CString(static_cast<const char*>(strEnvironment)));
     }
 
     if( bSelectionExists)
@@ -110,7 +110,7 @@ void CDlgPgSector::DoDataExchange(CDataExchange* pDX)
       m_comboForceField.ResetContent();
       m_comboFog.ResetContent();
       m_comboHaze.ResetContent();
-      CBrush3D *pbrBrush = NULL;
+      CBrush3DPtr pbrBrush;
       INDEX iSector = 0;
       // for all sectors
       FOREACHINDYNAMICCONTAINER(pDoc->m_selSectorSelection, CBrushSector, itbsc)
@@ -128,28 +128,28 @@ void CDlgPgSector::DoDataExchange(CDataExchange* pDX)
         INDEX iHaze = itbsc->GetHazeType();
         if( iHaze != iFirstHaze) bSameHaze = FALSE;
         // get sector brush
-        if( (pbrBrush == NULL) || (pbrBrush == itbsc->bsc_pbmBrushMip->bm_pbrBrush) )
+        if( (!pbrBrush) || (pbrBrush == CBrush3DPtr(CBrushMipPtr(itbsc->bsc_pbmBrushMip)->bm_pbrBrush)) )
         {
-          if( pbrBrush == NULL)
+          if( !pbrBrush )
           {
-            pbrBrush = itbsc->bsc_pbmBrushMip->bm_pbrBrush;
+            pbrBrush = CBrushMipPtr(itbsc->bsc_pbmBrushMip)->bm_pbrBrush;
             for(INDEX iForceField=0; iForceField<MAX_UBYTE; iForceField++)
             {
-              CTString strForceName = pbrBrush->br_penEntity->GetForceName( iForceField);
+              CTString strForceName = CEntityPtr(pbrBrush->br_penEntity)->GetForceName( iForceField);
               if( strForceName == "") break;
-              m_comboForceField.AddString( CString(strForceName));
+              m_comboForceField.AddString( CString(static_cast<const char*>(strForceName)));
             }
             for(INDEX iFog=0; iFog<MAX_UBYTE; iFog++)
             {
-              CTString strFogName = pbrBrush->br_penEntity->GetFogName( iFog);
+              CTString strFogName = CEntityPtr(pbrBrush->br_penEntity)->GetFogName( iFog);
               if( strFogName == "") break;
-              m_comboFog.AddString( CString(strFogName));
+              m_comboFog.AddString( CString(static_cast<const char*>(strFogName)));
             }
             for(INDEX iHaze=0; iHaze<MAX_UBYTE; iHaze++)
             {
-              CTString strHazeName = pbrBrush->br_penEntity->GetHazeName( iHaze);
+              CTString strHazeName = CEntityPtr(pbrBrush->br_penEntity)->GetHazeName( iHaze);
               if( strHazeName == "") break;
-              m_comboHaze.AddString( CString(strHazeName));
+              m_comboHaze.AddString( CString(static_cast<const char*>(strHazeName)));
             }
           }
         }
@@ -201,13 +201,13 @@ void CDlgPgSector::DoDataExchange(CDataExchange* pDX)
     // for all sectors
     FOREACHINDYNAMICCONTAINER(pDoc->m_selSectorSelection, CBrushSector, itbsc)
     {
-      CBrushSector &bsc=*itbsc;
+      CBrushSector bsc(*itbsc, false);
       if( iSector == 0)
       {
         iFirstContent = bsc.GetContentType();
         iFirstEnvironment = bsc.GetEnvironmentType();
         m_SectorAmbientColor.SetColor( bsc.bsc_colAmbient);
-        m_strSectorName = bsc.bsc_strName;
+        m_strSectorName = static_cast<const char*>(bsc.bsc_strName);
         m_ctrlVisibilityFlags.SetFlags(bsc.bsc_ulVisFlags);
         m_ctrlClassificationFlags.SetFlags(bsc.bsc_ulVisFlags);
         iInclude=(bsc.bsc_ulFlags2&BSCF2_VISIBILITYINCLUDE) ? 0 : 1;
@@ -279,7 +279,7 @@ void CDlgPgSector::DoDataExchange(CDataExchange* pDX)
     // for all sectors
     FOREACHINDYNAMICCONTAINER(pDoc->m_selSectorSelection, CBrushSector, itbsc)
     {
-      CBrushSector &bsc=*itbsc;
+      CBrushSector bsc(*itbsc, false);
       INDEX iNewContent = m_comboContentType.GetCurSel();
       if( iNewContent!=CB_ERR)
       {

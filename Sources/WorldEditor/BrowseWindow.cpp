@@ -1404,7 +1404,7 @@ void CBrowseWindow::SelectByTextures( BOOL bInSelectedSectors, BOOL bExceptSelec
                     break;
                   }
                 }
-                if( bSelect) pDoc->m_selPolygonSelection.Select(*itbpo.Current());
+                if( bSelect) pDoc->m_selPolygonSelection.Select(*itbpo);
               }
             }
           }

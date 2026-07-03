@@ -70,8 +70,8 @@ void CDlgEditTerrainLayer::DoDataExchange(CDataExchange* pDX)
   // if dialog is recieving data
   if( pDX->m_bSaveAndValidate == FALSE)
   {
-    CTerrainLayer *ptlLayer=GetLayer();
-    if(ptlLayer!=NULL)
+    CTerrainLayerPtr ptlLayer=GetLayer();
+    if(ptlLayer)
     {
 	    m_bAutoGenerate=ptlLayer->tl_bAutoRegenerated;
 	    m_fAltitudeMax=ptlLayer->tl_fMaxAltitude*100.0f;
@@ -150,8 +150,8 @@ void CDlgEditTerrainLayer::DoDataExchange(CDataExchange* pDX)
   // if dialog is giving data
   if( pDX->m_bSaveAndValidate != FALSE)
   {
-    CTerrainLayer *ptlLayer=GetLayer();
-    if(ptlLayer!=NULL)
+    CTerrainLayerPtr ptlLayer=GetLayer();
+    if(ptlLayer)
     {
 	    ptlLayer->tl_bAutoRegenerated=m_bAutoGenerate;
 	    ptlLayer->tl_fMaxAltitude=m_fAltitudeMax/100.0f;

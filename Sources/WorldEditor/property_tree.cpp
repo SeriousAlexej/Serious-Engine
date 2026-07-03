@@ -127,7 +127,7 @@ public:
       });
 
     QObject::connect(&EventHub::instance(), &EventHub::CurrentEntitySelectionChanged, mp_tree_view, [this]
-      (const std::set<CEntity*>& new_selection)
+      (const std::set<CEntity_*>& new_selection)
       {
         mp_tree_model->Fill(new_selection);
         mp_winWidget->setEnabled(!new_selection.empty());
@@ -142,7 +142,7 @@ public:
       });
 
     QObject::connect(&EventHub::instance(), &EventHub::EntityPicked, mp_tree_view, [this]
-      (CEntity* picked_entity)
+      (CEntity_* picked_entity)
       {
         mp_tree_model->OnEntityPicked(picked_entity, mp_tree_view->selectionModel()->selectedRows());
       });

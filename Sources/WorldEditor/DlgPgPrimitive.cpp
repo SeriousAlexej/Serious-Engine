@@ -119,7 +119,7 @@ void CDlgPgPrimitive::DoDataExchange(CDataExchange* pDX)
         GetDlgItem(IDC_BOTTOM_SHAPE)->ShowWindow( SW_HIDE);
         m_fEdit1 = theApp.m_vfpCurrent.vfp_fShearX;
         m_fEdit2 = theApp.m_vfpCurrent.vfp_fShearZ;
-        m_fEdit3 = (float) theApp.m_vfpCurrent.vfp_avVerticesOnBaseOfPrimitive.Count();
+        m_fEdit3 = (float) theApp.m_vfpCurrent.vfp_avVerticesOnBaseOfPrimitive.size();
         m_fEdit4 = theApp.m_vfpCurrent.vfp_fStretchX;
         m_fEdit5 = theApp.m_vfpCurrent.vfp_fStretchY;
 	      m_bIfRoom = theApp.m_vfpCurrent.vfp_bClosed;
@@ -152,7 +152,7 @@ void CDlgPgPrimitive::DoDataExchange(CDataExchange* pDX)
         GetDlgItem(IDC_IF_OUTER)->ShowWindow( SW_SHOW);
         m_fEdit1 = (float)theApp.m_vfpCurrent.vfp_iSlicesIn360;
         m_fEdit2 = (float)theApp.m_vfpCurrent.vfp_iNoOfSlices;
-        m_fEdit3 = (float)theApp.m_vfpCurrent.vfp_avVerticesOnBaseOfPrimitive.Count();
+        m_fEdit3 = (float)theApp.m_vfpCurrent.vfp_avVerticesOnBaseOfPrimitive.size();
         m_fEdit4 = theApp.m_vfpCurrent.vfp_fRadius;
 	      m_bIfRoom = theApp.m_vfpCurrent.vfp_bClosed;
 	      m_bIfOuter = theApp.m_vfpCurrent.vfp_bOuter;
@@ -348,11 +348,11 @@ void CDlgPgPrimitive::DoDataExchange(CDataExchange* pDX)
 
     if( ((theApp.m_vfpCurrent.vfp_ptPrimitiveType == PT_CONUS) ||
          (theApp.m_vfpCurrent.vfp_ptPrimitiveType == PT_TORUS)) &&
-         (theApp.m_vfpCurrent.vfp_avVerticesOnBaseOfPrimitive.Count() != m_fEdit3) &&
+         (theApp.m_vfpCurrent.vfp_avVerticesOnBaseOfPrimitive.size() != m_fEdit3) &&
          ((INDEX)(m_fEdit3) > 0) )
     {
-      theApp.m_vfpCurrent.vfp_avVerticesOnBaseOfPrimitive.Clear();
-      theApp.m_vfpCurrent.vfp_avVerticesOnBaseOfPrimitive.New( Abs((INDEX) m_fEdit3));
+      theApp.m_vfpCurrent.vfp_avVerticesOnBaseOfPrimitive.clear();
+      theApp.m_vfpCurrent.vfp_avVerticesOnBaseOfPrimitive.resize( Abs((INDEX) m_fEdit3));
     }
 	  theApp.m_vfpCurrent.vfp_fShearX = m_fEdit1;
 	  theApp.m_vfpCurrent.vfp_iSlicesIn360 = (INDEX) m_fEdit1;
@@ -494,84 +494,84 @@ BOOL CDlgPgPrimitive::OnInitDialog()
 
   INDEX iCt = 1;
   // add descriptions of primitives from history list into combo
-  FOREACHINLIST( CPrimitiveInHistoryBuffer, pihb_lnNode, theApp.m_lhPrimitiveHistory, itPrim)
+  for (auto& itPrim : theApp.m_lhPrimitiveHistory)
   {
     CTString strNo;
     strNo.PrintF("%d) ", iCt);
     CTString strDescription;
-    switch( itPrim->pihb_vfpPrimitive.vfp_ptPrimitiveType)
+    switch( itPrim->vfp_ptPrimitiveType)
     {
     case PT_CONUS:
       {
         strDescription.PrintF("%d vtx, Size(%g,%g,%g) Shear(%g,%g) Stretch(%g,%g)",
-          itPrim->pihb_vfpPrimitive.vfp_avVerticesOnBaseOfPrimitive.Count(),
-          itPrim->pihb_vfpPrimitive.vfp_fXMax-itPrim->pihb_vfpPrimitive.vfp_fXMin,
-          itPrim->pihb_vfpPrimitive.vfp_fZMax-itPrim->pihb_vfpPrimitive.vfp_fZMin,
-          itPrim->pihb_vfpPrimitive.vfp_fYMax-itPrim->pihb_vfpPrimitive.vfp_fYMin,
-          itPrim->pihb_vfpPrimitive.vfp_fShearX, itPrim->pihb_vfpPrimitive.vfp_fShearZ,
-          itPrim->pihb_vfpPrimitive.vfp_fStretchX, itPrim->pihb_vfpPrimitive.vfp_fStretchY);
+          static_cast<int>(itPrim->vfp_avVerticesOnBaseOfPrimitive.size()),
+          itPrim->vfp_fXMax-itPrim->vfp_fXMin,
+          itPrim->vfp_fZMax-itPrim->vfp_fZMin,
+          itPrim->vfp_fYMax-itPrim->vfp_fYMin,
+          itPrim->vfp_fShearX, itPrim->vfp_fShearZ,
+          itPrim->vfp_fStretchX, itPrim->vfp_fStretchY);
         break;
       }
     case PT_TORUS:
       {
         strDescription.PrintF("%d vtx, Size(%g,%g) Radius(%g) Slices(%d,%d)",
-          itPrim->pihb_vfpPrimitive.vfp_avVerticesOnBaseOfPrimitive.Count(),
-          itPrim->pihb_vfpPrimitive.vfp_fXMax-itPrim->pihb_vfpPrimitive.vfp_fXMin,
-          itPrim->pihb_vfpPrimitive.vfp_fZMax-itPrim->pihb_vfpPrimitive.vfp_fZMin,
-          itPrim->pihb_vfpPrimitive.vfp_fRadius,
-          itPrim->pihb_vfpPrimitive.vfp_iSlicesIn360,
-          itPrim->pihb_vfpPrimitive.vfp_iNoOfSlices);
+          static_cast<int>(itPrim->vfp_avVerticesOnBaseOfPrimitive.size()),
+          itPrim->vfp_fXMax-itPrim->vfp_fXMin,
+          itPrim->vfp_fZMax-itPrim->vfp_fZMin,
+          itPrim->vfp_fRadius,
+          itPrim->vfp_iSlicesIn360,
+          itPrim->vfp_iNoOfSlices);
         break;
       }
     case PT_STAIRCASES:
       {
-        if( itPrim->pihb_vfpPrimitive.vfp_bLinearStaircases)
+        if( itPrim->vfp_bLinearStaircases)
         {
           strDescription.PrintF("%d stairs, Size(%g,%g,%g)",
-            itPrim->pihb_vfpPrimitive.vfp_iNoOfSlices,
-            itPrim->pihb_vfpPrimitive.vfp_fXMax-itPrim->pihb_vfpPrimitive.vfp_fXMin,
-            itPrim->pihb_vfpPrimitive.vfp_fZMax-itPrim->pihb_vfpPrimitive.vfp_fZMin,
-            itPrim->pihb_vfpPrimitive.vfp_fYMax-itPrim->pihb_vfpPrimitive.vfp_fYMin);
+            itPrim->vfp_iNoOfSlices,
+            itPrim->vfp_fXMax-itPrim->vfp_fXMin,
+            itPrim->vfp_fZMax-itPrim->vfp_fZMin,
+            itPrim->vfp_fYMax-itPrim->vfp_fYMin);
         }
         else
         {
           strDescription.PrintF("Radius(%g), %d Slices %d Stairs Size(%g,%g)",
-            itPrim->pihb_vfpPrimitive.vfp_fRadius,
-            itPrim->pihb_vfpPrimitive.vfp_iSlicesIn360,
-            itPrim->pihb_vfpPrimitive.vfp_iNoOfSlices,
-            itPrim->pihb_vfpPrimitive.vfp_fXMax-itPrim->pihb_vfpPrimitive.vfp_fXMin,
-            itPrim->pihb_vfpPrimitive.vfp_fYMax-itPrim->pihb_vfpPrimitive.vfp_fYMin);
+            itPrim->vfp_fRadius,
+            itPrim->vfp_iSlicesIn360,
+            itPrim->vfp_iNoOfSlices,
+            itPrim->vfp_fXMax-itPrim->vfp_fXMin,
+            itPrim->vfp_fYMax-itPrim->vfp_fYMin);
         }
         break;
       }
     case PT_SPHERE:
       {
         strDescription.PrintF("Size(%g,%g,%g) %d meridians %d parallels",
-          itPrim->pihb_vfpPrimitive.vfp_fXMax-itPrim->pihb_vfpPrimitive.vfp_fXMin,
-          itPrim->pihb_vfpPrimitive.vfp_fZMax-itPrim->pihb_vfpPrimitive.vfp_fZMin,
-          itPrim->pihb_vfpPrimitive.vfp_fYMax-itPrim->pihb_vfpPrimitive.vfp_fYMin,
-          itPrim->pihb_vfpPrimitive.vfp_iMeridians,
-          itPrim->pihb_vfpPrimitive.vfp_iParalels);
+          itPrim->vfp_fXMax-itPrim->vfp_fXMin,
+          itPrim->vfp_fZMax-itPrim->vfp_fZMin,
+          itPrim->vfp_fYMax-itPrim->vfp_fYMin,
+          itPrim->vfp_iMeridians,
+          itPrim->vfp_iParalels);
         break;
       }
     case PT_TERRAIN:
       {
         strDescription.PrintF("Size(%g,%g,%g) Slices(%d,%d)",
-          itPrim->pihb_vfpPrimitive.vfp_fXMax-itPrim->pihb_vfpPrimitive.vfp_fXMin,
-          itPrim->pihb_vfpPrimitive.vfp_fZMax-itPrim->pihb_vfpPrimitive.vfp_fZMin,
-          itPrim->pihb_vfpPrimitive.vfp_fYMax-itPrim->pihb_vfpPrimitive.vfp_fYMin,
-          itPrim->pihb_vfpPrimitive.vfp_iSlicesPerWidth,
-          itPrim->pihb_vfpPrimitive.vfp_iSlicesPerHeight);
-         if( itPrim->pihb_vfpPrimitive.vfp_fnDisplacement != "")
+          itPrim->vfp_fXMax-itPrim->vfp_fXMin,
+          itPrim->vfp_fZMax-itPrim->vfp_fZMin,
+          itPrim->vfp_fYMax-itPrim->vfp_fYMin,
+          itPrim->vfp_iSlicesPerWidth,
+          itPrim->vfp_iSlicesPerHeight);
+         if( itPrim->vfp_fnDisplacement != "")
          {
-           strDescription.PrintF( "%s, Displ.: \"%s\", Amp. %g", strDescription,
-             (CTString&)(itPrim->pihb_vfpPrimitive.vfp_fnDisplacement.FileName()+
-             itPrim->pihb_vfpPrimitive.vfp_fnDisplacement.FileExt()),
-             itPrim->pihb_vfpPrimitive.vfp_fAmplitude);
+           strDescription.PrintF( "%s, Displ.: \"%s\", Amp. %g", static_cast<const char*>(strDescription),
+             static_cast<const char*>((CTString&)(itPrim->vfp_fnDisplacement.FileName()+
+             itPrim->vfp_fnDisplacement.FileExt())),
+             itPrim->vfp_fAmplitude);
          }
          else
          {
-           strDescription.PrintF( "%s, No displacement picture", strDescription);
+           strDescription.PrintF( "%s, No displacement picture", static_cast<const char*>(strDescription));
          }
         break;
       }
@@ -582,15 +582,15 @@ BOOL CDlgPgPrimitive::OnInitDialog()
     }
     CTString strPosition;
     strPosition.PrintF(", Pos(%g,%g,%g), Ang(%g,%g,%g)",
-          itPrim->pihb_vfpPrimitive.vfp_plPrimitive.pl_PositionVector(1),
-          itPrim->pihb_vfpPrimitive.vfp_plPrimitive.pl_PositionVector(2),
-          itPrim->pihb_vfpPrimitive.vfp_plPrimitive.pl_PositionVector(3),
-          DegAngle( itPrim->pihb_vfpPrimitive.vfp_plPrimitive.pl_OrientationAngle(1)),
-          DegAngle( itPrim->pihb_vfpPrimitive.vfp_plPrimitive.pl_OrientationAngle(2)),
-          DegAngle( itPrim->pihb_vfpPrimitive.vfp_plPrimitive.pl_OrientationAngle(3)));
+          itPrim->vfp_plPrimitive.pl_PositionVector(1),
+          itPrim->vfp_plPrimitive.pl_PositionVector(2),
+          itPrim->vfp_plPrimitive.pl_PositionVector(3),
+          DegAngle( itPrim->vfp_plPrimitive.pl_OrientationAngle(1)),
+          DegAngle( itPrim->vfp_plPrimitive.pl_OrientationAngle(2)),
+          DegAngle( itPrim->vfp_plPrimitive.pl_OrientationAngle(3)));
 
     CTString strTriangularisation;
-    switch( itPrim->pihb_vfpPrimitive.vfp_ttTriangularisationType)
+    switch( itPrim->vfp_ttTriangularisationType)
     {
     case TT_NONE: strTriangularisation = ""; break;
     case TT_CENTER_VERTEX: strTriangularisation = ", Triang:Center"; break;
@@ -612,9 +612,9 @@ BOOL CDlgPgPrimitive::OnInitDialog()
     case TT_FROM_VTX15: strTriangularisation = ", Triang:Vtx15"; break;
     }
 
-    INDEX iAddedAs = m_comboPrimitiveHistory.AddString(CString(
-      strNo+strDescription+strPosition+strTriangularisation));
-    m_comboPrimitiveHistory.SetItemData( iAddedAs, (ULONG) &itPrim->pihb_vfpPrimitive);
+    INDEX iAddedAs = m_comboPrimitiveHistory.AddString(CString(static_cast<const char*>(
+      strNo+strDescription+strPosition+strTriangularisation)));
+    m_comboPrimitiveHistory.SetItemData( iAddedAs, (ULONG) itPrim.get());
     iCt++;
   }
 	return TRUE;
@@ -673,17 +673,8 @@ void CDlgPgPrimitive::OnSelchangePrimitiveHistory()
 {
   INDEX iSelected = m_comboPrimitiveHistory.GetCurSel();
   if( iSelected == CB_ERR) return;
-  INDEX iCurrent = 0;
   // write history primitives list
-  FOREACHINLIST( CPrimitiveInHistoryBuffer, pihb_lnNode, theApp.m_lhPrimitiveHistory, itPrim)
-  {
-    if( iCurrent == iSelected)
-    {
-      theApp.m_vfpCurrent = itPrim->pihb_vfpPrimitive;
-      break;
-    }
-    iCurrent++;
-  }
+  theApp.m_vfpCurrent = *theApp.m_lhPrimitiveHistory.at(iSelected);
 
   CWorldEditorDoc* pDoc = theApp.GetActiveDocument();
   ASSERT( pDoc != NULL);

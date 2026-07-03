@@ -98,7 +98,7 @@ void CDlgPgPosition::DoDataExchange(CDataExchange* pDX)
     else if (pDoc->m_iMode == ENTITY_MODE && single_selection)
     {
       // get first entity
-      CEntity *penEntityOne = pDoc->m_selEntitySelection.GetFirstInSelection();
+      CEntityPtr penEntityOne = pDoc->m_selEntitySelection.GetFirstInSelection();
 
       // get placement of first entity
       CPlacement3D plEntityOnePlacement = penEntityOne->GetPlacement();
@@ -159,7 +159,7 @@ void CDlgPgPosition::DoDataExchange(CDataExchange* pDX)
       if (pDoc->m_selEntitySelection.Count() == 1)
       {
         // get first entity
-        CEntity* penEntityOne = pDoc->m_selEntitySelection.GetFirstInSelection();
+        CEntityPtr penEntityOne = pDoc->m_selEntitySelection.GetFirstInSelection();
 
         // get placement of first entity
         CPlacement3D plEntityOnePlacement = penEntityOne->GetPlacement();
@@ -244,14 +244,14 @@ void CDlgPgPosition::OnPickRotation()
   if (!mp_context || !curr_doc)
     return;
   theApp.InstallOneTimeSelectionStealer([this, curr_doc, qContext = QPointer { mp_context.get() }]
-  (CEntity* entity)
+  (CEntity_* entity)
   {
     if (!qContext)
       return;
     CWorldEditorDoc* pDoc = theApp.GetDocument();
     if (pDoc == curr_doc && !pDoc->m_absoluteRotation)
     {
-      pDoc->m_plMouseMove.pl_OrientationAngle = entity->GetPlacement().pl_OrientationAngle;
+      pDoc->m_plMouseMove.pl_OrientationAngle = CEntityPtr(entity)->GetPlacement().pl_OrientationAngle;
       pDoc->UpdateSelectionCommonPos();
     }
   },

@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "stdafx.h"
 #include "WorldEditor.h"
 #include "DlgLightAnimationEditor.h"
-#include <Engine/Templates/Stock_CAnimData.h>
+#include <SeriousEngineCppAPI/Templates/Stock_CAnimData.h>
 
 #ifdef _DEBUG
 #undef new
@@ -64,14 +64,14 @@ CDlgLightAnimationEditor::CDlgLightAnimationEditor(CWnd* pParent /*=NULL*/)
   try {
     adDefault.Save_t( fnDefaultAnimation);
   } catch( char *pError) {
-    FatalError( "Unable to save default animation: \"%s\", %s", (CTString&)fnDefaultAnimation, pError);
+    FatalError( "Unable to save default animation: \"%s\", %s", static_cast<const char*>((CTString&)fnDefaultAnimation), pError);
   }
 
   // try to load animation that was last edited
   try
   {
-    CTFileName fnLastEditted = CTString( CStringA(theApp.GetProfileString(L"World editor", L"Last edited light animation", CString(DEFAULT_ANIMATION_FILE))));
-    m_padAnimData = _pAnimStock->Obtain_t( fnLastEditted);
+    CTFileName fnLastEditted = CTString( static_cast<const char*>(CStringA(theApp.GetProfileString(L"World editor", L"Last edited light animation", CString(DEFAULT_ANIMATION_FILE)))));
+    m_padAnimData = _pAnimStock_Obtain_t( fnLastEditted);
     m_fnSaveName = fnLastEditted;
   }
   catch( char *pError)
@@ -80,11 +80,11 @@ CDlgLightAnimationEditor::CDlgLightAnimationEditor(CWnd* pParent /*=NULL*/)
     // try to load default animation
     try
     {
-      m_padAnimData = _pAnimStock->Obtain_t( fnDefaultAnimation);
+      m_padAnimData = _pAnimStock_Obtain_t( fnDefaultAnimation);
     }
     catch( char *pError2)
     {
-      FatalError( "Unable to save and obtain default animation: \"%s\", %s", (CTString&)fnDefaultAnimation, pError2);
+      FatalError( "Unable to save and obtain default animation: \"%s\", %s", static_cast<const char*>((CTString&)fnDefaultAnimation), pError2);
     }
   }
 
@@ -97,7 +97,7 @@ CDlgLightAnimationEditor::~CDlgLightAnimationEditor()
 {
   theApp.WriteProfileString(L"World editor", L"Last edited light animation", CString(m_padAnimData->GetName()));
   m_wndTestAnimation.m_aoAnimObject.SetData( NULL);
-  _pAnimStock->Release( m_padAnimData);
+  _pAnimStock_Release( m_padAnimData);
 }
 
 void CDlgLightAnimationEditor::DoDataExchange(CDataExchange* pDX)
@@ -203,10 +203,10 @@ void CDlgLightAnimationEditor::StoreData(void)
   }
 
   // and set new name to anim data
-  m_padAnimData->SetName( iLightAnimation, CTString(CStringA(m_strLightAnimationName)));
+  m_padAnimData->SetName( iLightAnimation, CTString(static_cast<const char*>(CStringA(m_strLightAnimationName))));
   //------------ Prepare new array of frames for current animation (key frames changing is
   // not applied here but in control LMB down handler)
-  CAnimData *pAD = m_padAnimData;
+  CAnimDataPtr pAD = m_padAnimData;
   // obtain information about animation
   CAnimInfo aiInfo;
   pAD->GetAnimInfo(iLightAnimation, aiInfo);
@@ -263,7 +263,7 @@ void CDlgLightAnimationEditor::SpreadFrames(void)
 
   // obtain information about animation
   CAnimInfo aiInfo;
-  CAnimData *pAD = m_padAnimData;
+  CAnimDataPtr pAD = m_padAnimData;
   pAD->GetAnimInfo(iLightAnimation, aiInfo);
   // get count of frames
   INDEX ctFrames = aiInfo.ai_NumberOfFrames;
@@ -491,8 +491,8 @@ void CDlgLightAnimationEditor::OnLoadAnimation()
 
   try
   {
-    _pAnimStock->Release( m_padAnimData);
-    m_padAnimData = _pAnimStock->Obtain_t( fnAnimation);
+    _pAnimStock_Release( m_padAnimData);
+    m_padAnimData = _pAnimStock_Obtain_t( fnAnimation);
     m_fnSaveName = fnAnimation;
   }
   catch( char *strError)
@@ -501,7 +501,7 @@ void CDlgLightAnimationEditor::OnLoadAnimation()
     try
     {
       CTFileName fnDefaultAnimation = CTString( DEFAULT_ANIMATION_FILE);
-      m_padAnimData = _pAnimStock->Obtain_t( fnDefaultAnimation);
+      m_padAnimData = _pAnimStock_Obtain_t( fnDefaultAnimation);
     }
     catch( char *strError2)
     {
@@ -532,9 +532,9 @@ void CDlgLightAnimationEditor::OnSaveAnimation()
       m_padAnimData->Write_t( &strmFile);
       strmFile.Close();
       // refresh animation
-      CAnimData *pad = _pAnimStock->Obtain_t(m_fnSaveName);
+      CAnimDataPtr pad = _pAnimStock_Obtain_t(m_fnSaveName);
       pad->Reload();
-      _pAnimStock->Release(pad);
+      _pAnimStock_Release(pad);
     }
     catch( char *strError)
     {
@@ -560,9 +560,9 @@ void CDlgLightAnimationEditor::OnSaveAsAnimation()
     m_fnSaveName = fnAnimation;
     strmFile.Close();
     // refresh animation
-    CAnimData *pad = _pAnimStock->Obtain_t(m_fnSaveName);
+    CAnimDataPtr pad = _pAnimStock_Obtain_t(m_fnSaveName);
     pad->Reload();
-    _pAnimStock->Release(pad);
+    _pAnimStock_Release(pad);
   }
   catch( char *strError)
   {

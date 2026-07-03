@@ -31,7 +31,7 @@ static char THIS_FILE[] = __FILE__;
 // CDlgLinkTree dialog
 
 
-CDlgLinkTree::CDlgLinkTree(CEntity *pen, CPoint pt, BOOL bWhoTargets, BOOL bPropertyNames,
+CDlgLinkTree::CDlgLinkTree(CEntityPtr pen, CPoint pt, BOOL bWhoTargets, BOOL bPropertyNames,
                            CWnd* pParent /*=NULL*/)
 	: CDialog(CDlgLinkTree::IDD, pParent)
 {
@@ -86,7 +86,7 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CDlgLinkTree message handlers
 
-CDynamicContainer<CEntity> _penAdded;
+CDynamicContainer_CEntity _penAdded;
 BOOL CDlgLinkTree::OnInitDialog() 
 {
   InitializeTree();
@@ -100,12 +100,11 @@ void CDlgLinkTree::InitializeTree(void)
   
   _penAdded.Clear();
   m_ctrTree.DeleteAllItems();
-  if( m_pen==NULL || m_pen->IsSelected( ENF_SELECTED))
+  if( !m_pen || m_pen->IsSelected())
   {
-    for (CEntity* iten : pDoc->m_selEntitySelection)
+    for (CEntity_* iten : pDoc->m_selEntitySelection)
     {
-      CEntity &en=*iten;
-      AddEntityPtrsRecursiv( &en, 0, "");
+      AddEntityPtrsRecursiv(iten, 0, "");
     }
   }
   else
@@ -174,7 +173,7 @@ void CDlgLinkTree::InitializeTree(void)
   MOVE_FLAG(IDC_LT_WHO, 3);
 }
 
-void CDlgLinkTree::AddEntityPtrsRecursiv(CEntity *pen, HTREEITEM hParent, CTString strPropertyName)
+void CDlgLinkTree::AddEntityPtrsRecursiv(CEntityPtr pen, HTREEITEM hParent, CTString strPropertyName)
 {
   CWorldEditorDoc *pDoc = theApp.GetDocument();
   if( _penAdded.IsMember( pen)) return;
@@ -210,7 +209,7 @@ void CDlgLinkTree::AddEntityPtrsRecursiv(CEntity *pen, HTREEITEM hParent, CTStri
   {
     strText=strText+pen->GetName();
   }
-  m_ctrTree.SetItemText( InsertedEntity, CString(strText));
+  m_ctrTree.SetItemText( InsertedEntity, CString(static_cast<const char*>(strText)));
   _penAdded.Add(pen);
   if(_penAdded.Count()>16) return;
 
@@ -220,21 +219,21 @@ void CDlgLinkTree::AddEntityPtrsRecursiv(CEntity *pen, HTREEITEM hParent, CTStri
     {
       // ---- Add entities that target
       // obtain entity class ptr
-      CDLLEntityClass *pdecDLLClass = iten->GetClass()->ec_pdecDLLClass;
+      CDLLEntityClassPtr pdecDLLClass = iten->GetClass()->ec_pdecDLLClass;
       // for all classes in hierarchy of this entity
-      for(;pdecDLLClass!=NULL; pdecDLLClass = pdecDLLClass->dec_pdecBase)
+      for(;pdecDLLClass; pdecDLLClass = pdecDLLClass->dec_pdecBase())
       {
         // for all properties
         for(INDEX iProperty=0; iProperty<pdecDLLClass->dec_ctProperties; iProperty++)
         {
-          CEntityProperty *pepProperty = &pdecDLLClass->dec_aepProperties[iProperty];
+          CEntityPropertyPtr pepProperty = pdecDLLClass->dec_aepProperties(iProperty);
           if( pepProperty->ep_eptType == CEntityProperty::EPT_ENTITYPTR)
           {
             // obtain property ptr
-            CEntity *penPtr = ENTITYPROPERTY( &*iten, pepProperty->ep_slOffset, CEntityPointer);
-            if( penPtr == pen)
+            CEntityPointer penPtr(ENTITY_PROPERTY( (*iten), pepProperty->ep_slOffset, CEntityPointer_), false);
+            if( penPtr.ep_pen() == pen)
             {
-              AddEntityPtrsRecursiv( &*iten, InsertedEntity, pepProperty->ep_strName);
+              AddEntityPtrsRecursiv( *iten, InsertedEntity, pepProperty->ep_strName);
             }
           }
         }
@@ -245,18 +244,18 @@ void CDlgLinkTree::AddEntityPtrsRecursiv(CEntity *pen, HTREEITEM hParent, CTStri
   {
     // ---- Add this entity's non-NULL ptrs recurively
     // obtain entity class ptr
-    CDLLEntityClass *pdecDLLClass = pen->GetClass()->ec_pdecDLLClass;
+    CDLLEntityClassPtr pdecDLLClass = pen->GetClass()->ec_pdecDLLClass;
     // for all classes in hierarchy of this entity
-    for(;pdecDLLClass!=NULL; pdecDLLClass = pdecDLLClass->dec_pdecBase)
+    for(;pdecDLLClass; pdecDLLClass = pdecDLLClass->dec_pdecBase())
     {
       // for all properties
       for(INDEX iProperty=0; iProperty<pdecDLLClass->dec_ctProperties; iProperty++)
       {
-        CEntityProperty *pepProperty = &pdecDLLClass->dec_aepProperties[iProperty];
+        CEntityPropertyPtr pepProperty = pdecDLLClass->dec_aepProperties(iProperty);
         if( pepProperty->ep_eptType == CEntityProperty::EPT_ENTITYPTR)
         {
           // obtain property ptr
-          CEntity *penPtr = ENTITYPROPERTY( pen, pepProperty->ep_slOffset, CEntityPointer);
+          CEntityPointer penPtr(ENTITY_PROPERTY( pen, pepProperty->ep_slOffset, CEntityPointer_), false);
           if( penPtr != NULL)
           {
             AddEntityPtrsRecursiv( penPtr, InsertedEntity, pepProperty->ep_strName);
@@ -323,7 +322,7 @@ void CDlgLinkTree::OnDblclkLinkTree(NMHDR* pNMHDR, LRESULT* pResult)
   {
     CWorldEditorDoc *pDoc = theApp.GetDocument();
     pDoc->m_selEntitySelection.Clear();
-    CEntity *pen=(CEntity *) m_ctrTree.GetItemData(item);
+    CEntityPtr pen((CEntity_ *) m_ctrTree.GetItemData(item));
     pDoc->m_selEntitySelection.Select( *pen);
     pDoc->m_chSelections.MarkChanged();
     EndDialog( IDOK);

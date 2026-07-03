@@ -186,7 +186,7 @@ public:
     vfp_fMipStep = vfpToCopy.vfp_fMipStep;
   };
 
-  inline BOOL operator==(const CValuesForPrimitive &vfpToCompare);
+  BOOL operator==(const CValuesForPrimitive &vfpToCompare) const;
   inline CValuesForPrimitive operator+(const CValuesForPrimitive &vfpToAdd);
   inline CValuesForPrimitive &operator+=(const CValuesForPrimitive &vfpToAdd);
   inline CValuesForPrimitive operator-(const CValuesForPrimitive &vfpToSub);
@@ -580,7 +580,7 @@ public:
 /////////////////////////////////////////////////////////////////////////////
 // Inline functions
 
-inline BOOL CValuesForPrimitive::operator==(const CValuesForPrimitive &vfpToCompare)
+inline BOOL CValuesForPrimitive::operator==(const CValuesForPrimitive &vfpToCompare) const
 {
   return (
     (vfp_avVerticesOnBaseOfPrimitive.size() == vfpToCompare.vfp_avVerticesOnBaseOfPrimitive.size() ) &&

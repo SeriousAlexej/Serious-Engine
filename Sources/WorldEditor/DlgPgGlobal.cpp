@@ -80,11 +80,11 @@ void CDlgPgGlobal::DoDataExchange(CDataExchange* pDX)
       m_udSelectionCounts.MarkUpdated();
     }
 
-    if( theApp.m_ptdActiveTexture != NULL)
+    if( theApp.m_ptdActiveTexture)
     {
       m_strTextureInfo = 
-        (CTString&)theApp.m_ptdActiveTexture->GetName()+" "+
-        theApp.m_ptdActiveTexture->GetDescription();
+        static_cast<const char*>((CTString&)theApp.m_ptdActiveTexture->GetName()+" "+
+        theApp.m_ptdActiveTexture->GetDescription());
     }
   }
 

@@ -280,9 +280,9 @@ void CDlgPgPolygon::InitComboBoxes(void)
   // add all available frictions
   for(INDEX iFriction=0; iFriction<MAX_UBYTE; iFriction++)
   {
-    strFrictionName = pDoc->m_woWorld.wo_astSurfaceTypes[iFriction].st_strName;
+    strFrictionName = pDoc->m_woWorld.wo_astSurfaceTypes[iFriction]->st_strName;
     if( strFrictionName == "") break;
-    INDEX iAddedAs = m_ComboFriction.AddString( CString(strFrictionName));
+    INDEX iAddedAs = m_ComboFriction.AddString( CString(static_cast<const char*>(strFrictionName)));
   }
 
   // none must exist
@@ -292,20 +292,18 @@ void CDlgPgPolygon::InitComboBoxes(void)
   if( pDoc->m_selPolygonSelection.Count() != 0)
   {
     // obtain first polygon's brush
-    CBrush3D *pbrBrush = NULL;
-    pDoc->m_selPolygonSelection.Lock();
+    CBrush3DPtr pbrBrush;
     if( !pDoc->m_selPolygonSelection.IsMember( pDoc->m_pbpoLastCentered))
     {
-      pbrBrush = pDoc->m_selPolygonSelection[0].bpo_pbscSector->bsc_pbmBrushMip->bm_pbrBrush;
+      pbrBrush = CBrushMipPtr(CBrushSectorPtr(pDoc->m_selPolygonSelection[0]->bpo_pbscSector)->bsc_pbmBrushMip)->bm_pbrBrush;
     }
-    pDoc->m_selPolygonSelection.Unlock();
 
     BOOL bEnableMirror = TRUE;
     // for each of the selected polygons
     FOREACHINDYNAMICCONTAINER(pDoc->m_selPolygonSelection, CBrushPolygon, itbpo)
     {
       // disable mirror combo box if all polygons are not from same brush
-      if( pbrBrush != itbpo->bpo_pbscSector->bsc_pbmBrushMip->bm_pbrBrush)
+      if( pbrBrush.get_handle() != CBrushMipPtr(CBrushSectorPtr(itbpo->bpo_pbscSector)->bsc_pbmBrushMip)->bm_pbrBrush)
       {
         bEnableMirror = FALSE;
         break;
@@ -318,9 +316,9 @@ void CDlgPgPolygon::InitComboBoxes(void)
       // add mirrors
       for(INDEX iMirror=1; iMirror<MAX_UBYTE; iMirror++)
       {
-        CTString strMirrorName = pbrBrush->br_penEntity->GetMirrorName( iMirror);
+        CTString strMirrorName = CEntityPtr(pbrBrush->br_penEntity)->GetMirrorName( iMirror);
         if( strMirrorName == "") break;
-        m_ComboMirror.AddString( CString(strMirrorName));
+        m_ComboMirror.AddString( CString(static_cast<const char*>(strMirrorName)));
       }
     }
   }

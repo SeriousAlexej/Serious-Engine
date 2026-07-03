@@ -67,8 +67,8 @@ void CDlgPgRenderingStatistics::DoDataExchange(CDataExchange* pDX)
       // set eol character
       pchrFile[ ulProfileFileSize] = 0;
       fileProfile.Read_t( pchrFile, ulProfileFileSize);
-      strRenderingProfile = CTString( pchrFile);
-      delete pchrFile;
+      strRenderingProfile = pchrFile;
+      delete[] pchrFile;
     }
     // catch errors
     catch( char *strError)

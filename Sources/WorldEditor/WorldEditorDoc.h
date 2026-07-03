@@ -142,7 +142,7 @@ public:
   std::vector<DOUBLE3D> m_avStartDragVertices;
   CBrushPolygonSelection m_selPolygonSelection;
   std::vector<CPlacement3D> m_aSelectedEntityPlacements;
-  CBrushPolygon *m_pbpoLastCentered;
+  CBrushPolygonPtr m_pbpoLastCentered;
 
   CChangeableRT m_chSelections;
   CChangeableRT m_chDocument;

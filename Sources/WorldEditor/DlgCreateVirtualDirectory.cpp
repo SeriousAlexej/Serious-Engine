@@ -60,7 +60,7 @@ void CDlgCreateVirtualDirectory::DoDataExchange(CDataExchange* pDX)
   // if dialog gives data
   if( pDX->m_bSaveAndValidate != FALSE)
   {
-    m_strCreatedDirName = CTString( CStringA(m_strDirectoryName));
+    m_strCreatedDirName = CTString( static_cast<const char*>(CStringA(m_strDirectoryName)));
     m_iSelectedIconType = 0;
     // Now set selected directory icon type
     for( i=0; i<m_DirectoryIconsList.GetItemCount(); i++)

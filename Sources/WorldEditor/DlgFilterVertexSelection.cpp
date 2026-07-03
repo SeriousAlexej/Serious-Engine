@@ -73,10 +73,10 @@ void CDlgFilterVertexSelection::DoDataExchange(CDataExchange* pDX)
   // if dialog is giving data
   if( pDX->m_bSaveAndValidate != FALSE)
   {
-    CDynamicContainer<CBrushVertex> dcVertices;
+    CDynamicContainer_CBrushVertex dcVertices;
     {FOREACHINDYNAMICCONTAINER( pDoc->m_selVertexSelection, CBrushVertex, itvtx)
     {
-      dcVertices.Add( itvtx);
+      dcVertices.Add( *itvtx);
     }}
 
     // for each of the dynamic container

@@ -471,7 +471,7 @@ void CWorldEditorDoc::SetupBackdropTextureObject( CTFileName fnPicture, CTexture
   CImageInfo iiImageInfo;
   try
   {
-    iiImageInfo.LoadAnyGfxFormat_t( fnPicture);
+    _EngineGUI.LoadAnyGfxFormat_t(iiImageInfo, fnPicture);
     // both dimension must be potentions of 2
     if( (iiImageInfo.ii_Width  == 1<<((int)Log2( (FLOAT)iiImageInfo.ii_Width))) &&
         (iiImageInfo.ii_Height == 1<<((int)Log2( (FLOAT)iiImageInfo.ii_Height))) )
@@ -2055,7 +2055,7 @@ void CWorldEditorDoc::CreateTerrainPrimitive(void)
   {
     try
     {
-      iiDisplace.LoadAnyGfxFormat_t( theApp.m_vfpCurrent.vfp_fnDisplacement);
+      _EngineGUI.LoadAnyGfxFormat_t(iiDisplace, theApp.m_vfpCurrent.vfp_fnDisplacement);
       m_slDisplaceTexTime=GetFileTimeStamp_t(theApp.m_vfpCurrent.vfp_fnDisplacement);
     }
     catch( char *strError)
