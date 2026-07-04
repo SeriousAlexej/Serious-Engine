@@ -44,7 +44,7 @@ CDlgTipOfTheDay::CDlgTipOfTheDay(CWnd* pParent /*=NULL*/)
     CTFileStream strm;
     strm.Open_t(CTString("Data\\SED_TipOfTheDay.txt"));
     while (!strm.AtEOF()) {
-      strm.GetLine_t(m_astrTips.Push(), '$');
+      strm.GetLine_t(m_astrTips.emplace_back(), '$');
     }
   } catch (char *strError) {
     WarningMessage("Cannot show Tip of the Day:\n%s", strError);
@@ -56,10 +56,12 @@ void CDlgTipOfTheDay::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 
-  INDEX ctTips = m_astrTips.Count();
+  INDEX ctTips = m_astrTips.size();
   if (ctTips>0) {
     theApp.m_iCurrentTipOfTheDay = (theApp.m_iCurrentTipOfTheDay+ctTips)%ctTips;
-    m_wndTipText.m_strTipText = (const char*)m_astrTips[theApp.m_iCurrentTipOfTheDay];
+    auto tip_it = m_astrTips.begin();
+    std::advance(tip_it, theApp.m_iCurrentTipOfTheDay);
+    m_wndTipText.m_strTipText = static_cast<const char*>(*tip_it);
   } else {
     m_wndTipText.m_strTipText = "error";
   }

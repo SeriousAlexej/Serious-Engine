@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "stdafx.h"
 #include "MainFrm.h"
 #include "EventHub.h"
-#include <Engine/Templates/Stock_CTextureData.h>
+#include <SeriousEngineCppAPI/Templates/Stock_CTextureData.h>
 #include <process.h>
 
 #include <QFile>
@@ -192,7 +192,7 @@ CMainFrame::~CMainFrame()
   // info frame window will be destroyed trough auto destroy object mechanism
 
   CWorldEditorApp *pApp = (CWorldEditorApp *)AfxGetApp();
-  pApp->WriteProfileString(L"World editor", L"Last virtual tree", CString(m_fnLastVirtualTree));
+  pApp->WriteProfileString(L"World editor", L"Last virtual tree", CString(static_cast<const char*>(m_fnLastVirtualTree)));
 
   // destroy color palette
   if( m_pColorPalette != NULL)
@@ -396,7 +396,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
       (void) strError;
       CTString strMessage;
       strMessage.PrintF("Error reading virtual tree file:\n%s.\n\nSwitching to empty virtual tree.", m_fnLastVirtualTree);
-      AfxMessageBox( CString(strMessage));
+      AfxMessageBox( CString(static_cast<const char*>(strMessage)));
       m_Browser.m_VirtualTree.MakeRoot();
       m_Browser.OnUpdateVirtualTreeControl();
     }
@@ -851,8 +851,8 @@ void CMainFrame::CustomColorPicker( PIX pixX, PIX pixY)
       return;
     }
     // initialize canvas for active texture button
-    _pGfx->CreateWindowCanvas( m_pColorPalette->m_hWnd, &m_pColorPalette->m_pViewPort,
-                               &m_pColorPalette->m_pDrawPort);
+    _pGfx_CreateWindowCanvas( m_pColorPalette->m_hWnd, m_pColorPalette->m_pViewPort,
+                               m_pColorPalette->m_pDrawPort);
   }
   else
   {
@@ -1061,7 +1061,7 @@ BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
       static CPoint ptLast;
       CPoint ptNow;
       GetCursorPos( &ptNow);
-      CTimerValue tvNow = _pTimer->GetHighPrecisionTimer();
+      CTimerValue tvNow = _pTimer_GetHighPrecisionTimer();
       FLOAT tmDelta = (tvNow-tvLast).GetSeconds();
       if( tmDelta<0.5f && abs(ptNow.x-ptLast.x)<5 && abs(ptNow.y-ptLast.y)<5)
       {
@@ -1176,7 +1176,7 @@ BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
         CWorldEditorDoc *pDoc = theApp.GetDocument();
         if( pDoc != NULL && pDoc->GetEditingMode()==TERRAIN_MODE)
         {
-          FLOAT fCurrentTime = _pTimer->GetRealTimeTick();
+          FLOAT fCurrentTime = _pTimer_GetRealTimeTick();
           if(_fLastNumKeyDownTime==-1)
           {
             _fLastNumKeyDownTime = fCurrentTime;
@@ -1210,7 +1210,7 @@ BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
       CWorldEditorDoc *pDoc = theApp.GetDocument();
       if( pDoc != NULL && pDoc->GetEditingMode()==TERRAIN_MODE)
       {
-        FLOAT fCurrentTime = _pTimer->GetRealTimeTick();
+        FLOAT fCurrentTime = _pTimer_GetRealTimeTick();
         if( fCurrentTime-_fLastNumKeyDownTime<BRUSH_PRESSURE_DELAY)
         {
           if( fCurrentTime-_fLastTimePressureApplied<BRUSH_PRESSURE_SUB_DELAY)
@@ -1356,7 +1356,7 @@ void CMainFrame::StartApplication( CTString strApplicationToRun)
 
 void CMainFrame::OnCallModeler()
 {
-  StartApplication( "Modeler.exe");
+  StartApplication( "SeriousModelerEX.exe");
 }
 
 
@@ -1498,7 +1498,8 @@ ON_STORE_MENU_SHORTCUT( OnStoreMenuShortcut10, 9);
 
 void CMainFrame::OnConsole()
 {
-  _pGameGUI->OnInvokeConsole();
+  // TODO - move console dialog to WED
+  //_pGameGUI_OnInvokeConsole();
 }
 
 
@@ -1515,16 +1516,16 @@ void CMainFrame::OnToolRecreateTexture()
 void CMainFrame::OnRecreateCurrentTexture()
 {
   // there must be valid texture
-  if( theApp.m_ptdActiveTexture == NULL) return;
-  CTextureData *pTD = theApp.m_ptdActiveTexture;
+  if( !theApp.m_ptdActiveTexture) return;
+  CTextureDataPtr pTD = theApp.m_ptdActiveTexture;
   CTFileName fnTextureName = pTD->GetName();
   // call recreate texture dialog
   _EngineGUI.CreateTexture( fnTextureName);
   // try to
-  CTextureData *ptdTextureToReload;
+  CTextureDataPtr ptdTextureToReload;
   try {
     // obtain texture
-    ptdTextureToReload = _pTextureStock->Obtain_t( fnTextureName);
+    ptdTextureToReload = _pTextureStock_Obtain_t( fnTextureName);
   }
   catch ( char *err_str) {
     AfxMessageBox( CString(err_str));
@@ -1533,7 +1534,7 @@ void CMainFrame::OnRecreateCurrentTexture()
   // reload the texture
   ptdTextureToReload->Reload();
   // release the texture
-  _pTextureStock->Release( ptdTextureToReload);
+  _pTextureStock_Release( ptdTextureToReload);
   // if browser is valid
   if( ::IsWindow( m_Browser.m_BrowseWindow.m_hWnd))
   {
@@ -1607,7 +1608,7 @@ void CMainFrame::OnTimer(UINT nIDEvent)
     if( hwndParent == ctt.cct_hwndCaller)
     {
       // if game is on, disable tool tips
-      if( _pInput->IsInputEnabled()) return;
+      if( _pInput_IsInputEnabled()) return;
 
       ctt.cct_pCallback( ctt.cct_pThis, achrToolTip);
 
@@ -1662,7 +1663,7 @@ void CMainFrame::OnHelpFinder()
       // if only one entity selected
       if( pDoc->m_selEntitySelection.Count() == 1)
       {
-        CEntity *pen = pDoc->m_selEntitySelection.GetFirstInSelection();  
+        CEntityPtr pen = pDoc->m_selEntitySelection.GetFirstInSelection();  
         CTFileName fnecl = pen->GetClass()->GetName();
         theApp.DisplayHelp(fnecl, HH_DISPLAY_TOPIC, NULL);
         return;
@@ -1676,7 +1677,7 @@ void CMainFrame::SetStatusBarMessage( CTString strMessage, INDEX iPane, FLOAT fT
 {
   // obtain stop time
   m_wndStatusBar.SetPaneText( iPane, CString(strMessage), TRUE);
-  FLOAT tmNow = _pTimer->GetHighPrecisionTimer().GetSeconds();
+  FLOAT tmNow = _pTimer_GetHighPrecisionTimer().GetSeconds();
   theApp.m_tmStartStatusLineInfo=tmNow + fTime;
 }
 

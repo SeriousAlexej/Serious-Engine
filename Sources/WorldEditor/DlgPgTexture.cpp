@@ -75,7 +75,7 @@ void CDlgPgTexture::DoDataExchange(CDataExchange* pDX)
   // if dialog is receiving data and control windows are valid
   if( (pDX->m_bSaveAndValidate == FALSE) && IsWindow( m_comboScroll.m_hWnd) )
   {
-    if (m_dirty || mp_last_world != &pDoc->m_woWorld)
+    if (m_dirty || mp_last_world.get_handle() != pDoc->m_woWorld.C_Handle())
     {
       m_dirty = false;
       mp_last_world = &pDoc->m_woWorld;
@@ -83,14 +83,14 @@ void CDlgPgTexture::DoDataExchange(CDataExchange* pDX)
       m_comboScroll.ResetContent();
       for (INDEX iScroll = 0; iScroll < 256; iScroll++)
       {
-        CTString strScrollName = pDoc->m_woWorld.wo_attTextureTransformations[iScroll].tt_strName;
-        if (strScrollName != CTString("")) m_comboScroll.AddString(CString(strScrollName));
+        CTString strScrollName = pDoc->m_woWorld.wo_attTextureTransformations[iScroll]->tt_strName;
+        if (strScrollName != CTString("")) m_comboScroll.AddString(CString(static_cast<const char*>(strScrollName)));
       }
       m_comboBlend.ResetContent();
       for (INDEX iBlend = 0; iBlend < 256; iBlend++)
       {
-        CTString strBlendName = pDoc->m_woWorld.wo_atbTextureBlendings[iBlend].tb_strName;
-        if (strBlendName != CTString("")) m_comboBlend.AddString(CString(strBlendName));
+        CTString strBlendName = pDoc->m_woWorld.wo_atbTextureBlendings[iBlend]->tb_strName;
+        if (strBlendName != CTString("")) m_comboBlend.AddString(CString(static_cast<const char*>(strBlendName)));
       }
     }
 
@@ -147,14 +147,14 @@ void CDlgPgTexture::DoDataExchange(CDataExchange* pDX)
       // for each of the selected polygons
       FOREACHINDYNAMICCONTAINER(pDoc->m_selPolygonSelection, CBrushPolygon, itbpo)
       {
-        CBrushPolygon &bpo = *itbpo;
-        ubFlagsOn &= bpo.bpo_abptTextures[pDoc->m_iTexture].s.bpt_ubFlags;
-        ubFlagsOff &= ~bpo.bpo_abptTextures[pDoc->m_iTexture].s.bpt_ubFlags;
+        CBrushPolygon bpo(*itbpo, false);
+        ubFlagsOn &= bpo.bpo_abptTextures[pDoc->m_iTexture].bpt_ubFlags;
+        ubFlagsOff &= ~bpo.bpo_abptTextures[pDoc->m_iTexture].bpt_ubFlags;
 
         CMappingDefinitionUI mdui;
         bpo.bpo_abptTextures[pDoc->m_iTexture].bpt_mdMapping.ToUI( mdui);
-        CTextureData *ptdTexture = (CTextureData *) bpo.bpo_abptTextures[pDoc->m_iTexture].bpt_toTexture.GetData();
-        if( ptdTexture == NULL)
+        CTextureDataPtr ptdTexture = bpo.bpo_abptTextures[pDoc->m_iTexture].bpt_toTexture.GetData();
+        if( !ptdTexture)
         {
           GetDlgItem( IDC_PREVIEW_FRAME)->EnableWindow( FALSE);
           m_strTextureFile = NO_TEXTURE;
@@ -165,17 +165,17 @@ void CDlgPgTexture::DoDataExchange(CDataExchange* pDX)
           CTString strTexture = ptdTexture->GetName();
           if( ctPolygons == 0)
           {
-        	  m_ctrlCombineColor.SetColor( bpo.bpo_abptTextures[pDoc->m_iTexture].s.bpt_colColor);
+        	  m_ctrlCombineColor.SetColor( bpo.bpo_abptTextures[pDoc->m_iTexture].bpt_colColor);
             m_strTextureFile = strTexture;
             m_strTextureDim = ptdTexture->GetDescription();
           }
           else
           {
-        	  if( m_ctrlCombineColor.GetColor() != bpo.bpo_abptTextures[pDoc->m_iTexture].s.bpt_colColor)
+        	  if( m_ctrlCombineColor.GetColor() != bpo.bpo_abptTextures[pDoc->m_iTexture].bpt_colColor)
             {
               m_ctrlCombineColor.SetMixedColor();
             }
-            if( m_strTextureFile != CString( strTexture))
+            if( m_strTextureFile != CString(static_cast<const char*>(strTexture)))
             {
               GetDlgItem( IDC_PREVIEW_FRAME)->EnableWindow( FALSE);
               m_strTextureFile = DIFFERENT_TEXTURE;
@@ -192,8 +192,8 @@ void CDlgPgTexture::DoDataExchange(CDataExchange* pDX)
           m_fStretchU = mdui.mdui_fUStretch;  m_bStretchU = TRUE;
           m_fStretchV = mdui.mdui_fVStretch;  m_bStretchV = TRUE;
 
-          ubFirstScroll = bpo.bpo_abptTextures[pDoc->m_iTexture].s.bpt_ubScroll;
-          ubFirstBlend = bpo.bpo_abptTextures[pDoc->m_iTexture].s.bpt_ubBlend;
+          ubFirstScroll = bpo.bpo_abptTextures[pDoc->m_iTexture].bpt_ubScroll;
+          ubFirstBlend = bpo.bpo_abptTextures[pDoc->m_iTexture].bpt_ubBlend;
         }
         else
         {
@@ -204,8 +204,8 @@ void CDlgPgTexture::DoDataExchange(CDataExchange* pDX)
           if( m_fStretchU != mdui.mdui_fUStretch)  m_bStretchU = FALSE;
           if( m_fStretchV != mdui.mdui_fVStretch)  m_bStretchV = FALSE;
 
-          if( bpo.bpo_abptTextures[pDoc->m_iTexture].s.bpt_ubScroll != ubFirstScroll) bSameScroll = FALSE;
-          if( bpo.bpo_abptTextures[pDoc->m_iTexture].s.bpt_ubBlend != ubFirstBlend) bSameBlend = FALSE;
+          if( bpo.bpo_abptTextures[pDoc->m_iTexture].bpt_ubScroll != ubFirstScroll) bSameScroll = FALSE;
+          if( bpo.bpo_abptTextures[pDoc->m_iTexture].bpt_ubBlend != ubFirstBlend) bSameBlend = FALSE;
         }
         ctPolygons++;
       }
@@ -279,9 +279,9 @@ void CDlgPgTexture::DoDataExchange(CDataExchange* pDX)
     // for each of the selected polygons
     FOREACHINDYNAMICCONTAINER(pDoc->m_selPolygonSelection, CBrushPolygon, itbpo)
     {
-      CBrushPolygon &bpo = *itbpo;
-      bpo.bpo_abptTextures[pDoc->m_iTexture].s.bpt_ubFlags &= ulBitsToClear;
-      bpo.bpo_abptTextures[pDoc->m_iTexture].s.bpt_ubFlags |= ulBitsToSet;
+      CBrushPolygon bpo(*itbpo, false);
+      bpo.bpo_abptTextures[pDoc->m_iTexture].bpt_ubFlags &= ulBitsToClear;
+      bpo.bpo_abptTextures[pDoc->m_iTexture].bpt_ubFlags |= ulBitsToSet;
 
       CMappingDefinitionUI mdui;
       bpo.bpo_abptTextures[pDoc->m_iTexture].bpt_mdMapping.ToUI( mdui);
@@ -294,13 +294,13 @@ void CDlgPgTexture::DoDataExchange(CDataExchange* pDX)
       bpo.bpo_abptTextures[pDoc->m_iTexture].bpt_mdMapping.FromUI( mdui);
 
       INDEX iScroll = m_comboScroll.GetCurSel();
-      if( iScroll != -1) bpo.bpo_abptTextures[pDoc->m_iTexture].s.bpt_ubScroll = (UBYTE)iScroll;
+      if( iScroll != -1) bpo.bpo_abptTextures[pDoc->m_iTexture].bpt_ubScroll = (UBYTE)iScroll;
       INDEX iBlend = m_comboBlend.GetCurSel();
-      if( iBlend != -1)  bpo.bpo_abptTextures[pDoc->m_iTexture].s.bpt_ubBlend = (UBYTE)iBlend;
+      if( iBlend != -1)  bpo.bpo_abptTextures[pDoc->m_iTexture].bpt_ubBlend = (UBYTE)iBlend;
 
       if( m_ctrlCombineColor.IsColorValid())
       {
-        bpo.bpo_abptTextures[pDoc->m_iTexture].s.bpt_colColor = m_ctrlCombineColor.GetColor();
+        bpo.bpo_abptTextures[pDoc->m_iTexture].bpt_colColor = m_ctrlCombineColor.GetColor();
       }
     }
     pDoc->UpdateAllViews( NULL);
@@ -473,7 +473,7 @@ void CDlgPgTexture::OnDropFiles(HDROP hDropInfo)
   try
   {
     fnDropped.RemoveApplicationPath_t();
-    GetDlgItem( IDC_TEXTURE_FILE_T)->SetWindowText( CString(fnDropped));
+    GetDlgItem( IDC_TEXTURE_FILE_T)->SetWindowText( CString(static_cast<const char*>(fnDropped)));
     // apply data change
 	  UpdateData( TRUE);
   }

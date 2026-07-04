@@ -1164,9 +1164,9 @@ void CBrowseWindow::OnLButtonDblClk(UINT nFlags, CPoint point)
     CWorldEditorDoc *pDoc = theApp.GetDocument();
     if(pDoc!=NULL && pDoc->GetEditingMode()==TERRAIN_MODE)
     {
-      CTerrainLayer *ptlLayer=GetLayer();
-      CTerrain *ptTerrain=GetTerrain();
-      if(ptlLayer!=NULL && ptTerrain!=NULL)
+      CTerrainLayerPtr ptlLayer=GetLayer();
+      CTerrainPtr ptTerrain=GetTerrain();
+      if(ptlLayer && ptTerrain)
       {
         try
         {

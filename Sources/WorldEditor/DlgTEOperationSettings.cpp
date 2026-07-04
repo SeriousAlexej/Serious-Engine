@@ -55,8 +55,8 @@ void CDlgTEOperationSettings::DoDataExchange(CDataExchange* pDX)
     m_strDistributionNoiseTexture=theApp.m_fnDistributionNoiseTexture.FileName();
     m_strContinousNoiseTexture=theApp.m_fnContinousNoiseTexture.FileName();
 
-    CTerrain *ptrTerrain=GetTerrain();
-    if(ptrTerrain!=NULL)
+    CTerrainPtr ptrTerrain=GetTerrain();
+    if(ptrTerrain)
     {
       GetDlgItem(IDC_EQUALIZE_VALUE)->EnableWindow( TRUE);
   	  m_fClampAltitude=FLOAT(theApp.m_uwEditAltitude)/65535*ptrTerrain->tr_vTerrainSize(2);
@@ -95,8 +95,8 @@ void CDlgTEOperationSettings::DoDataExchange(CDataExchange* pDX)
   // if dialog is giving data
   if(pDX->m_bSaveAndValidate != FALSE)
   {
-    CTerrain *ptrTerrain=GetTerrain();
-    if(ptrTerrain!=NULL)
+    CTerrainPtr ptrTerrain=GetTerrain();
+    if(ptrTerrain)
     {
 	    theApp.m_uwEditAltitude=m_fClampAltitude/ptrTerrain->tr_vTerrainSize(2)*65535;
     }

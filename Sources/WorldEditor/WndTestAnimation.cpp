@@ -32,8 +32,6 @@ static char THIS_FILE[] = __FILE__;
 
 CWndTestAnimation::CWndTestAnimation()
 {
-  m_pDrawPort = NULL;
-  m_pViewPort = NULL;
   // mark that timer is not yet started
   m_iTimerID = -1;
 }
@@ -66,14 +64,14 @@ void CWndTestAnimation::OnPaint()
     m_iTimerID = (int) SetTimer( 1, 50, NULL);
   }
 
-  if( (m_pViewPort == NULL) && (m_pDrawPort == NULL) )
+  if( (!m_pViewPort) && (!m_pDrawPort ) )
   {
     // initialize canvas for active texture button
-    _pGfx->CreateWindowCanvas( m_hWnd, &m_pViewPort, &m_pDrawPort);
+    _pGfx_CreateWindowCanvas( m_hWnd, m_pViewPort, m_pDrawPort);
   }
 
   // if there is a valid drawport, and the drawport can be locked
-  if( (m_pDrawPort != NULL) && (m_pDrawPort->Lock()) )
+  if( (m_pDrawPort) && (m_pDrawPort->Lock()) )
   {
     // get curently selected light animation combo member
     INDEX iLightAnimation = m_pParentDlg->GetSelectedLightAnimation();
@@ -94,7 +92,7 @@ void CWndTestAnimation::OnPaint()
     // unlock the drawport
     m_pDrawPort->Unlock();
     // if there is a valid viewport
-    if (m_pViewPort!=NULL)
+    if (m_pViewPort)
     {
       // swap it
       m_pViewPort->SwapBuffers();
@@ -108,10 +106,10 @@ void CWndTestAnimation::OnTimer(UINT nIDEvent)
 	// on our timer discard test animation window
   if( nIDEvent == 1)
   {
-    TIME timeCurrentTick = _pTimer->GetRealTimeTick();
+    TIME timeCurrentTick = _pTimer_GetRealTimeTick();
     if( timeCurrentTick > timeLastTick )
     {
-      _pTimer->SetCurrentTick( timeCurrentTick);
+      _pTimer_SetCurrentTick( timeCurrentTick);
       timeLastTick = timeCurrentTick;
     }
     Invalidate(FALSE);	
@@ -123,15 +121,14 @@ void CWndTestAnimation::OnTimer(UINT nIDEvent)
 void CWndTestAnimation::OnDestroy() 
 {
   KillTimer( m_iTimerID);
-  _pTimer->SetCurrentTick( 0.0f);
+  _pTimer_SetCurrentTick( 0.0f);
 	CWnd::OnDestroy();
 
-  if( m_pViewPort != NULL)
+  if( m_pViewPort )
   {
-    _pGfx->DestroyWindowCanvas( m_pViewPort);
-    m_pViewPort = NULL;
+    _pGfx_DestroyWindowCanvas( m_pViewPort);
   }
 
-  m_pViewPort = NULL;
-  m_pDrawPort = NULL;
+  m_pViewPort.Reset();
+  m_pDrawPort.Reset();
 }

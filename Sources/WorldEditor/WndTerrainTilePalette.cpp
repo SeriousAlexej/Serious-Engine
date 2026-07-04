@@ -35,25 +35,17 @@ static char THIS_FILE[] = __FILE__;
 
 CWndTerrainTilePalette::CWndTerrainTilePalette()
 {
-  m_ptd=NULL;
-  m_pDrawPort = NULL;
-  m_pViewPort = NULL;
   m_iTimerID = -1;
 }
 
 CWndTerrainTilePalette::~CWndTerrainTilePalette()
 {
   // free allocated tile info structures
-  for(INDEX i=0; i<m_dcTileInfo.Count(); i++)
-  {
-    delete &m_dcTileInfo[i];
-  }
-  m_dcTileInfo.Clear();
+  m_dcTileInfo.clear();
 
-  if( m_pViewPort != NULL)
+  if( m_pViewPort)
   {
-    _pGfx->DestroyWindowCanvas( m_pViewPort);
-    m_pViewPort = NULL;
+    _pGfx_DestroyWindowCanvas( m_pViewPort);
   }
 }
 
@@ -85,8 +77,8 @@ PIXaabbox2D CWndTerrainTilePalette::GetTileBBox( INDEX iTile)
 
 void CWndTerrainTilePalette::OnPaint() 
 {
-  CTerrainLayer *ptlLayer=GetLayer();
-  if(ptlLayer==NULL) return;
+  CTerrainLayerPtr ptlLayer=GetLayer();
+  if(!ptlLayer) return;
 
   {
   CPaintDC dc(this); // device context for painting
@@ -102,7 +94,7 @@ void CWndTerrainTilePalette::OnPaint()
   ScreenToClient( &ptMouse);
 
   // if there is a valid drawport, and the drawport can be locked
-  if( (m_pDrawPort != NULL) && (m_pDrawPort->Lock()) )
+  if( (m_pDrawPort) && (m_pDrawPort->Lock()) )
   {
     CWorldEditorView *pWorldEditorView = theApp.GetActiveView();
     ASSERT( pWorldEditorView != NULL);
@@ -112,16 +104,16 @@ void CWndTerrainTilePalette::OnPaint()
     m_pDrawPort->FillZBuffer(ZBUF_BACK);
 
     CTextureObject to;
-    to.SetData(m_ptd);
+    to.SetData(*m_ptd);
     PIX pixTexW=m_ptd->GetPixWidth();
     PIX pixTexH=m_ptd->GetPixHeight();
     PIX pixTileSize=pixTexW/m_ctTilesPerRaw;
     PIX pixdpw=m_pDrawPort->GetWidth();
     PIX pixdph=m_pDrawPort->GetHeight();
 
-    for(INDEX iTile=0; iTile<m_dcTileInfo.Count(); iTile++)
+    for(INDEX iTile=0; iTile<static_cast<INDEX>(m_dcTileInfo.size()); iTile++)
     {
-      CTileInfo &ti=m_dcTileInfo[iTile];
+      CTileInfo &ti=*m_dcTileInfo[iTile];
       MEXaabbox2D boxTex=MEXaabbox2D(
         MEX2D(ti.ti_ix*pixTileSize, ti.ti_iy*pixTileSize),
         MEX2D((ti.ti_ix+1)*pixTileSize, (ti.ti_iy+1)*pixTileSize) );
@@ -168,7 +160,7 @@ void CWndTerrainTilePalette::OnPaint()
         Swap(fJ1,fJ3);
       }
 
-      m_pDrawPort->InitTexture( &to);
+      m_pDrawPort->InitTexture( to);
       COLOR col=C_WHITE|CT_OPAQUE;
       m_pDrawPort->AddTexture(fI0, fJ0, fU0, fV0, col,
                               fI1, fJ1, fU1, fV1, col,
@@ -182,12 +174,12 @@ void CWndTerrainTilePalette::OnPaint()
     m_pDrawPort->DrawBorder( 0,0, m_pDrawPort->GetWidth(),m_pDrawPort->GetHeight(), C_vlGRAY|CT_OPAQUE);
 
     // draw selected tile
-    CTileInfo &ti=m_dcTileInfo[ptlLayer->tl_iSelectedTile];    
+    CTileInfo &ti=*m_dcTileInfo[ptlLayer->tl_iSelectedTile];    
     MEXaabbox2D boxTex=MEXaabbox2D(
       MEX2D(ti.ti_ix*pixTileSize, ti.ti_iy*pixTileSize),
       MEX2D((ti.ti_ix+1)*pixTileSize, (ti.ti_iy+1)*pixTileSize) );
     PIXaabbox2D boxScr=GetTileBBox(ptlLayer->tl_iSelectedTile);
-    TIME tm=_pTimer->GetRealTimeTick();
+    TIME tm=_pTimer_GetRealTimeTick();
     FLOAT fFactor=sin(tm*8)/2.0f+0.5f;
     COLOR colSelected=LerpColor(C_vlGRAY,C_RED,fFactor);
     m_pDrawPort->DrawBorder(boxScr.Min()(1), boxScr.Min()(2), 
@@ -196,9 +188,9 @@ void CWndTerrainTilePalette::OnPaint()
 
     // draw tile under mouse
     PIXaabbox2D boxPoint( PIX2D( ptMouse.x, ptMouse.y), PIX2D(ptMouse.x, ptMouse.y));
-    for( INDEX itum=0; itum<m_dcTileInfo.Count(); itum++)
+    for( INDEX itum=0; itum<static_cast<INDEX>(m_dcTileInfo.size()); itum++)
     {
-      CTileInfo &ti=m_dcTileInfo[itum];    
+      CTileInfo &ti=*m_dcTileInfo[itum];    
       PIXaabbox2D boxScr=GetTileBBox(itum);
       if( (boxScr & boxPoint) == boxPoint)
       {
@@ -215,21 +207,21 @@ void CWndTerrainTilePalette::OnPaint()
     m_pDrawPort->Unlock();
 
     // if there is a valid viewport
-    if (m_pViewPort!=NULL)
+    if (m_pViewPort)
     {
       m_pViewPort->SwapBuffers();
     }
   }
 }
 
-BOOL CWndTerrainTilePalette::Initialize(PIX pixX, PIX pixY, CTextureData *ptd, BOOL bCenter/*=TRUE*/)
+BOOL CWndTerrainTilePalette::Initialize(PIX pixX, PIX pixY, CTextureDataPtr ptd, BOOL bCenter/*=TRUE*/)
 {
   m_ptd=ptd;
 
   // obtain tile info array
-  ObtainLayerTileInfo( &m_dcTileInfo, ptd, m_ctTilesPerRaw);
+  ObtainLayerTileInfo( m_dcTileInfo, ptd, m_ctTilesPerRaw);
 
-  INDEX ctTiles=m_dcTileInfo.Count();
+  INDEX ctTiles=static_cast<INDEX>(m_dcTileInfo.size());
   if(ctTiles==0) return FALSE;
   m_ctPaletteTilesH=sqrt((FLOAT)ctTiles);
 
@@ -284,7 +276,7 @@ BOOL CWndTerrainTilePalette::Initialize(PIX pixX, PIX pixY, CTextureData *ptd, B
       AfxMessageBox( L"Error: Failed to create terrain tile palette window!");
       return FALSE;
     }
-    _pGfx->CreateWindowCanvas( m_hWnd, &m_pViewPort, &m_pDrawPort);
+    _pGfx_CreateWindowCanvas( m_hWnd, m_pViewPort, m_pDrawPort);
   }
   return TRUE;
 }
@@ -336,12 +328,12 @@ void CWndTerrainTilePalette::OnLButtonUp(UINT nFlags, CPoint point)
 {
   PIXaabbox2D boxPoint( PIX2D( point.x, point.y), PIX2D(point.x, point.y) );
   // for all tiles
-  for( INDEX iTile=0; iTile<m_dcTileInfo.Count(); iTile++)
+  for( INDEX iTile=0; iTile<static_cast<INDEX>(m_dcTileInfo.size()); iTile++)
   {
     if( (GetTileBBox(iTile) & boxPoint) == boxPoint)
     {
-      CTerrainLayer *ptlLayer=GetLayer();
-      if(ptlLayer==NULL) return;
+      CTerrainLayerPtr ptlLayer=GetLayer();
+      if(!ptlLayer) return;
       if( ptlLayer->tl_ltType==LT_TILE)
       {
         ptlLayer->tl_iSelectedTile=iTile;

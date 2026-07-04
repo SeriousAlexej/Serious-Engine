@@ -218,7 +218,7 @@ public:
   /* if delete entity operation is allowed returns true */
   BOOL IsDeleteEntityEnabled(void);
   // remove given entity from linked chain
-  void RemoveFromLinkedChain(CEntity *pen);
+  void RemoveFromLinkedChain(CEntity_* pen);
   /* Returns curently active mip factor (auto or manual one) */
   FLOAT GetCurrentlyActiveMipFactor(void);
   /* obtain point in the world where mouse pointed last time it was moved */
@@ -250,7 +250,7 @@ public:
   void ApplyDefaultMapping(CBrushPolygonPtr pbpo, BOOL bRotation, BOOL bOffset, BOOL bStretch);
 
   // get current brush mip of current csg target brush
-  CBrushMip *GetCurrentBrushMip(void);
+  CBrushMipPtr GetCurrentBrushMip(void);
   void SetMipBrushFactor(void);
   void OnAddMorePreciseMip(BOOL bClone);
   void OnAddRougherMipLevel(BOOL bClone);

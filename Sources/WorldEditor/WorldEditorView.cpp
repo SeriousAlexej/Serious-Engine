@@ -9579,7 +9579,7 @@ void CWorldEditorView::OnAddRougherMipLevel(BOOL bClone)
 }
 
 // get current brush mip of current csg target brush
-CBrushMip *CWorldEditorView::GetCurrentBrushMip(void)
+CBrushMipPtr CWorldEditorView::GetCurrentBrushMip(void)
 {
   CMainFrame* pMainFrame = STATIC_DOWNCAST(CMainFrame, AfxGetMainWnd());
   CEntity *penBrush = pMainFrame->m_CSGDesitnationCombo.GetSelectedBrushEntity();

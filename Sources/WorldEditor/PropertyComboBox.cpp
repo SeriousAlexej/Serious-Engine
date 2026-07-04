@@ -37,10 +37,7 @@ CPropertyComboBox::CPropertyComboBox()
 CPropertyComboBox::~CPropertyComboBox()
 {
   // delete current property list
-  FORDELETELIST(CPropertyID, pid_lnNode, m_lhProperties, itDel)
-  {
-    delete &itDel.Current();
-  }
+  m_lhProperties.clear();
 }
 
 void CPropertyComboBox::SetDialogPtr( CPropertyComboBar *pDialog)
@@ -65,35 +62,35 @@ void CPropertyComboBox::OnContextMenu(CWnd* pWnd, CPoint point)
 	INDEX i=0;
 }
 
-void CPropertyComboBox::JoinProperties( CEntity *penEntity, BOOL bIntersect)
+void CPropertyComboBox::JoinProperties( CEntityPtr penEntity, BOOL bIntersect)
 {
   // if we should add all of this entity's properties (if this is first entity)
   if( !bIntersect)
   {
     // obtain entity class ptr
-    CDLLEntityClass *pdecDLLClass = penEntity->GetClass()->ec_pdecDLLClass;
+    CDLLEntityClassPtr pdecDLLClass = penEntity->GetClass()->ec_pdecDLLClass;
     // for all classes in hierarchy of this entity
-    for(;pdecDLLClass!=NULL; pdecDLLClass = pdecDLLClass->dec_pdecBase)
+    for(;pdecDLLClass; pdecDLLClass = pdecDLLClass->dec_pdecBase())
     {
       // for all properties
       for(INDEX iProperty=0; iProperty<pdecDLLClass->dec_ctProperties; iProperty++)
       {
-        CEntityProperty &epProperty = pdecDLLClass->dec_aepProperties[iProperty];
+        CEntityPropertyPtr epProperty = pdecDLLClass->dec_aepProperties(iProperty);
         // don't add properties with no name
-        if( epProperty.ep_strName != CTString("") )
+        if( epProperty->ep_strName != CTString("") )
         {
-          CAnimData *pAD = NULL;
+          CAnimDataPtr pAD;
           // remember anim data
-          if( epProperty.ep_eptType == CEntityProperty::EPT_ANIMATION)
+          if( epProperty->ep_eptType == CEntityProperty::EPT_ANIMATION)
           {
-            pAD = penEntity->GetAnimData( epProperty.ep_slOffset);
+            pAD = penEntity->GetAnimData( epProperty->ep_slOffset);
           }
           // create current CPropertyID
-          CPropertyID *pPropertyID = new CPropertyID( epProperty.ep_strName,
-            epProperty.ep_eptType, &epProperty, pAD);
+          auto pPropertyID = std::make_unique<CPropertyID>( epProperty->ep_strName,
+            epProperty->ep_eptType, epProperty, pAD);
           // if we should add all of this entity's properties (if this is first entity)
           // and add it into list
-          m_lhProperties.AddTail( pPropertyID->pid_lnNode);
+          m_lhProperties.push_back(std::move(pPropertyID));
         }
       }
     }
@@ -103,85 +100,65 @@ void CPropertyComboBox::JoinProperties( CEntity *penEntity, BOOL bIntersect)
   // If not, remove it that existing property.
   else
   {
-    FORDELETELIST(CPropertyID, pid_lnNode, m_lhProperties, itProp)
+    for (auto itProp = m_lhProperties.begin(); itProp != m_lhProperties.end();)
     {
-      CTString strCurrentName = itProp->pid_strName;
-      CEntityProperty::PropertyType eptCurrentType = itProp->pid_eptType;
-      // mark that property with same name is not found
-      BOOL bSameFound = FALSE;
+      CTString strCurrentName = (*itProp)->pid_strName;
+      CEntityProperty::PropertyType eptCurrentType = (*itProp)->pid_eptType;
+      bool same_found = false;
+      bool keep_looking = true;
 
       // obtain entity class ptr
-      CDLLEntityClass *pdecDLLClass = penEntity->GetClass()->ec_pdecDLLClass;
+      CDLLEntityClassPtr pdecDLLClass = penEntity->GetClass()->ec_pdecDLLClass;
       // for all classes in hierarchy of this entity
-      for(; pdecDLLClass!=NULL; pdecDLLClass = pdecDLLClass->dec_pdecBase)
+      for(; keep_looking && pdecDLLClass; pdecDLLClass = pdecDLLClass->dec_pdecBase())
       {
         // for all properties
         for(INDEX iProperty=0; iProperty<pdecDLLClass->dec_ctProperties; iProperty++) 
         {
-          CEntityProperty &epProperty = pdecDLLClass->dec_aepProperties[iProperty];
-          CAnimData *pAD = NULL;
+          CEntityPropertyPtr epProperty = pdecDLLClass->dec_aepProperties(iProperty);
+          CAnimDataPtr pAD;
           // remember anim data
-          if( epProperty.ep_eptType == CEntityProperty::EPT_ANIMATION)
+          if( epProperty->ep_eptType == CEntityProperty::EPT_ANIMATION)
           {
-            pAD = penEntity->GetAnimData( epProperty.ep_slOffset);
+            pAD = penEntity->GetAnimData( epProperty->ep_slOffset);
           }
 
           // create current CPropertyID
-          CPropertyID PropertyID = CPropertyID( epProperty.ep_strName, epProperty.ep_eptType,
-            &epProperty, pAD);
+          CPropertyID PropertyID = CPropertyID( epProperty->ep_strName, epProperty->ep_eptType,
+            epProperty, pAD);
 
           // is this property same as one we are investigating
           if( (strCurrentName == PropertyID.pid_strName) &&
               (eptCurrentType == PropertyID.pid_eptType) )
           {
             // if propperty is enum, enum ptr must also be the same
-            if( itProp->pid_eptType == CEntityProperty::EPT_ENUM)
+            if( (*itProp)->pid_eptType == CEntityProperty::EPT_ENUM)
             {
               // only then,
-              if( itProp->pid_penpProperty->ep_pepetEnumType == 
-                  PropertyID.pid_penpProperty->ep_pepetEnumType)
-              {
-                // same property is found
-                bSameFound = TRUE;
-              }
-              else
-              {
-                bSameFound = FALSE;
-              }
-              goto pcb_OutLoop_JoinProperties;
+              if( (*itProp)->pid_penpProperty->ep_pepetEnumType == PropertyID.pid_penpProperty->ep_pepetEnumType)
+                same_found = true;
             }
             // if propperty is animation, anim data ptr must be the same
-            else if( itProp->pid_eptType == CEntityProperty::EPT_ANIMATION)
+            else if( (*itProp)->pid_eptType == CEntityProperty::EPT_ANIMATION)
             {
-              if(itProp->pid_padAnimData == PropertyID.pid_padAnimData)
-              {
-                // same property is found
-                bSameFound = TRUE;
-              }
-              else
-              {
-                bSameFound = FALSE;
-              }
-              goto pcb_OutLoop_JoinProperties;
+              if((*itProp)->pid_padAnimData == PropertyID.pid_padAnimData)
+                same_found = true;
             }
             else
             {
-              // same property is found
-              bSameFound = TRUE;
-              goto pcb_OutLoop_JoinProperties;
+              same_found = true;
             }
+            keep_looking = false;
+            break;
           }
         }
       }
-pcb_OutLoop_JoinProperties:;
-      // if property with same name is not found
-      if( !bSameFound)
-      {
-        // remove our investigating property from list
-        itProp->pid_lnNode.Remove();
-        // and delete it
-        delete &itProp.Current();
-      }
+
+      // if property with same name is not found - remove our investigating property from list
+      if (!same_found)
+        itProp = m_lhProperties.erase(itProp);
+      else
+        ++itProp;
     }
   }
 }
@@ -212,14 +189,12 @@ BOOL CPropertyComboBox::OnIdle(LONG lCount)
     if( (pDoc != NULL) && (pDoc->m_iMode == ENTITY_MODE) )
     {
       // delete current property list
-      FORDELETELIST(CPropertyID, pid_lnNode, m_lhProperties, itDel)
-      {
-        delete &itDel.Current();
-      }
+      m_lhProperties.clear();
 
       // for each of the selected entities
-      for (CEntity* iten : pDoc->m_selEntitySelection)
+      for (CEntity_* iten_ : pDoc->m_selEntitySelection)
       {
+        CEntityPtr iten(iten_);
         // if this is first entity in dynamic container
         if( pDoc->m_selEntitySelection.GetFirstInSelection() == iten)
         {
@@ -236,20 +211,20 @@ BOOL CPropertyComboBox::OnIdle(LONG lCount)
       if( pDoc->m_selEntitySelection.Count() != 0)
       {
         // -----------------  Add spawn flags property 
-        CPropertyID *ppidSpawnFlags = new CPropertyID( "Spawn flags (Alt+Shift+S)",
-          CEntityProperty::EPT_SPAWNFLAGS, NULL, NULL);
-        m_lhProperties.AddTail( ppidSpawnFlags->pid_lnNode);
+        auto ppidSpawnFlags = std::make_unique<CPropertyID>( "Spawn flags (Alt+Shift+S)",
+          CEntityProperty::EPT_SPAWNFLAGS, CEntityPropertyPtr{}, CAnimDataPtr{});
+        m_lhProperties.push_back(std::move(ppidSpawnFlags));
         // -----------------  Add parent entity property 
-        CPropertyID *ppidParent = new CPropertyID( "Parent (Alt+Shift+A)",
-          CEntityProperty::EPT_PARENT, NULL, NULL);
-        m_lhProperties.AddTail( ppidParent->pid_lnNode);
+        auto ppidParent = std::make_unique<CPropertyID>( "Parent (Alt+Shift+A)",
+          CEntityProperty::EPT_PARENT, CEntityPropertyPtr{}, CAnimDataPtr{});
+        m_lhProperties.push_back(std::move(ppidParent));
       }
 
       // if there are some intersecting properties
-      if( !m_lhProperties.IsEmpty())
+      if( !m_lhProperties.empty())
       {
         // add intersecting properties of selected entities into combo box
-        FOREACHINLIST(CPropertyID, pid_lnNode, m_lhProperties, itProp)
+        for (auto& itProp : m_lhProperties)
         {
           char achrShortcutKey[ 64] = "";
           if( itProp->pid_chrShortcutKey != 0)
@@ -257,9 +232,9 @@ BOOL CPropertyComboBox::OnIdle(LONG lCount)
             sprintf( achrShortcutKey, " (%c)", itProp->pid_chrShortcutKey);
           }
           // add property name and shortcut key
-          INDEX iAddedAs = AddString( CString(itProp->pid_strName + achrShortcutKey));
+          INDEX iAddedAs = AddString( CString(static_cast<const char*>(itProp->pid_strName + achrShortcutKey)));
           // set ptr to property ID object
-          SetItemData( iAddedAs, (ULONG) &*itProp);
+          SetItemData( iAddedAs, (ULONG) itProp.get());
           // enable combo
           EnableWindow();
         }

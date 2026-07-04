@@ -32,17 +32,13 @@ static char THIS_FILE[] = __FILE__;
 
 CWndDisplayTexture::CWndDisplayTexture()
 {
-  m_ptd=NULL;
-  m_pDrawPort = NULL;
-  m_pViewPort = NULL;
 }
 
 CWndDisplayTexture::~CWndDisplayTexture()
 {
-  if( m_pViewPort != NULL)
+  if( m_pViewPort )
   {
-    _pGfx->DestroyWindowCanvas( m_pViewPort);
-    m_pViewPort = NULL;
+    _pGfx_DestroyWindowCanvas( m_pViewPort);
   }
 }
 
@@ -69,7 +65,7 @@ void CWndDisplayTexture::OnPaint()
   ScreenToClient( &ptMouse);
 
   // if there is a valid drawport, and the drawport can be locked
-  if( (m_pDrawPort != NULL) && (m_pDrawPort->Lock()) )
+  if( (m_pDrawPort) && (m_pDrawPort->Lock()) )
   {
     CWorldEditorView *pWorldEditorView = theApp.GetActiveView();
     ASSERT( pWorldEditorView != NULL);
@@ -79,8 +75,8 @@ void CWndDisplayTexture::OnPaint()
     m_pDrawPort->FillZBuffer(ZBUF_BACK);
     
     CTextureObject to;
-    to.SetData(m_ptd);
-    m_pDrawPort->PutTexture( &to, m_boxTexture);
+    to.SetData(*m_ptd);
+    m_pDrawPort->PutTexture( to, m_boxTexture);
     m_pDrawPort->DrawBorder( 0,0, m_pDrawPort->GetWidth(),m_pDrawPort->GetHeight(), C_mdGRAY|CT_OPAQUE);
 
     m_pDrawPort->SetFont( _pfdConsoleFont);
@@ -93,14 +89,14 @@ void CWndDisplayTexture::OnPaint()
     m_pDrawPort->Unlock();
 
     // if there is a valid viewport
-    if (m_pViewPort!=NULL)
+    if (m_pViewPort)
     {
       m_pViewPort->SwapBuffers();
     }
   }
 }
 
-BOOL CWndDisplayTexture::Initialize(PIX pixX, PIX pixY, CTextureData *ptd,
+BOOL CWndDisplayTexture::Initialize(PIX pixX, PIX pixY, CTextureDataPtr ptd,
                                     CTString strText1/*""*/, CTString strText2/*""*/, BOOL bDown/*=FALSE*/)
 {
   m_ptd=ptd;
@@ -168,7 +164,7 @@ BOOL CWndDisplayTexture::Initialize(PIX pixX, PIX pixY, CTextureData *ptd,
       AfxMessageBox( L"Error: Failed to create display texture window!");
       return FALSE;
     }
-    _pGfx->CreateWindowCanvas( m_hWnd, &m_pViewPort, &m_pDrawPort);
+    _pGfx_CreateWindowCanvas( m_hWnd, m_pViewPort, m_pDrawPort);
   }
   return TRUE;
 }

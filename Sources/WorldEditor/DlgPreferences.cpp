@@ -103,7 +103,7 @@ void CDlgPreferences::DoDataExchange(CDataExchange* pDX)
       for(INDEX iExp=-5; iExp<=5; iExp+=1)
       {
         FLOAT fPow=pow(2.0f ,iExp*2);
-        FLOAT fEpsilon=_pShell->GetFLOAT("mth_fCSGEpsilon");
+        FLOAT fEpsilon=_pShell_GetFLOAT("mth_fCSGEpsilon");
         if( fEpsilon==fPow)
         {
           iCSGPrecission=iExp;
@@ -112,13 +112,13 @@ void CDlgPreferences::DoDataExchange(CDataExchange* pDX)
       }
       m_ctrlCSGPrecission.SetPos( iCSGPrecission+5);
       CTString strCSGPrecission;
-      if( _pShell->GetFLOAT("mth_fCSGEpsilon")==1.0f)
+      if( _pShell_GetFLOAT("mth_fCSGEpsilon")==1.0f)
       {
         strCSGPrecission.PrintF("CSG Precission: 1 (default)");
       }
       else
       {
-        strCSGPrecission.PrintF("CSG Precission: %g", _pShell->GetFLOAT("mth_fCSGEpsilon"));
+        strCSGPrecission.PrintF("CSG Precission: %g", _pShell_GetFLOAT("mth_fCSGEpsilon"));
       }
       m_strCSGPrecission=strCSGPrecission;
     }
@@ -177,7 +177,7 @@ void CDlgPreferences::DoDataExchange(CDataExchange* pDX)
     theApp.m_Preferences.ap_bHideShadowsOnOpen = m_bHideShadowsOnStart;
     theApp.m_Preferences.ap_bAutoUpdateDisplaceMap = m_bAutoUpdateDisplaceMap;
     theApp.m_Preferences.ap_iUndoLevels = m_UndoLevels.GetPos();
-    _pShell->SetFLOAT("mth_fCSGEpsilon", pow(2.0f, (m_ctrlCSGPrecission.GetPos()-5)*2)); 
+    _pShell_SetFLOAT("mth_fCSGEpsilon", pow(2.0f, (m_ctrlCSGPrecission.GetPos()-5)*2)); 
     theApp.m_Preferences.ap_iStartupWindowSetup = m_iWndStartupCfg;
     theApp.m_Preferences.ap_strSourceSafeProject = CStringA(m_strSSProject);
     theApp.m_Preferences.ap_fDefaultFlyModeSpeed=m_fFlyModeSpeed;
@@ -190,7 +190,7 @@ void CDlgPreferences::DoDataExchange(CDataExchange* pDX)
       theApp.m_iApi=m_ctrGfxApi.GetItemData(iCurSel);
       if( iOldGfxApi!=theApp.m_iApi)
       {
-        _pGfx->ResetDisplayMode((enum GfxAPIType) theApp.m_iApi);
+        _pGfx_ResetDisplayMode((enum GfxAPIType) theApp.m_iApi);
       }
     }
   }
@@ -219,13 +219,13 @@ BOOL CDlgPreferences::OnInitDialog()
 
   m_ctrGfxApi.ResetContent();
   
-  if( _pGfx->HasAPI( GAT_OGL))
+  if( _pGfx_HasAPI( GAT_OGL))
   {
     INDEX iAddedAs=m_ctrGfxApi.AddString(L"OpenGL");
     m_ctrGfxApi.SetItemData(iAddedAs, GAT_OGL);
   }
 #ifdef SE1_D3D
-  if( _pGfx->HasAPI( GAT_D3D))
+  if( _pGfx_HasAPI( GAT_D3D))
   {
     INDEX iAddedAs=m_ctrGfxApi.AddString(L"Direct3D");
     m_ctrGfxApi.SetItemData(iAddedAs, GAT_D3D);

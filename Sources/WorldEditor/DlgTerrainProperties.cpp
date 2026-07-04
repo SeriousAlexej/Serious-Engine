@@ -53,8 +53,8 @@ CDlgTerrainProperties::CDlgTerrainProperties(CWnd* pParent /*=NULL*/)
 	m_strEdgeMap = _T("");
 	//}}AFX_DATA_INIT
   
-  CTerrain *ptrTerrain=GetTerrain();
-  if(ptrTerrain==NULL) return;
+  CTerrainPtr ptrTerrain=GetTerrain();
+  if(!ptrTerrain) return;
 
   _iShadowMapShift=ptrTerrain->tr_iShadowMapSizeAspect;
   _iShadingMapShift=ptrTerrain->tr_iShadingMapSizeAspect;
@@ -66,8 +66,8 @@ void CDlgTerrainProperties::DoDataExchange(CDataExchange* pDX)
 {
   CTString strTemp;
 
-  CTerrain *ptrTerrain=GetTerrain();
-  if(ptrTerrain==NULL) return;
+  CTerrainPtr ptrTerrain=GetTerrain();
+  if(!ptrTerrain) return;
 
   // if dialog is recieving data
   if( pDX->m_bSaveAndValidate == FALSE && IsWindow(m_ctrlShadowMapSlider))
@@ -228,7 +228,7 @@ void CDlgTerrainProperties::DoDataExchange(CDataExchange* pDX)
     // update terrain
     if(bUpdateTerrain)
     {
-      ptrTerrain->tr_penEntity->TerrainChangeNotify();
+      CEntityPtr(ptrTerrain->tr_penEntity)->TerrainChangeNotify();
       GenerateLayerDistribution(-1);
       ptrTerrain->RefreshTerrain();
       ptrTerrain->UpdateShadowMap();
@@ -254,8 +254,8 @@ END_MESSAGE_MAP()
 void CDlgTerrainProperties::InitComboBoxes(void)
 {
   INDEX iToSelect, iWidth;
-  CTerrain *ptrTerrain=GetTerrain();
-  if(ptrTerrain==NULL) return;
+  CTerrainPtr ptrTerrain=GetTerrain();
+  if(!ptrTerrain) return;
 
   // prepare quads per tile combo box
   m_ctrlQuadsPerTile.ResetContent();
@@ -264,7 +264,7 @@ void CDlgTerrainProperties::InitComboBoxes(void)
   {
     CTString strItem;
     strItem.PrintF("%d x %d", iQuads, iQuads);
-	  INDEX iAddedAs=m_ctrlQuadsPerTile.AddString(CString(strItem));
+	  INDEX iAddedAs=m_ctrlQuadsPerTile.AddString(CString(static_cast<const char*>(strItem)));
 	  m_ctrlQuadsPerTile.SetItemData(iAddedAs,iQuads);
     if(ptrTerrain->tr_ctQuadsInTileRow==iQuads)
     {
@@ -283,11 +283,11 @@ void CDlgTerrainProperties::InitComboBoxes(void)
     CTString strItem;
     strItem.PrintF("%d", iWidth+1);
 	  // width
-    INDEX iW=m_ctrlHeightMapWidth.AddString(CString(strItem));
+    INDEX iW=m_ctrlHeightMapWidth.AddString(CString(static_cast<const char*>(strItem)));
     m_ctrlHeightMapWidth.SetItemData(iW,iWidth+1);
     if(ptrTerrain->tr_pixHeightMapWidth==iWidth+1)    iToSelectW=iW;
 	  // height
-    INDEX iH=m_ctrlHeightMapHeight.AddString(CString(strItem));
+    INDEX iH=m_ctrlHeightMapHeight.AddString(CString(static_cast<const char*>(strItem)));
     m_ctrlHeightMapHeight.SetItemData(iH,iWidth+1);
     if(ptrTerrain->tr_pixHeightMapHeight==iWidth+1)    iToSelectH=iH;
   }
@@ -301,8 +301,8 @@ void CDlgTerrainProperties::InitComboBoxes(void)
 // prepare tile pretender combo boxes
 void CDlgTerrainProperties::PrepareTilePretenderCombo(void)
 {
-  CTerrain *ptrTerrain=GetTerrain();
-  if(ptrTerrain==NULL) return;
+  CTerrainPtr ptrTerrain=GetTerrain();
+  if(!ptrTerrain) return;
 
   m_ctrlTilePretender.ResetContent();
   INDEX iToSelect=6;
@@ -310,7 +310,7 @@ void CDlgTerrainProperties::PrepareTilePretenderCombo(void)
   {
     CTString strItem;
     strItem.PrintF("%d x %d", iWidth, iWidth);
-	  INDEX iAddedAs=m_ctrlTilePretender.AddString(CString(strItem));
+	  INDEX iAddedAs=m_ctrlTilePretender.AddString(CString(static_cast<const char*>(strItem)));
     m_ctrlTilePretender.SetItemData(iAddedAs, iWidth);
 
     if(ptrTerrain->tr_pixFirstMipTopMapWidth==iWidth)
@@ -325,8 +325,8 @@ void CDlgTerrainProperties::PrepareTilePretenderCombo(void)
 // prepare tile pretender combo boxes
 void CDlgTerrainProperties::PrepareGlobalPretenderCombo(void)
 {
-  CTerrain *ptrTerrain=GetTerrain();
-  if(ptrTerrain==NULL) return;
+  CTerrainPtr ptrTerrain=GetTerrain();
+  if(!ptrTerrain) return;
 
   INDEX iHeightMapWidthItem=m_ctrlHeightMapWidth.GetCurSel();
   PIX pixHeightMapWidth=m_ctrlHeightMapWidth.GetItemData(iHeightMapWidthItem);
@@ -340,7 +340,7 @@ void CDlgTerrainProperties::PrepareGlobalPretenderCombo(void)
   {
     CTString strItem;
     strItem.PrintF("%d x %d", iWidth, INDEX(iWidth/fAspect));
-	  INDEX iAddedAs=m_ctrlGlobalPretenderTexture.AddString(CString(strItem));
+	  INDEX iAddedAs=m_ctrlGlobalPretenderTexture.AddString(CString(static_cast<const char*>(strItem)));
     m_ctrlGlobalPretenderTexture.SetItemData(iAddedAs, iWidth);
     if(_pixGlobalPretenderTextureWidth==iWidth)
     {

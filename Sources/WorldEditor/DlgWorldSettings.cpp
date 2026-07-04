@@ -19,7 +19,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "stdafx.h"
 #include "DlgWorldSettings.h"
 
-#include <Engine/Models/ImportedMesh.h>
+#include <EngineGui/ImportedMesh.h>
+#include <EngineGui/Object3D_IO.h>
 
 #ifdef _DEBUG
 #undef new
@@ -186,7 +187,7 @@ void CDlgWorldSettings::DoDataExchange(CDataExchange* pDX)
         // load 3D object
         FLOATmatrix3D mStretch;
         mStretch.Diagonal(1.0f);
-        pDoc->m_o3dBackdropObject.FillFromMesh(ImportedMesh(pDoc->m_woWorld.wo_strBackdropObject, mStretch));
+        FillObject3DFromMesh(pDoc->m_o3dBackdropObject, ImportedMesh(pDoc->m_woWorld.wo_strBackdropObject, mStretch));
       }
       // catch and
       catch( char *strError)
@@ -257,14 +258,14 @@ void CDlgWorldSettings::OnBrowseBackgroundPicture()
 
   // substract last two letters of background's file name
   char achrShortenedBcgName[ PATH_MAX];
-  strcpy( achrShortenedBcgName, fnChoosedFile.FileDir()+fnChoosedFile.FileName());
+  strcpy( achrShortenedBcgName, static_cast<const char*>(fnChoosedFile.FileDir()+fnChoosedFile.FileName()));
   // there must be at least two letters in selected texture name
   if( strlen( achrShortenedBcgName) > 2)
   {
     // shorten file name for two letters
     achrShortenedBcgName[ strlen( achrShortenedBcgName)-2] = 0;
     // assign new background texture name
-    m_fnBackgroundPicture = CTString(achrShortenedBcgName)+fnChoosedFile.FileExt();
+    m_fnBackgroundPicture = static_cast<const char*>(CTString(achrShortenedBcgName)+fnChoosedFile.FileExt());
   }
   // enable ok button
   //GetDlgItem( IDOK)->EnableWindow( TRUE);
@@ -319,7 +320,7 @@ void CDlgWorldSettings::OnBrowseTopViewPicture()
   CTFileName fnPicture = _EngineGUI.FileRequester( "Picture for top view",
     imageFilter.data(), "Picture for view directory", "");
   if( fnPicture == "") return;
-  GetDlgItem( IDC_TOP_VIEW_PICTURE_T)->SetWindowText( CString(fnPicture));
+  GetDlgItem( IDC_TOP_VIEW_PICTURE_T)->SetWindowText( CString(static_cast<const char*>(fnPicture)));
 	m_strTopViewPicture = fnPicture;
   CWorldEditorDoc *pDoc = theApp.GetDocument();
   pDoc->SetupBackdropTextureObject( CTString(CStringA(m_strTopViewPicture)), pDoc->m_toBackdropUp);
@@ -331,7 +332,7 @@ void CDlgWorldSettings::OnBrowseFrontViewPicture()
   CTFileName fnPicture = _EngineGUI.FileRequester( "Picture for front view",
     imageFilter.data(), "Picture for view directory", "");
   if( fnPicture == "") return;
-  GetDlgItem( IDC_FRONT_VIEW_PICTURE_T)->SetWindowText( CString(fnPicture));
+  GetDlgItem( IDC_FRONT_VIEW_PICTURE_T)->SetWindowText( CString(static_cast<const char*>(fnPicture)));
 	m_strFrontViewPicture = fnPicture;
   CWorldEditorDoc *pDoc = theApp.GetDocument();
   pDoc->SetupBackdropTextureObject( CTString(CStringA(m_strFrontViewPicture)), pDoc->m_toBackdropFt);
@@ -343,7 +344,7 @@ void CDlgWorldSettings::OnBrowseRightViewPicture()
   CTFileName fnPicture = _EngineGUI.FileRequester( "Picture for right view",
     imageFilter.data(), "Picture for view directory", "");
   if( fnPicture == "") return;
-  GetDlgItem( IDC_RIGHT_VIEW_PICTURE_T)->SetWindowText( CString(fnPicture));
+  GetDlgItem( IDC_RIGHT_VIEW_PICTURE_T)->SetWindowText( CString(static_cast<const char*>(fnPicture)));
 	m_strRightViewPicture = fnPicture;
   CWorldEditorDoc *pDoc = theApp.GetDocument();
   pDoc->SetupBackdropTextureObject( CTString(CStringA(m_strRightViewPicture)), pDoc->m_toBackdropRt);
@@ -356,7 +357,7 @@ void CDlgWorldSettings::OnBrowseBackdropObject()
   CTFileName fnObject = _EngineGUI.FileRequester( "Select background object",
     file_filter.data(), "Backdrop object directory", "");
   if( fnObject == "") return;
-  GetDlgItem( IDC_BACKDROP_OBJECT_T)->SetWindowText( CString(fnObject));
+  GetDlgItem( IDC_BACKDROP_OBJECT_T)->SetWindowText( CString(static_cast<const char*>(fnObject)));
 	m_strBackdropObject = fnObject;
 }
 

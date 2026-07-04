@@ -63,7 +63,7 @@ BOOL CWndAnimationFrames::IsSelectedFrameKeyFrame(void)
   // get curently selected light animation combo member
   INDEX iLightAnimation = m_pParentDlg->GetSelectedLightAnimation();
   // get animation data
-  CAnimDataPtr& pAD = m_pParentDlg->m_padAnimData;
+  CAnimDataPtr pAD = m_pParentDlg->m_padAnimData;
   // obtain information about animation
   CAnimInfo aiInfo;
   pAD->GetAnimInfo(iLightAnimation, aiInfo);
@@ -100,7 +100,7 @@ void CWndAnimationFrames::OnPaint()
     // get curently selected light animation combo member
     INDEX iLightAnimation = m_pParentDlg->GetSelectedLightAnimation();
     // get animation data
-    CAnimDataPtr& pAD = m_pParentDlg->m_padAnimData;
+    CAnimDataPtr pAD = m_pParentDlg->m_padAnimData;
     // obtain information about animation
     CAnimInfo aiInfo;
     pAD->GetAnimInfo(iLightAnimation, aiInfo);
@@ -166,7 +166,7 @@ BOOL CWndAnimationFrames::IsFrameVisible(INDEX iFrame)
   // obtain information about animation
   CAnimInfo aiInfo;
   // get animation data
-  CAnimDataPtr& pAD = m_pParentDlg->m_padAnimData;
+  CAnimDataPtr pAD = m_pParentDlg->m_padAnimData;
   pAD->GetAnimInfo(iLightAnimation, aiInfo);
   if( (iFrame>=m_iStartingFrame) && 
       (iFrame<(m_iStartingFrame+m_iFramesInLine)) &&
@@ -185,7 +185,7 @@ void CWndAnimationFrames::DeleteSelectedFrame( void)
   // get curently selected light animation combo member
   INDEX iLightAnimation = m_pParentDlg->GetSelectedLightAnimation();
   // get animation data
-  CAnimDataPtr& pAD = m_pParentDlg->m_padAnimData;
+  CAnimDataPtr pAD = m_pParentDlg->m_padAnimData;
   // obtain information about animation
   CAnimInfo aiInfo;
   pAD->GetAnimInfo(iLightAnimation, aiInfo);
@@ -225,7 +225,7 @@ void CWndAnimationFrames::OnLButtonDown(UINT nFlags, CPoint point)
   // get curently selected light animation combo member
   INDEX iLightAnimation = m_pParentDlg->GetSelectedLightAnimation();
   // get animation data
-  CAnimDataPtr& pAD = m_pParentDlg->m_padAnimData;
+  CAnimDataPtr pAD = m_pParentDlg->m_padAnimData;
   COLORREF newFrameColor = CLRF_CLR( pAD->GetFrame(iLightAnimation, iFrame));
   if( MyChooseColor( newFrameColor, *m_pParentDlg) )
   {
@@ -266,7 +266,7 @@ void CWndAnimationFrames::ScrollRight(void)
   // obtain information about animation
   CAnimInfo aiInfo;
   // get animation data
-  CAnimDataPtr& pAD = m_pParentDlg->m_padAnimData;
+  CAnimDataPtr pAD = m_pParentDlg->m_padAnimData;
   pAD->GetAnimInfo(iLightAnimation, aiInfo);
   // calculate possible new starting frame
   INDEX iNewLastDisplayedFrame = m_iStartingFrame+1+m_iFramesInLine;
@@ -304,7 +304,7 @@ void CWndAnimationFrames::ScrollPgRight()
   // obtain information about animation
   CAnimInfo aiInfo;
   // get animation data
-  CAnimDataPtr& pAD = m_pParentDlg->m_padAnimData;
+  CAnimDataPtr pAD = m_pParentDlg->m_padAnimData;
   pAD->GetAnimInfo(iLightAnimation, aiInfo);
   // calculate possible new starting frame
   INDEX iNewStart = m_iStartingFrame+m_iFramesInLine;

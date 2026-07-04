@@ -30,14 +30,14 @@ static char THIS_FILE[] = __FILE__;
 /////////////////////////////////////////////////////////////////////////////
 // CToolTipWnd
 
-CStaticArray<PIX> _saPixLineHeights;
+std::vector<PIX> _saPixLineHeights;
 CToolTipWnd::CToolTipWnd()
 {
 }
 
 CToolTipWnd::~CToolTipWnd()
 {
-  _saPixLineHeights.Clear();
+  _saPixLineHeights.clear();
 }
 
 
@@ -107,10 +107,10 @@ void CToolTipWnd::ObtainTextSize(PIX &pixMaxWidth, PIX &pixMaxHeight)
   if( pDC == NULL) return;
 
   pixMaxWidth = 0;
-  _saPixLineHeights.Clear();
+  _saPixLineHeights.clear();
   PIX pixStartY = 0;
   INDEX ctLines = GetLinesCount();
-  _saPixLineHeights.New( ctLines);
+  _saPixLineHeights.resize( ctLines);
   for(INDEX iLine = 0; iLine<ctLines; iLine++)
   {
     CTString strLine = GetLine(iLine);

@@ -309,8 +309,6 @@ BOOL CDlgRenderingPreferences::OnInitDialog()
 {
   CDialog::OnInitDialog();
 
-  CModelRenderPrefs &pmrpPrefs = theApp.m_vpViewPrefs[ m_iBuffer].m_mrpModelRenderPrefs;
-  CWorldRenderPrefs &pwrpPrefs = theApp.m_vpViewPrefs[ m_iBuffer].m_wrpWorldRenderPrefs;
   // we will set window's name so we know on which buffer we are working on
   char chrWndTitle[ 64];
   // create new name
@@ -381,7 +379,7 @@ void CDlgRenderingPreferences::OnBrowseBcgPicture()
   CTFileName fnBcgPicture = _EngineGUI.FileRequester( "Select background texture",
     "Texture (*.tex)\0*.tex\0" FILTER_TEX FILTER_END, "Background textures", "");
   if( fnBcgPicture == "") return;
-  sprintf( theApp.m_vpViewPrefs[ m_iBuffer].m_achrBcgPicture, "%s", fnBcgPicture);
+  sprintf( theApp.m_vpViewPrefs[ m_iBuffer].m_achrBcgPicture, "%s", static_cast<const char*>(fnBcgPicture));
   m_strBcgTexture = fnBcgPicture.FileName();
   UpdateData( FALSE);
 }

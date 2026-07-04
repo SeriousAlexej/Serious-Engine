@@ -313,15 +313,15 @@ void CDlgPgShadow::InitComboBoxes(void)
   // add all available illuminations
   for(INDEX iIllumination=0; iIllumination<MAX_UBYTE; iIllumination++)
   {
-    strIlluminationName = pDoc->m_woWorld.wo_aitIlluminationTypes[iIllumination].it_strName;
+    strIlluminationName = pDoc->m_woWorld.wo_aitIlluminationTypes[iIllumination]->it_strName;
     if(strIlluminationName == "") break;
-    INDEX iAddedAs = m_ComboIllumination.AddString( CString(strIlluminationName));
+    INDEX iAddedAs = m_ComboIllumination.AddString( CString(static_cast<const char*>(strIlluminationName)));
     m_ComboIllumination.SetItemData( iAddedAs, (ULONG) iIllumination);
   }
   for(INDEX iBlend=0; iBlend<256; iBlend++)
   {
-    CTString strBlendName = pDoc->m_woWorld.wo_atbTextureBlendings[iBlend].tb_strName;
-    if( strBlendName != CTString("") ) m_comboShadowBlend.AddString( CString(strBlendName));
+    CTString strBlendName = pDoc->m_woWorld.wo_atbTextureBlendings[iBlend]->tb_strName;
+    if( strBlendName != CTString("") ) m_comboShadowBlend.AddString( CString(static_cast<const char*>(strBlendName)));
   }    
 
   // none must exist
@@ -331,20 +331,18 @@ void CDlgPgShadow::InitComboBoxes(void)
   if( pDoc->m_selPolygonSelection.Count() != 0)
   {
     // obtain first polygon's brush
-    CBrush3D *pbrBrush = NULL;
-    pDoc->m_selPolygonSelection.Lock();
+    CBrush3DPtr pbrBrush;
     if( !pDoc->m_selPolygonSelection.IsMember( pDoc->m_pbpoLastCentered))
     {
-      pbrBrush = pDoc->m_selPolygonSelection[0].bpo_pbscSector->bsc_pbmBrushMip->bm_pbrBrush;
+      pbrBrush = CBrushMipPtr(CBrushSectorPtr(pDoc->m_selPolygonSelection[0]->bpo_pbscSector)->bsc_pbmBrushMip)->bm_pbrBrush;
     }
-    pDoc->m_selPolygonSelection.Unlock();
 
     BOOL bEnableGradient = TRUE;
     // for each of the selected polygons
     FOREACHINDYNAMICCONTAINER(pDoc->m_selPolygonSelection, CBrushPolygon, itbpo)
     {
       // disable gradient combo box if all polygons are not from same brush
-      if( pbrBrush != itbpo->bpo_pbscSector->bsc_pbmBrushMip->bm_pbrBrush)
+      if( pbrBrush.get_handle() != CBrushMipPtr(CBrushSectorPtr(itbpo->bpo_pbscSector)->bsc_pbmBrushMip)->bm_pbrBrush)
       {
         bEnableGradient = FALSE;
         break;
@@ -357,9 +355,9 @@ void CDlgPgShadow::InitComboBoxes(void)
       // add gradients
       for(INDEX iGradient=0; iGradient<MAX_UBYTE; iGradient++)
       {
-        CTString strGradientName = pbrBrush->br_penEntity->GetGradientName( iGradient);
+        CTString strGradientName = CEntityPtr(pbrBrush->br_penEntity)->GetGradientName( iGradient);
         if( strGradientName == "") break;
-        m_ctrlComboGradient.AddString( CString(strGradientName));
+        m_ctrlComboGradient.AddString( CString(static_cast<const char*>(strGradientName)));
       }
     }
   }

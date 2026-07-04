@@ -49,7 +49,7 @@ void CDlgSnapVertex::DoDataExchange(CDataExchange* pDX)
 
   if( pDX->m_bSaveAndValidate == FALSE)
   {
-    CBrushVertex *pvtx=pDoc->m_selVertexSelection.GetFirstInSelection();
+    CBrushVertexPtr pvtx=pDoc->m_selVertexSelection.GetFirstInSelection();
     FLOAT3D vFirst=pvtx->bvx_vAbsolute;
     m_fX=vFirst(1);
     m_fY=vFirst(2);
@@ -65,7 +65,7 @@ void CDlgSnapVertex::DoDataExchange(CDataExchange* pDX)
   // if dialog is recieving data
   if( pDX->m_bSaveAndValidate == FALSE)
   {
-    CBrushVertex *pvtx=pDoc->m_selVertexSelection.GetFirstInSelection();
+    CBrushVertexPtr pvtx=pDoc->m_selVertexSelection.GetFirstInSelection();
     FLOAT3D vFirst=pvtx->bvx_vAbsolute;
     BOOL bValidX, bValidY, bValidZ;
     bValidX=bValidY=bValidZ=TRUE;

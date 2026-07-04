@@ -55,7 +55,7 @@ void CDlgSelectByName::DoDataExchange(CDataExchange* pDX)
     for( INDEX i=0; i<m_ListBox.GetCount(); i++)
     {
       // obtain entity ptr
-      CEntity &penEntity = *((CEntity *) m_ListBox.GetItemData( i));
+      CEntity penEntity((CEntity_*) m_ListBox.GetItemData( i), false);
       // if entity was selected
       if( m_pDoc->m_selEntitySelection.IsSelected( penEntity))
       {
@@ -106,9 +106,9 @@ BOOL CDlgSelectByName::OnInitDialog()
       // add it to list box
       INDEX iListEntry = m_ListBox.AddString( CString(strEntityName));
       // set item's data as ptr to current entity
-      m_ListBox.SetItemData( iListEntry, (ULONG)(&*iten));
+      m_ListBox.SetItemData( iListEntry, (ULONG)(iten->C_Handle()));
       // if current entity is selected
-      if( iten->IsSelected( ENF_SELECTED))
+      if( iten->IsSelected())
       {
         // set check to on
         m_ListBox.SetCheck( iListEntry, 1);

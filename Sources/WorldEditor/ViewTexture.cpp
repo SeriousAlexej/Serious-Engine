@@ -32,8 +32,6 @@ static char THIS_FILE[] = __FILE__;
 
 CViewTexture::CViewTexture()
 {
-  m_pViewPort = NULL;
-  m_pDrawPort = NULL;
 }
 
 CViewTexture::~CViewTexture()
@@ -71,14 +69,14 @@ void CViewTexture::OnPaint()
     MoveWindow( rectBorder);
   }
 
-  if( (m_pViewPort == NULL) && (m_pDrawPort == NULL) )
+  if( (!m_pViewPort) && (!m_pDrawPort) )
   {
     // initialize canvas for active texture button
-    _pGfx->CreateWindowCanvas( m_hWnd, &m_pViewPort, &m_pDrawPort);
+    _pGfx_CreateWindowCanvas( m_hWnd, m_pViewPort, m_pDrawPort);
   }
 
   // if there is a valid drawport, and the drawport can be locked
-  if( (m_pDrawPort != NULL) && (m_pDrawPort->Lock()))
+  if( (m_pDrawPort) && (m_pDrawPort->Lock()))
   {
     PIX pixWidth = m_pDrawPort->GetWidth();
     PIX pixHeight = m_pDrawPort->GetHeight();
@@ -101,9 +99,9 @@ void CViewTexture::OnPaint()
       (void) strError;
     }
 
-    if( toTexture.GetData() != NULL)
+    if( toTexture.GetData() )
     {
-      m_pDrawPort->PutTexture( &toTexture, rectPict);
+      m_pDrawPort->PutTexture( toTexture, rectPict);
     }
     else
     {
@@ -116,7 +114,7 @@ void CViewTexture::OnPaint()
     // unlock the drawport
     m_pDrawPort->Unlock();
     // if there is a valid viewport
-    if (m_pViewPort!=NULL)
+    if (m_pViewPort)
     {
       // swap it
       m_pViewPort->SwapBuffers();
@@ -165,9 +163,9 @@ void CViewTexture::OnRecreateTexture()
     (void) strError;
   }
 
-  if( toTexture.GetData() != NULL)
+  if( toTexture.GetData() )
   {
-    _EngineGUI.CreateTexture( CTString(m_strTexture));
+    _EngineGUI.CreateTexture( m_strTexture);
     CWorldEditorDoc *pDoc = theApp.GetDocument();
     if( pDoc != NULL)
     {
@@ -180,12 +178,11 @@ void CViewTexture::OnDestroy()
 {
 	CWnd::OnDestroy();
 
-  if( m_pViewPort != NULL)
+  if( m_pViewPort)
   {
-    _pGfx->DestroyWindowCanvas( m_pViewPort);
-    m_pViewPort = NULL;
+    _pGfx_DestroyWindowCanvas( m_pViewPort);
   }
 
-  m_pViewPort = NULL;
-  m_pDrawPort = NULL;
+  m_pViewPort.Reset();
+  m_pDrawPort.Reset();
 }

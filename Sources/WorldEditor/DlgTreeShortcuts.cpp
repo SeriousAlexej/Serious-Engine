@@ -70,7 +70,7 @@ void CDlgTreeShortcuts::DoDataExchange(CDataExchange* pDX)
     for(INDEX iCtrl=0; iCtrl<10; iCtrl++)
     {
       // set names to buttons
-      GetDlgItem( IDC_SHORTCUT01+iCtrl)->SetWindowText( CString(astrShortcutNames[ iCtrl]));
+      GetDlgItem( IDC_SHORTCUT01+iCtrl)->SetWindowText( CString(static_cast<const char*>(astrShortcutNames[ iCtrl])));
     }
   }
 

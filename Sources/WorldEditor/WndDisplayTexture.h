@@ -55,7 +55,7 @@ public:
 // Implementation
 public:
 	virtual ~CWndDisplayTexture();
-  BOOL Initialize(PIX pixX, PIX pixY, CTextureData *ptd, CTString strText1="", CTString strText2="", BOOL bDown=FALSE);
+  BOOL Initialize(PIX pixX, PIX pixY, CTextureDataPtr ptd, CTString strText1="", CTString strText2="", BOOL bDown=FALSE);
 
 	// Generated message map functions
 protected:

@@ -133,11 +133,11 @@ void ApplyMaximumOntoTerrain(void);
 void ApplyFlattenOntoTerrain(void);
 void ApplyPosterizeOntoTerrain(void);
 void DiscardLayerDistribution(Rect rect);
-void ApplyTerrainUndo(CTerrainUndo *ptrud);
-void ApplyTerrainRedo(CTerrainUndo *ptrud);
+void ApplyTerrainUndo(std::unique_ptr<CTerrainUndo>& ptrud);
+void ApplyTerrainRedo(std::unique_ptr<CTerrainUndo>& ptrud);
 void DeleteTerrainUndo(CWorldEditorDoc* pDoc);
 void TerrainEditBegin(void);
 void TerrainEditEnd(void);
-void ObtainLayerTileInfo(std::vector<std::unique_ptr<CTileInfo>>& pdcTileInfo, CTextureDataPtr ptdTexture, INDEX &ctTilesPerRaw);
+void ObtainLayerTileInfo(std::vector<std::unique_ptr<CTileInfo>>& pdcTileInfo, CTextureDataPtr ptdTexture, INDEX &ctTilesPerRow);
 
 #endif // TERRAINEDITING_H

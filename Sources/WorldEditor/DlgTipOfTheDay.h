@@ -30,7 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class CDlgTipOfTheDay : public CDialog
 {
 public:
-  CStaticStackArray<CTString> m_astrTips;
+  std::list<CTString> m_astrTips;
 // Construction
 public:
 	CDlgTipOfTheDay(CWnd* pParent = NULL);   // standard constructor

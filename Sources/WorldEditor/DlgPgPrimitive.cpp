@@ -352,7 +352,7 @@ void CDlgPgPrimitive::DoDataExchange(CDataExchange* pDX)
          ((INDEX)(m_fEdit3) > 0) )
     {
       theApp.m_vfpCurrent.vfp_avVerticesOnBaseOfPrimitive.clear();
-      theApp.m_vfpCurrent.vfp_avVerticesOnBaseOfPrimitive.resize( Abs((INDEX) m_fEdit3));
+      theApp.m_vfpCurrent.vfp_avVerticesOnBaseOfPrimitive.resize( Abs((INDEX) m_fEdit3), DOUBLE3D(0, 0, 0));
     }
 	  theApp.m_vfpCurrent.vfp_fShearX = m_fEdit1;
 	  theApp.m_vfpCurrent.vfp_iSlicesIn360 = (INDEX) m_fEdit1;
