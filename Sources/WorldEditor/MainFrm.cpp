@@ -1676,7 +1676,7 @@ void CMainFrame::OnHelpFinder()
 void CMainFrame::SetStatusBarMessage( CTString strMessage, INDEX iPane, FLOAT fTime)
 {
   // obtain stop time
-  m_wndStatusBar.SetPaneText( iPane, CString(strMessage), TRUE);
+  m_wndStatusBar.SetPaneText( iPane, CString(static_cast<const char*>(strMessage)), TRUE);
   FLOAT tmNow = _pTimer_GetHighPrecisionTimer().GetSeconds();
   theApp.m_tmStartStatusLineInfo=tmNow + fTime;
 }

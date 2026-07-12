@@ -512,7 +512,7 @@ void CWorldEditorApp::MyParseCommandLine(void)
 {
   _strCmd = CStringA(m_lpCmdLine);
   cmd_strOutput = "";
-  cmd_strOutput+=CTString(0, TRANS("Command line: '%s'\n"), _strCmd);
+  cmd_strOutput+=CTString(0, TRANS("Command line: '%s'\n"), static_cast<const char*>(_strCmd));
   // if no command line
   if (strlen(static_cast<const char*>(_strCmd)) == 0) {
     // do nothing

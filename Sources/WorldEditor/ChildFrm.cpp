@@ -444,17 +444,17 @@ void CChildFrame::TestGame( BOOL bFullScreen)
   _wrpWorldRenderPrefs = pPerspectiveView->m_vpViewPrefs.m_wrpWorldRenderPrefs;
   _mrpModelRenderPrefs = pPerspectiveView->m_vpViewPrefs.m_mrpModelRenderPrefs;
   _wrpWorldRenderPrefs.SetShadowsType( pPerspectiveView->GetChildFrame()->m_stShadowType);
-  _wrpWorldRenderPrefs.SetSelectedEntityModel( theApp.m_pEntityMarkerModelObject.get_handle());
-  _wrpWorldRenderPrefs.SetSelectedPortalModel( theApp.m_pPortalMarkerModelObject.get_handle());
-  _wrpWorldRenderPrefs.SetEmptyBrushModel( theApp.m_pEmptyBrushModelObject.get_handle());
+  _wrpWorldRenderPrefs.SetSelectedEntityModel( *theApp.m_pEntityMarkerModelObject);
+  _wrpWorldRenderPrefs.SetSelectedPortalModel( *theApp.m_pPortalMarkerModelObject);
+  _wrpWorldRenderPrefs.SetEmptyBrushModel( *theApp.m_pEmptyBrushModelObject);
   _wrpWorldRenderPrefs.SetTextureLayerOn( theApp.m_bTexture1, 0);
   _wrpWorldRenderPrefs.SetTextureLayerOn( theApp.m_bTexture2, 1);
   _wrpWorldRenderPrefs.SetTextureLayerOn( theApp.m_bTexture3, 2);
   _wrpWorldRenderPrefs.DisableVisTweaks(FALSE);
 
-  _wrpWorldRenderPrefs.SetSelectedEntityModel( theApp.m_pEntityMarkerModelObject.get_handle());
-  _wrpWorldRenderPrefs.SetSelectedPortalModel( theApp.m_pPortalMarkerModelObject.get_handle());
-  _wrpWorldRenderPrefs.SetEmptyBrushModel( theApp.m_pEmptyBrushModelObject.get_handle());
+  _wrpWorldRenderPrefs.SetSelectedEntityModel( *theApp.m_pEntityMarkerModelObject);
+  _wrpWorldRenderPrefs.SetSelectedPortalModel( *theApp.m_pPortalMarkerModelObject);
+  _wrpWorldRenderPrefs.SetEmptyBrushModel( *theApp.m_pEmptyBrushModelObject);
 
   // prepare test game view/draw ports
   CViewPortPtr pvp = pPerspectiveView->m_pvpViewPort;

@@ -673,8 +673,17 @@ void CDlgPgPrimitive::OnSelchangePrimitiveHistory()
 {
   INDEX iSelected = m_comboPrimitiveHistory.GetCurSel();
   if( iSelected == CB_ERR) return;
+  INDEX iCurrent = 0;
   // write history primitives list
-  theApp.m_vfpCurrent = *theApp.m_lhPrimitiveHistory.at(iSelected);
+  for (auto& itPrim : theApp.m_lhPrimitiveHistory)
+  {
+    if (iCurrent == iSelected)
+    {
+      theApp.m_vfpCurrent = *itPrim;
+      break;
+    }
+    iCurrent++;
+  }
 
   CWorldEditorDoc* pDoc = theApp.GetActiveDocument();
   ASSERT( pDoc != NULL);

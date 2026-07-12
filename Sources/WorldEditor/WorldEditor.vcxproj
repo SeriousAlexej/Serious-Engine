@@ -130,10 +130,10 @@
       <AdditionalLibraryDirectories>$(SolutionDir)SeriousEngineCAPI\Release\;$(SolutionDir)EngineGUI\$(Configuration)\;$(SolutionDir)qtwinmigrateBuild\$(Configuration)\;$(Qt_dir)\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <CustomBuildStep>
-      <Command>copy Release\$(TargetName).exe $(SolutionDir)..\Bin_1.10\ &gt;nul
-copy $(SolutionDir)qtwinmigrateBuild\install\QtSolutions_MFCMigrationFramework.dll $(SolutionDir)..\Bin_1.10\ &gt; nul
-$(Qt_dir)\bin\windeployqt.exe $(SolutionDir)..\Bin_1.10\$(TargetName).exe
-$(Qt_dir)\bin\windeployqt.exe $(SolutionDir)..\Bin_1.10\QtSolutions_MFCMigrationFramework.dll
+      <Command>copy Release\$(TargetName).exe $(SolutionDir)..\Bin\ &gt;nul
+copy $(SolutionDir)qtwinmigrateBuild\install\QtSolutions_MFCMigrationFramework.dll $(SolutionDir)..\Bin\ &gt; nul
+$(Qt_dir)\bin\windeployqt.exe $(SolutionDir)..\Bin\$(TargetName).exe
+$(Qt_dir)\bin\windeployqt.exe $(SolutionDir)..\Bin\QtSolutions_MFCMigrationFramework.dll
 </Command>
       <Message>Copying %(Filename) binaries to $(SolutionDir)..\Bin</Message>
       <Outputs>$(SolutionDir)..\Bin_1.10\$(InputName).exe;%(Outputs)</Outputs>
@@ -186,10 +186,10 @@ $(Qt_dir)\bin\windeployqt.exe $(SolutionDir)..\Bin_1.10\QtSolutions_MFCMigration
       <AdditionalLibraryDirectories>$(SolutionDir)SeriousEngineCAPI\Release\;$(SolutionDir)EngineGUI\$(Configuration)\;$(SolutionDir)qtwinmigrateBuild\$(Configuration)\;$(Qt_dir)\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <CustomBuildStep>
-      <Command>copy Debug\$(TargetName).exe $(SolutionDir)..\Bin_1.10\Debug\ &gt;nul
-copy $(SolutionDir)qtwinmigrateBuild\install\QtSolutions_MFCMigrationFrameworkd.dll $(SolutionDir)..\Bin_1.10\Debug\ &gt; nul
-$(Qt_dir)\bin\windeployqt.exe $(SolutionDir)..\Bin_1.10\Debug\$(TargetName).exe
-$(Qt_dir)\bin\windeployqt.exe $(SolutionDir)..\Bin_1.10\Debug\QtSolutions_MFCMigrationFrameworkd.dll
+      <Command>copy Debug\$(TargetName).exe $(SolutionDir)..\Bin\Debug\ &gt;nul
+copy $(SolutionDir)qtwinmigrateBuild\install\QtSolutions_MFCMigrationFrameworkd.dll $(SolutionDir)..\Bin\Debug\ &gt; nul
+$(Qt_dir)\bin\windeployqt.exe $(SolutionDir)..\Bin\Debug\$(TargetName).exe
+$(Qt_dir)\bin\windeployqt.exe $(SolutionDir)..\Bin\Debug\QtSolutions_MFCMigrationFrameworkd.dll
 </Command>
       <Message>Copying %(Filename) binaries to $(SolutionDir)..\Bin_1.10\Debug</Message>
       <Outputs>$(SolutionDir)..\Bin_1.10\Debug\$(InputName).exe;%(Outputs)</Outputs>

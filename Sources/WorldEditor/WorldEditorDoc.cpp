@@ -1579,9 +1579,9 @@ void CWorldEditorDoc::CreateConusPrimitive(void)
     // create polygons on side of conus
     AddPolygon( 4, avSidePolygon, _bClosed, f3dMappingTranslation);
   }
-  delete avBottomPolygon;
-  delete avTopPolygon;
-  delete avSidePolygon;
+  delete[] avBottomPolygon;
+  delete[] avTopPolygon;
+  delete[] avSidePolygon;
   theApp.m_vfpCurrent.vfp_o3dPrimitive.Optimize();
   ConvertObject3DToBrush(theApp.m_vfpCurrent.vfp_o3dPrimitive);
 }
