@@ -1564,7 +1564,7 @@ void CModelerView::OnLButtonDown(UINT nFlags, CPoint point)
       SetProjectionData( prProjection, m_pDrawPort);
       // set position of document's model
       prProjection.ObjectPlacementL() = m_plModelPlacement;
-      m_ModelObject.ColorizePolygon( m_pDrawPort, &prProjection, point.x, point.y,
+      m_ModelObject.ColorizePolygon( m_pDrawPort, prProjection, point.x, point.y,
                                      m_iChoosedColor, m_bOnColorMode);
       pDoc->m_emEditModel.edm_md.md_bPreparedForRendering = FALSE;
       pDoc->SetModifiedFlag();
@@ -3642,7 +3642,7 @@ INDEX CModelerView::GetClosestVertex(FLOAT3D &vClosestVertex)
   SetProjectionData( prProjection, m_pDrawPort);
   // set position of document's model
   prProjection.ObjectPlacementL() = m_plModelPlacement;
-  return m_ModelObject.PickVertexIndex( m_pDrawPort, &prProjection,
+  return m_ModelObject.PickVertexIndex( m_pDrawPort, prProjection,
     m_MousePosition.x, m_MousePosition.y, vClosestVertex);
 }
 

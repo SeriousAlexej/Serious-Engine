@@ -112,9 +112,9 @@ public:
   enum CSGType m_csgtPreLastUsedCSGOperation;
   enum CSGType m_csgtLastUsedCSGOperation;
   // list head for undo
-  std::vector<std::unique_ptr<CUndo>> m_lhUndo;
+  std::list<std::unique_ptr<CUndo>> m_lhUndo;
   // list head for redo
-  std::vector<std::unique_ptr<CUndo>> m_lhRedo;
+  std::list<std::unique_ptr<CUndo>> m_lhRedo;
   BOOL m_absoluteRotation;
   BOOL m_bAutoSnap;
   BOOL m_bOrientationIcons;
@@ -215,9 +215,9 @@ public:
   // does "snap to grid" for primitive values
   void SnapPrimitiveValuesToGrid(void);
   // saves curent state of the world as tail of give undo/redo list
-  void SaveWorldIntoUndoRedoList(std::vector<std::unique_ptr<CUndo>>& lhList);
+  void SaveWorldIntoUndoRedoList(std::list<std::unique_ptr<CUndo>>& lhList);
   // restores last operation from given undo/redo object
-  void LoadWorldFromUndoRedoList( CUndo *pUndoRedo);
+  void LoadWorldFromUndoRedoList( CUndo& pUndoRedo);
   // remembers last operation into undo buffer
   void RememberUndo(void);
   // undoes last operation

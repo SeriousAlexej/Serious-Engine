@@ -1774,7 +1774,7 @@ void CPropertyComboBar::SetIntersectingEntityClassName(void)
   {
     CEntityPtr iten(iten_);
     // get class of this entity
-    CEntityClass *pencEntityClass = iten->GetClass();
+    CEntityClassPtr pencEntityClass = iten->GetClass();
     // get file name of clas file
     CTFileName fnClassFileName = pencEntityClass->GetName().FileName();
     // get name

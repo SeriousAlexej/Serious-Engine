@@ -141,7 +141,12 @@ public:
   CTFileName vfp_fnDisplacement;
 
   CValuesForPrimitive();
-  inline CValuesForPrimitive (CValuesForPrimitive &vfpToCopy)
+  inline CValuesForPrimitive(CValuesForPrimitive& vfpToCopy)
+  {
+    *this = vfpToCopy;
+  }
+
+  inline CValuesForPrimitive& operator=(const CValuesForPrimitive& vfpToCopy)
   {
     vfp_avVerticesOnBaseOfPrimitive = vfpToCopy.vfp_avVerticesOnBaseOfPrimitive;
     vfp_ptPrimitiveType = vfpToCopy.vfp_ptPrimitiveType;
@@ -184,7 +189,9 @@ public:
     vfp_fnDisplacement = vfpToCopy.vfp_fnDisplacement;
     vfp_fMipStart = vfpToCopy.vfp_fMipStart;
     vfp_fMipStep = vfpToCopy.vfp_fMipStep;
-  };
+
+    return *this;
+  }
 
   BOOL operator==(const CValuesForPrimitive &vfpToCompare) const;
   inline CValuesForPrimitive operator+(const CValuesForPrimitive &vfpToAdd);
@@ -356,8 +363,8 @@ public:
   CPlacement3D m_plClipboard1;
   CPlacement3D m_plClipboard2;
 
-  CBrushPolygonPtr m_pbpoClipboardPolygon;
-  CBrushPolygonPtr m_pbpoPolygonWithDeafultValues;
+  std::unique_ptr<CBrushPolygon> m_pbpoClipboardPolygon;
+  std::unique_ptr<CBrushPolygon> m_pbpoPolygonWithDeafultValues;
   CTFileName m_fnClassForDropMarker;
   // flag is set while changing display mode
   BOOL m_bChangeDisplayModeInProgress;
@@ -411,7 +418,7 @@ public:
   class CAppPrefs m_Preferences;
   // error texture
   CTextureDataPtr m_ptdError;
-  CTextureObjectPtr m_ptoError;
+  std::unique_ptr<CTextureObject> m_ptoError;
   // icons tray texture
   CTextureDataPtr m_ptdIconsTray;
   // default texture for primitives
@@ -428,36 +435,36 @@ public:
   // for holding entity selection marker model
   CTextureDataPtr m_ptdEntityMarkerTexture;
 	CModelDataPtr m_pEntityMarkerModelData;
-	CModelObjectPtr m_pEntityMarkerModelObject;
+  std::unique_ptr<CModelObject> m_pEntityMarkerModelObject;
   CTextureDataPtr m_gizmo_texture;
   CModelDataPtr m_axis_data;
-  CModelObjectPtr m_axis_model;
+  std::unique_ptr<CModelObject> m_axis_model;
   CModelDataPtr m_axis_selected_data;
-  CModelObjectPtr m_axis_model_selected;
+  std::unique_ptr<CModelObject> m_axis_model_selected;
   CModelDataPtr m_ring_data;
-  CModelObjectPtr m_ring_model;
+  std::unique_ptr<CModelObject> m_ring_model;
   CModelDataPtr m_ring_selected_data;
-  CModelObjectPtr m_ring_model_selected;
+  std::unique_ptr<CModelObject> m_ring_model_selected;
   // for holding portal selection marker model
   CTextureDataPtr m_ptdPortalMarkerTexture;
 	CModelDataPtr m_pPortalMarkerModelData;
-	CModelObjectPtr m_pPortalMarkerModelObject;
+  std::unique_ptr<CModelObject> m_pPortalMarkerModelObject;
   // for holding empty brush model
   CTextureDataPtr m_ptdEmptyBrushTexture;
 	CModelDataPtr m_pEmptyBrushModelData;
-	CModelObjectPtr m_pEmptyBrushModelObject;
+  std::unique_ptr<CModelObject> m_pEmptyBrushModelObject;
   // for holding range sphere model
   CTextureDataPtr m_ptdRangeSphereTexture;
 	CModelDataPtr m_pRangeSphereModelData;
-	CModelObjectPtr m_pRangeSphereModelObject;
+  std::unique_ptr<CModelObject> m_pRangeSphereModelObject;
   // for holding angle3D model
   CTextureDataPtr m_ptdAngle3DTexture;
 	CModelDataPtr m_pAngle3DModelData;
-	CModelObjectPtr m_pAngle3DModelObject;
+  std::unique_ptr<CModelObject> m_pAngle3DModelObject;
   // for holding bounding box model
   CTextureDataPtr m_ptdBoundingBoxTexture;
 	CModelDataPtr m_pBoundingBoxModelData;
-	CModelObjectPtr m_pBoundingBoxModelObject;
+  std::unique_ptr<CModelObject> m_pBoundingBoxModelObject;
 
   // variables for full screen display mode
 	CDisplayMode m_dmFullScreen;
@@ -489,7 +496,7 @@ public:
   // default values for terrain primitives
   CValuesForPrimitive m_vfpTerrain;
   // for linking primitives
-  std::vector<std::unique_ptr<CValuesForPrimitive>> m_lhPrimitiveHistory;
+  std::list<std::unique_ptr<CValuesForPrimitive>> m_lhPrimitiveHistory;
   // obtain currently active view
   CWorldEditorDoc *GetActiveDocument(void);
   // obtain currently active view
