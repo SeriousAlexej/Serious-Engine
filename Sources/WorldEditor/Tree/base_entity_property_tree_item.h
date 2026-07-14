@@ -78,9 +78,9 @@ protected:
       CEntityPtr cur_ent(*cur_it);
       CEntityPropertyPtr cur_actual_property = cur_ent->PropertyForName(mp_property->pid_strName);
 
-      if constexpr (requires { &TPropType::C_Handle; })
+      if constexpr (requires { std::declval<TPropType>().C_Handle(); })
       { // complex type
-        using TPropTypeHandle = std::invoke_result_t<decltype(&TPropType::C_Handle), TPropType>;
+        using TPropTypeHandle = std::remove_pointer_t<decltype(std::declval<TPropType>().C_Handle())>;
         if (TPropType(ENTITY_PROPERTY(cur_ent, cur_actual_property->ep_slOffset, TPropTypeHandle), false) !=
             TPropType(ENTITY_PROPERTY(beg_ent, beg_actual_property->ep_slOffset, TPropTypeHandle), false))
           return false;
@@ -100,10 +100,10 @@ protected:
     CEntityPtr beg_ent(*m_entities.begin());
     CEntityPropertyPtr actual_property = beg_ent->PropertyForName(mp_property->pid_strName);
 
-    if constexpr (requires { &TPropType::C_Handle; })
+    if constexpr (requires { std::declval<TPropType>().C_Handle(); })
     {
       // complex type
-      using TPropTypeHandle = std::invoke_result_t<decltype(&TPropType::C_Handle), TPropType>;
+      using TPropTypeHandle = std::remove_pointer_t<decltype(std::declval<TPropType>().C_Handle())>;
       return TPropType(ENTITY_PROPERTY(beg_ent, actual_property->ep_slOffset, TPropTypeHandle), false);
     } else {
       // simple type
@@ -120,10 +120,10 @@ protected:
       entity->End();
       CEntityPropertyPtr actual_property = entity->PropertyForName(mp_property->pid_strName);
 
-      if constexpr (requires { &TPropType::C_Handle; })
+      if constexpr (requires { std::declval<TPropType>().C_Handle(); })
       {
         // complex type
-        using TPropTypeHandle = std::invoke_result_t<decltype(&TPropType::C_Handle), TPropType>;
+        using TPropTypeHandle = std::remove_pointer_t<decltype(std::declval<TPropType>().C_Handle())>;
         TPropType prop(ENTITY_PROPERTY(entity, actual_property->ep_slOffset, TPropTypeHandle), false);
         prop = prop_value;
       }
