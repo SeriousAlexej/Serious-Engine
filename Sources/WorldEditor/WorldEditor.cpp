@@ -365,6 +365,32 @@ void CViewPrefs::ClearInvalidConfigPointers(void)
   m_wrpWorldRenderPrefs.SetEmptyBrushModel(NULL);
 }
 
+void CViewPrefs::Read_t(CTStream& istrFile)
+{
+  m_wrpWorldRenderPrefs.Read_t(&istrFile);
+  m_mrpModelRenderPrefs.Read_t(&istrFile);
+  istrFile >> m_bAutoRenderingRange;
+  istrFile >> m_fRenderingRange;
+  istrFile >> m_PaperColor;
+  istrFile >> m_SelectionColor;
+  istrFile >> m_bMeasurementTape;
+  istrFile >> m_GridColor;
+  istrFile.Read_t(&m_achrBcgPicture[0], 256);
+}
+
+void CViewPrefs::Write_t(CTStream& ostrFile)
+{
+  m_wrpWorldRenderPrefs.Write_t(&ostrFile);
+  m_mrpModelRenderPrefs.Write_t(&ostrFile);
+  ostrFile << m_bAutoRenderingRange;
+  ostrFile << m_fRenderingRange;
+  ostrFile << m_PaperColor;
+  ostrFile << m_SelectionColor;
+  ostrFile << m_bMeasurementTape;
+  ostrFile << m_GridColor;
+  ostrFile.Write_t(&m_achrBcgPicture[0], 256);
+}
+
 CAppPrefs::~CAppPrefs()
 {
 }
@@ -1781,7 +1807,7 @@ void CAppPrefs::WriteToIniFile()
 
 BOOL CWorldEditorApp::LoadRenderingPreferences()
 {
-  CTFileName fnRenderingPrefs = CTString("Data\\WEDRenderingPrefs.bin");
+  CTFileName fnRenderingPrefs = CTString("Data\\SEDEXRenderingPrefs.bin");
 
   // if rendering preferences file does not exist
   if (!FileExists(fnRenderingPrefs)) {
@@ -1803,8 +1829,8 @@ BOOL CWorldEditorApp::LoadRenderingPreferences()
       throw( "Invalid version of rendering preferences, switching to defaults.");
     }
     // read view rendering preferences
-    strmFile.Read_t( &m_vpViewPrefs, sizeof( m_vpViewPrefs));
     for(INDEX i=0; i<ARRAYCOUNT(m_vpViewPrefs); i++) {
+      m_vpViewPrefs[i].Read_t(strmFile);
       m_vpViewPrefs[i].ClearInvalidConfigPointers();
     }
     // read ID for end of rendering prefs
@@ -1828,14 +1854,16 @@ void CWorldEditorApp::SaveRenderingPreferences(void)
   try
   {
     // open binary file to save rendering preferences
-  	CTFileName fnRenderingPrefs = CTString("Data\\WEDRenderingPrefs.bin");
+  	CTFileName fnRenderingPrefs = CTString("Data\\SEDEXRenderingPrefs.bin");
     strmFile.Create_t( fnRenderingPrefs);
     // write file ID
     strmFile.WriteID_t( CChunkID( "RPRF"));  // child configurations
     // write version number
     strmFile.WriteID_t( CChunkID( VIEW_PREFERENCES_VER));
     // write child configurations array
-    strmFile.Write_t( &m_vpViewPrefs, sizeof( m_vpViewPrefs));
+    for (INDEX i = 0; i < ARRAYCOUNT(m_vpViewPrefs); i++) {
+      m_vpViewPrefs[i].Write_t(strmFile);
+    }
     // write ID for end of rendering prefs
     strmFile.WriteID_t( CChunkID( "RPED"));  // rendering preferences end
   }
@@ -1872,9 +1900,43 @@ void CChildConfiguration::ClearInvalidConfigPointers(void)
   m_vpViewPrefs[3].ClearInvalidConfigPointers();
 }
 
+void CChildConfiguration::Read_t(CTStream& istrFile)
+{
+  istrFile >> m_iHorizontalSplitters;
+  istrFile >> m_iVerticalSplitters;
+  istrFile >> m_fPercentageLeft;
+  istrFile >> m_fPercentageTop;
+  istrFile >> m_bGridOn;
+  m_vpViewPrefs[0].Read_t(istrFile);
+  m_vpViewPrefs[1].Read_t(istrFile);
+  m_vpViewPrefs[2].Read_t(istrFile);
+  m_vpViewPrefs[3].Read_t(istrFile);
+  istrFile >> (INDEX&)m_ptProjectionType[0];
+  istrFile >> (INDEX&)m_ptProjectionType[1];
+  istrFile >> (INDEX&)m_ptProjectionType[2];
+  istrFile >> (INDEX&)m_ptProjectionType[3];
+}
+
+void CChildConfiguration::Write_t(CTStream& ostrFile)
+{
+  ostrFile << m_iHorizontalSplitters;
+  ostrFile << m_iVerticalSplitters;
+  ostrFile << m_fPercentageLeft;
+  ostrFile << m_fPercentageTop;
+  ostrFile << m_bGridOn;
+  m_vpViewPrefs[0].Write_t(ostrFile);
+  m_vpViewPrefs[1].Write_t(ostrFile);
+  m_vpViewPrefs[2].Write_t(ostrFile);
+  m_vpViewPrefs[3].Write_t(ostrFile);
+  ostrFile << (INDEX)m_ptProjectionType[0];
+  ostrFile << (INDEX)m_ptProjectionType[1];
+  ostrFile << (INDEX)m_ptProjectionType[2];
+  ostrFile << (INDEX)m_ptProjectionType[3];
+}
+
 BOOL CWorldEditorApp::LoadChildConfigurations(void)
 {
-  CTFileName fnChildConfigurations = CTString("Data\\WEDChildConfigurations.bin");
+  CTFileName fnChildConfigurations = CTString("Data\\SEDEXChildConfigurations.bin");
 
   // if child configuration file does not exist
   if (!FileExists(fnChildConfigurations)) {
@@ -1898,7 +1960,9 @@ BOOL CWorldEditorApp::LoadChildConfigurations(void)
     // clear configurations
     m_ccChildConfigurations->SetDefaultValues();
     // read child configurations array
-    strmFile.Read_t( &m_ccChildConfigurations, sizeof( m_ccChildConfigurations));
+    for (INDEX i = 0; i < ARRAYCOUNT(m_ccChildConfigurations); i++) {
+      m_ccChildConfigurations[i].Read_t(strmFile);
+    }
     // read end of file ID
     strmFile.ExpectID_t( CChunkID( "CCED"));  // end of child configurations ID
   }
@@ -1921,7 +1985,7 @@ void CWorldEditorApp::SaveChildConfigurations(void)
   CTFileStream strmFile;
   try
   {
-  	CTFileName fnChildConfigurations = CTString("Data\\WEDChildConfigurations.bin");
+  	CTFileName fnChildConfigurations = CTString("Data\\SEDEXChildConfigurations.bin");
     // create binary file to receive child configurations
     strmFile.Create_t( fnChildConfigurations);
     // write file ID
@@ -1929,7 +1993,9 @@ void CWorldEditorApp::SaveChildConfigurations(void)
     // write version number
     strmFile.WriteID_t( CChunkID( CHILD_CONFIGURATION_VER));
     // write child configurations array
-    strmFile.Write_t( &m_ccChildConfigurations, sizeof( m_ccChildConfigurations));
+    for (INDEX i = 0; i < ARRAYCOUNT(m_ccChildConfigurations); i++) {
+      m_ccChildConfigurations[i].Write_t(strmFile);
+    }
     // write end of file ID
     strmFile.WriteID_t( CChunkID( "CCED"));  // end of child configurations ID
   }

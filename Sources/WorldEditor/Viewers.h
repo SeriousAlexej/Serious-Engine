@@ -42,7 +42,7 @@ public:
 class CSlaveViewer {
 friend class CMasterViewer;
 public:
-  enum ProjectionType {
+  enum ProjectionType : INDEX{
     PT_ILLEGAL = 0,
     PT_PERSPECTIVE,
     PT_ISOMETRIC_FRONT,

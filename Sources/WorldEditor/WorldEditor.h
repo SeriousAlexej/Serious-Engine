@@ -27,8 +27,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <functional>
 
-#define CHILD_CONFIGURATION_VER "V012"
-#define VIEW_PREFERENCES_VER "V012"
+#define CHILD_CONFIGURATION_VER "V013"
+#define VIEW_PREFERENCES_VER "V013"
 
 #define VIEW_PREFERENCES_CT 10
 #define CHILD_CONFIGURATIONS_CT 10
@@ -253,6 +253,8 @@ public:
   // set default values
   void SetDefaultValues(void);
   void ClearInvalidConfigPointers(void);
+  void Read_t(CTStream& istrFile);   // throw char * // read and
+  void Write_t(CTStream& ostrFile);  // throw char * // write functions
   // world's rendering preferences
   CWorldRenderPrefs m_wrpWorldRenderPrefs;
   // model's rendering preferences
@@ -280,6 +282,8 @@ public:
   // set default values
   void SetDefaultValues(void);
   void ClearInvalidConfigPointers(void);
+  void Read_t(CTStream& istrFile);   // throw char * // read and
+  void Write_t(CTStream& ostrFile);  // throw char * // write functions
   // numbers of horizontal splitters
   INDEX m_iHorizontalSplitters;
   // numbers of vertical splitters
