@@ -172,7 +172,7 @@ void CDlgCreateSpecularTexture::CreateTexture( CTFileName fnTexture, FLOAT fExp)
 
   try
   {
-    TD.Create_t( &II, pixSize, 1, FALSE);
+    TD.Create_t( II, pixSize, 1, FALSE);
     fsFile.Create_t( fnTexture);
     TD.Write_t( &fsFile);
     fsFile.Close();

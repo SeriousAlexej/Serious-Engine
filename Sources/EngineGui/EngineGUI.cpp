@@ -87,7 +87,7 @@ void CEngineGUI::CreateTexture_t(const CTFileName& inFileName, const CTFileName&
     this->LoadAnyGfxFormat_t(inPic, inFileName);
 
     // create texture
-    tex.Create_t(&inPic, inMex, inMipmaps, bForce32bit);
+    tex.Create_t(inPic, inMex, inMipmaps, bForce32bit);
 
     // no more need for picture - get out!
     inPic.Clear();

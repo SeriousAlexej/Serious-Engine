@@ -102,7 +102,7 @@ void CDlgEditTerrainBrush::OnImportTerrainBrush()
     CTFileName fnTexture = GetBrushTextureName(m_iBrush);
     // creates new texture with one frame
     CTextureData tdPicture;
-    tdPicture.Create_t( &ii, ii.ii_Width, 16, TRUE);
+    tdPicture.Create_t( ii, ii.ii_Width, 16, TRUE);
     tdPicture.Save_t( fnTexture);
   }
 }

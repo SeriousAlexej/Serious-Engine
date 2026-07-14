@@ -158,7 +158,7 @@ BOOL CreateFBMTexture(PIX pixW, PIX pixH, CTFileName fnFBMFile)
   CTextureData tdFBM;
   try
   {
-    tdFBM.Create_t( &ii, pixW, 16, TRUE);
+    tdFBM.Create_t( ii, pixW, 16, TRUE);
     tdFBM.Save_t( fnFBMFile);
   }
   catch( char *strError)

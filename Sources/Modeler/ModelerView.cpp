@@ -3174,7 +3174,7 @@ void CModelerView::SaveThumbnail()
     try {
       fnThumbnail.RemoveApplicationPath_t();
       // create texture
-      TD.Create_t( &iiImageInfo, 128, MAX_MEX_LOG2, FALSE);
+      TD.Create_t( iiImageInfo, 128, MAX_MEX_LOG2, FALSE);
       // save the thumbnail
       CTFileStream File;
       File.Create_t( fnThumbnail);

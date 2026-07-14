@@ -396,7 +396,7 @@ void GroBrowser::_UpdatePreview()
             {
               thumbnailFile = CTString("Temp\\Temp.tex");
               CTextureData tdForPictureConverting;
-              tdForPictureConverting.Create_t(&iiImageInfo, iiImageInfo.ii_Width, 1, FALSE);
+              tdForPictureConverting.Create_t(iiImageInfo, iiImageInfo.ii_Width, 1, FALSE);
               tdForPictureConverting.Save_t(thumbnailFile);
             }
           }

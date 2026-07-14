@@ -347,7 +347,7 @@ void CDlgCreateReflectionTexture::CreateReflectionTexture_t( CTFileName fnTextur
     CTFileStream fsFile;
     CTextureData td;
     iiEnv.SaveTGA_t( fnEnv.NoExt()+".tga");
-    td.Create_t( &iiEnv, pixSize, 1, FALSE);
+    td.Create_t( iiEnv, pixSize, 1, FALSE);
     fsFile.Create_t(fnEnv);
     td.Write_t( &fsFile);
     fsFile.Close();
