@@ -131,7 +131,7 @@ static void ShowTestModeScreen( CDrawPortPtr& pDP, CViewPortPtr& pVP)
   // type resolution
   CDisplayMode dmCurrent;
   _pGfx_GetCurrentDisplayMode( dmCurrent);
-  strTestMessage.PrintF( "%d x %d x %s", dpWidth, dpHeight, dmCurrent.DepthString());
+  strTestMessage.PrintF( "%d x %d x %s", dpWidth, dpHeight, static_cast<const char*>(dmCurrent.DepthString()));
   pDP->PutTextC( strTestMessage, 1.0f/2*dpWidth+2, 1.0f/2*dpHeight+2, C_dGRAY|CT_OPAQUE);
   pDP->PutTextC( strTestMessage, 1.0f/2*dpWidth,   1.0f/2*dpHeight,   C_WHITE|CT_OPAQUE);
 
@@ -165,7 +165,7 @@ CDlgSelectMode::CDlgSelectMode( CDisplayMode &dm, enum GfxAPIType &gfxAPI,
 
   // set current mode and driver strings
   CTString str;
-  str.PrintF( "%d x %d x %s", dm.dm_pixSizeI, dm.dm_pixSizeJ, dm.DepthString());
+  str.PrintF( "%d x %d x %s", dm.dm_pixSizeI, dm.dm_pixSizeJ, static_cast<const char*>(dm.DepthString()));
   m_strCurrentMode = str;
 
   switch(gfxAPI) {

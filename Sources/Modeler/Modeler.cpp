@@ -464,7 +464,13 @@ void CModelerApp::EditScriptAndReopenDocument(CTFileName fnScriptName)
 {
   try
   {
-    fnScriptName.RemoveApplicationPath_t();
+    try
+    {
+      fnScriptName.RemoveApplicationPath_t();
+    }
+    catch (const char*)
+    {
+    }
     auto script = ScriptIO::ReadFromFile(fnScriptName);
 
     CModelerApp::ModalGuard guard;

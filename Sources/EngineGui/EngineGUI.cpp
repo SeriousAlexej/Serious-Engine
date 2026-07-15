@@ -103,7 +103,13 @@ ImageFormat CEngineGUI::GetGfxFileInfo_t(CImageInfo& ii, const CTFileName& strFi
   if (format == ImageFormat::Unsupported)
   {
     auto fullFileName = strFileName;
-    fullFileName.RemoveApplicationPath_t();
+    try
+    {
+      fullFileName.RemoveApplicationPath_t();
+    }
+    catch (const char*)
+    {
+    }
     fullFileName = _fnmApplicationPath + _fnmMod + fullFileName;
     fullFileName.SetAbsolutePath();
 
@@ -126,7 +132,13 @@ void CEngineGUI::LoadAnyGfxFormat_t(CImageInfo& ii, const CTFileName& strFileNam
   if (iFileFormat == ImageFormat::Other)
   {
     auto fullFileName = strFileName;
-    fullFileName.RemoveApplicationPath_t();
+    try
+    {
+      fullFileName.RemoveApplicationPath_t();
+    }
+    catch (const char*)
+    {
+    }
     fullFileName = _fnmApplicationPath + _fnmMod + fullFileName;
     fullFileName.SetAbsolutePath();
 

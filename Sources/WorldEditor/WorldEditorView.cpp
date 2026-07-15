@@ -4068,7 +4068,7 @@ void CWorldEditorView::CallPopupMenu(CPoint point)
           pPopup->EnableMenuItem( ID_EDIT_COPY_ALTERNATIVE, MF_DISABLED|MF_GRAYED);
         }
 
-        if( pDoc->m_woWorld.CanJoinSectors(pDoc->m_selSectorSelection))
+        if( !pDoc->m_woWorld.CanJoinSectors(pDoc->m_selSectorSelection))
         {
           pPopup->EnableMenuItem( ID_CSG_JOIN_SECTORS, MF_DISABLED|MF_GRAYED);
         }

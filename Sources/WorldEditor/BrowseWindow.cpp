@@ -760,7 +760,7 @@ void CBrowseWindow::InsertItem( CTFileName fnItem, CPoint pt)
       char err_str[ 256];
       sprintf( err_str, "Dropped texture \"%s\" has incorrect dimensions %.2f x %.2f."
                         "All textures must have dimensions that are potentions of 2.",
-        static_cast<const char*>((CTString&)fnItem), METERS_MEX( mexWidth), METERS_MEX( mexHeight));
+        static_cast<const char*>(fnItem), METERS_MEX( mexWidth), METERS_MEX( mexHeight));
       AfxMessageBox( CString(err_str));
       return;
     }
