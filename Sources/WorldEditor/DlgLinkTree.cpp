@@ -30,7 +30,6 @@ static char THIS_FILE[] = __FILE__;
 /////////////////////////////////////////////////////////////////////////////
 // CDlgLinkTree dialog
 
-
 CDlgLinkTree::CDlgLinkTree(CEntityPtr pen, CPoint pt, BOOL bWhoTargets, BOOL bPropertyNames,
                            CWnd* pParent /*=NULL*/)
 	: CDialog(CDlgLinkTree::IDD, pParent)
@@ -181,7 +180,7 @@ void CDlgLinkTree::AddEntityPtrsRecursiv(CEntityPtr pen, HTREEITEM hParent, CTSt
   HTREEITEM InsertedEntity;
   InsertedEntity = m_ctrTree.InsertItem( 0, L"", 0, 0,
     TVIS_SELECTED, TVIF_STATE, 0, hParent, 0);
-  m_ctrTree.SetItemData( InsertedEntity, (ULONG)(pen));
+  m_ctrTree.SetItemData( InsertedEntity, (ULONG)pen.get_handle());
   CTString strText="";
   if( m_bClass)
   {
@@ -256,7 +255,7 @@ void CDlgLinkTree::AddEntityPtrsRecursiv(CEntityPtr pen, HTREEITEM hParent, CTSt
         {
           // obtain property ptr
           CEntityPointer penPtr(ENTITY_PROPERTY( pen, pepProperty->ep_slOffset, CEntityPointer_), false);
-          if( penPtr != NULL)
+          if( penPtr )
           {
             AddEntityPtrsRecursiv( penPtr, InsertedEntity, pepProperty->ep_strName);
           }

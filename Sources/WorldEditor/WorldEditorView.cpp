@@ -1266,6 +1266,7 @@ void CWorldEditorView::RenderView( CDrawPortPtr pDP)
     RenderAndApplyTerrainEditBrush(theApp.m_vLastTerrainHit);
   }
   
+  bool viewing_from_entity = false;
   if( GetChildFrame()->m_bViewFromEntity &&
       (penOnlySelected) &&
       !(penOnlySelected->GetFlags()&ENF_ANCHORED) &&
@@ -1278,6 +1279,7 @@ void CWorldEditorView::RenderView( CDrawPortPtr pDP)
     prProjection->Prepare();
 
     ::RenderView(pDoc->m_woWorld, *penOnlySelected, prProjection, *pDP);
+    viewing_from_entity = true;
   }
   else
   {
@@ -1435,7 +1437,7 @@ void CWorldEditorView::RenderView( CDrawPortPtr pDP)
   }
   EndModelRenderingView();
 
-  if (pDoc->GizmoVisible(this))
+  if (pDoc->GizmoVisible(this) && !viewing_from_entity)
   {
     pDP->FillZBuffer(ZBUF_BACK);
 
@@ -3896,6 +3898,7 @@ void CWorldEditorView::OnLButtonDblClk(UINT nFlags, CPoint point)
           DiscardShadows( penBrush);
         }
       }
+      pDoc->UpdateSelectionCommonPos();
     }
     pDoc->UpdateAllViews( NULL);
     // refresh position page
@@ -8549,8 +8552,6 @@ void CWorldEditorView::AdjustGizmoProjection(CAnyProjection3D& proj)
 {
   if (proj.IsIsometric())
     ((CIsometricProjection3D&)*(proj.operator CProjection3D*())).ZoomFactorL() = 100.0f;
-  else
-    ((CPerspectiveProjection3D&)*(proj.operator CProjection3D*())).FOVL() = AngleRad(std::atan(m_pdpDrawPort->GetWidth() / 800.0)) * 2.0;
   proj->Prepare();
 }
 

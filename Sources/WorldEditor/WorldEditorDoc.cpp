@@ -5711,7 +5711,7 @@ void CWorldEditorDoc::OnExportEntities()
           if( pepProperty->ep_eptType == CEntityProperty::EPT_ENTITYPTR) {
             // get the pointer
             CEntityPointer penPointed(ENTITY_PROPERTY( pen, pepProperty->ep_slOffset, CEntityPointer_), false);
-            SLONG ulID = penPointed==NULL ? -1 : penPointed->en_ulID;
+            SLONG ulID = (!penPointed) ? -1 : penPointed->en_ulID;
             strLine.PrintF("    \"%s\" = long(%d);", pepProperty->ep_strName, ulID);
             strmFile.PutLine_t(strLine);
           }          
