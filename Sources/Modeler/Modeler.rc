@@ -1232,8 +1232,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,1
- PRODUCTVERSION 1,0,0,1
+ FILEVERSION 1,10,0,0
+ PRODUCTVERSION 1,10,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -1248,13 +1248,13 @@ BEGIN
     BEGIN
         BLOCK "040904B0"
         BEGIN
-            VALUE "FileDescription", "MODELER MFC Application"
-            VALUE "FileVersion", "1, 0, 0, 1"
-            VALUE "InternalName", "MODELER"
-            VALUE "LegalCopyright", "Copyright © 1997"
-            VALUE "OriginalFilename", "MODELER.EXE"
-            VALUE "ProductName", "MODELER Application"
-            VALUE "ProductVersion", "1, 0, 0, 1"
+            VALUE "FileDescription", "SeriousModelerEX"
+            VALUE "FileVersion", "1, 10, 0, 0"
+            VALUE "InternalName", "SeriousModelerEX"
+            VALUE "LegalCopyright", "GPLv2"
+            VALUE "OriginalFilename", "SeriousModelerEX.exe"
+            VALUE "ProductName", "SeriousModelerEX"
+            VALUE "ProductVersion", "1, 10, 0, 0"
         END
     END
     BLOCK "VarFileInfo"
