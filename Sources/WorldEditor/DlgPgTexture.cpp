@@ -80,18 +80,31 @@ void CDlgPgTexture::DoDataExchange(CDataExchange* pDX)
       m_dirty = false;
       mp_last_world = &pDoc->m_woWorld;
 
+      m_comboScroll.SetRedraw(FALSE);
+      m_comboBlend.SetRedraw(FALSE);
+
+      int prevVisible = m_comboScroll.GetMinVisible();
+      m_comboScroll.SetMinVisibleItems(1);
       m_comboScroll.ResetContent();
       for (INDEX iScroll = 0; iScroll < 256; iScroll++)
       {
         CTString strScrollName = pDoc->m_woWorld.wo_attTextureTransformations[iScroll]->tt_strName;
         if (strScrollName != CTString("")) m_comboScroll.AddString(CString(static_cast<const char*>(strScrollName)));
       }
+      m_comboScroll.SetMinVisibleItems(prevVisible);
+
+      prevVisible = m_comboBlend.GetMinVisible();
+      m_comboBlend.SetMinVisibleItems(1);
       m_comboBlend.ResetContent();
       for (INDEX iBlend = 0; iBlend < 256; iBlend++)
       {
         CTString strBlendName = pDoc->m_woWorld.wo_atbTextureBlendings[iBlend]->tb_strName;
         if (strBlendName != CTString("")) m_comboBlend.AddString(CString(static_cast<const char*>(strBlendName)));
       }
+      m_comboBlend.SetMinVisibleItems(prevVisible);
+
+      m_comboScroll.SetRedraw(TRUE);
+      m_comboBlend.SetRedraw(TRUE);
     }
 
     m_radioTexture = pDoc->m_iTexture;

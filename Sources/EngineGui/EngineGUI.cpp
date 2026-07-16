@@ -349,7 +349,7 @@ CTFileName CEngineGUI::CreateTexture(CTFileName fnTexFileToRecreate/*=CTString("
         }
         else if (!matchingImageFound)
         {
-          WarningMessage( "Cannot find source for recreating texture: \"%s\"", fnTexFileToRecreate);
+          WarningMessage( "Cannot find source for recreating texture: \"%s\"", static_cast<const char*>(fnTexFileToRecreate));
         }
       }
       // reload the texture

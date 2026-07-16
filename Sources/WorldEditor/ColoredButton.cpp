@@ -185,7 +185,7 @@ void CColoredButton::OnClicked()
     rectWindow.bottom = ptMousePoint.y;
     // create window
     BOOL bResult = pColorPalette->CreateEx( WS_EX_TOOLWINDOW,
-      NULL, L"Palette", WS_CHILD|WS_POPUP|WS_VISIBLE,
+      NULL, L"Palette", WS_POPUP|WS_VISIBLE,
       rectWindow.left, rectWindow.top, rectWindow.Width(), rectWindow.Height(),
       m_hWnd, NULL, NULL);
     if( !bResult)

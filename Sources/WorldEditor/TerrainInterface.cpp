@@ -1979,7 +1979,7 @@ void InvokeTerrainBrushPalette( PIX pixX, PIX pixY)
     // create window
     CMainFrame* pMainFrame = STATIC_DOWNCAST(CMainFrame, AfxGetMainWnd());
     BOOL bResult = _pBrushPalette->CreateEx( WS_EX_TOOLWINDOW,
-      NULL, L"Brush palette", WS_CHILD|WS_POPUP|WS_VISIBLE,
+      NULL, L"Brush palette", WS_POPUP|WS_VISIBLE,
       rectWindow.left, rectWindow.top, rectWindow.Width(), rectWindow.Height(),
       pMainFrame->m_hWnd, NULL, NULL);
     _pBrushPalette->SetFocus();
