@@ -32,6 +32,7 @@ public:
 
     void                  Clear();
     virtual bool          EntityPresentInHierarchy(CEntity_* entity) const;
+    virtual bool          IsVolatile() const;
 
     void                  appendChild(std::unique_ptr<BasePropertyTreeItem>&& child);
     BasePropertyTreeItem* parentItem();

@@ -18,6 +18,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "stdafx.h"
 #include "PropertyComboBar.h"
+#include "EventHub.h"
+
+#include <QTimer>
 
 #ifdef _DEBUG
 #undef new
@@ -135,6 +138,11 @@ BOOL CPropertyComboBar::Create( CWnd* pParentWnd, UINT nIDTemplate,
   m_PropertyComboBox.SetFont(&theApp.m_Font);
   // set font for enum combo
   m_EditEnumComboBox.SetFont(&theApp.m_Font);
+
+  QObject::connect(&EventHub::instance(), &EventHub::PropertyChanged, &m_qt_context, [this]
+  {
+    QTimer::singleShot(0, &m_qt_context, [this] { ArrangeControls(); });
+  });
 
   return TRUE;
 }
@@ -590,6 +598,7 @@ void CPropertyComboBar::DoDataExchange(CDataExchange* pDX)
       // redraw all views
       pDoc->UpdateAllViews( NULL);
     }
+    EventHub::instance().PropertyChanged(pDoc->m_selEntitySelection.Set(), ppidProperty, nullptr);
   }
 	
 	CDialogBar::DoDataExchange(pDX);
@@ -763,6 +772,7 @@ void CPropertyComboBar::SetFirstValidEmptyTargetProperty(CEntityPtr penTarget)
         m_PropertyComboBox.SetCurSel(iItem);
         m_PropertyComboBox.SelectProperty();
         pDoc->m_chSelections.MarkChanged();
+        EventHub::instance().PropertyChanged(pDoc->m_selEntitySelection.Set(), ppidProperty, nullptr);
         return;
       }}
     }
@@ -891,6 +901,8 @@ void CPropertyComboBar::SetColorPropertyToEntities( COLOR colNewColor)
   }
   // mark that document is changed
   pDoc->SetModifiedFlag( TRUE);
+
+  EventHub::instance().PropertyChanged(pDoc->m_selEntitySelection.Set(), ppidProperty, nullptr);
 }
 
 BOOL CPropertyComboBar::OnIdle(LONG lCount)
@@ -1895,6 +1907,7 @@ void CPropertyComboBar::OnNoFile(void)
   pDoc->m_chSelections.MarkChanged();
   // reload data to dialog
   UpdateData( FALSE);
+  EventHub::instance().PropertyChanged(pDoc->m_selEntitySelection.Set(), ppidProperty, nullptr);
 }
 
 void CPropertyComboBar::ClearAllTargets(CEntityPtr penClicked)
@@ -1925,6 +1938,8 @@ void CPropertyComboBar::ClearAllTargets(CEntityPtr penClicked)
           {
             // clear entity ptr
             CEntityPointer(ENTITY_PROPERTY( iten, epProperty->ep_slOffset, CEntityPointer_), false) = static_cast<CEntity_*>(nullptr);
+            CPropertyID propertyID(epProperty->ep_strName, CEntityProperty::EPT_ENTITYPTR, epProperty, {});
+            EventHub::instance().PropertyChanged({ iten.get_handle() }, &propertyID, nullptr);
           }
         }
       }
@@ -1950,6 +1965,8 @@ void CPropertyComboBar::ClearAllTargets(CEntityPtr penClicked)
         {
           // clear entity ptr
           CEntityPointer(ENTITY_PROPERTY( penClicked, epProperty->ep_slOffset, CEntityPointer_), false) = static_cast<CEntity_*>(nullptr);
+          CPropertyID propertyID(epProperty->ep_strName, CEntityProperty::EPT_ENTITYPTR, epProperty, {});
+          EventHub::instance().PropertyChanged({ penClicked.get_handle() }, &propertyID, nullptr);
         }
       }
     }
@@ -2020,4 +2037,5 @@ void CPropertyComboBar::OnNoTarget()
   pDoc->m_chSelections.MarkChanged();
   // reload data to dialog
   UpdateData( FALSE);
+  EventHub::instance().PropertyChanged(pDoc->m_selEntitySelection.Set(), ppidProperty, nullptr);
 }

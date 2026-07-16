@@ -8647,7 +8647,7 @@ void CWorldEditorView::GetToolTipText( char *pToolTipText)
     pdecDLLClass = penEntity->GetClass()->ec_pdecDLLClass;
     pchrCursor += sprintf(pchrCursor, "Class: %-24.24s\n", pdecDLLClass->dec_strName);
     INDEX ctLetters = strlen("Class: ")+strlen(pdecDLLClass->dec_strName);
-    memset(pchrCursor, '�', ctLetters);
+    memset(pchrCursor, '-', ctLetters);
     pchrCursor+=ctLetters;
     *pchrCursor = '\n';
     pchrCursor++;
@@ -8743,7 +8743,7 @@ void CWorldEditorView::GetToolTipText( char *pToolTipText)
       "No of edges:", ctEdges,
       "No of vertices:", ctVertices,
       "No of planes:", ctPlanes);
-    pchrCursor += sprintf(pchrCursor, "%s\n", "������������������������������");
+    pchrCursor += sprintf(pchrCursor, "------------------------------\n");
 
     if( !bCountSelection)
     {
@@ -8762,7 +8762,7 @@ void CWorldEditorView::GetToolTipText( char *pToolTipText)
             pchrCursor += sprintf(pchrCursor, "%-24s %g m\n", static_cast<const char*>(strTmp), fMipSwitchDistance);
             iMip++;
           }
-          pchrCursor += sprintf(pchrCursor, "%s\n", "������������������������������");
+          pchrCursor += sprintf(pchrCursor, "------------------------------\n");
         }
       }
     }
@@ -8894,7 +8894,7 @@ else {\
         }
       }
     }
-    pchrCursor += sprintf(pchrCursor, "Primitive info:\n���������������\n%-24s %d\n%-24s %d\n%-24s %d\n%-24s %d",
+    pchrCursor += sprintf(pchrCursor, "Primitive info:\n---------------\n%-24s %d\n%-24s %d\n%-24s %d\n%-24s %d",
       "No of polygons:", ctPolygons,
       "No of edges:", ctEdges,
       "No of vertices:", ctVertices,

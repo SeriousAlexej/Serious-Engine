@@ -18,11 +18,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef PROPERTYCOMBOBAR_H
 #define PROPERTYCOMBOBAR_H 1
 
+#include <QObject>
+
 /////////////////////////////////////////////////////////////////////////////
 // CPropertyComboBar dialog
 
 class CPropertyComboBar : public CDialogBar
 {
+private:
+  QObject m_qt_context;
 // Construction
 public:
   BOOL Create( CWnd* pParentWnd, UINT nIDTemplate, UINT nStyle,

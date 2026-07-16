@@ -129,10 +129,24 @@ public:
     QObject::connect(&EventHub::instance(), &EventHub::CurrentEntitySelectionChanged, mp_tree_view, [this]
       (const std::set<CEntity_*>& new_selection)
       {
+        if (mp_tree_model->rowCount() > 0)
+        {
+          if (auto* prev_property = GetSelectedProperty())
+            mp_last_selected_property = std::make_unique<CPropertyID>(prev_property->pid_strName, prev_property->pid_eptType, CEntityPropertyPtr{}, CAnimDataPtr{});
+          else
+            mp_last_selected_property.reset();
+        }
+
         mp_tree_model->Fill(new_selection);
         mp_winWidget->setEnabled(!new_selection.empty());
         if (!new_selection.empty())
           mp_tree_view->setExpanded(mp_tree_model->index(0, 0), true);
+
+        if (!mp_last_selected_property)
+          return;
+        auto index_of_same_property = mp_tree_model->FindProperty(*mp_last_selected_property);
+        if (index_of_same_property.isValid())
+          mp_tree_view->selectionModel()->select(index_of_same_property, QItemSelectionModel::Rows | QItemSelectionModel::Select);
       });
 
     QObject::connect(mp_tree_view, &QTreeView::expanded, mp_tree_model, [this]
@@ -199,9 +213,10 @@ private:
   }
 
 private:
-  std::unique_ptr<QWinWidget> mp_winWidget;
-  QTreeView*                  mp_tree_view = nullptr;
-  PropertyTreeModel*          mp_tree_model = nullptr;
+  std::unique_ptr<CPropertyID> mp_last_selected_property;
+  std::unique_ptr<QWinWidget>  mp_winWidget;
+  QTreeView*                   mp_tree_view = nullptr;
+  PropertyTreeModel*           mp_tree_model = nullptr;
 };
 
 PropertyTree_MFC_Host::PropertyTree_MFC_Host()

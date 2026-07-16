@@ -185,7 +185,7 @@ int PropertyTreeModel::columnCount(const QModelIndex&) const
 int PropertyTreeModel::rowCount(const QModelIndex& parent) const
 {
   BasePropertyTreeItem* parentItem;
-  if (parent.column() > 0)
+  if (parent.isValid() && parent.column() > 0)
     return 0;
 
   if (!parent.isValid())
@@ -256,6 +256,25 @@ void PropertyTreeModel::EnsureSubtreeIsFilled(const QModelIndex& index)
     _FillSubTree(entity_item);
 }
 
+QModelIndex PropertyTreeModel::FindProperty(const CPropertyID& property) const
+{
+  BasePropertyTreeItem* root_property = mp_header_item->child(0);
+  if (!root_property)
+    return QModelIndex();
+
+  for (size_t i = 0; i < root_property->childCount(); ++i)
+  {
+    auto* child_row = dynamic_cast<BaseEntityPropertyTreeItem*>(root_property->child(i));
+    if (!child_row || !child_row->_GetProperty())
+      continue;
+
+    if (child_row->_GetProperty()->pid_eptType == property.pid_eptType &&
+        child_row->_GetProperty()->pid_strName == property.pid_strName)
+      return createIndex(i, 0, child_row);
+  }
+  return QModelIndex();
+}
+
 void PropertyTreeModel::Clear()
 {
   beginResetModel();
@@ -269,6 +288,8 @@ void PropertyTreeModel::_AppendItem(std::unique_ptr<BasePropertyTreeItem>&& item
   QObject::connect(item_raw, &BasePropertyTreeItem::Changed,
     [this, item_raw]
     {
+      if (!item_raw->IsVolatile())
+        return;
       int row = item_raw->row();
       dataChanged(createIndex(row, 0, item_raw), createIndex(row, 2, item_raw));
     });
@@ -364,11 +385,11 @@ CEntity_* PropertyTreeModel::_GetPointerEntity(BaseEntityPropertyTreeItem* entit
 {
   CEntity_* pointed_entity = nullptr;
   CEntityPtr first_entity(*entity_item->m_entities.begin());
-  if (entity_item->mp_property->pid_eptType == CEntityProperty::EPT_PARENT)
+  if (entity_item->_GetProperty()->pid_eptType == CEntityProperty::EPT_PARENT)
   {
     pointed_entity = first_entity->GetParent();
   } else {
-    CEntityPropertyPtr actual_property = first_entity->PropertyForName(entity_item->mp_property->pid_strName);
+    CEntityPropertyPtr actual_property = first_entity->PropertyForName(entity_item->_GetProperty()->pid_strName);
     if (actual_property)
     {
       CEntityPointer pointer(ENTITY_PROPERTY(first_entity, actual_property->ep_slOffset, CEntityPointer_), false);

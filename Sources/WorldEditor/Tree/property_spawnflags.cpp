@@ -18,6 +18,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "base_entity_property_tree_item.h"
 #include "checklist_widget.h"
 
+#include <QAbstractItemView>
+#include <QPointer>
+
 class Property_SpawnFlags : public BaseEntityPropertyTreeItem
 {
 public:
@@ -30,6 +33,7 @@ public:
   {
     m_flags.clear();
     auto* editor = new CheckListWidget(parent);
+    mp_editor = editor;
     _AddFlag(editor, "Easy", SPF_EASY);
     _AddFlag(editor, "Normal", SPF_NORMAL);
     _AddFlag(editor, "Hard", SPF_HARD);
@@ -72,6 +76,7 @@ public:
         CWorldEditorDoc* pDoc = theApp.GetDocument();
         pDoc->SetModifiedFlag(TRUE);
         pDoc->UpdateAllViews(NULL);
+        EventHub::instance().PropertyChanged(m_entities, mp_property.get(), this);
       });
 
     return editor;
@@ -87,6 +92,13 @@ public:
   }
 
 private:
+  bool IsVolatile() const override final
+  {
+    if (mp_editor && !mp_editor->view()->isVisible())
+      return true;
+    return false;
+  }
+
   QString _GetTypeName() const override final
   {
     return "SPAWNFLAGS";
@@ -117,6 +129,7 @@ private:
 
 private:
   std::vector<QStandardItem*> m_flags;
+  QPointer<CheckListWidget> mp_editor;
 };
 
 /*******************************************************************************************/

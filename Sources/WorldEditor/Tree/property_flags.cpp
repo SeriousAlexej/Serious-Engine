@@ -18,6 +18,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "base_entity_property_tree_item.h"
 #include "checklist_widget.h"
 
+#include <QAbstractItemView>
+#include <QPointer>
+
 class Property_Flags : public BaseEntityPropertyTreeItem
 {
 public:
@@ -34,6 +37,7 @@ public:
     CEntityPropertyEnumTypePtr enum_type = actual_property->ep_pepetEnumType;
 
     auto* editor = new CheckListWidget(parent);
+    mp_editor = editor;
     for (int i = 0; i < enum_type->epet_ctValues; ++i)
     {
       const auto enum_value = enum_type->epet_aepevValues(i);
@@ -71,6 +75,7 @@ public:
         CWorldEditorDoc* pDoc = theApp.GetDocument();
         pDoc->SetModifiedFlag(TRUE);
         pDoc->UpdateAllViews(NULL);
+        EventHub::instance().PropertyChanged(m_entities, mp_property.get(), this);
       });
 
     return editor;
@@ -86,6 +91,13 @@ public:
   }
 
 private:
+  bool IsVolatile() const override final
+  {
+    if (mp_editor && !mp_editor->view()->isVisible())
+      return true;
+    return false;
+  }
+
   QString _GetTypeName() const override final
   {
     return "FLAGS";
@@ -118,6 +130,7 @@ private:
 
 private:
   std::vector<QStandardItem*> m_flags;
+  QPointer<CheckListWidget> mp_editor;
 };
 
 /*******************************************************************************************/

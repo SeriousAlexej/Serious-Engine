@@ -49,11 +49,14 @@ void CDlgSnapVertex::DoDataExchange(CDataExchange* pDX)
 
   if( pDX->m_bSaveAndValidate == FALSE)
   {
-    CBrushVertexPtr pvtx=pDoc->m_selVertexSelection.GetFirstInSelection();
-    FLOAT3D vFirst=pvtx->bvx_vAbsolute;
-    m_fX=vFirst(1);
-    m_fY=vFirst(2);
-    m_fZ=vFirst(3);
+    if (pDoc->m_selVertexSelection.Count() > 0)
+    {
+      CBrushVertexPtr pvtx = pDoc->m_selVertexSelection.GetFirstInSelection();
+      FLOAT3D vFirst = pvtx->bvx_vAbsolute;
+      m_fX = vFirst(1);
+      m_fY = vFirst(2);
+      m_fZ = vFirst(3);
+    }
   }
 
 	//{{AFX_DATA_MAP(CDlgSnapVertex)
@@ -65,20 +68,25 @@ void CDlgSnapVertex::DoDataExchange(CDataExchange* pDX)
   // if dialog is recieving data
   if( pDX->m_bSaveAndValidate == FALSE)
   {
-    CBrushVertexPtr pvtx=pDoc->m_selVertexSelection.GetFirstInSelection();
-    FLOAT3D vFirst=pvtx->bvx_vAbsolute;
-    BOOL bValidX, bValidY, bValidZ;
-    bValidX=bValidY=bValidZ=TRUE;
-    // for each of the dynamic container
-    {FOREACHINDYNAMICCONTAINER( pDoc->m_selVertexSelection, CBrushVertex, itvtx)
+    if (pDoc->m_selVertexSelection.Count() > 0)
     {
-      if( itvtx->bvx_vAbsolute(1)!=vFirst(1)) bValidX=FALSE;
-      if( itvtx->bvx_vAbsolute(2)!=vFirst(2)) bValidY=FALSE;
-      if( itvtx->bvx_vAbsolute(3)!=vFirst(3)) bValidZ=FALSE;
-    }}
-    if( !bValidX) GetDlgItem(IDC_VTX_SNAP_X)->SetWindowText(L"");
-    if( !bValidY) GetDlgItem(IDC_VTX_SNAP_Y)->SetWindowText(L"");
-    if( !bValidZ) GetDlgItem(IDC_VTX_SNAP_Z)->SetWindowText(L"");
+      CBrushVertexPtr pvtx = pDoc->m_selVertexSelection.GetFirstInSelection();
+      FLOAT3D vFirst = pvtx->bvx_vAbsolute;
+      BOOL bValidX, bValidY, bValidZ;
+      bValidX = bValidY = bValidZ = TRUE;
+      // for each of the dynamic container
+      {
+        FOREACHINDYNAMICCONTAINER(pDoc->m_selVertexSelection, CBrushVertex, itvtx)
+        {
+          if (itvtx->bvx_vAbsolute(1) != vFirst(1)) bValidX = FALSE;
+          if (itvtx->bvx_vAbsolute(2) != vFirst(2)) bValidY = FALSE;
+          if (itvtx->bvx_vAbsolute(3) != vFirst(3)) bValidZ = FALSE;
+        }
+      }
+      if (!bValidX) GetDlgItem(IDC_VTX_SNAP_X)->SetWindowText(L"");
+      if (!bValidY) GetDlgItem(IDC_VTX_SNAP_Y)->SetWindowText(L"");
+      if (!bValidZ) GetDlgItem(IDC_VTX_SNAP_Z)->SetWindowText(L"");
+    }
   }
 
   // if dialog is giving data
@@ -96,21 +104,26 @@ void CDlgSnapVertex::DoDataExchange(CDataExchange* pDX)
 
     if( bApplyX|bApplyY|bApplyZ)
     {
-      pDoc->RememberUndo();
-      pDoc->m_woWorld.TriangularizeForVertices( pDoc->m_selVertexSelection);
-      // for each of the dynamic container
-      {FOREACHINDYNAMICCONTAINER( pDoc->m_selVertexSelection, CBrushVertex, itvtx)
+      if (pDoc->m_selVertexSelection.Count() > 0)
       {
-        DOUBLE3D vNew=FLOATtoDOUBLE(itvtx->bvx_vAbsolute);
-        if( bApplyX) vNew(1)=m_fX;
-        if( bApplyY) vNew(2)=m_fY;
-        if( bApplyZ) vNew(3)=m_fZ;
-        itvtx->SetAbsolutePosition(vNew);
-      }}
-      pDoc->m_woWorld.UpdateSectorsDuringVertexChange( pDoc->m_selVertexSelection);
-      pDoc->m_woWorld.UpdateSectorsAfterVertexChange( pDoc->m_selVertexSelection);
-      pDoc->UpdateAllViews( NULL);
-      pDoc->SetModifiedFlag();
+        pDoc->RememberUndo();
+        pDoc->m_woWorld.TriangularizeForVertices(pDoc->m_selVertexSelection);
+        // for each of the dynamic container
+        {
+          FOREACHINDYNAMICCONTAINER(pDoc->m_selVertexSelection, CBrushVertex, itvtx)
+          {
+            DOUBLE3D vNew = FLOATtoDOUBLE(itvtx->bvx_vAbsolute);
+            if (bApplyX) vNew(1) = m_fX;
+            if (bApplyY) vNew(2) = m_fY;
+            if (bApplyZ) vNew(3) = m_fZ;
+            itvtx->SetAbsolutePosition(vNew);
+          }
+        }
+        pDoc->m_woWorld.UpdateSectorsDuringVertexChange(pDoc->m_selVertexSelection);
+        pDoc->m_woWorld.UpdateSectorsAfterVertexChange(pDoc->m_selVertexSelection);
+        pDoc->UpdateAllViews(NULL);
+        pDoc->SetModifiedFlag();
+      }
     }
   }
 }

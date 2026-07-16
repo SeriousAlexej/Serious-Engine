@@ -39,6 +39,7 @@ public:
   CPropertyID*  GetSelectedProperty(const QModelIndexList& model_indices) const;
   void          OnEntityPicked(CEntity_* picked_entity, const QModelIndexList& model_indices);
   void          EnsureSubtreeIsFilled(const QModelIndex& index);
+  QModelIndex   FindProperty(const CPropertyID& property) const;
 
   int           rowCount(const QModelIndex& parent = QModelIndex()) const override;
   int           columnCount(const QModelIndex& parent = QModelIndex()) const override;
