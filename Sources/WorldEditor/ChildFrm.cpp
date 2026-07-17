@@ -501,7 +501,7 @@ void CChildFrame::TestGame( BOOL bFullScreen)
     hWndFullScreen = CreateWindowExA(
       WS_EX_TOPMOST,
       APPLICATION_NAME,
-      "Serious Editor - Full Screen Test Game",   // title
+      "Serious Editor EX - Full Screen Test Game",   // title
       WS_POPUP,
       0,0,
       pixSizeI, pixSizeJ,  // window size
@@ -521,7 +521,7 @@ void CChildFrame::TestGame( BOOL bFullScreen)
     SE_UpdateWindowHandle( hWndFullScreen);
 
     // set window title and show it
-    sprintf( achWindowTitle, "Serious Editor - Test Game (FullScreen %dx%d)", pixSizeI, pixSizeJ);
+    sprintf( achWindowTitle, "Serious Editor EX - Test Game (FullScreen %dx%d)", pixSizeI, pixSizeJ);
     ::SetWindowTextA( hWndFullScreen, achWindowTitle);
     ::ShowWindow(    hWndFullScreen, SW_SHOWNORMAL);
 

@@ -2896,7 +2896,7 @@ END
 
 STRINGTABLE
 BEGIN
-    IDR_MAINFRAME           "Serious Editor"
+    IDR_MAINFRAME           "Serious Editor EX"
     IDR_WEDTYPE             "\nSedDoc\nWorld file\nWorlds (*.wld)\n.wld\nSeriousEditor.Document\nSerious Editor Document"
     IDS_DEFAULT_FONT        "MS Sans Serif"
     IDS_WED_ARIAL_FONT      "Arial"

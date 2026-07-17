@@ -9632,7 +9632,7 @@ void CWorldEditorView::OnPreviousMipBrush()
   {
     pbmPrevMip = pbmCurrentMip->GetPrev();
   }
-  if (pbmPrevMip) return;
+  if (!pbmPrevMip) return;
 
   // set manual mip factor to show previous mip brush
   GetChildFrame()->m_fManualMipBrushingFactor = pbmPrevMip->GetMipDistance()-0.01f;

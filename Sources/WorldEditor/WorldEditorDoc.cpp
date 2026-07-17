@@ -1656,9 +1656,9 @@ void CWorldEditorDoc::CreateTorusPrimitive(void)
   // free allocated arrays
   for( INDEX iFree=0; iFree<iNoOfSlices+1; iFree++)
   {
-    delete papvBases[iFree];
+    delete[] papvBases[iFree];
   }
-  delete papvBases;
+  delete[] papvBases;
 
   theApp.m_vfpCurrent.vfp_o3dPrimitive.Optimize();
   ConvertObject3DToBrush(theApp.m_vfpCurrent.vfp_o3dPrimitive);
@@ -1928,9 +1928,9 @@ void CWorldEditorDoc::CreateStaircasesPrimitive(void)
   // free allocated arrays
   for( INDEX iFree=0; iFree<iNoOfStairs; iFree++)
   {
-    delete papvBases[iFree];
+    delete[] papvBases[iFree];
   }
-  delete papvBases;
+  delete[] papvBases;
 
   theApp.m_vfpCurrent.vfp_o3dPrimitive.Optimize();
   ConvertObject3DToBrush(theApp.m_vfpCurrent.vfp_o3dPrimitive);
@@ -2026,9 +2026,9 @@ void CWorldEditorDoc::CreateSpherePrimitive(void)
   // free allocated arrays
   for( INDEX iFree=0; iFree<iParalels+1; iFree++)
   {
-    delete papvSlices[iFree];
+    delete[] papvSlices[iFree];
   }
-  delete papvSlices;
+  delete[] papvSlices;
 
   theApp.m_vfpCurrent.vfp_o3dPrimitive.Optimize();
   ConvertObject3DToBrush(theApp.m_vfpCurrent.vfp_o3dPrimitive);

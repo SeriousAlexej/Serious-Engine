@@ -310,7 +310,7 @@ BEGIN
         MENUITEM "&Help Topics",                ID_HELP_FINDER
         MENUITEM SEPARATOR
         MENUITEM "About Qt...",                 ID_APP_ABOUT_QT
-        MENUITEM "&About Serious Modeler...",   ID_APP_ABOUT
+        MENUITEM "&About Serious Modeler EX...",   ID_APP_ABOUT
         MENUITEM "Mouse help\tCtrl+M",          ID_VIEW_HELP_MOUSE
     END
 END
@@ -478,7 +478,7 @@ BEGIN
         MENUITEM "&Help Topics",                ID_HELP_FINDER
         MENUITEM SEPARATOR
         MENUITEM "About Qt...",                 ID_APP_ABOUT_QT
-        MENUITEM "&About Serious Modeler...",   ID_APP_ABOUT
+        MENUITEM "&About Serious Modeler EX...",   ID_APP_ABOUT
         MENUITEM "Mouse help\tCtrl+M",          ID_VIEW_HELP_MOUSE
     END
 END
@@ -1697,7 +1697,7 @@ END
 
 STRINGTABLE
 BEGIN
-    IDR_MAINFRAME           "Serious Modeler"
+    IDR_MAINFRAME           "Serious Modeler EX"
     IDR_MDLDOCTYPE          "\nMdlDoc\nModel file\nSerious Modeler Files (*.mdl)\n.MDL\nSeriousModeler.Document\nSerious Modeler Document"
     IDR_SCRIPTDOCTYPE       "\nScrDoc\nScript file\nScript Files (*.scr)\n.SCR\nSeriousModeler.Document\nSerious Modeler Document"
 END
