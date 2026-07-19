@@ -22,6 +22,8 @@ class Property_Weapons : public BaseEntityPropertyTreeItem
 {
 private:
   enum WeaponType {
+    WEAPON_KNIFE = 0,
+    WEAPON_COLT = 1,
     WEAPON_DOUBLECOLT = 2,
     WEAPON_SINGLESHOTGUN = 3,
     WEAPON_DOUBLESHOTGUN = 4,
@@ -33,7 +35,25 @@ private:
     WEAPON_FLAMER = 10,
     WEAPON_LASER = 11,
     WEAPON_SNIPER = 12,
-    WEAPON_IRONCANNON = 13
+    WEAPON_IRONCANNON = 13,
+    WEAPON_14 = 14,
+    WEAPON_15 = 15,
+    WEAPON_16 = 16,
+    WEAPON_17 = 17,
+    WEAPON_18 = 18,
+    WEAPON_19 = 19,
+    WEAPON_20 = 20,
+    WEAPON_21 = 21,
+    WEAPON_22 = 22,
+    WEAPON_23 = 23,
+    WEAPON_24 = 24,
+    WEAPON_25 = 25,
+    WEAPON_26 = 26,
+    WEAPON_27 = 27,
+    WEAPON_28 = 28,
+    WEAPON_29 = 29,
+    WEAPON_30 = 30,
+    WEAPON_31 = 31,
   };
 
 public:
@@ -46,18 +66,38 @@ public:
   {
     m_flags.clear();
     auto* editor = new CheckListWidget(parent);
-    _AddFlag(editor, "Chainsaw", 1 << WEAPON_CHAINSAW);
-    _AddFlag(editor, "Double Colt", 1 << WEAPON_DOUBLECOLT);
-    _AddFlag(editor, "Single Shotgun", 1 << WEAPON_SINGLESHOTGUN);
-    _AddFlag(editor, "Double Shotgun", 1 << WEAPON_DOUBLESHOTGUN);
-    _AddFlag(editor, "Tommygun", 1 << WEAPON_TOMMYGUN);
-    _AddFlag(editor, "Minigun", 1 << WEAPON_MINIGUN);
-    _AddFlag(editor, "Rocket Launcher", 1 << WEAPON_ROCKETLAUNCHER);
-    _AddFlag(editor, "Grenade Launcher", 1 << WEAPON_GRENADELAUNCHER);
-    _AddFlag(editor, "Flamethrower", 1 << WEAPON_FLAMER);
-    _AddFlag(editor, "Laser", 1 << WEAPON_LASER);
-    _AddFlag(editor, "Sniper Rifle", 1 << WEAPON_SNIPER);
-    _AddFlag(editor, "Cannon", 1 << WEAPON_IRONCANNON);
+    _AddFlag(editor, "Chainsaw (bit 9)", 1 << WEAPON_CHAINSAW);
+    _AddFlag(editor, "Double Colt (bit 2)", 1 << WEAPON_DOUBLECOLT);
+    _AddFlag(editor, "Single Shotgun (bit 3)", 1 << WEAPON_SINGLESHOTGUN);
+    _AddFlag(editor, "Double Shotgun (bit 4)", 1 << WEAPON_DOUBLESHOTGUN);
+    _AddFlag(editor, "Tommygun (bit 5)", 1 << WEAPON_TOMMYGUN);
+    _AddFlag(editor, "Minigun (bit 6)", 1 << WEAPON_MINIGUN);
+    _AddFlag(editor, "Rocket Launcher (bit 7)", 1 << WEAPON_ROCKETLAUNCHER);
+    _AddFlag(editor, "Grenade Launcher (bit 8)", 1 << WEAPON_GRENADELAUNCHER);
+    _AddFlag(editor, "Flamethrower (bit 10)", 1 << WEAPON_FLAMER);
+    _AddFlag(editor, "Laser (bit 11)", 1 << WEAPON_LASER);
+    _AddFlag(editor, "Sniper Rifle (bit 12)", 1 << WEAPON_SNIPER);
+    _AddFlag(editor, "Cannon (bit 13)", 1 << WEAPON_IRONCANNON);
+    _AddFlag(editor, "(bit 0)", 1 << WEAPON_KNIFE);
+    _AddFlag(editor, "(bit 1)", 1 << WEAPON_COLT);
+    _AddFlag(editor, "(bit 14)", 1 << WEAPON_14);
+    _AddFlag(editor, "(bit 15)", 1 << WEAPON_15);
+    _AddFlag(editor, "(bit 16)", 1 << WEAPON_16);
+    _AddFlag(editor, "(bit 17)", 1 << WEAPON_17);
+    _AddFlag(editor, "(bit 18)", 1 << WEAPON_18);
+    _AddFlag(editor, "(bit 19)", 1 << WEAPON_19);
+    _AddFlag(editor, "(bit 20)", 1 << WEAPON_20);
+    _AddFlag(editor, "(bit 21)", 1 << WEAPON_21);
+    _AddFlag(editor, "(bit 22)", 1 << WEAPON_22);
+    _AddFlag(editor, "(bit 23)", 1 << WEAPON_23);
+    _AddFlag(editor, "(bit 24)", 1 << WEAPON_24);
+    _AddFlag(editor, "(bit 25)", 1 << WEAPON_25);
+    _AddFlag(editor, "(bit 26)", 1 << WEAPON_26);
+    _AddFlag(editor, "(bit 27)", 1 << WEAPON_27);
+    _AddFlag(editor, "(bit 28)", 1 << WEAPON_28);
+    _AddFlag(editor, "(bit 29)", 1 << WEAPON_29);
+    _AddFlag(editor, "(bit 30)", 1 << WEAPON_30);
+    _AddFlag(editor, "(bit 31)", 1 << WEAPON_31);
 
     QObject::connect(editor, &CheckListWidget::Changed, this, [this]
       {
