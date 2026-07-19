@@ -41,7 +41,7 @@ public:
   {
     auto* editor = new QSpinBox(parent);
     editor->setStyleSheet(g_spin_style);
-    editor->setRange(-99999999, 99999999);
+    editor->setRange(INT_MIN, INT_MAX);
     editor->setValue(_CurrentPropValue());
     editor->setFocusPolicy(Qt::StrongFocus);
     editor->installEventFilter(this);
