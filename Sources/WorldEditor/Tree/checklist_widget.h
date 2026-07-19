@@ -36,11 +36,13 @@ private:
   std::optional<Qt::CheckState> _GlobalCheckState() const;
   bool event(QEvent* event) override;
   bool eventFilter(QObject* object, QEvent* event) override;
+  void showPopup() override;
   void hidePopup() override;
   void _UpdateText();
 
 private:
   QStandardItemModel m_model;
+  bool m_changed = false;
 };
 
 #endif

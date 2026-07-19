@@ -22,8 +22,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "EventHub.h"
 #include <SeriousEngineCppAPI/Templates/Stock_CTextureData.h>
 #include <process.h>
+#include <afxpriv.h>
 
 #include <QFile>
+#include <QTimer>
 
 #ifdef _DEBUG
 #undef new
@@ -385,21 +387,21 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	// Try to load virtual tree to browser
   m_fnLastVirtualTree = CTString( CStringA(pApp->GetProfileString(L"World editor",
     L"Last virtual tree", L"VirtualTrees\\BasicVirtualTree.vrt")));
-  if( m_fnLastVirtualTree != "")
+  if (m_fnLastVirtualTree == "")
+    m_fnLastVirtualTree = CTString("VirtualTrees\\BasicVirtualTree.vrt");
+
+  try
   {
-    try
-    {
-      m_Browser.LoadVirtualTree_t( m_fnLastVirtualTree, NULL);
-    }
-    catch( char *strError)
-    {
-      (void) strError;
-      CTString strMessage;
-      strMessage.PrintF("Error reading virtual tree file:\n%s.\n\nSwitching to empty virtual tree.", m_fnLastVirtualTree);
-      AfxMessageBox( CString(static_cast<const char*>(strMessage)));
-      m_Browser.m_VirtualTree.MakeRoot();
-      m_Browser.OnUpdateVirtualTreeControl();
-    }
+    m_Browser.LoadVirtualTree_t( m_fnLastVirtualTree, NULL);
+  }
+  catch( char *strError)
+  {
+    (void) strError;
+    CTString strMessage;
+    strMessage.PrintF("Error reading virtual tree file:\n%s.\n\nSwitching to empty virtual tree.", m_fnLastVirtualTree);
+    AfxMessageBox( CString(static_cast<const char*>(strMessage)));
+    m_Browser.m_VirtualTree.MakeRoot();
+    m_Browser.OnUpdateVirtualTreeControl();
   }
 
 
@@ -1645,6 +1647,19 @@ LRESULT CMainFrame::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
     case SC_SCREENSAVE:
     case SC_MONITORPOWER:
       return 0;
+    }
+  }
+
+  if (message == WM_SIZING)
+  {
+    if (theApp.mp_qtContext && !m_posted_kickidle_during_sizing)
+    {
+      m_posted_kickidle_during_sizing = true;
+      QTimer::singleShot(16, Qt::PreciseTimer, theApp.mp_qtContext, [this]
+        {
+          m_posted_kickidle_during_sizing = false;
+          ::PostMessage(GetSafeHwnd(), WM_KICKIDLE, 0, 0);
+        });
     }
   }
 

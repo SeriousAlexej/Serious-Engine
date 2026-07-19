@@ -330,6 +330,7 @@ private:
   std::function<void(CEntity_*)> m_selection_stealer;
 public:
 // Atributes
+  QObject* mp_qtContext = nullptr;
   FLOAT3D m_vLastTerrainHit;
   CEntityPtr m_penLastTerrainHit;
   FLOAT m_fCurrentTerrainBrush;

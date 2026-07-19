@@ -222,7 +222,7 @@ QWidget* PropertyTreeModel::CreateEditor(const QModelIndex& index, QWidget* pare
 
 CPropertyID* PropertyTreeModel::GetSelectedProperty(const QModelIndexList& model_indices) const
 {
-  for (QModelIndex index : model_indices)
+  for (const QModelIndex& index : model_indices)
   {
     auto* item = static_cast<BasePropertyTreeItem*>(index.internalPointer());
     auto* entity_item = dynamic_cast<BaseEntityPropertyTreeItem*>(item);
@@ -235,7 +235,7 @@ CPropertyID* PropertyTreeModel::GetSelectedProperty(const QModelIndexList& model
 
 void PropertyTreeModel::OnEntityPicked(CEntity_* picked_entity, const QModelIndexList& model_indices)
 {
-  for (QModelIndex index : model_indices)
+  for (const QModelIndex& index : model_indices)
   {
     auto* item = static_cast<BasePropertyTreeItem*>(index.internalPointer());
     auto* entity_item = dynamic_cast<BaseEntityPropertyTreeItem*>(item);
@@ -262,7 +262,7 @@ QModelIndex PropertyTreeModel::FindProperty(const CPropertyID& property) const
   if (!root_property)
     return QModelIndex();
 
-  for (size_t i = 0; i < root_property->childCount(); ++i)
+  for (int i = 0; i < root_property->childCount(); ++i)
   {
     auto* child_row = dynamic_cast<BaseEntityPropertyTreeItem*>(root_property->child(i));
     if (!child_row || !child_row->_GetProperty())

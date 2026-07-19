@@ -954,6 +954,7 @@ BOOL CWorldEditorApp::SubInitInstance()
     OpenDocumentFile(m_lpCmdLine);
   }
 
+  mp_qtContext = new QObject;
   return TRUE;
 }
 
@@ -2015,6 +2016,9 @@ void CWorldEditorApp::ClearInvalidConfigPointers(void)
 
 int CWorldEditorApp::ExitInstance()
 {
+  delete mp_qtContext;
+  mp_qtContext = nullptr;
+
   // cleanup game library
   _pGameGUI->End();
   _upGameGUI.reset();

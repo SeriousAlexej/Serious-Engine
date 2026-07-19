@@ -259,7 +259,7 @@ CSize PropertyTree_MFC_Host::CalcDynamicLayout(int nLength, DWORD dwMode)
   {
     if (dwMode & LM_STRETCH) // if not docked stretch to fit
       return CSize((dwMode & LM_HORZ) ? 32767 : m_Size.cx,
-        (dwMode & LM_HORZ) ? m_Size.cy : 32767);
+                   (dwMode & LM_HORZ) ? m_Size.cy : 32767);
     else
       return m_Size;
   }
@@ -267,10 +267,9 @@ CSize PropertyTree_MFC_Host::CalcDynamicLayout(int nLength, DWORD dwMode)
     return m_Size;
   // In all other cases, accept the dynamic length
   if (dwMode & LM_LENGTHY)
-    return CSize(m_Size.cx,
-      m_Size.cy = nLength);
+    return CSize(m_Size.cx, m_Size.cy = nLength);
   else
-    return CSize(m_Size.cx = nLength);
+    return CSize(m_Size.cx = nLength, m_Size.cy);
 }
 
 bool PropertyTree_MFC_Host::IsUnderMouse() const

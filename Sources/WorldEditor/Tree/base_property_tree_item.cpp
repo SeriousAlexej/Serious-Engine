@@ -58,7 +58,7 @@ BasePropertyTreeItem* BasePropertyTreeItem::child(int row)
 
 int BasePropertyTreeItem::childCount() const
 {
-  return m_childItems.size();
+  return static_cast<int>(m_childItems.size());
 }
 
 BasePropertyTreeItem* BasePropertyTreeItem::parentItem()

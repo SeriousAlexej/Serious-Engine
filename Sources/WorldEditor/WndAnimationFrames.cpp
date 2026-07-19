@@ -151,7 +151,7 @@ void CWndAnimationFrames::OnPaint()
     // unlock the drawport
     m_pDrawPort->Unlock();
     // if there is a valid viewport
-    if (!m_pViewPort)
+    if (m_pViewPort)
     {
       // swap it
       m_pViewPort->SwapBuffers();
