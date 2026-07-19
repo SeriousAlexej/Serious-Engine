@@ -865,6 +865,12 @@ void CMainFrame::CustomColorPicker( PIX pixX, PIX pixY)
 
 BOOL CMainFrame::OnIdle(LONG lCount)
 {
+  HMONITOR comboMonitor = ::MonitorFromWindow(GetSafeHwnd(), MONITOR_DEFAULTTONEAREST);
+  MONITORINFO monitorInfo;
+  monitorInfo.cbSize = sizeof(MONITORINFO);
+  ::GetMonitorInfo(comboMonitor, &monitorInfo);
+  m_monitor_width = abs(monitorInfo.rcMonitor.right - monitorInfo.rcMonitor.left);
+
   // Call OnIdle() for info frame's property sheet
   if( m_pInfoFrame != NULL)
   {

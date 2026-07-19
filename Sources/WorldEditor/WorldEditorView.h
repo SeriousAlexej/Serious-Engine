@@ -168,7 +168,7 @@ public:
 	FLOAT2D m_axis_projection;
 public:
 	void ResetInteraction();
-	void AdjustGizmoProjection(CAnyProjection3D& proj);
+	void AdjustGizmoProjection(CAnyProjection3D& proj, FLOAT& scale, const FLOAT view_width, const FLOAT view_height);
 	std::optional<std::pair<GizmoAxis, FLOAT2D>> HoveredAxis();
   // obtain draw port
   inline CDrawPortPtr GetDrawPort( void) {

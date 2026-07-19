@@ -557,8 +557,7 @@ public:
   // gets name for given virtual tree node
   CTString GetNameForVirtualTreeNode( CVirtualTreeNode *pvtnNode);
   void DisplayHelp(const CTFileName &fnHlk, UINT uCommand, DWORD dwData);
-  void ApplyTerrainEditing(CCastRay &crRayHit);
-  
+
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CWorldEditorApp)

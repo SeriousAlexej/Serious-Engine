@@ -433,7 +433,7 @@ namespace
     if (pDoc && !pDoc->m_absoluteRotation)
     {
       FLOATmatrix3D rot;
-      MakeRotationMatrix(rot, pDoc->m_plMouseMove.pl_OrientationAngle);
+      MakeRotationMatrixFast(rot, pDoc->m_plMouseMove.pl_OrientationAngle);
       res *= rot;
     }
 
@@ -509,7 +509,7 @@ namespace
 
   using TEdge = std::pair<FLOAT3D, FLOAT3D>;
 
-  std::vector<TEdge> _GetAxisContour(const CPlacement3D& pl, GizmoAxis gizmo)
+  std::vector<TEdge> _GetAxisContour(const CPlacement3D& pl, GizmoAxis gizmo, const FLOAT scale)
   {
     static const std::vector<std::pair<FLOAT2D, FLOAT2D>> circle_2d = _GenerateCircle(12, 0.375);
 
@@ -571,11 +571,11 @@ namespace
     }
 
     FLOATmatrix3D rot;
-    MakeRotationMatrix(rot, pl.pl_OrientationAngle);
+    MakeRotationMatrixFast(rot, pl.pl_OrientationAngle);
     for (auto& edge : res)
     {
-      edge.first = (edge.first * rot) + pl.pl_PositionVector;
-      edge.second = (edge.second * rot) + pl.pl_PositionVector;
+      edge.first = (edge.first * scale * rot) + pl.pl_PositionVector;
+      edge.second = (edge.second * scale * rot) + pl.pl_PositionVector;
     }
     return res;
   }
@@ -1442,7 +1442,8 @@ void CWorldEditorView::RenderView( CDrawPortPtr pDP)
     pDP->FillZBuffer(ZBUF_BACK);
 
     CAnyProjection3D axisProj = prProjection;
-    AdjustGizmoProjection(axisProj);
+    FLOAT scale = 1.0f;
+    AdjustGizmoProjection(axisProj, scale, pDP->GetWidth(), pDP->GetHeight());
 
     BeginModelRenderingView(axisProj, pDP);
 
@@ -1459,7 +1460,7 @@ void CWorldEditorView::RenderView( CDrawPortPtr pDP)
         hovered_axis = hovered_axis_and_proj->first;
     }
 
-    auto draw_gizmo = [this, &hovered_axis, &gizmo_origin, pDoc](GizmoAxis gizmo)
+    auto draw_gizmo = [this, &hovered_axis, &gizmo_origin, pDoc, scale](GizmoAxis gizmo)
     {
       auto axis_model = _GetAxisModel(gizmo, hovered_axis);
 
@@ -1477,6 +1478,9 @@ void CWorldEditorView::RenderView( CDrawPortPtr pDP)
       rm.rm_vLightDirection = FLOAT3D(1, 0, 0);
       rm.rm_colLight = C_WHITE;
       rm.rm_colAmbient = C_WHITE;
+      axis_model->mo_Stretch(1) = scale;
+      axis_model->mo_Stretch(2) = scale;
+      axis_model->mo_Stretch(3) = scale;
       axis_model->SetupModelRendering(rm);
       axis_model->RenderModel(rm);
     };
@@ -8548,11 +8552,30 @@ void CWorldEditorView::ResetInteraction()
     GetDocument()->UpdateGizmoVisibility();
 }
 
-void CWorldEditorView::AdjustGizmoProjection(CAnyProjection3D& proj)
+void CWorldEditorView::AdjustGizmoProjection(CAnyProjection3D& proj, FLOAT& scale, const FLOAT view_width, const FLOAT view_height)
 {
   if (proj.IsIsometric())
-    ((CIsometricProjection3D&)*(proj.operator CProjection3D*())).ZoomFactorL() = 100.0f;
-  proj->Prepare();
+  {
+    ((CIsometricProjection3D&)*(proj.operator CProjection3D * ())).ZoomFactorL() = 100.0f;
+    scale = 1.0f;
+    proj->Prepare();
+  }
+  else if (proj.IsPerspective())
+  {
+    constexpr double default_gizmo_to_monitor_ratio = 100.0 / 2560.0;
+    const CMainFrame* pMainFrame = STATIC_DOWNCAST(CMainFrame, AfxGetMainWnd());
+    const FLOAT desired_gizmo_size_in_pixels = static_cast<FLOAT>(pMainFrame->m_monitor_width * default_gizmo_to_monitor_ratio);
+
+    const FLOAT3D pt1(view_width * 0.5f, view_height * 0.5f, g_gizmo_z_offset);
+    const FLOAT3D pt2(view_width * 0.5f + desired_gizmo_size_in_pixels, view_height * 0.5f, g_gizmo_z_offset);
+
+    proj->Prepare();
+    CProjection3D& proj_3d = *(proj.operator CProjection3D * ());
+    const auto pt1_proj = proj_3d.ProjectCoordinateReverse(pt1);
+    const auto pt2_proj = proj_3d.ProjectCoordinateReverse(pt2);
+
+    scale = (pt1_proj - pt2_proj).Length();
+  }
 }
 
 std::optional<std::pair<GizmoAxis, FLOAT2D>> CWorldEditorView::HoveredAxis()
@@ -8571,7 +8594,8 @@ std::optional<std::pair<GizmoAxis, FLOAT2D>> CWorldEditorView::HoveredAxis()
   view_proj->Prepare();
 
   CAnyProjection3D axis_proj = view_proj;
-  AdjustGizmoProjection(axis_proj);
+  FLOAT scale = 1.0f;
+  AdjustGizmoProjection(axis_proj, scale, m_pdpDrawPort->GetWidth(), m_pdpDrawPort->GetHeight());
 
   FLOAT3D selection_center;
   view_proj->ProjectCoordinate(pDoc->m_plMouseMove.pl_PositionVector, selection_center);
@@ -8597,7 +8621,7 @@ std::optional<std::pair<GizmoAxis, FLOAT2D>> CWorldEditorView::HoveredAxis()
       GizmoAxis::Z_Rotation
     })
   {
-    const auto edges = _GetAxisContour(gizmo_placement, axis);
+    const auto edges = _GetAxisContour(gizmo_placement, axis, scale);
     if (std::any_of(edges.begin(), edges.end(), [&](const TEdge& edge)
       {
         FLOAT3D e1;

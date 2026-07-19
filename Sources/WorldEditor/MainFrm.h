@@ -54,6 +54,7 @@ private:
 public:
 	// old window position and styles before full screen mode
 	
+	double m_monitor_width = 2560.0;
   WINDOWPLACEMENT m_OldPlacement;
 	LONG m_OldStyleEx;
 	LONG m_OldStyle;
