@@ -2815,7 +2815,7 @@ void CWorldEditorDoc::Undo(void)
   // save current state of level into redo list
   SaveWorldIntoUndoRedoList( m_lhRedo);
   // restore last saved state from undo list
-  LoadWorldFromUndoRedoList(*m_lhUndo.front());
+  LoadWorldFromUndoRedoList(*pUndo);
   // delete just used undo member
 }
 
