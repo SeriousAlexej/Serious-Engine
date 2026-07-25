@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <SeriousEngineCppAPI/Classes/BaseEvents.h>
 #include <EngineGui/ImportedMesh.h>
 #include <EngineGui/Object3D_IO.h>
+#include <CrashRpt.h>
 
 #include <QtWin>
 #include <QIcon>
@@ -2813,11 +2814,36 @@ void CWorldEditorApp::OnFileNew()
 
 int CWorldEditorApp::Run()
 {
+  char exe_path[MAX_PATH];
+  ::GetModuleFileNameA(NULL, exe_path, MAX_PATH);
+  const CTFileName ct_exe_path = CTString(exe_path);
+  const CTFileName ct_crash_rpt_dir = ct_exe_path.FileDir() + "\\CrashRpt";
+  const CString crash_rpt_dir(static_cast<const char*>(ct_crash_rpt_dir));
+
+  CR_INSTALL_INFO info;
+  memset(&info, 0, sizeof(CR_INSTALL_INFO));
+  info.cb = sizeof(CR_INSTALL_INFO);
+  info.pszAppName = _T("SeriousEditorEX");
+  info.dwFlags |= CR_INST_ALL_POSSIBLE_HANDLERS | CR_INST_DONT_SEND_REPORT | CR_INST_STORE_ZIP_ARCHIVES;
+  info.pszErrorReportSaveDir = crash_rpt_dir;
+
+  int nResult = crInstall(&info);
+  if (nResult != 0)
+  {
+    TCHAR buff[256];
+    crGetLastErrorMsg(buff, 256);
+    MessageBox(NULL, buff, _T("crInstall error"), MB_OK);
+    return 1;
+  }
+
 	int iResult;
   CTStream::ExecuteWithStreamHandling([this, &iResult]
     {
       iResult = QMfcApp::run(this);
     });
+
+  crUninstall();
+
   delete qApp;
 	return iResult;
 }

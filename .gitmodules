@@ -9,3 +9,7 @@
 	path = Sources/EntitiesAlpha
 	url = https://gitlab.com/TwilightWingsStudio/entitiesalpha.git
 	branch = master
+[submodule "Sources/CrashRpt"]
+	path = Sources/CrashRpt
+	url = https://git.code.sf.net/p/crashrpt/code
+	branch = master
