@@ -34,8 +34,8 @@ IMPLEMENT_DYNCREATE(CDlgPgShadow, CPropertyPage)
 CDlgPgShadow::CDlgPgShadow() : CPropertyPage(CDlgPgShadow::IDD)
 {
   m_ctrlShadowColor.SetPickerType(  CColoredButton::PT_MFC);
-	//{{AFX_DATA_INIT(CDlgPgShadow)
-	//}}AFX_DATA_INIT
+  //{{AFX_DATA_INIT(CDlgPgShadow)
+  //}}AFX_DATA_INIT
 }
 
 CDlgPgShadow::~CDlgPgShadow()
@@ -75,16 +75,16 @@ void CDlgPgShadow::DoDataExchange(CDataExchange* pDX)
     m_bDontReceiveShadows.EnableWindow( bSelectionExists);
     m_bNoDynamicLights.EnableWindow( bSelectionExists);
     m_NoShadow.EnableWindow( bSelectionExists);
-	  m_ctrlComboClusterSize.EnableWindow( bSelectionExists);
-	  m_comboShadowBlend.EnableWindow( bSelectionExists);
-	  m_ComboIllumination.EnableWindow( bSelectionExists);
-	  m_ctrlComboGradient.EnableWindow( bSelectionExists);
+    m_ctrlComboClusterSize.EnableWindow( bSelectionExists);
+    m_comboShadowBlend.EnableWindow( bSelectionExists);
+    m_ComboIllumination.EnableWindow( bSelectionExists);
+    m_ctrlComboGradient.EnableWindow( bSelectionExists);
     GetDlgItem( IDC_STATIC_CLUSTER_SIZE)->EnableWindow( bSelectionExists);
     GetDlgItem( IDC_STATIC_ILLUMINATION)->EnableWindow( bSelectionExists);
     GetDlgItem( IDC_STATIC_GRADIENT)->EnableWindow( bSelectionExists);
     GetDlgItem( IDC_STATIC_SHADOW_COLOR)->EnableWindow( bSelectionExists);
     GetDlgItem( IDC_STATIC_SHADOW_BLEND)->EnableWindow( bSelectionExists);    
-	  m_ctrlShadowColor.EnableWindow( bSelectionExists);
+    m_ctrlShadowColor.EnableWindow( bSelectionExists);
 
     // if selection exists, calculate tri-state value of attribute intersection
     if( bSelectionExists)
@@ -115,11 +115,11 @@ void CDlgPgShadow::DoDataExchange(CDataExchange* pDX)
           sbFirstShadowClusterSize = itbpo->bpo_bppProperties.bpp_sbShadowClusterSize;
           ubFirstShadowBlend = itbpo->bpo_bppProperties.bpp_ubShadowBlend;
           ubFirstGradient = itbpo->bpo_bppProperties.bpp_ubGradientType;
-      	  m_ctrlShadowColor.SetColor( itbpo->bpo_colShadow);
+          m_ctrlShadowColor.SetColor( itbpo->bpo_colShadow);
         }
         else
         {
-        	if( m_ctrlShadowColor.GetColor() != itbpo->bpo_colShadow)
+          if( m_ctrlShadowColor.GetColor() != itbpo->bpo_colShadow)
           {
             m_ctrlShadowColor.SetMixedColor();
           }
@@ -173,22 +173,22 @@ void CDlgPgShadow::DoDataExchange(CDataExchange* pDX)
   }
 
   //{{AFX_DATA_MAP(CDlgPgShadow)
-	DDX_Control(pDX, IDC_GRADIENT_COMBO, m_ctrlComboGradient);
-	DDX_Control(pDX, IDC_DARK_CORNERS, m_bDarkCorners);
-	DDX_Control(pDX, IDC_NO_DYNAMIC_LIGHTS, m_bNoDynamicLights);
-	DDX_Control(pDX, IDC_IS_RECEIVING_SHADOWS, m_bDontReceiveShadows);
-	DDX_Control(pDX, IDC_DYNAMIC_LIGHTS_ONLY, m_bDynamicLightsOnly);
+  DDX_Control(pDX, IDC_GRADIENT_COMBO, m_ctrlComboGradient);
+  DDX_Control(pDX, IDC_DARK_CORNERS, m_bDarkCorners);
+  DDX_Control(pDX, IDC_NO_DYNAMIC_LIGHTS, m_bNoDynamicLights);
+  DDX_Control(pDX, IDC_IS_RECEIVING_SHADOWS, m_bDontReceiveShadows);
+  DDX_Control(pDX, IDC_DYNAMIC_LIGHTS_ONLY, m_bDynamicLightsOnly);
   DDX_Control(pDX, IDC_HAS_DIRECTIONAL_AMBIENT, m_bHasDirectionalAmbient);
-	DDX_Control(pDX, IDC_HAS_PRECISE_SHADOWS, m_bHasPreciseShadows);
-	DDX_Control(pDX, IDC_NO_PLANE_DIFFUSION, m_bNoPlaneDiffusion);
-	DDX_Control(pDX, IDC_HAS_DIRECTIONAL_SHADOWS, m_bHasDirectionalShadows);
-	DDX_Control(pDX, IDC_NO_SHADOW, m_NoShadow);
-	DDX_Control(pDX, IDC_IS_LIGHT_BEAM_PASSABLLE, m_IsLightBeamPassable);
-	DDX_Control(pDX, ID_SHADOW_COLOR, m_ctrlShadowColor);
-	DDX_Control(pDX, IDC_SHADOW_BLEND_COMBO, m_comboShadowBlend);
-	DDX_Control(pDX, IDC_CLUSTER_SIZE_COMBO, m_ctrlComboClusterSize);
-	DDX_Control(pDX, IDC_ILLUMINATION_COMBO, m_ComboIllumination);
-	//}}AFX_DATA_MAP
+  DDX_Control(pDX, IDC_HAS_PRECISE_SHADOWS, m_bHasPreciseShadows);
+  DDX_Control(pDX, IDC_NO_PLANE_DIFFUSION, m_bNoPlaneDiffusion);
+  DDX_Control(pDX, IDC_HAS_DIRECTIONAL_SHADOWS, m_bHasDirectionalShadows);
+  DDX_Control(pDX, IDC_NO_SHADOW, m_NoShadow);
+  DDX_Control(pDX, IDC_IS_LIGHT_BEAM_PASSABLLE, m_IsLightBeamPassable);
+  DDX_Control(pDX, ID_SHADOW_COLOR, m_ctrlShadowColor);
+  DDX_Control(pDX, IDC_SHADOW_BLEND_COMBO, m_comboShadowBlend);
+  DDX_Control(pDX, IDC_CLUSTER_SIZE_COMBO, m_ctrlComboClusterSize);
+  DDX_Control(pDX, IDC_ILLUMINATION_COMBO, m_ComboIllumination);
+  //}}AFX_DATA_MAP
 
   // if dialog is giving data
   if( pDX->m_bSaveAndValidate != FALSE)
@@ -284,18 +284,18 @@ void CDlgPgShadow::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CDlgPgShadow, CPropertyPage)
-	//{{AFX_MSG_MAP(CDlgPgShadow)
-	ON_CBN_SELCHANGE(IDC_CLUSTER_SIZE_COMBO, OnSelchangeShadowClusterSizeCombo)
-	ON_CBN_SELCHANGE(IDC_ILLUMINATION_COMBO, OnSelchangeIlluminationCombo)
-	ON_CBN_DROPDOWN(IDC_ILLUMINATION_COMBO, OnDropdownIlluminationCombo)
-	ON_CBN_SELCHANGE(IDC_SHADOW_BLEND_COMBO, OnSelchangeShadowBlendCombo)
-	ON_CBN_DROPDOWN(IDC_SHADOW_BLEND_COMBO, OnDropdownShadowBlendCombo)
-	ON_CBN_DROPDOWN(IDC_CLUSTER_SIZE_COMBO, OnDropdownClusterSizeCombo)
-	ON_WM_CONTEXTMENU()
-	ON_CBN_DROPDOWN(IDC_GRADIENT_COMBO, OnDropdownGradientCombo)
-	ON_CBN_SELCHANGE(IDC_GRADIENT_COMBO, OnSelchangeGradientCombo)
+  //{{AFX_MSG_MAP(CDlgPgShadow)
+  ON_CBN_SELCHANGE(IDC_CLUSTER_SIZE_COMBO, OnSelchangeShadowClusterSizeCombo)
+  ON_CBN_SELCHANGE(IDC_ILLUMINATION_COMBO, OnSelchangeIlluminationCombo)
+  ON_CBN_DROPDOWN(IDC_ILLUMINATION_COMBO, OnDropdownIlluminationCombo)
+  ON_CBN_SELCHANGE(IDC_SHADOW_BLEND_COMBO, OnSelchangeShadowBlendCombo)
+  ON_CBN_DROPDOWN(IDC_SHADOW_BLEND_COMBO, OnDropdownShadowBlendCombo)
+  ON_CBN_DROPDOWN(IDC_CLUSTER_SIZE_COMBO, OnDropdownClusterSizeCombo)
+  ON_WM_CONTEXTMENU()
+  ON_CBN_DROPDOWN(IDC_GRADIENT_COMBO, OnDropdownGradientCombo)
+  ON_CBN_SELCHANGE(IDC_GRADIENT_COMBO, OnSelchangeGradientCombo)
   ON_NOTIFY_EX( TTN_NEEDTEXT, 0, OnToolTipNotify )
-	//}}AFX_MSG_MAP
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -306,10 +306,10 @@ void CDlgPgShadow::InitComboBoxes(void)
   CTString strGradientName;
   CTString strIlluminationName;
 
-	m_ComboIllumination.ResetContent();
-	m_ctrlComboClusterSize.ResetContent();
-	m_comboShadowBlend.ResetContent();
-	m_ctrlComboGradient.ResetContent();
+  m_ComboIllumination.ResetContent();
+  m_ctrlComboClusterSize.ResetContent();
+  m_comboShadowBlend.ResetContent();
+  m_ctrlComboGradient.ResetContent();
   // add all available illuminations
   for(INDEX iIllumination=0; iIllumination<MAX_UBYTE; iIllumination++)
   {
@@ -399,33 +399,33 @@ BOOL CDlgPgShadow::OnIdle(LONG lCount)
 
 BOOL CDlgPgShadow::PreTranslateMessage(MSG* pMsg) 
 {
-	if(pMsg->message==WM_KEYDOWN && pMsg->wParam==VK_RETURN)
+  if(pMsg->message==WM_KEYDOWN && pMsg->wParam==VK_RETURN)
   {
     // move data from page to polygon
     UpdateData( TRUE);
     // the message is handled
     return TRUE;
   }
-	return CPropertyPage::PreTranslateMessage(pMsg);
+  return CPropertyPage::PreTranslateMessage(pMsg);
 }
 
 BOOL CDlgPgShadow::OnInitDialog() 
 {
   EnableToolTips( TRUE);
-	CPropertyPage::OnInitDialog();
+  CPropertyPage::OnInitDialog();
   if( IsWindow( m_ComboIllumination.m_hWnd))
   {
     InitComboBoxes();
   }
   m_ctrlShadowColor.SetDialogPtr( this);
-	m_bNoPlaneDiffusion.SetDialogPtr( this);
-	m_bDarkCorners.SetDialogPtr( this);
-	m_bDynamicLightsOnly.SetDialogPtr( this);
-	m_bHasPreciseShadows.SetDialogPtr( this);
-	m_bHasDirectionalAmbient.SetDialogPtr( this);
-	m_bHasDirectionalShadows.SetDialogPtr( this);
-	m_NoShadow.SetDialogPtr( this);
-	m_IsLightBeamPassable.SetDialogPtr( this);
+  m_bNoPlaneDiffusion.SetDialogPtr( this);
+  m_bDarkCorners.SetDialogPtr( this);
+  m_bDynamicLightsOnly.SetDialogPtr( this);
+  m_bHasPreciseShadows.SetDialogPtr( this);
+  m_bHasDirectionalAmbient.SetDialogPtr( this);
+  m_bHasDirectionalShadows.SetDialogPtr( this);
+  m_NoShadow.SetDialogPtr( this);
+  m_IsLightBeamPassable.SetDialogPtr( this);
   m_bDontReceiveShadows.SetDialogPtr( this);
   m_bNoDynamicLights.SetDialogPtr( this);
   return TRUE;
@@ -434,38 +434,38 @@ BOOL CDlgPgShadow::OnInitDialog()
 void CDlgPgShadow::OnSelchangeShadowClusterSizeCombo() 
 {
   // update dialog data (to reflect data change)
-	UpdateData( TRUE);
+  UpdateData( TRUE);
 }
 
 void CDlgPgShadow::OnSelchangeIlluminationCombo() 
 {
-	UpdateData( TRUE);
+  UpdateData( TRUE);
 }
 
 void CDlgPgShadow::OnSelchangeShadowBlendCombo() 
 {
-	UpdateData( TRUE);
+  UpdateData( TRUE);
 }
 
 void CDlgPgShadow::OnSelchangeGradientCombo() 
 {
-	UpdateData( TRUE);
+  UpdateData( TRUE);
 }
 
 void CDlgPgShadow::OnDropdownIlluminationCombo() 
 {
-	m_ComboIllumination.SetDroppedWidth( 256);
+  m_ComboIllumination.SetDroppedWidth( 256);
 }
 
 void CDlgPgShadow::OnDropdownShadowBlendCombo() 
 {
-	m_comboShadowBlend.SetDroppedWidth( 256);
+  m_comboShadowBlend.SetDroppedWidth( 256);
 }
 
 
 void CDlgPgShadow::OnDropdownClusterSizeCombo() 
 {
-	m_ctrlComboClusterSize.SetDroppedWidth( 256);
+  m_ctrlComboClusterSize.SetDroppedWidth( 256);
 }
 
 void CDlgPgShadow::OnDropdownGradientCombo() 
@@ -482,14 +482,14 @@ void CDlgPgShadow::OnContextMenu(CWnd* pWnd, CPoint point)
   {
     if( menu.LoadMenu(IDR_INFO_POLYGON_POPUP))
     {
-		  CMenu* pPopup = menu.GetSubMenu(0);
+      CMenu* pPopup = menu.GetSubMenu(0);
       if( pDoc->m_selPolygonSelection.Count() != 1)
       {
         menu.EnableMenuItem(ID_SET_AS_DEFAULT, MF_DISABLED|MF_GRAYED);
       }
 
       pPopup->TrackPopupMenu(TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_LEFTALIGN,
-								   point.x, point.y, this);
+                   point.x, point.y, this);
     }
   }
 }

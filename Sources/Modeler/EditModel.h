@@ -91,17 +91,17 @@ public:
   BOOL ts_bSet;
   CPlacement3D ts_plLightPlacement;
   CPlacement3D ts_plModelPlacement;
-	FLOAT ts_fTargetDistance;
-	FLOAT3D ts_vTarget;
-	ANGLE3D ts_angViewerOrientation;
+  FLOAT ts_fTargetDistance;
+  FLOAT3D ts_vTarget;
+  ANGLE3D ts_angViewerOrientation;
   FLOAT ts_LightDistance;
   COLOR ts_LightColor;
   COLOR ts_colAmbientColor;
-	COLORREF ts_PaperColor;
-	COLORREF ts_InkColor;
-	BOOL ts_IsWinBcgTexture;
-	CTFileName ts_WinBcgTextureName;
-	CModelRenderPrefs ts_RenderPrefs;
+  COLORREF ts_PaperColor;
+  COLORREF ts_InkColor;
+  BOOL ts_IsWinBcgTexture;
+  CTFileName ts_WinBcgTextureName;
+  CModelRenderPrefs ts_RenderPrefs;
 
   CThumbnailSettings( void);
   void Read_t( CTStream *strFile); // throw char *
@@ -120,12 +120,12 @@ private:
     std::function<void(ImportedMesh&)> m_generator;
   };
 
-  void NewModel(const ImportedMesh& mesh);									// creates new model, surface, vertice and polygon arrays
-  void AddMipModel(const ImportedMesh& mesh);							// adds one mip model
+  void NewModel(const ImportedMesh& mesh);                  // creates new model, surface, vertice and polygon arrays
+  void AddMipModel(const ImportedMesh& mesh);              // adds one mip model
   void CreateBoneTriangles(ImportedMesh& mesh, const ImportedSkeleton& skel, const FLOATmatrix3D& transform, FLOAT stretch);
   std::vector<FrameGenerator> LoadFrameGenerators(const ModelScript::Animations& animations, const ImportedMesh& baseMesh, const ImportedSkeleton& skeleton, const FLOATmatrix3D& mStretch);
   // loads and converts model's animation data from script file
-  void LoadModelAnimationData_t(const ModelScript::Animations& animations, const ImportedMesh& baseMesh, const ImportedSkeleton& skeleton, const FLOATmatrix3D &mStretch);	// throw char *
+  void LoadModelAnimationData_t(const ModelScript::Animations& animations, const ImportedMesh& baseMesh, const ImportedSkeleton& skeleton, const FLOATmatrix3D &mStretch);  // throw char *
   INDEX edm_iActiveCollisionBox;                  // collision box that is currently edited
 
 public:
@@ -142,9 +142,9 @@ public:
   void MarkChanged();
 
 public:
-	CEditModel();																		// default contructor
-	~CEditModel();																	// default destructor
-  CModelData edm_md;															// edited model data
+  CEditModel();                                    // default contructor
+  ~CEditModel();                                  // default destructor
+  CModelData edm_md;                              // edited model data
   TBoneToTriangle m_boneTriangleMapping; // If bone triangles were generated, this map shall contain triangle indices for each bone
   INDEX m_boneTriangleMappingGeneration = 0;
   std::vector<std::unique_ptr<CAttachedModel>> edm_aamAttachedModels;// array of attached models
@@ -158,11 +158,11 @@ public:
   // create empty attaching sounds
   void CreateEmptyAttachingSounds(void);
   // creates default script file
-  void CreateScriptFile_t(CTFileName &fnFile);	  // throw char *
+  void CreateScriptFile_t(CTFileName &fnFile);    // throw char *
   // creates mip-model and mapping default constructios after it loads data from script
   void LoadFromScript_t(CTFileName &fnFileName); // throw char *
   // updates animations
-  void UpdateAnimations_t(CTFileName &fnScriptName);	// throw char *
+  void UpdateAnimations_t(CTFileName &fnScriptName);  // throw char *
   // updates mip models configuration, looses their mapping !
   void UpdateMipModels_t(CTFileName &fnScriptName); // throw char *
   void CreateMipModels_t(const ImportedMesh& baseMesh, INDEX iVertexRemoveRate, INDEX iSurfacePreservingFactor);
@@ -210,24 +210,24 @@ public:
   // set new collision box equality value
   void SetCollisionBoxDimensionEquality( INDEX iNewDimEqType);
   // overloaded load function
-	void Load_t( CTFileName fnFileName); // throw char *
+  void Load_t( CTFileName fnFileName); // throw char *
   void Load_t_base(const CTFileName fnFileName);
   // overloaded save function
-	void Save_t( CTFileName fnFileName); // throw char *
+  void Save_t( CTFileName fnFileName); // throw char *
   // exports .h file (#define ......)
   void SaveIncludeFile_t( CTFileName fnFileName, CTString strDefinePrefix);  // throw char *
 
   // know how to load
-	void Read_t( CTStream *istrFile); // throw char *
+  void Read_t( CTStream *istrFile); // throw char *
   // and save modeler data (i.e. vindow positions, view prefs, texture file names...)
-	void Write_t( CTStream *ostrFile); // throw char *
+  void Write_t( CTStream *ostrFile); // throw char *
 
   // load and save mapping data for whole model (iMip = -1) or just for one mip model
   void LoadMapping_t( CTFileName fnFileName, INDEX iMip = -1);
   void SaveMapping_t( CTFileName fnFileName, INDEX iMip = -1);
   // read and write settings for given mip
   void ReadMipSettings_t( CTStream *istrFile, INDEX iMip);  // throw char *
-	void WriteMipSettings_t( CTStream *ostrFile, INDEX iMip);
+  void WriteMipSettings_t( CTStream *ostrFile, INDEX iMip);
 };
 
 

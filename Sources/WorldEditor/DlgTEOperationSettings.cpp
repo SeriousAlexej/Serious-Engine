@@ -32,18 +32,18 @@ static char THIS_FILE[] = __FILE__;
 
 
 CDlgTEOperationSettings::CDlgTEOperationSettings(CWnd* pParent /*=NULL*/)
-	: CDialog(CDlgTEOperationSettings::IDD, pParent)
+  : CDialog(CDlgTEOperationSettings::IDD, pParent)
 {
-	//{{AFX_DATA_INIT(CDlgTEOperationSettings)
-	m_fClampAltitude = 0.0f;
-	m_fNoiseAltitude = 0.0f;
-	m_fPaintPower = 0.0f;
-	m_fPosterizeStep = 0.0f;
-	m_fSmoothPower = 0.0f;
-	m_fFilterPower = 0.0f;
-	m_strContinousNoiseTexture = _T("");
-	m_strDistributionNoiseTexture = _T("");
-	//}}AFX_DATA_INIT
+  //{{AFX_DATA_INIT(CDlgTEOperationSettings)
+  m_fClampAltitude = 0.0f;
+  m_fNoiseAltitude = 0.0f;
+  m_fPaintPower = 0.0f;
+  m_fPosterizeStep = 0.0f;
+  m_fSmoothPower = 0.0f;
+  m_fFilterPower = 0.0f;
+  m_strContinousNoiseTexture = _T("");
+  m_strDistributionNoiseTexture = _T("");
+  //}}AFX_DATA_INIT
 }
 
 
@@ -59,38 +59,38 @@ void CDlgTEOperationSettings::DoDataExchange(CDataExchange* pDX)
     if(ptrTerrain)
     {
       GetDlgItem(IDC_EQUALIZE_VALUE)->EnableWindow( TRUE);
-  	  m_fClampAltitude=FLOAT(theApp.m_uwEditAltitude)/65535*ptrTerrain->tr_vTerrainSize(2);
+      m_fClampAltitude=FLOAT(theApp.m_uwEditAltitude)/65535*ptrTerrain->tr_vTerrainSize(2);
     }
     else
     {
       GetDlgItem(IDC_EQUALIZE_VALUE)->EnableWindow( FALSE);
       m_fClampAltitude=0;
     }
-	  m_fPaintPower=theApp.m_fPaintPower*100.0f;
-	  m_fSmoothPower=theApp.m_fSmoothPower*100.0f;
-	  m_fFilterPower=theApp.m_fFilterPower*100.0f;
-	  m_fPosterizeStep=theApp.m_fPosterizeStep;
-	  m_fNoiseAltitude=theApp.m_fNoiseAltitude;
+    m_fPaintPower=theApp.m_fPaintPower*100.0f;
+    m_fSmoothPower=theApp.m_fSmoothPower*100.0f;
+    m_fFilterPower=theApp.m_fFilterPower*100.0f;
+    m_fPosterizeStep=theApp.m_fPosterizeStep;
+    m_fNoiseAltitude=theApp.m_fNoiseAltitude;
   }
 
-	CDialog::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CDlgTEOperationSettings)
-	DDX_Control(pDX, IDC_GENERATION_ALGORITHM, m_ctrlGenerationMethod);
-	DDX_Control(pDX, IDC_FILTER_COMBO, m_ctrlFilter);
-	DDX_Text(pDX, IDC_EQUALIZE_VALUE, m_fClampAltitude);
-	DDV_MinMaxFloat(pDX, m_fClampAltitude, 0.f, 65535.f);
-	DDX_Text(pDX, IDC_NOISE_STRENGTH, m_fNoiseAltitude);
-	DDV_MinMaxFloat(pDX, m_fNoiseAltitude, 0.f, 65535.f);
-	DDX_Text(pDX, IDC_PAINT_POWER, m_fPaintPower);
-	DDV_MinMaxFloat(pDX, m_fPaintPower, 0.f, 10000.f);
-	DDX_Text(pDX, IDC_POSTERIZE_STEP, m_fPosterizeStep);
-	DDV_MinMaxFloat(pDX, m_fPosterizeStep, 0.f, 65535.f);
-	DDX_Text(pDX, IDC_SMOOTH_POWER, m_fSmoothPower);
-	DDV_MinMaxFloat(pDX, m_fSmoothPower, 0.f, 10000.f);
-	DDX_Text(pDX, IDC_FILTER_POWER, m_fFilterPower);
-	DDX_Text(pDX, IDC_CONTINOUS_NOISE_T, m_strContinousNoiseTexture);
-	DDX_Text(pDX, IDC_DISTRIBUTION_NOISE_T, m_strDistributionNoiseTexture);
-	//}}AFX_DATA_MAP
+  CDialog::DoDataExchange(pDX);
+  //{{AFX_DATA_MAP(CDlgTEOperationSettings)
+  DDX_Control(pDX, IDC_GENERATION_ALGORITHM, m_ctrlGenerationMethod);
+  DDX_Control(pDX, IDC_FILTER_COMBO, m_ctrlFilter);
+  DDX_Text(pDX, IDC_EQUALIZE_VALUE, m_fClampAltitude);
+  DDV_MinMaxFloat(pDX, m_fClampAltitude, 0.f, 65535.f);
+  DDX_Text(pDX, IDC_NOISE_STRENGTH, m_fNoiseAltitude);
+  DDV_MinMaxFloat(pDX, m_fNoiseAltitude, 0.f, 65535.f);
+  DDX_Text(pDX, IDC_PAINT_POWER, m_fPaintPower);
+  DDV_MinMaxFloat(pDX, m_fPaintPower, 0.f, 10000.f);
+  DDX_Text(pDX, IDC_POSTERIZE_STEP, m_fPosterizeStep);
+  DDV_MinMaxFloat(pDX, m_fPosterizeStep, 0.f, 65535.f);
+  DDX_Text(pDX, IDC_SMOOTH_POWER, m_fSmoothPower);
+  DDV_MinMaxFloat(pDX, m_fSmoothPower, 0.f, 10000.f);
+  DDX_Text(pDX, IDC_FILTER_POWER, m_fFilterPower);
+  DDX_Text(pDX, IDC_CONTINOUS_NOISE_T, m_strContinousNoiseTexture);
+  DDX_Text(pDX, IDC_DISTRIBUTION_NOISE_T, m_strDistributionNoiseTexture);
+  //}}AFX_DATA_MAP
 
   // if dialog is giving data
   if(pDX->m_bSaveAndValidate != FALSE)
@@ -98,29 +98,29 @@ void CDlgTEOperationSettings::DoDataExchange(CDataExchange* pDX)
     CTerrainPtr ptrTerrain=GetTerrain();
     if(ptrTerrain)
     {
-	    theApp.m_uwEditAltitude=m_fClampAltitude/ptrTerrain->tr_vTerrainSize(2)*65535;
+      theApp.m_uwEditAltitude=m_fClampAltitude/ptrTerrain->tr_vTerrainSize(2)*65535;
     }
-	  theApp.m_fPaintPower=m_fPaintPower/100.0f;
-	  theApp.m_fSmoothPower=m_fSmoothPower/100.0f;
+    theApp.m_fPaintPower=m_fPaintPower/100.0f;
+    theApp.m_fSmoothPower=m_fSmoothPower/100.0f;
     INDEX iSelectedItem=iSelectedItem=m_ctrlFilter.GetCurSel();
     theApp.m_iFilter=m_ctrlFilter.GetItemData(iSelectedItem);
-	  theApp.m_fFilterPower=m_fFilterPower/100.0f;
-	  theApp.m_fPosterizeStep=m_fPosterizeStep;
-	  theApp.m_fNoiseAltitude=m_fNoiseAltitude;
+    theApp.m_fFilterPower=m_fFilterPower/100.0f;
+    theApp.m_fPosterizeStep=m_fPosterizeStep;
+    theApp.m_fNoiseAltitude=m_fNoiseAltitude;
     theApp.m_iTerrainGenerationMethod=m_ctrlGenerationMethod.GetCurSel();
   }
 }
 
 
 BEGIN_MESSAGE_MAP(CDlgTEOperationSettings, CDialog)
-	//{{AFX_MSG_MAP(CDlgTEOperationSettings)
-	ON_BN_CLICKED(IDC_VIEW_NOISE_TEXTURE, OnViewNoiseTexture)
-	ON_BN_CLICKED(IDC_BROWSE_CONTINOUS_NOISE, OnBrowseContinousNoise)
-	ON_BN_CLICKED(IDC_BROWSE_DISTRIBUTION_NOISE, OnBrowseDistributionNoise)
-	ON_BN_CLICKED(IDC_VIEW_DISTRIBUTION_NOISE_TEXTURE, OnViewDistributionNoiseTexture)
-	ON_BN_CLICKED(IDC_GENERATION_SETTINGS, OnGenerationSettings)
-	ON_CBN_DROPDOWN(IDC_GENERATION_ALGORITHM, OnDropdownGenerationAlgorithm)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CDlgTEOperationSettings)
+  ON_BN_CLICKED(IDC_VIEW_NOISE_TEXTURE, OnViewNoiseTexture)
+  ON_BN_CLICKED(IDC_BROWSE_CONTINOUS_NOISE, OnBrowseContinousNoise)
+  ON_BN_CLICKED(IDC_BROWSE_DISTRIBUTION_NOISE, OnBrowseDistributionNoise)
+  ON_BN_CLICKED(IDC_VIEW_DISTRIBUTION_NOISE_TEXTURE, OnViewDistributionNoiseTexture)
+  ON_BN_CLICKED(IDC_GENERATION_SETTINGS, OnGenerationSettings)
+  ON_CBN_DROPDOWN(IDC_GENERATION_ALGORITHM, OnDropdownGenerationAlgorithm)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -137,8 +137,8 @@ CTString GetFilterName(INDEX iFilter)
 
 BOOL CDlgTEOperationSettings::OnInitDialog() 
 {
-	CDialog::OnInitDialog();
-	
+  CDialog::OnInitDialog();
+  
   if( IsWindow( m_ctrlFilter.m_hWnd))
   {
     INDEX iItem;
@@ -160,8 +160,8 @@ BOOL CDlgTEOperationSettings::OnInitDialog()
     m_ctrlGenerationMethod.SetCurSel(theApp.m_iTerrainGenerationMethod);
   }
 
-	return TRUE;  // return TRUE unless you set the focus to a control
-	              // EXCEPTION: OCX Property Pages should return FALSE
+  return TRUE;  // return TRUE unless you set the focus to a control
+                // EXCEPTION: OCX Property Pages should return FALSE
 }
 
 void CDlgTEOperationSettings::OnViewNoiseTexture() 
@@ -227,9 +227,9 @@ void CDlgTEOperationSettings::OnGenerationSettings()
   {
   case 0:
   {
-	  CDlgEditFloat dlg(this);
+    CDlgEditFloat dlg(this);
     dlg.m_fEditFloat=theApp.m_iRNDSubdivideAndDisplaceItterations;
-	  dlg.m_strVarName = "Random itterations";
+    dlg.m_strVarName = "Random itterations";
     dlg.m_strTitle = "Subdivide and displace";
     if(dlg.DoModal()!=IDOK)
     {

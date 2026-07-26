@@ -30,18 +30,18 @@ static char THIS_FILE[] = __FILE__;
 
 
 CDlgNewProgress::CDlgNewProgress(CWnd* pParent /*=NULL*/)
-	: CDialog(CDlgNewProgress::IDD, pParent)
+  : CDialog(CDlgNewProgress::IDD, pParent)
 {
   
-	//{{AFX_DATA_INIT(CDlgNewProgress)
-	m_ProgressMessage = _T("");
-	//}}AFX_DATA_INIT
+  //{{AFX_DATA_INIT(CDlgNewProgress)
+  m_ProgressMessage = _T("");
+  //}}AFX_DATA_INIT
 }
 
 
 void CDlgNewProgress::DoDataExchange(CDataExchange* pDX)
 {
-	CDialog::DoDataExchange(pDX);
+  CDialog::DoDataExchange(pDX);
 
   if( !pDX->m_bSaveAndValidate)
   {
@@ -49,16 +49,16 @@ void CDlgNewProgress::DoDataExchange(CDataExchange* pDX)
   }
 
   //{{AFX_DATA_MAP(CDlgNewProgress)
-	DDX_Control(pDX, IDC_PROGRESS1, m_NewProgressLine);
-	DDX_Text(pDX, IDC_PROGRESS_MESSAGE, m_ProgressMessage);
-	//}}AFX_DATA_MAP
+  DDX_Control(pDX, IDC_PROGRESS1, m_NewProgressLine);
+  DDX_Text(pDX, IDC_PROGRESS_MESSAGE, m_ProgressMessage);
+  //}}AFX_DATA_MAP
 }
 
 
 BEGIN_MESSAGE_MAP(CDlgNewProgress, CDialog)
-	//{{AFX_MSG_MAP(CDlgNewProgress)
-		// NOTE: the ClassWizard will add message map macros here
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CDlgNewProgress)
+    // NOTE: the ClassWizard will add message map macros here
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////

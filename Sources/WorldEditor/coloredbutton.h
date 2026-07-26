@@ -30,7 +30,7 @@ public:
     PT_MFC,
   };
 
-	CColoredButton();
+  CColoredButton();
 
 // Attributes
 public:
@@ -59,32 +59,32 @@ public:
   void ColorToComponents(void);
   int OnToolHitTest( CPoint point, TOOLINFO* pTI ) const;
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CColoredButton)
-	public:
-	virtual void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CColoredButton)
+  public:
+  virtual void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
+  //}}AFX_VIRTUAL
 
 // Implementation
 public:
-	virtual ~CColoredButton();
+  virtual ~CColoredButton();
 
-	// Generated message map functions
+  // Generated message map functions
 protected:
-	//{{AFX_MSG(CColoredButton)
-	afx_msg void OnClicked();
-	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
-	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
-	afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
-	afx_msg void OnCopyColor();
-	afx_msg void OnPasteColor();
-	afx_msg void OnNumericAlpha();
-	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
-	afx_msg void OnKillFocus(CWnd* pNewWnd);
-	//}}AFX_MSG
+  //{{AFX_MSG(CColoredButton)
+  afx_msg void OnClicked();
+  afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+  afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+  afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
+  afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
+  afx_msg void OnCopyColor();
+  afx_msg void OnPasteColor();
+  afx_msg void OnNumericAlpha();
+  afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
+  afx_msg void OnKillFocus(CWnd* pNewWnd);
+  //}}AFX_MSG
 
-	DECLARE_MESSAGE_MAP()
+  DECLARE_MESSAGE_MAP()
 };
 
 /////////////////////////////////////////////////////////////////////////////

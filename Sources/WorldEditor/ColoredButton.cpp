@@ -65,18 +65,18 @@ CColoredButton::~CColoredButton()
 
 
 BEGIN_MESSAGE_MAP(CColoredButton, CButton)
-	//{{AFX_MSG_MAP(CColoredButton)
-	ON_CONTROL_REFLECT(BN_CLICKED, OnClicked)
-	ON_WM_MOUSEMOVE()
-	ON_WM_LBUTTONDOWN()
-	ON_WM_LBUTTONUP()
-	ON_WM_CONTEXTMENU()
-	ON_COMMAND(ID_COPY_COLOR, OnCopyColor)
-	ON_COMMAND(ID_PASTE_COLOR, OnPasteColor)
-	ON_COMMAND(ID_NUMERIC_ALPHA, OnNumericAlpha)
-	ON_WM_LBUTTONDBLCLK()
-	ON_WM_KILLFOCUS()
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CColoredButton)
+  ON_CONTROL_REFLECT(BN_CLICKED, OnClicked)
+  ON_WM_MOUSEMOVE()
+  ON_WM_LBUTTONDOWN()
+  ON_WM_LBUTTONUP()
+  ON_WM_CONTEXTMENU()
+  ON_COMMAND(ID_COPY_COLOR, OnCopyColor)
+  ON_COMMAND(ID_PASTE_COLOR, OnPasteColor)
+  ON_COMMAND(ID_NUMERIC_ALPHA, OnNumericAlpha)
+  ON_WM_LBUTTONDBLCLK()
+  ON_WM_KILLFOCUS()
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -278,7 +278,7 @@ void CColoredButton::OnLButtonDown(UINT nFlags, CPoint point)
     theApp.m_cttToolTips.ManualOn( rectWindow.left, rectWindow.bottom, &::GetToolTipText, this);
 
     m_ptCenter.x = ::GetSystemMetrics(SM_CXSCREEN)/2;
-	  m_ptCenter.y = ::GetSystemMetrics(SM_CYSCREEN)/2;
+    m_ptCenter.y = ::GetSystemMetrics(SM_CYSCREEN)/2;
     GetCursorPos( &m_ptStarting);
 
     _bMouseMoveEnabled = TRUE;
@@ -398,7 +398,7 @@ void CColoredButton::OnContextMenu(CWnd* pWnd, CPoint point)
   {
     CMenu* pPopup = menu.GetSubMenu(0);
     pPopup->TrackPopupMenu(TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_LEFTALIGN,
-								 point.x, point.y, this);
+                 point.x, point.y, this);
   }
 }
 
@@ -432,7 +432,7 @@ void CColoredButton::OnNumericAlpha()
 void CColoredButton::OnLButtonDblClk(UINT nFlags, CPoint point) 
 {
   OnNumericAlpha();
-	CButton::OnLButtonDblClk(nFlags, point);
+  CButton::OnLButtonDblClk(nFlags, point);
 }
 
 void CColoredButton::OnKillFocus(CWnd* pNewWnd) 
@@ -451,5 +451,5 @@ void CColoredButton::OnKillFocus(CWnd* pNewWnd)
     SetCursorPos(m_ptStarting.x, m_ptStarting.y);
   }
 
-	CButton::OnKillFocus(pNewWnd);
+  CButton::OnKillFocus(pNewWnd);
 }

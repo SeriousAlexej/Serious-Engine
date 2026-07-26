@@ -98,15 +98,15 @@ PIXaabbox2D CCustomComboWnd::GetLineBBox( INDEX iLine)
 }
 
 BEGIN_MESSAGE_MAP(CCustomComboWnd, CWnd)
-	//{{AFX_MSG_MAP(CCustomComboWnd)
-	ON_WM_PAINT()
-	ON_WM_KILLFOCUS()
-	ON_WM_LBUTTONDOWN()
-	ON_WM_MOUSEMOVE()
-	ON_WM_DESTROY()
-	ON_WM_TIMER()
-	ON_WM_LBUTTONUP()
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CCustomComboWnd)
+  ON_WM_PAINT()
+  ON_WM_KILLFOCUS()
+  ON_WM_LBUTTONDOWN()
+  ON_WM_MOUSEMOVE()
+  ON_WM_DESTROY()
+  ON_WM_TIMER()
+  ON_WM_LBUTTONUP()
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 
@@ -292,19 +292,19 @@ void CCustomComboWnd::OnLButtonDown(UINT nFlags, CPoint point)
 void CCustomComboWnd::OnMouseMove(UINT nFlags, CPoint point) 
 {
   Invalidate(FALSE);
-	CWnd::OnMouseMove(nFlags, point);
+  CWnd::OnMouseMove(nFlags, point);
 }
 
 void CCustomComboWnd::OnDestroy() 
 {
   KillTimer( m_iTimerID);
-	CWnd::OnDestroy();
+  CWnd::OnDestroy();
 }
 
 void CCustomComboWnd::OnTimer(UINT nIDEvent) 
 {
-  Invalidate(FALSE);	
-	CWnd::OnTimer(nIDEvent);
+  Invalidate(FALSE);  
+  CWnd::OnTimer(nIDEvent);
 }
 
 BOOL CCustomComboWnd::PreTranslateMessage(MSG* pMsg) 
@@ -315,7 +315,7 @@ BOOL CCustomComboWnd::PreTranslateMessage(MSG* pMsg)
     DeleteTempMap();
     return TRUE;
   }
-	return CWnd::PreTranslateMessage(pMsg);
+  return CWnd::PreTranslateMessage(pMsg);
 }
 
 void CCustomComboWnd::OnLButtonUp(UINT nFlags, CPoint point) 
@@ -347,6 +347,6 @@ void CCustomComboWnd::OnLButtonUp(UINT nFlags, CPoint point)
       }
     }
   }
-	
-	CWnd::OnLButtonUp(nFlags, point);
+  
+  CWnd::OnLButtonUp(nFlags, point);
 }

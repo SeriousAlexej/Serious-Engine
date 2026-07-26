@@ -112,11 +112,11 @@ BOOL PlaneRayIntersection(
 }
 
 CDlgCreateReflectionTexture::CDlgCreateReflectionTexture(CWnd* pParent /*=NULL*/)
-	: CDialog(CDlgCreateReflectionTexture::IDD, pParent)
+  : CDialog(CDlgCreateReflectionTexture::IDD, pParent)
 {
-	//{{AFX_DATA_INIT(CDlgCreateReflectionTexture)
-	m_bAutoRotate = FALSE;
-	//}}AFX_DATA_INIT
+  //{{AFX_DATA_INIT(CDlgCreateReflectionTexture)
+  m_bAutoRotate = FALSE;
+  //}}AFX_DATA_INIT
 
   m_bAutoRotate = TRUE;
   m_colorReflection.m_pwndParentDialog = this;
@@ -137,19 +137,19 @@ CDlgCreateReflectionTexture::CDlgCreateReflectionTexture(CWnd* pParent /*=NULL*/
 
 void CDlgCreateReflectionTexture::DoDataExchange(CDataExchange* pDX)
 {
-	CDialog::DoDataExchange(pDX);
+  CDialog::DoDataExchange(pDX);
 
   if( !pDX->m_bSaveAndValidate)
   {
   }
 
-	//{{AFX_DATA_MAP(CDlgCreateReflectionTexture)
-	DDX_Control(pDX, IDC_SIZE_IN_PIXELS, m_comboSizeInPixels);
-	DDX_Control(pDX, IDC_REFLECTION_COLOR, m_colorReflection);
-	DDX_Control(pDX, IDC_LIGHT_COLOR, m_colorLight);
-	DDX_Control(pDX, IDC_AMBIENT_COLOR, m_colorAmbient);
-	DDX_Check(pDX, IDC_AUTO_ROTATE, m_bAutoRotate);
-	//}}AFX_DATA_MAP
+  //{{AFX_DATA_MAP(CDlgCreateReflectionTexture)
+  DDX_Control(pDX, IDC_SIZE_IN_PIXELS, m_comboSizeInPixels);
+  DDX_Control(pDX, IDC_REFLECTION_COLOR, m_colorReflection);
+  DDX_Control(pDX, IDC_LIGHT_COLOR, m_colorLight);
+  DDX_Control(pDX, IDC_AMBIENT_COLOR, m_colorAmbient);
+  DDX_Check(pDX, IDC_AUTO_ROTATE, m_bAutoRotate);
+  //}}AFX_DATA_MAP
 
   if( pDX->m_bSaveAndValidate)
   { 
@@ -169,13 +169,13 @@ void CDlgCreateReflectionTexture::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CDlgCreateReflectionTexture, CDialog)
-	//{{AFX_MSG_MAP(CDlgCreateReflectionTexture)
-	ON_WM_PAINT()
-	ON_WM_TIMER()
-	ON_WM_DESTROY()
-	ON_BN_CLICKED(IDC_AUTO_ROTATE, OnAutoRotate)
-	ON_CBN_SELCHANGE(IDC_SIZE_IN_PIXELS, OnSelchangeSizeInPixels)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CDlgCreateReflectionTexture)
+  ON_WM_PAINT()
+  ON_WM_TIMER()
+  ON_WM_DESTROY()
+  ON_BN_CLICKED(IDC_AUTO_ROTATE, OnAutoRotate)
+  ON_CBN_SELCHANGE(IDC_SIZE_IN_PIXELS, OnSelchangeSizeInPixels)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -478,7 +478,7 @@ void CDlgCreateReflectionTexture::RenderPreview(void)
   wnd.Create( NULL, NULL, WS_BORDER|WS_VISIBLE, rectWnd, this, IDW);
 void CDlgCreateReflectionTexture::OnPaint() 
 {
-	CPaintDC dc(this); // device context for painting
+  CPaintDC dc(this); // device context for painting
 
   if( m_iTimerID == -1)
   {
@@ -507,19 +507,19 @@ void CDlgCreateReflectionTexture::OnPaint()
 
 BOOL CDlgCreateReflectionTexture::OnInitDialog() 
 {
-	CDialog::OnInitDialog();
-	
+  CDialog::OnInitDialog();
+  
   if(::IsWindow( m_comboSizeInPixels.m_hWnd))
   {
     m_comboSizeInPixels.SetCurSel( 6);
   }
   UpdateData( TRUE);
-	return TRUE;
+  return TRUE;
 }
 
 void CDlgCreateReflectionTexture::OnTimer(UINT nIDEvent) 
 {
-	// on our timer discard preview window
+  // on our timer discard preview window
   if( nIDEvent == 1 && _bTimerEnabled)
   {
     TIME timeCurrentTick = _pTimer_GetRealTimeTick();
@@ -528,10 +528,10 @@ void CDlgCreateReflectionTexture::OnTimer(UINT nIDEvent)
       _pTimer_SetCurrentTick( timeCurrentTick);
       timeLastTick = timeCurrentTick;
     }
-    RenderPreview();	
+    RenderPreview();  
   }
 
-	CDialog::OnTimer(nIDEvent);
+  CDialog::OnTimer(nIDEvent);
 }
 
 void CDlgCreateReflectionTexture::OnDestroy() 
@@ -542,7 +542,7 @@ void CDlgCreateReflectionTexture::OnDestroy()
 
   KillTimer( m_iTimerID);
   _pTimer_SetCurrentTick( 0.0f);
-	CDialog::OnDestroy();
+  CDialog::OnDestroy();
 }
 
 void CDlgCreateReflectionTexture::OnAutoRotate() 
@@ -703,5 +703,5 @@ void CDlgCreateReflectionTexture::OnOK()
     CopyFileA( fnTemp, _fnmApplicationPath+fnFinal, FALSE);
   }
 
-	CDialog::OnOK();
+  CDialog::OnOK();
 }

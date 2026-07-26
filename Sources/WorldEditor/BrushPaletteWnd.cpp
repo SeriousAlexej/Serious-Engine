@@ -47,16 +47,16 @@ CBrushPaletteWnd::~CBrushPaletteWnd()
 
 
 BEGIN_MESSAGE_MAP(CBrushPaletteWnd, CWnd)
-	//{{AFX_MSG_MAP(CBrushPaletteWnd)
-	ON_WM_PAINT()
-	ON_WM_KILLFOCUS()
-	ON_WM_LBUTTONDOWN()
-	ON_WM_RBUTTONDOWN()
-	ON_WM_MOUSEMOVE()
-	ON_WM_DESTROY()
-	ON_WM_TIMER()
-	ON_WM_LBUTTONUP()
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CBrushPaletteWnd)
+  ON_WM_PAINT()
+  ON_WM_KILLFOCUS()
+  ON_WM_LBUTTONDOWN()
+  ON_WM_RBUTTONDOWN()
+  ON_WM_MOUSEMOVE()
+  ON_WM_DESTROY()
+  ON_WM_TIMER()
+  ON_WM_LBUTTONUP()
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 
@@ -190,13 +190,13 @@ void CBrushPaletteWnd::OnRButtonDown(UINT nFlags, CPoint point)
 void CBrushPaletteWnd::OnMouseMove(UINT nFlags, CPoint point) 
 {
   Invalidate(FALSE);
-	CWnd::OnMouseMove(nFlags, point);
+  CWnd::OnMouseMove(nFlags, point);
 }
 
 void CBrushPaletteWnd::OnDestroy() 
 {
   KillTimer( m_iTimerID);
-	CWnd::OnDestroy();
+  CWnd::OnDestroy();
 }
 
 void CBrushPaletteWnd::OnTimer(UINT nIDEvent) 
@@ -213,8 +213,8 @@ void CBrushPaletteWnd::OnTimer(UINT nIDEvent)
     return;
   }
 
-  Invalidate(FALSE);	
-	CWnd::OnTimer(nIDEvent);
+  Invalidate(FALSE);  
+  CWnd::OnTimer(nIDEvent);
 }
 
 BOOL CBrushPaletteWnd::PreTranslateMessage(MSG* pMsg) 
@@ -226,7 +226,7 @@ BOOL CBrushPaletteWnd::PreTranslateMessage(MSG* pMsg)
     return TRUE;
   }
 
-	return CWnd::PreTranslateMessage(pMsg);
+  return CWnd::PreTranslateMessage(pMsg);
 }
 
 void CBrushPaletteWnd::OnLButtonUp(UINT nFlags, CPoint point) 

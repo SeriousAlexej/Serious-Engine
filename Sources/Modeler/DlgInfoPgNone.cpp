@@ -31,26 +31,26 @@ static char THIS_FILE[] = __FILE__;
 
 CDlgInfoPgNone::CDlgInfoPgNone() : CPropertyPage(CDlgInfoPgNone::IDD)
 {
-	//{{AFX_DATA_INIT(CDlgInfoPgNone)
-		// NOTE: the ClassWizard will add member initialization here
-	//}}AFX_DATA_INIT
+  //{{AFX_DATA_INIT(CDlgInfoPgNone)
+    // NOTE: the ClassWizard will add member initialization here
+  //}}AFX_DATA_INIT
   theApp.m_pPgInfoNone = this;
 }
 
 
 void CDlgInfoPgNone::DoDataExchange(CDataExchange* pDX)
 {
-	CDialog::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CDlgInfoPgNone)
-		// NOTE: the ClassWizard will add DDX and DDV calls here
-	//}}AFX_DATA_MAP
+  CDialog::DoDataExchange(pDX);
+  //{{AFX_DATA_MAP(CDlgInfoPgNone)
+    // NOTE: the ClassWizard will add DDX and DDV calls here
+  //}}AFX_DATA_MAP
 }
 
 
 BEGIN_MESSAGE_MAP(CDlgInfoPgNone, CPropertyPage)
-	//{{AFX_MSG_MAP(CDlgInfoPgNone)
-		// NOTE: the ClassWizard will add message map macros here
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CDlgInfoPgNone)
+    // NOTE: the ClassWizard will add message map macros here
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////

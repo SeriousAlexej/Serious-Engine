@@ -34,57 +34,57 @@ extern INDEX wed_bSaveTestGameFirstTime = TRUE;
 IMPLEMENT_DYNCREATE(CChildFrame, CMDIChildWnd)
 
 BEGIN_MESSAGE_MAP(CChildFrame, CMDIChildWnd)
-	//{{AFX_MSG_MAP(CChildFrame)
-	ON_COMMAND(ID_GRID_ON_OFF, OnGridOnOff)
-	ON_UPDATE_COMMAND_UI(ID_GRID_ON_OFF, OnUpdateGridOnOff)
-	ON_COMMAND(ID_TEST_GAME, OnTestGameWindowed)
-	ON_COMMAND(ID_TEST_GAME_FULLSCREEN, OnTestGameFullScreen)
-	ON_UPDATE_COMMAND_UI(ID_TEST_GAME, OnUpdateTestGame)
-	ON_COMMAND(ID_RENDER_TARGETS, OnRenderTargets)
-	ON_UPDATE_COMMAND_UI(ID_RENDER_TARGETS, OnUpdateRenderTargets)
-	ON_COMMAND(ID_MOVE_ANCHORED, OnMoveAnchored)
-	ON_UPDATE_COMMAND_UI(ID_MOVE_ANCHORED, OnUpdateMoveAnchored)
-	ON_WM_TIMER()
-	ON_COMMAND(ID_SCENE_RENDERING_TIME, OnSceneRenderingTime)
-	ON_UPDATE_COMMAND_UI(ID_SCENE_RENDERING_TIME, OnUpdateSceneRenderingTime)
-	ON_COMMAND(ID_AUTO_MIP_LEVELING, OnAutoMipLeveling)
-	ON_UPDATE_COMMAND_UI(ID_AUTO_MIP_LEVELING, OnUpdateAutoMipLeveling)
-	ON_COMMAND(ID_WINDOW_CLOSE, OnWindowClose)
-	ON_COMMAND(ID_VIEW_SELECTION, OnViewSelection)
-	ON_UPDATE_COMMAND_UI(ID_VIEW_SELECTION, OnUpdateViewSelection)
-	ON_COMMAND(ID_MAXIMIZE_VIEW, OnMaximizeView)
-	ON_COMMAND(ID_TOGGLE_VIEW_PICTURES, OnToggleViewPictures)
-	ON_UPDATE_COMMAND_UI(ID_TOGGLE_VIEW_PICTURES, OnUpdateToggleViewPictures)
-	ON_COMMAND(ID_VIEW_FROM_ENTITY, OnViewFromEntity)
-	ON_UPDATE_COMMAND_UI(ID_VIEW_FROM_ENTITY, OnUpdateViewFromEntity)
-	ON_COMMAND(ID_VIEW_SHADOWS_ONOFF, OnViewShadowsOnoff)
-	ON_COMMAND(ID_CALCULATE_SHADOWS_ONOFF, OnCalculateShadowsOnoff)
-	ON_UPDATE_COMMAND_UI(ID_VIEW_SHADOWS_ONOFF, OnUpdateViewShadowsOnoff)
-	ON_UPDATE_COMMAND_UI(ID_CALCULATE_SHADOWS_ONOFF, OnUpdateCalculateShadowsOnoff)
-	ON_COMMAND(ID_STORE_POSITION01, OnStorePosition01)
-	ON_COMMAND(ID_STORE_POSITION02, OnStorePosition02)
-	ON_COMMAND(ID_RESTORE_POSITION01, OnRestorePosition01)
-	ON_COMMAND(ID_RESTORE_POSITION02, OnRestorePosition02)
-	ON_COMMAND(ID_TOGGLE_ENTITY_NAMES, OnToggleEntityNames)
-	ON_UPDATE_COMMAND_UI(ID_TOGGLE_ENTITY_NAMES, OnUpdateToggleEntityNames)
-	ON_COMMAND(ID_TOGGLE_VISIBILITY_TWEAKS, OnToggleVisibilityTweaks)
-	ON_UPDATE_COMMAND_UI(ID_TOGGLE_VISIBILITY_TWEAKS, OnUpdateToggleVisibilityTweaks)
-	ON_COMMAND(ID_ENABLE_VISIBILITY_TWEAKS, OnEnableVisibilityTweaks)
-	ON_UPDATE_COMMAND_UI(ID_ENABLE_VISIBILITY_TWEAKS, OnUpdateEnableVisibilityTweaks)
-	ON_COMMAND(ID_RESTORE_POSITION03, OnRestorePosition03)
-	ON_COMMAND(ID_RESTORE_POSITION04, OnRestorePosition04)
-	ON_COMMAND(ID_STORE_POSITION03, OnStorePosition03)
-	ON_COMMAND(ID_STORE_POSITION04, OnStorePosition04)
-	ON_COMMAND(ID_KEY_B, OnKeyB)
-	ON_UPDATE_COMMAND_UI(ID_KEY_B, OnUpdateKeyB)
-	ON_COMMAND(ID_KEY_G, OnKeyG)
-	ON_UPDATE_COMMAND_UI(ID_KEY_G, OnUpdateKeyG)
-	ON_COMMAND(ID_KEY_Y, OnKeyY)
-	ON_UPDATE_COMMAND_UI(ID_KEY_Y, OnUpdateKeyY)
-	ON_UPDATE_COMMAND_UI(ID_TEST_GAME_FULLSCREEN, OnUpdateTestGame)
-	ON_COMMAND(ID_KEY_CTRL_G, OnKeyCtrlG)
-	ON_UPDATE_COMMAND_UI(ID_KEY_CTRL_G, OnUpdateKeyCtrlG)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CChildFrame)
+  ON_COMMAND(ID_GRID_ON_OFF, OnGridOnOff)
+  ON_UPDATE_COMMAND_UI(ID_GRID_ON_OFF, OnUpdateGridOnOff)
+  ON_COMMAND(ID_TEST_GAME, OnTestGameWindowed)
+  ON_COMMAND(ID_TEST_GAME_FULLSCREEN, OnTestGameFullScreen)
+  ON_UPDATE_COMMAND_UI(ID_TEST_GAME, OnUpdateTestGame)
+  ON_COMMAND(ID_RENDER_TARGETS, OnRenderTargets)
+  ON_UPDATE_COMMAND_UI(ID_RENDER_TARGETS, OnUpdateRenderTargets)
+  ON_COMMAND(ID_MOVE_ANCHORED, OnMoveAnchored)
+  ON_UPDATE_COMMAND_UI(ID_MOVE_ANCHORED, OnUpdateMoveAnchored)
+  ON_WM_TIMER()
+  ON_COMMAND(ID_SCENE_RENDERING_TIME, OnSceneRenderingTime)
+  ON_UPDATE_COMMAND_UI(ID_SCENE_RENDERING_TIME, OnUpdateSceneRenderingTime)
+  ON_COMMAND(ID_AUTO_MIP_LEVELING, OnAutoMipLeveling)
+  ON_UPDATE_COMMAND_UI(ID_AUTO_MIP_LEVELING, OnUpdateAutoMipLeveling)
+  ON_COMMAND(ID_WINDOW_CLOSE, OnWindowClose)
+  ON_COMMAND(ID_VIEW_SELECTION, OnViewSelection)
+  ON_UPDATE_COMMAND_UI(ID_VIEW_SELECTION, OnUpdateViewSelection)
+  ON_COMMAND(ID_MAXIMIZE_VIEW, OnMaximizeView)
+  ON_COMMAND(ID_TOGGLE_VIEW_PICTURES, OnToggleViewPictures)
+  ON_UPDATE_COMMAND_UI(ID_TOGGLE_VIEW_PICTURES, OnUpdateToggleViewPictures)
+  ON_COMMAND(ID_VIEW_FROM_ENTITY, OnViewFromEntity)
+  ON_UPDATE_COMMAND_UI(ID_VIEW_FROM_ENTITY, OnUpdateViewFromEntity)
+  ON_COMMAND(ID_VIEW_SHADOWS_ONOFF, OnViewShadowsOnoff)
+  ON_COMMAND(ID_CALCULATE_SHADOWS_ONOFF, OnCalculateShadowsOnoff)
+  ON_UPDATE_COMMAND_UI(ID_VIEW_SHADOWS_ONOFF, OnUpdateViewShadowsOnoff)
+  ON_UPDATE_COMMAND_UI(ID_CALCULATE_SHADOWS_ONOFF, OnUpdateCalculateShadowsOnoff)
+  ON_COMMAND(ID_STORE_POSITION01, OnStorePosition01)
+  ON_COMMAND(ID_STORE_POSITION02, OnStorePosition02)
+  ON_COMMAND(ID_RESTORE_POSITION01, OnRestorePosition01)
+  ON_COMMAND(ID_RESTORE_POSITION02, OnRestorePosition02)
+  ON_COMMAND(ID_TOGGLE_ENTITY_NAMES, OnToggleEntityNames)
+  ON_UPDATE_COMMAND_UI(ID_TOGGLE_ENTITY_NAMES, OnUpdateToggleEntityNames)
+  ON_COMMAND(ID_TOGGLE_VISIBILITY_TWEAKS, OnToggleVisibilityTweaks)
+  ON_UPDATE_COMMAND_UI(ID_TOGGLE_VISIBILITY_TWEAKS, OnUpdateToggleVisibilityTweaks)
+  ON_COMMAND(ID_ENABLE_VISIBILITY_TWEAKS, OnEnableVisibilityTweaks)
+  ON_UPDATE_COMMAND_UI(ID_ENABLE_VISIBILITY_TWEAKS, OnUpdateEnableVisibilityTweaks)
+  ON_COMMAND(ID_RESTORE_POSITION03, OnRestorePosition03)
+  ON_COMMAND(ID_RESTORE_POSITION04, OnRestorePosition04)
+  ON_COMMAND(ID_STORE_POSITION03, OnStorePosition03)
+  ON_COMMAND(ID_STORE_POSITION04, OnStorePosition04)
+  ON_COMMAND(ID_KEY_B, OnKeyB)
+  ON_UPDATE_COMMAND_UI(ID_KEY_B, OnUpdateKeyB)
+  ON_COMMAND(ID_KEY_G, OnKeyG)
+  ON_UPDATE_COMMAND_UI(ID_KEY_G, OnUpdateKeyG)
+  ON_COMMAND(ID_KEY_Y, OnKeyY)
+  ON_UPDATE_COMMAND_UI(ID_KEY_Y, OnUpdateKeyY)
+  ON_UPDATE_COMMAND_UI(ID_TEST_GAME_FULLSCREEN, OnUpdateTestGame)
+  ON_COMMAND(ID_KEY_CTRL_G, OnKeyCtrlG)
+  ON_UPDATE_COMMAND_UI(ID_KEY_CTRL_G, OnUpdateKeyCtrlG)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -138,18 +138,18 @@ CChildFrame::~CChildFrame()
 }
 
 BOOL CChildFrame::OnCreateClient( LPCREATESTRUCT /*lpcs*/,
-	CCreateContext* pContext)
+  CCreateContext* pContext)
 {
-	return m_wndSplitter.Create( this,
-		2, 2,                 // TODO: adjust the number of rows, columns
-		CSize( 10, 10 ),      // TODO: adjust the minimum pane size
-		pContext, WS_CHILD | WS_VISIBLE | SPLS_DYNAMIC_SPLIT);
+  return m_wndSplitter.Create( this,
+    2, 2,                 // TODO: adjust the number of rows, columns
+    CSize( 10, 10 ),      // TODO: adjust the minimum pane size
+    pContext, WS_CHILD | WS_VISIBLE | SPLS_DYNAMIC_SPLIT);
 }
 
 BOOL CChildFrame::PreCreateWindow(CREATESTRUCT& cs)
 {
-	// TODO: Modify the Window class or styles here by modifying
-	//  the CREATESTRUCT cs
+  // TODO: Modify the Window class or styles here by modifying
+  //  the CREATESTRUCT cs
 
   BOOL bMaximized = FALSE;
   CMDIFrameWnd *pFrame = (CMDIFrameWnd *)AfxGetApp()->m_pMainWnd;
@@ -159,7 +159,7 @@ BOOL CChildFrame::PreCreateWindow(CREATESTRUCT& cs)
     cs.style |= WS_VISIBLE | WS_MAXIMIZE;
   }
 
-	return CMDIChildWnd::PreCreateWindow(cs);
+  return CMDIChildWnd::PreCreateWindow(cs);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -168,12 +168,12 @@ BOOL CChildFrame::PreCreateWindow(CREATESTRUCT& cs)
 #ifdef _DEBUG
 void CChildFrame::AssertValid() const
 {
-	CMDIChildWnd::AssertValid();
+  CMDIChildWnd::AssertValid();
 }
 
 void CChildFrame::Dump(CDumpContext& dc) const
 {
-	CMDIChildWnd::Dump(dc);
+  CMDIChildWnd::Dump(dc);
 }
 
 #endif //_DEBUG
@@ -306,7 +306,7 @@ void CChildFrame::SetChildConfiguration( INDEX iViewConfiguration)
       ASSERT( pWEDView != NULL);
       pWEDView->m_vpViewPrefs = CC.m_vpViewPrefs[ j*2 + i];
       pWEDView->m_ptProjectionType = CC.m_ptProjectionType[ j*2 + i];
-			// resize it
+      // resize it
       pWEDView->m_pvpViewPort->Resize();
     }
   }
@@ -353,7 +353,7 @@ void CChildFrame::KeyPressed(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 void CChildFrame::ActivateFrame(int nCmdShow) 
 {
-	CMDIChildWnd::ActivateFrame(nCmdShow);
+  CMDIChildWnd::ActivateFrame(nCmdShow);
 
   // set default child's configuration
   SetChildConfiguration( theApp.m_Preferences.ap_iStartupWindowSetup);
@@ -410,7 +410,7 @@ void CChildFrame::TestGame( BOOL bFullScreen)
   CWorldEditorView *pPerspectiveView = GetPerspectiveView();
   ASSERT( pPerspectiveView != NULL);
   SetActiveView( pPerspectiveView, FALSE);
-	CWorldEditorDoc* pDoc = pPerspectiveView->GetDocument();
+  CWorldEditorDoc* pDoc = pPerspectiveView->GetDocument();
 
   CTFileName fnmWorldToPlay;
   CTFileName fnmTempWorld = CTString("Temp\\TestGame.wld");
@@ -694,7 +694,7 @@ void CChildFrame::OnUpdateSceneRenderingTime(CCmdUI* pCmdUI)
 
 void CChildFrame::OnMoveAnchored() 
 {
-  m_bAncoredMovingAllowed	= !m_bAncoredMovingAllowed;
+  m_bAncoredMovingAllowed  = !m_bAncoredMovingAllowed;
   m_iAnchoredResetTimerID = SetTimer( 1, 60000*5, NULL);
 }
 
@@ -715,7 +715,7 @@ void CChildFrame::OnTimer(UINT nIDEvent)
     KillTimer( m_iAnchoredResetTimerID);
   }
     
-	CMDIChildWnd::OnTimer(nIDEvent);
+  CMDIChildWnd::OnTimer(nIDEvent);
 }
 
 
@@ -750,9 +750,9 @@ void CChildFrame::OnViewSelection()
   // get document
   CWorldEditorView *pWEDView = (CWorldEditorView *) m_wndSplitter.GetPane( 0, 0);
   ASSERT( pWEDView != NULL);
-	CWorldEditorDoc* pDoc = pWEDView->GetDocument();
-	ASSERT_VALID(pDoc);
-	m_bSelectionVisible = !m_bSelectionVisible;
+  CWorldEditorDoc* pDoc = pWEDView->GetDocument();
+  ASSERT_VALID(pDoc);
+  m_bSelectionVisible = !m_bSelectionVisible;
   pDoc->UpdateAllViews( NULL);
 }
 
@@ -766,10 +766,10 @@ void CChildFrame::OnToggleVisibilityTweaks()
   // get document
   CWorldEditorView *pWEDView = (CWorldEditorView *) m_wndSplitter.GetPane( 0, 0);
   ASSERT( pWEDView != NULL);
-	CWorldEditorDoc* pDoc = pWEDView->GetDocument();
-	ASSERT_VALID(pDoc);
-	m_bShowVisibilityTweaks = !m_bShowVisibilityTweaks;
-	// auto turn off disabling of visibility tweaks
+  CWorldEditorDoc* pDoc = pWEDView->GetDocument();
+  ASSERT_VALID(pDoc);
+  m_bShowVisibilityTweaks = !m_bShowVisibilityTweaks;
+  // auto turn off disabling of visibility tweaks
   m_bDisableVisibilityTweaks = FALSE;
   pDoc->UpdateAllViews( NULL);
 }
@@ -831,8 +831,8 @@ void CChildFrame::OnUpdateViewFromEntity(CCmdUI* pCmdUI)
 
 #define APPLY_SHADOW_TYPE( stNewShadowType) \
   CWorldEditorView *pWEDView = (CWorldEditorView *) m_wndSplitter.GetPane( 0, 0);\
-	CWorldEditorDoc* pDoc = pWEDView->GetDocument();\
-	ASSERT_VALID(pDoc);\
+  CWorldEditorDoc* pDoc = pWEDView->GetDocument();\
+  ASSERT_VALID(pDoc);\
   m_stShadowType = stNewShadowType;\
   pDoc->UpdateAllViews( NULL);\
 
@@ -986,8 +986,8 @@ void CChildFrame::OnRestorePosition01()
 
   CWorldEditorView *pWEDView = (CWorldEditorView *) m_wndSplitter.GetPane( 0, 0);
   ASSERT( pWEDView != NULL);
-	CWorldEditorDoc* pDoc = pWEDView->GetDocument();
-	ASSERT_VALID(pDoc);
+  CWorldEditorDoc* pDoc = pWEDView->GetDocument();
+  ASSERT_VALID(pDoc);
   pDoc->UpdateAllViews( NULL);
 }
 
@@ -998,8 +998,8 @@ void CChildFrame::OnRestorePosition02()
   CWorldEditorView *pWEDView = (CWorldEditorView *) m_wndSplitter.GetPane( 0, 0);
 
   ASSERT( pWEDView != NULL);
-	CWorldEditorDoc* pDoc = pWEDView->GetDocument();
-	ASSERT_VALID(pDoc);
+  CWorldEditorDoc* pDoc = pWEDView->GetDocument();
+  ASSERT_VALID(pDoc);
   pDoc->UpdateAllViews( NULL);
 }
 
@@ -1010,8 +1010,8 @@ void CChildFrame::OnRestorePosition03()
 
   CWorldEditorView *pWEDView = (CWorldEditorView *) m_wndSplitter.GetPane( 0, 0);
   ASSERT( pWEDView != NULL);
-	CWorldEditorDoc* pDoc = pWEDView->GetDocument();
-	ASSERT_VALID(pDoc);
+  CWorldEditorDoc* pDoc = pWEDView->GetDocument();
+  ASSERT_VALID(pDoc);
   pDoc->UpdateAllViews( NULL);
 }
 
@@ -1022,8 +1022,8 @@ void CChildFrame::OnRestorePosition04()
 
   CWorldEditorView *pWEDView = (CWorldEditorView *) m_wndSplitter.GetPane( 0, 0);
   ASSERT( pWEDView != NULL);
-	CWorldEditorDoc* pDoc = pWEDView->GetDocument();
-	ASSERT_VALID(pDoc);
+  CWorldEditorDoc* pDoc = pWEDView->GetDocument();
+  ASSERT_VALID(pDoc);
   pDoc->UpdateAllViews( NULL);
 }
 
@@ -1067,9 +1067,9 @@ void CChildFrame::OnEnableVisibilityTweaks()
   // get document
   CWorldEditorView *pWEDView = (CWorldEditorView *) m_wndSplitter.GetPane( 0, 0);
   ASSERT( pWEDView != NULL);
-	CWorldEditorDoc* pDoc = pWEDView->GetDocument();
-	ASSERT_VALID(pDoc);
-	m_bDisableVisibilityTweaks = !m_bDisableVisibilityTweaks;
+  CWorldEditorDoc* pDoc = pWEDView->GetDocument();
+  ASSERT_VALID(pDoc);
+  m_bDisableVisibilityTweaks = !m_bDisableVisibilityTweaks;
   pDoc->UpdateAllViews( NULL);
 }
 

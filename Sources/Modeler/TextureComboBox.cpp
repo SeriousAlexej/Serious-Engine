@@ -37,10 +37,10 @@ CTextureComboBox::~CTextureComboBox()
 }
 
 BEGIN_MESSAGE_MAP(CTextureComboBox, CComboBox)
-	//{{AFX_MSG_MAP(CTextureComboBox)
-	ON_CONTROL_REFLECT(CBN_SELCHANGE, OnSelchange)
-	ON_CONTROL_REFLECT(CBN_DROPDOWN, OnDropdown)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CTextureComboBox)
+  ON_CONTROL_REFLECT(CBN_SELCHANGE, OnSelchange)
+  ON_CONTROL_REFLECT(CBN_DROPDOWN, OnDropdown)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////

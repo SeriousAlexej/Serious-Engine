@@ -42,12 +42,12 @@ CToolTipWnd::~CToolTipWnd()
 
 
 BEGIN_MESSAGE_MAP(CToolTipWnd, CWnd)
-	//{{AFX_MSG_MAP(CToolTipWnd)
-	ON_WM_PAINT()
-	ON_WM_CREATE()
-	ON_WM_SETFOCUS()
-	ON_WM_TIMER()
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CToolTipWnd)
+  ON_WM_PAINT()
+  ON_WM_CREATE()
+  ON_WM_SETFOCUS()
+  ON_WM_TIMER()
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 
@@ -125,7 +125,7 @@ void CToolTipWnd::ObtainTextSize(PIX &pixMaxWidth, PIX &pixMaxHeight)
 
 void CToolTipWnd::OnPaint() 
 {
-	CPaintDC dc(this);
+  CPaintDC dc(this);
   
   CRect rectWindow;
   GetClientRect(rectWindow);
@@ -149,9 +149,9 @@ void CToolTipWnd::OnPaint()
 
 int CToolTipWnd::OnCreate(LPCREATESTRUCT lpCreateStruct) 
 {
-	if (CWnd::OnCreate(lpCreateStruct) == -1)
-		return -1;
-	
+  if (CWnd::OnCreate(lpCreateStruct) == -1)
+    return -1;
+  
   SetupWindowSizeAndPosition();
 
   if( !m_bManualControl)
@@ -172,8 +172,8 @@ void CToolTipWnd::SetupWindowSizeAndPosition(void)
   pixHeight+=2;
   
   GetCursorPos( &m_ptMouse); 
-	int iCursorX = 12;
-	int iCursorY = 18;
+  int iCursorX = 12;
+  int iCursorY = 18;
   CRect rectWindow;
   rectWindow.left = m_ptMouse.x+iCursorX;
   rectWindow.top = m_ptMouse.y+iCursorY;
@@ -187,10 +187,10 @@ void CToolTipWnd::SetupWindowSizeAndPosition(void)
   rectWindow.right = rectWindow.left + pixWidth;
   rectWindow.bottom = rectWindow.top + pixHeight;
   
-	int iEdgeX	 = ::GetSystemMetrics(SM_CXEDGE);		// window edge width
-	int iEdgeY   = ::GetSystemMetrics(SM_CYEDGE);
-	PIX pixScreenX = ::GetSystemMetrics(SM_CXMAXIMIZED)-4*iEdgeX;	// screen size
-	PIX pixScreenY = ::GetSystemMetrics(SM_CYMAXIMIZED)-4*iEdgeX;
+  int iEdgeX   = ::GetSystemMetrics(SM_CXEDGE);    // window edge width
+  int iEdgeY   = ::GetSystemMetrics(SM_CYEDGE);
+  PIX pixScreenX = ::GetSystemMetrics(SM_CXMAXIMIZED)-4*iEdgeX;  // screen size
+  PIX pixScreenY = ::GetSystemMetrics(SM_CYMAXIMIZED)-4*iEdgeX;
   if(rectWindow.bottom > pixScreenY)
   {
     rectWindow.top -= rectWindow.bottom-pixScreenY;
@@ -200,7 +200,7 @@ void CToolTipWnd::SetupWindowSizeAndPosition(void)
     rectWindow.left -= rectWindow.right-pixScreenX;
   }
   MoveWindow( rectWindow);
-	
+  
   ReleaseDC( pDC);
 }
 
@@ -208,7 +208,7 @@ void CToolTipWnd::OnSetFocus(CWnd* pOldWnd)
 {
   if ( pOldWnd!=NULL && IsWindow(pOldWnd->m_hWnd))
   {
-	  pOldWnd->SetFocus();
+    pOldWnd->SetFocus();
   }
 }
 

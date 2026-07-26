@@ -31,37 +31,37 @@ class CDlgExportForSkinning : public CDialog
 public:
   INDEX m_iTextureWidth;
 
-	CDlgExportForSkinning(CTFileName fnExportFile, CWnd* pParent = NULL);   // standard constructor
+  CDlgExportForSkinning(CTFileName fnExportFile, CWnd* pParent = NULL);   // standard constructor
 
 // Dialog Data
-	//{{AFX_DATA(CDlgExportForSkinning)
-	enum { IDD = IDD_EXPORT_FOR_SKINNIG };
-	CColoredButton	m_ctrlWireColor;
-	CColoredButton	m_ctrlPaperColor;
-	CComboBox	m_ctrlExportPictureSize;
-	BOOL	m_bColoredSurfaces;
-	BOOL	m_bSurfaceNumbers;
-	BOOL	m_bWireFrame;
-	CString	m_strExportedFileName;
-	CString	m_strSurfaceListFile;
-	//}}AFX_DATA
+  //{{AFX_DATA(CDlgExportForSkinning)
+  enum { IDD = IDD_EXPORT_FOR_SKINNIG };
+  CColoredButton  m_ctrlWireColor;
+  CColoredButton  m_ctrlPaperColor;
+  CComboBox  m_ctrlExportPictureSize;
+  BOOL  m_bColoredSurfaces;
+  BOOL  m_bSurfaceNumbers;
+  BOOL  m_bWireFrame;
+  CString  m_strExportedFileName;
+  CString  m_strSurfaceListFile;
+  //}}AFX_DATA
 
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CDlgExportForSkinning)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CDlgExportForSkinning)
+  protected:
+  virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+  //}}AFX_VIRTUAL
 
 // Implementation
 protected:
 
-	// Generated message map functions
-	//{{AFX_MSG(CDlgExportForSkinning)
-	virtual BOOL OnInitDialog();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+  // Generated message map functions
+  //{{AFX_MSG(CDlgExportForSkinning)
+  virtual BOOL OnInitDialog();
+  //}}AFX_MSG
+  DECLARE_MESSAGE_MAP()
 };
 
 //{{AFX_INSERT_LOCATION}}

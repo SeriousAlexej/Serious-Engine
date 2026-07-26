@@ -40,14 +40,14 @@ CViewTexture::~CViewTexture()
 
 
 BEGIN_MESSAGE_MAP(CViewTexture, CWnd)
-	//{{AFX_MSG_MAP(CViewTexture)
-	ON_WM_PAINT()
-	ON_WM_LBUTTONDOWN()
-	ON_WM_LBUTTONDBLCLK()
-	ON_WM_CONTEXTMENU()
-	ON_COMMAND(ID_RECREATE_TEXTURE, OnRecreateTexture)
-	ON_WM_DESTROY()
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CViewTexture)
+  ON_WM_PAINT()
+  ON_WM_LBUTTONDOWN()
+  ON_WM_LBUTTONDBLCLK()
+  ON_WM_CONTEXTMENU()
+  ON_COMMAND(ID_RECREATE_TEXTURE, OnRecreateTexture)
+  ON_WM_DESTROY()
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 
@@ -137,7 +137,7 @@ void CViewTexture::OnLButtonDown(UINT nFlags, CPoint point)
 void CViewTexture::OnLButtonDblClk(UINT nFlags, CPoint point)
 {
   OnRecreateTexture();
-	CWnd::OnLButtonDblClk(nFlags, point);
+  CWnd::OnLButtonDblClk(nFlags, point);
 }
 
 void CViewTexture::OnContextMenu(CWnd* pWnd, CPoint point)
@@ -147,7 +147,7 @@ void CViewTexture::OnContextMenu(CWnd* pWnd, CPoint point)
   {
     CMenu* pPopup = menu.GetSubMenu(0);
     pPopup->TrackPopupMenu( TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_LEFTALIGN,
-								            point.x, point.y, this);
+                            point.x, point.y, this);
   }
 }
 
@@ -176,7 +176,7 @@ void CViewTexture::OnRecreateTexture()
 
 void CViewTexture::OnDestroy()
 {
-	CWnd::OnDestroy();
+  CWnd::OnDestroy();
 
   if( m_pViewPort)
   {

@@ -119,22 +119,22 @@ void SetColorToProfile( CTString strVarName, COLOR colValue)
 // CModelerApp
 
 BEGIN_MESSAGE_MAP(CModelerApp, CWinApp)
-	//{{AFX_MSG_MAP(CModelerApp)
+  //{{AFX_MSG_MAP(CModelerApp)
   ON_COMMAND(ID_APP_ABOUT_QT, OnQtAbout)
-	ON_COMMAND(ID_APP_ABOUT, OnAppAbout)
-	ON_COMMAND(ID_FILE_NEW, OnFileNew)
-	ON_COMMAND(ID_FILE_OPEN, OnFileOpen)
-	ON_COMMAND(ID_FILE_PREFERENCES, OnFilePreferences)
-	//}}AFX_MSG_MAP
-	// Standard file based document commands
-	ON_COMMAND(ID_FILE_OPEN, CWinApp::OnFileOpen)
-	// Standard print setup command
-	ON_COMMAND(ID_FILE_PRINT_SETUP, CWinApp::OnFilePrintSetup)
+  ON_COMMAND(ID_APP_ABOUT, OnAppAbout)
+  ON_COMMAND(ID_FILE_NEW, OnFileNew)
+  ON_COMMAND(ID_FILE_OPEN, OnFileOpen)
+  ON_COMMAND(ID_FILE_PREFERENCES, OnFilePreferences)
+  //}}AFX_MSG_MAP
+  // Standard file based document commands
+  ON_COMMAND(ID_FILE_OPEN, CWinApp::OnFileOpen)
+  // Standard print setup command
+  ON_COMMAND(ID_FILE_PRINT_SETUP, CWinApp::OnFilePrintSetup)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
 
-UINT APIENTRY ModelerFileRequesterHook( HWND hdlg, UINT uiMsg, WPARAM wParam,	LPARAM lParam)
+UINT APIENTRY ModelerFileRequesterHook( HWND hdlg, UINT uiMsg, WPARAM wParam,  LPARAM lParam)
 {
   if( uiMsg == WM_INITDIALOG)
   {
@@ -258,56 +258,56 @@ BOOL CModelerApp::SubInitInstance()
   m_showing_modal_dialog = false;
 
   wchar_t strIni[ 128];
-	// Standard initialization
-	// If you are not using these features and wish to reduce the size
-	//  of your final executable, you should remove from the following
-	//  the specific initialization routines you do not need.
+  // Standard initialization
+  // If you are not using these features and wish to reduce the size
+  //  of your final executable, you should remove from the following
+  //  the specific initialization routines you do not need.
 
   CoInitialize(nullptr);
 #ifdef _AFXDLL
-	Enable3dControls();			// Call this when using MFC in a shared DLL
+  Enable3dControls();      // Call this when using MFC in a shared DLL
 #else
-	Enable3dControlsStatic();	// Call this when linking to MFC statically
+  Enable3dControlsStatic();  // Call this when linking to MFC statically
 #endif
 
   // settings will be saved into registry instead of ini file
   SetRegistryKey( L"SeriousEngine");
 
-	LoadStdProfileSettings(8);  // Load standard INI file options (including MRU)
+  LoadStdProfileSettings(8);  // Load standard INI file options (including MRU)
 
-	// Register the application's document templates.  Document templates
-	//  serve as the connection between documents, frame windows and views.
+  // Register the application's document templates.  Document templates
+  //  serve as the connection between documents, frame windows and views.
 
-	CMultiDocTemplate* pDocTemplate;
-	m_pdtModelDocTemplate = pDocTemplate = new CMultiDocTemplate(
-		IDR_MDLDOCTYPE,
-		RUNTIME_CLASS(CModelerDoc),
-		RUNTIME_CLASS(CChildFrame), // custom MDI child frame
-		RUNTIME_CLASS(CModelerView));
-	AddDocTemplate(pDocTemplate);
+  CMultiDocTemplate* pDocTemplate;
+  m_pdtModelDocTemplate = pDocTemplate = new CMultiDocTemplate(
+    IDR_MDLDOCTYPE,
+    RUNTIME_CLASS(CModelerDoc),
+    RUNTIME_CLASS(CChildFrame), // custom MDI child frame
+    RUNTIME_CLASS(CModelerView));
+  AddDocTemplate(pDocTemplate);
 
   // initialize engine, without network
   SE_InitEngine("");  // DO NOT SPECIFY NAME HERE!
   SE_LoadDefaultFonts();
 
-	// create main MDI Frame window
-	CMainFrame* pMainFrame = new CMainFrame;
-	if( !pMainFrame->LoadFrame(IDR_MAINFRAME)) return FALSE;
+  // create main MDI Frame window
+  CMainFrame* pMainFrame = new CMainFrame;
+  if( !pMainFrame->LoadFrame(IDR_MAINFRAME)) return FALSE;
   m_pMainWnd = pMainFrame;
   
   // set main window for engine
   SE_UpdateWindowHandle( m_pMainWnd->m_hWnd);
 
-	// Enable drag/drop open
-	m_pMainWnd->DragAcceptFiles();
+  // Enable drag/drop open
+  m_pMainWnd->DragAcceptFiles();
 
-	// Enable DDE Execute open
-	EnableShellOpen();
-	RegisterShellFileTypes(TRUE);
+  // Enable DDE Execute open
+  EnableShellOpen();
+  RegisterShellFileTypes(TRUE);
 
-	// Parse command line for standard shell commands, DDE, file open
-	CCommandLineInfo cmdInfo;
-	ParseCommandLine(cmdInfo);
+  // Parse command line for standard shell commands, DDE, file open
+  CCommandLineInfo cmdInfo;
+  ParseCommandLine(cmdInfo);
 
   // load startup script
   _pShell_Execute( "include \"Scripts\\Modeler_startup.ini\"");
@@ -430,12 +430,12 @@ BOOL CModelerApp::SubInitInstance()
   m_pfntFont = _pfdDisplayFont;
 
   // Dispatch commands specified on the command line
-	if( !ProcessShellCommand(cmdInfo)) return FALSE;
+  if( !ProcessShellCommand(cmdInfo)) return FALSE;
 
-	// The main window has been initialized, so show and update it.
+  // The main window has been initialized, so show and update it.
   m_nCmdShow = SW_SHOWMAXIMIZED; // maximize main frame !!!
-	pMainFrame->ShowWindow(m_nCmdShow);
-	pMainFrame->UpdateWindow();
+  pMainFrame->ShowWindow(m_nCmdShow);
+  pMainFrame->UpdateWindow();
 
   // if stating modeler for the first time
   if( m_bFirstTimeStarted) {
@@ -646,25 +646,25 @@ void CModelerApp::CreateNewDocument( CTFileName fnRequestedFile)
 
   // Now we create document instance of type CModelerDoc
   CDocument* pDocument = m_pdtModelDocTemplate->CreateNewDocument();
- 	if (pDocument == NULL)
-	{
-		TRACE0("CDocTemplate::CreateNewDocument returned NULL.\n");
-		AfxMessageBox(AFX_IDP_FAILED_TO_CREATE_DOC);
-		return;
-	}
-	ASSERT_VALID(pDocument);
-	
+   if (pDocument == NULL)
+  {
+    TRACE0("CDocTemplate::CreateNewDocument returned NULL.\n");
+    AfxMessageBox(AFX_IDP_FAILED_TO_CREATE_DOC);
+    return;
+  }
+  ASSERT_VALID(pDocument);
+  
   BOOL bAutoDelete = pDocument->m_bAutoDelete;
-	pDocument->m_bAutoDelete = FALSE;   // don't destroy if something goes wrong
-	CFrameWnd* pFrame = m_pdtModelDocTemplate->CreateNewFrame(pDocument, NULL);
-	pDocument->m_bAutoDelete = bAutoDelete;
-	if (pFrame == NULL)
-	{
-		AfxMessageBox(AFX_IDP_FAILED_TO_CREATE_DOC);
-		delete pDocument;       // explicit delete on error
-		return;
-	}
-	ASSERT_VALID(pFrame);
+  pDocument->m_bAutoDelete = FALSE;   // don't destroy if something goes wrong
+  CFrameWnd* pFrame = m_pdtModelDocTemplate->CreateNewFrame(pDocument, NULL);
+  pDocument->m_bAutoDelete = bAutoDelete;
+  if (pFrame == NULL)
+  {
+    AfxMessageBox(AFX_IDP_FAILED_TO_CREATE_DOC);
+    delete pDocument;       // explicit delete on error
+    return;
+  }
+  ASSERT_VALID(pFrame);
 
   pDocument->SetModifiedFlag();
   pDocument->SetPathName( CString(_fnmApplicationPath + fnMdlFile), FALSE);
@@ -673,11 +673,11 @@ void CModelerApp::CreateNewDocument( CTFileName fnRequestedFile)
   char strError[ 256];
   if( !((CModelerDoc *)pDocument)->CreateModelFromScriptFile( fnScriptFile, strError))
   {
-  	pDocument->OnCloseDocument();       // explicit delete on error
+    pDocument->OnCloseDocument();       // explicit delete on error
     AfxMessageBox( CString(strError));
-		return;
+    return;
   }
-	m_pdtModelDocTemplate->InitialUpdateFrame(pFrame, pDocument, TRUE);
+  m_pdtModelDocTemplate->InitialUpdateFrame(pFrame, pDocument, TRUE);
 }
 
 void CModelerApp::OnFileNew()
@@ -724,39 +724,39 @@ void CModelerApp::OnFileOpen()
 
     // Now we create document instance 
     CDocument* pDocument = pDocTemplate->CreateNewDocument();
- 	  if (pDocument == NULL)
-	  {
-		  TRACE0("CDocTemplate::CreateNewDocument returned NULL.\n");
-		  AfxMessageBox(AFX_IDP_FAILED_TO_CREATE_DOC);
-		  return;
-	  }
-	  ASSERT_VALID(pDocument);
-	  
+     if (pDocument == NULL)
+    {
+      TRACE0("CDocTemplate::CreateNewDocument returned NULL.\n");
+      AfxMessageBox(AFX_IDP_FAILED_TO_CREATE_DOC);
+      return;
+    }
+    ASSERT_VALID(pDocument);
+    
     // Model documents must be opened before view creation
     if( !pDocument->OnOpenDocument( CString(fnFullRequestedFile)))
     {
-		  AfxMessageBox(AFX_IDP_FAILED_TO_CREATE_DOC);
-		  //delete pDocument;       // explicit delete on error
-		  return;
+      AfxMessageBox(AFX_IDP_FAILED_TO_CREATE_DOC);
+      //delete pDocument;       // explicit delete on error
+      return;
     }
   
     // View creation
     BOOL bAutoDelete = pDocument->m_bAutoDelete;
-	  pDocument->m_bAutoDelete = FALSE;   // don't destroy if something goes wrong
-	  CFrameWnd* pFrame = pDocTemplate->CreateNewFrame(pDocument, NULL);
-	  pDocument->m_bAutoDelete = bAutoDelete;
-	  if (pFrame == NULL)
-	  {
-		  AfxMessageBox(AFX_IDP_FAILED_TO_CREATE_DOC);
-		  delete pDocument;       // explicit delete on error
-		  return;
-	  }
-	  ASSERT_VALID(pFrame);
+    pDocument->m_bAutoDelete = FALSE;   // don't destroy if something goes wrong
+    CFrameWnd* pFrame = pDocTemplate->CreateNewFrame(pDocument, NULL);
+    pDocument->m_bAutoDelete = bAutoDelete;
+    if (pFrame == NULL)
+    {
+      AfxMessageBox(AFX_IDP_FAILED_TO_CREATE_DOC);
+      delete pDocument;       // explicit delete on error
+      return;
+    }
+    ASSERT_VALID(pFrame);
 
     pDocument->SetModifiedFlag( FALSE);
     pDocument->SetPathName( CString(fnFullRequestedFile), TRUE);
     pDocument->SetTitle( CString(fnFullRequestedFile.FileName() + fnFullRequestedFile.FileExt()));
-	  pDocTemplate->InitialUpdateFrame(pFrame, pDocument, TRUE);
+    pDocTemplate->InitialUpdateFrame(pFrame, pDocument, TRUE);
   }
 }
 
@@ -787,7 +787,7 @@ int CModelerApp::ExitInstance()
   CoUninitialize();
   m_Preferences.WriteToIniFile();
   WriteProfileInt(L"Display modes", L"SED Gfx API", m_iApi);
-	return CWinApp::ExitInstance();
+  return CWinApp::ExitInstance();
 }
 
 BOOL CModelerApp::AddModelerWorkingTexture( CTFileName fnTexName)
@@ -840,7 +840,7 @@ BOOL CModelerApp::AddModelerWorkingPatch( CTFileName fnPatchName)
 
 const CTextureObject *CModelerApp::GetValidBcgTexture( CTFileName fnTexName)
 {
-	const CTextureObject *ptoResult = NULL;
+  const CTextureObject *ptoResult = NULL;
   for (auto& it_wt : m_WorkingTextures)
   {
     if( it_wt->wt_FileName == fnTexName)

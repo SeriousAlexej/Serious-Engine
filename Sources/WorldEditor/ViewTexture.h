@@ -29,7 +29,7 @@ class CViewTexture : public CWnd
 {
 // Construction
 public:
-	CViewTexture();
+  CViewTexture();
 // Attributes
 public:
   CTString m_strTexture;
@@ -42,25 +42,25 @@ public:
 public:
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CViewTexture)
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CViewTexture)
+  //}}AFX_VIRTUAL
 
 // Implementation
 public:
-	virtual ~CViewTexture();
+  virtual ~CViewTexture();
 
-	// Generated message map functions
+  // Generated message map functions
 protected:
-	//{{AFX_MSG(CViewTexture)
-	afx_msg void OnPaint();
-	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
-	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
-	afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
-	afx_msg void OnRecreateTexture();
-	afx_msg void OnDestroy();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+  //{{AFX_MSG(CViewTexture)
+  afx_msg void OnPaint();
+  afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+  afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
+  afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
+  afx_msg void OnRecreateTexture();
+  afx_msg void OnDestroy();
+  //}}AFX_MSG
+  DECLARE_MESSAGE_MAP()
 };
 
 /////////////////////////////////////////////////////////////////////////////

@@ -380,18 +380,18 @@ CTerrainInterface::~CTerrainInterface()
 
 
 BEGIN_MESSAGE_MAP(CTerrainInterface, CWnd)
-	//{{AFX_MSG_MAP(CTerrainInterface)
-	ON_WM_PAINT()
-	ON_WM_DESTROY()
-	ON_WM_LBUTTONDOWN()
-	ON_WM_MOUSEMOVE()
-	ON_WM_LBUTTONUP()
-	ON_WM_RBUTTONDOWN()
-	ON_WM_RBUTTONUP()
-	ON_WM_LBUTTONDBLCLK()
-	ON_WM_DROPFILES()
-	ON_WM_CREATE()
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CTerrainInterface)
+  ON_WM_PAINT()
+  ON_WM_DESTROY()
+  ON_WM_LBUTTONDOWN()
+  ON_WM_MOUSEMOVE()
+  ON_WM_LBUTTONUP()
+  ON_WM_RBUTTONDOWN()
+  ON_WM_RBUTTONUP()
+  ON_WM_LBUTTONDBLCLK()
+  ON_WM_DROPFILES()
+  ON_WM_CREATE()
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 
@@ -509,7 +509,7 @@ PIX2D GetLayerSize(CDrawPortPtr pdp)
 
 void CTerrainInterface::OnDestroy() 
 {
-	CWnd::OnDestroy();
+  CWnd::OnDestroy();
 
   if( m_pViewPort )
   {
@@ -1511,9 +1511,9 @@ void OnSelectBrush(INDEX iSelectedItem)
     CTerrainPtr ptrTerrain=GetTerrain();
     if( !ptrTerrain) return;
 
-	  CDlgEditFloat dlg;
+    CDlgEditFloat dlg;
     dlg.m_fEditFloat=theApp.m_fPosterizeStep;
-	  dlg.m_strVarName = "Posterize step (m)";
+    dlg.m_strVarName = "Posterize step (m)";
     dlg.m_strTitle = "Enter posterize step";
     if(dlg.DoModal()!=IDOK) return;
     theApp.m_fPosterizeStep=dlg.m_fEditFloat;
@@ -2007,7 +2007,7 @@ void InvokeBrushPalette(CTIButton *ptib, CPoint pt, CDrawPortPtr pdp)
 
 BOOL CTerrainInterface::Create(LPCTSTR lpszClassName, LPCTSTR lpszWindowName, DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID, CCreateContext* pContext) 
 {
-	return CWnd::Create(lpszClassName, lpszWindowName, dwStyle, rect, pParentWnd, nID, pContext);
+  return CWnd::Create(lpszClassName, lpszWindowName, dwStyle, rect, pParentWnd, nID, pContext);
 }
 
 BOOL CTerrainInterface::IsClicked(CTIButton &tib, CPoint pt) const
@@ -2028,7 +2028,7 @@ BOOL _bDummyMouseMove=FALSE;
 BOOL _bMouseTrapInProgress=FALSE;
 void CTerrainInterface::OnLButtonDown(UINT nFlags, CPoint point) 
 {
-	CWnd::OnLButtonDown(nFlags, point);
+  CWnd::OnLButtonDown(nFlags, point);
   SetFocus();
 
   m_ptMouseDown=point;
@@ -2195,7 +2195,7 @@ BOOL CTerrainInterface::PreTranslateMessage(MSG* pMsg)
 
 void CTerrainInterface::OnRButtonDown(UINT nFlags, CPoint point) 
 {
-	CWnd::OnRButtonDown(nFlags, point);
+  CWnd::OnRButtonDown(nFlags, point);
   SetFocus();
 
   m_ptMouseDown=point;
@@ -2258,7 +2258,7 @@ void CTerrainInterface::OnRButtonUp(UINT nFlags, CPoint point)
     m_ptMouseDown.x=-1;
     m_ptMouseDown.y=-1;
   }
-	CWnd::OnRButtonUp(nFlags, point);
+  CWnd::OnRButtonUp(nFlags, point);
 }
 
 void CTerrainInterface::OnIdle(void)
@@ -2319,7 +2319,7 @@ void CTerrainInterface::OnDropFiles(HDROP hDropInfo)
     return;
   }
 
-	// buffer for dropped file name
+  // buffer for dropped file name
   wchar_t chrFile[ 256];
   // place dropped file name into buffer
   DragQueryFile( hDropInfo, 0, chrFile, 256);
@@ -2338,16 +2338,16 @@ void CTerrainInterface::OnDropFiles(HDROP hDropInfo)
       tib.tib_pOnDropFiles(&tib, ptMouse, m_pDrawPort, fnDropped);
     }
   }
-	CWnd::OnDropFiles(hDropInfo);
+  CWnd::OnDropFiles(hDropInfo);
 }
 
 int CTerrainInterface::OnCreate(LPCREATESTRUCT lpCreateStruct) 
 {
-	if (CWnd::OnCreate(lpCreateStruct) == -1)
-		return -1;
+  if (CWnd::OnCreate(lpCreateStruct) == -1)
+    return -1;
   DragAcceptFiles();
   EnableToolTips( TRUE);
-	return 0;
+  return 0;
 }
 
 int CTerrainInterface::OnToolHitTest( CPoint point, TOOLINFO* pTI ) const
@@ -2371,7 +2371,7 @@ int CTerrainInterface::OnToolHitTest( CPoint point, TOOLINFO* pTI ) const
 
 void CTerrainInterface::InitializeInterface(CDrawPortPtr pdp)
 {
-	try
+  try
   {
     DECLARE_CTFILENAME( fnTerrainEditIcons, "Textures\\Editor\\TerrainEditingIcons.tex");
     _toIcons.SetData_t(fnTerrainEditIcons);

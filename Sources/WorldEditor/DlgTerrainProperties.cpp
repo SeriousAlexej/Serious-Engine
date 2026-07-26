@@ -36,22 +36,22 @@ static PIX _pixGlobalPretenderTextureWidth=64;
 
 
 CDlgTerrainProperties::CDlgTerrainProperties(CWnd* pParent /*=NULL*/)
-	: CDialog(CDlgTerrainProperties::IDD, pParent)
+  : CDialog(CDlgTerrainProperties::IDD, pParent)
 {
-	//{{AFX_DATA_INIT(CDlgTerrainProperties)
-	m_strHeightmapSize = _T("");
-	m_strShadowMapSize = _T("");
-	m_strTerrainPretender = _T("");
-	m_strTilePretender = _T("");
-	m_fTerrainLength = 0.0f;
-	m_fTerrainHeight = 0.0f;
-	m_fTerrainWidth = 0.0f;
-	m_fLODSwitch = 0.0f;
-	m_strShadingMapSize = _T("");
-	m_strMemoryConsumption = _T("");
-	m_strLayerMemory = _T("");
-	m_strEdgeMap = _T("");
-	//}}AFX_DATA_INIT
+  //{{AFX_DATA_INIT(CDlgTerrainProperties)
+  m_strHeightmapSize = _T("");
+  m_strShadowMapSize = _T("");
+  m_strTerrainPretender = _T("");
+  m_strTilePretender = _T("");
+  m_fTerrainLength = 0.0f;
+  m_fTerrainHeight = 0.0f;
+  m_fTerrainWidth = 0.0f;
+  m_fLODSwitch = 0.0f;
+  m_strShadingMapSize = _T("");
+  m_strMemoryConsumption = _T("");
+  m_strLayerMemory = _T("");
+  m_strEdgeMap = _T("");
+  //}}AFX_DATA_INIT
   
   CTerrainPtr ptrTerrain=GetTerrain();
   if(!ptrTerrain) return;
@@ -129,32 +129,32 @@ void CDlgTerrainProperties::DoDataExchange(CDataExchange* pDX)
     m_fLODSwitch=ptrTerrain->tr_fDistFactor;
   }
 
-	CDialog::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CDlgTerrainProperties)
-	DDX_Control(pDX, IDC_GLOBAL_PRETENDER, m_ctrlGlobalPretenderTexture);
-	DDX_Control(pDX, IDC_TILE_PRETENDER, m_ctrlTilePretender);
-	DDX_Control(pDX, IDC_SHADING_MAP, m_ctrlShadingMapSlider);
-	DDX_Control(pDX, IDC_TERRAIN_QUADS_PER_TILE, m_ctrlQuadsPerTile);
-	DDX_Control(pDX, IDC_TERRAIN_HM_WIDTH, m_ctrlHeightMapWidth);
-	DDX_Control(pDX, IDC_TERRAIN_HM_HEIGHT, m_ctrlHeightMapHeight);
-	DDX_Control(pDX, IDC_SHADOW_MAP, m_ctrlShadowMapSlider);
-	DDX_Text(pDX, IDC_HEIGHTIMAP_SIZE_T, m_strHeightmapSize);
-	DDX_Text(pDX, IDC_SHADOW_MAP_T, m_strShadowMapSize);
-	DDX_Text(pDX, IDC_TERRAIN_PRETENDER_T, m_strTerrainPretender);
-	DDX_Text(pDX, IDC_TILE_PRETENDER_T, m_strTilePretender);
-	DDX_Text(pDX, IDC_TERRAIN_LENGTH, m_fTerrainLength);
-	DDV_MinMaxFloat(pDX, m_fTerrainLength, 0.f, 1.e+007f);
-	DDX_Text(pDX, IDC_TERRAIN_HEIGHT, m_fTerrainHeight);
-	DDV_MinMaxFloat(pDX, m_fTerrainHeight, 0.f, 1.e+007f);
-	DDX_Text(pDX, IDC_TERRAIN_WIDTH, m_fTerrainWidth);
-	DDV_MinMaxFloat(pDX, m_fTerrainWidth, 0.f, 1.e+007f);
-	DDX_Text(pDX, IDC_TERRAIN_LOD_SWITCH, m_fLODSwitch);
-	DDV_MinMaxFloat(pDX, m_fLODSwitch, 0.f, 1.e+007f);
-	DDX_Text(pDX, IDC_SHADING_MAP_T, m_strShadingMapSize);
-	DDX_Text(pDX, IDC_TERRAIN_MEMORY_T, m_strMemoryConsumption);
-	DDX_Text(pDX, IDC_LAYER_MEMORY_T, m_strLayerMemory);
-	DDX_Text(pDX, IDC_TERRAIN_EDGE_MEMORY_T, m_strEdgeMap);
-	//}}AFX_DATA_MAP
+  CDialog::DoDataExchange(pDX);
+  //{{AFX_DATA_MAP(CDlgTerrainProperties)
+  DDX_Control(pDX, IDC_GLOBAL_PRETENDER, m_ctrlGlobalPretenderTexture);
+  DDX_Control(pDX, IDC_TILE_PRETENDER, m_ctrlTilePretender);
+  DDX_Control(pDX, IDC_SHADING_MAP, m_ctrlShadingMapSlider);
+  DDX_Control(pDX, IDC_TERRAIN_QUADS_PER_TILE, m_ctrlQuadsPerTile);
+  DDX_Control(pDX, IDC_TERRAIN_HM_WIDTH, m_ctrlHeightMapWidth);
+  DDX_Control(pDX, IDC_TERRAIN_HM_HEIGHT, m_ctrlHeightMapHeight);
+  DDX_Control(pDX, IDC_SHADOW_MAP, m_ctrlShadowMapSlider);
+  DDX_Text(pDX, IDC_HEIGHTIMAP_SIZE_T, m_strHeightmapSize);
+  DDX_Text(pDX, IDC_SHADOW_MAP_T, m_strShadowMapSize);
+  DDX_Text(pDX, IDC_TERRAIN_PRETENDER_T, m_strTerrainPretender);
+  DDX_Text(pDX, IDC_TILE_PRETENDER_T, m_strTilePretender);
+  DDX_Text(pDX, IDC_TERRAIN_LENGTH, m_fTerrainLength);
+  DDV_MinMaxFloat(pDX, m_fTerrainLength, 0.f, 1.e+007f);
+  DDX_Text(pDX, IDC_TERRAIN_HEIGHT, m_fTerrainHeight);
+  DDV_MinMaxFloat(pDX, m_fTerrainHeight, 0.f, 1.e+007f);
+  DDX_Text(pDX, IDC_TERRAIN_WIDTH, m_fTerrainWidth);
+  DDV_MinMaxFloat(pDX, m_fTerrainWidth, 0.f, 1.e+007f);
+  DDX_Text(pDX, IDC_TERRAIN_LOD_SWITCH, m_fLODSwitch);
+  DDV_MinMaxFloat(pDX, m_fLODSwitch, 0.f, 1.e+007f);
+  DDX_Text(pDX, IDC_SHADING_MAP_T, m_strShadingMapSize);
+  DDX_Text(pDX, IDC_TERRAIN_MEMORY_T, m_strMemoryConsumption);
+  DDX_Text(pDX, IDC_LAYER_MEMORY_T, m_strLayerMemory);
+  DDX_Text(pDX, IDC_TERRAIN_EDGE_MEMORY_T, m_strEdgeMap);
+  //}}AFX_DATA_MAP
 
   // if dialog is giving data
   if( pDX->m_bSaveAndValidate != FALSE)
@@ -239,13 +239,13 @@ void CDlgTerrainProperties::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CDlgTerrainProperties, CDialog)
-	//{{AFX_MSG_MAP(CDlgTerrainProperties)
-	ON_WM_HSCROLL()
-	ON_CBN_SELCHANGE(IDC_TERRAIN_HM_WIDTH, OnSelchangeTerrainHmWidth)
-	ON_CBN_SELCHANGE(IDC_TERRAIN_HM_HEIGHT, OnSelchangeTerrainHmHeight)
-	ON_CBN_SELCHANGE(IDC_TILE_PRETENDER, OnSelchangeTilePretender)
-	ON_CBN_SELCHANGE(IDC_GLOBAL_PRETENDER, OnSelchangeGlobalPretender)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CDlgTerrainProperties)
+  ON_WM_HSCROLL()
+  ON_CBN_SELCHANGE(IDC_TERRAIN_HM_WIDTH, OnSelchangeTerrainHmWidth)
+  ON_CBN_SELCHANGE(IDC_TERRAIN_HM_HEIGHT, OnSelchangeTerrainHmHeight)
+  ON_CBN_SELCHANGE(IDC_TILE_PRETENDER, OnSelchangeTilePretender)
+  ON_CBN_SELCHANGE(IDC_GLOBAL_PRETENDER, OnSelchangeGlobalPretender)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -264,29 +264,29 @@ void CDlgTerrainProperties::InitComboBoxes(void)
   {
     CTString strItem;
     strItem.PrintF("%d x %d", iQuads, iQuads);
-	  INDEX iAddedAs=m_ctrlQuadsPerTile.AddString(CString(static_cast<const char*>(strItem)));
-	  m_ctrlQuadsPerTile.SetItemData(iAddedAs,iQuads);
+    INDEX iAddedAs=m_ctrlQuadsPerTile.AddString(CString(static_cast<const char*>(strItem)));
+    m_ctrlQuadsPerTile.SetItemData(iAddedAs,iQuads);
     if(ptrTerrain->tr_ctQuadsInTileRow==iQuads)
     {
       iToSelect=iAddedAs;
     }
   }
-	m_ctrlQuadsPerTile.SetCurSel(iToSelect);
+  m_ctrlQuadsPerTile.SetCurSel(iToSelect);
 
   // prepare heightmap size combo boxes
-	m_ctrlHeightMapWidth.ResetContent();
-	m_ctrlHeightMapHeight.ResetContent();
+  m_ctrlHeightMapWidth.ResetContent();
+  m_ctrlHeightMapHeight.ResetContent();
   INDEX iToSelectW=3;
   INDEX iToSelectH=3;
   for(iWidth=32; iWidth<=2048; iWidth*=2)
   {
     CTString strItem;
     strItem.PrintF("%d", iWidth+1);
-	  // width
+    // width
     INDEX iW=m_ctrlHeightMapWidth.AddString(CString(static_cast<const char*>(strItem)));
     m_ctrlHeightMapWidth.SetItemData(iW,iWidth+1);
     if(ptrTerrain->tr_pixHeightMapWidth==iWidth+1)    iToSelectW=iW;
-	  // height
+    // height
     INDEX iH=m_ctrlHeightMapHeight.AddString(CString(static_cast<const char*>(strItem)));
     m_ctrlHeightMapHeight.SetItemData(iH,iWidth+1);
     if(ptrTerrain->tr_pixHeightMapHeight==iWidth+1)    iToSelectH=iH;
@@ -310,7 +310,7 @@ void CDlgTerrainProperties::PrepareTilePretenderCombo(void)
   {
     CTString strItem;
     strItem.PrintF("%d x %d", iWidth, iWidth);
-	  INDEX iAddedAs=m_ctrlTilePretender.AddString(CString(static_cast<const char*>(strItem)));
+    INDEX iAddedAs=m_ctrlTilePretender.AddString(CString(static_cast<const char*>(strItem)));
     m_ctrlTilePretender.SetItemData(iAddedAs, iWidth);
 
     if(ptrTerrain->tr_pixFirstMipTopMapWidth==iWidth)
@@ -318,7 +318,7 @@ void CDlgTerrainProperties::PrepareTilePretenderCombo(void)
       iToSelect=iAddedAs;
     }
   }
-	m_ctrlTilePretender.SetCurSel(iToSelect);
+  m_ctrlTilePretender.SetCurSel(iToSelect);
   
 }
 
@@ -340,25 +340,25 @@ void CDlgTerrainProperties::PrepareGlobalPretenderCombo(void)
   {
     CTString strItem;
     strItem.PrintF("%d x %d", iWidth, INDEX(iWidth/fAspect));
-	  INDEX iAddedAs=m_ctrlGlobalPretenderTexture.AddString(CString(static_cast<const char*>(strItem)));
+    INDEX iAddedAs=m_ctrlGlobalPretenderTexture.AddString(CString(static_cast<const char*>(strItem)));
     m_ctrlGlobalPretenderTexture.SetItemData(iAddedAs, iWidth);
     if(_pixGlobalPretenderTextureWidth==iWidth)
     {
       iToSelect=iAddedAs;
     }
   }
-	m_ctrlGlobalPretenderTexture.SetCurSel(iToSelect);
+  m_ctrlGlobalPretenderTexture.SetCurSel(iToSelect);
 }
 
 BOOL CDlgTerrainProperties::OnInitDialog() 
 {
-	CDialog::OnInitDialog();
-	
+  CDialog::OnInitDialog();
+  
   // initialize combo boxes
   InitComboBoxes();
 
-	m_ctrlShadowMapSlider.SetRange(-10, 10, TRUE);
-	m_ctrlShadingMapSlider.SetRange(0, 10, TRUE);
+  m_ctrlShadowMapSlider.SetRange(-10, 10, TRUE);
+  m_ctrlShadingMapSlider.SetRange(0, 10, TRUE);
 
   m_ctrlShadowMapSlider.SetPos(_iShadowMapShift);
   m_ctrlShadowMapSlider.Invalidate(FALSE);
@@ -366,7 +366,7 @@ BOOL CDlgTerrainProperties::OnInitDialog()
   m_ctrlShadingMapSlider.Invalidate(FALSE);
 
   UpdateData(FALSE);
-	return TRUE;
+  return TRUE;
 }
 
 BOOL _bUpdateDlg=TRUE;
@@ -401,7 +401,7 @@ void CDlgTerrainProperties::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScro
 
 void CDlgTerrainProperties::OnOK() 
 {
-	CDialog::OnOK();
+  CDialog::OnOK();
 }
 
 void CDlgTerrainProperties::OnSelchangeTilePretender() 

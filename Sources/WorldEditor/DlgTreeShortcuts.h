@@ -33,29 +33,29 @@ public:
   CDlgTreeShortcuts(CWnd* pParent = NULL);   // standard constructor
 
 // Dialog Data
-	//{{AFX_DATA(CDlgTreeShortcuts)
-	enum { IDD = IDD_TREE_SHORTCUTS };
-	//}}AFX_DATA
+  //{{AFX_DATA(CDlgTreeShortcuts)
+  enum { IDD = IDD_TREE_SHORTCUTS };
+  //}}AFX_DATA
 
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CDlgTreeShortcuts)
-	public:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CDlgTreeShortcuts)
+  public:
+  virtual BOOL PreTranslateMessage(MSG* pMsg);
+  protected:
+  virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+  //}}AFX_VIRTUAL
   afx_msg void OnTreeShortcut(UINT nID);
 
 // Implementation
 protected:
 
-	// Generated message map functions
-	//{{AFX_MSG(CDlgTreeShortcuts)
-		// NOTE: the ClassWizard will add member functions here
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+  // Generated message map functions
+  //{{AFX_MSG(CDlgTreeShortcuts)
+    // NOTE: the ClassWizard will add member functions here
+  //}}AFX_MSG
+  DECLARE_MESSAGE_MAP()
 };
 
 //{{AFX_INSERT_LOCATION}}

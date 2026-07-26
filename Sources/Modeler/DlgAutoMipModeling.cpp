@@ -30,12 +30,12 @@ static char THIS_FILE[] = __FILE__;
 
 
 CDlgAutoMipModeling::CDlgAutoMipModeling(CWnd* pParent /*=NULL*/)
-	: CDialog(CDlgAutoMipModeling::IDD, pParent)
+  : CDialog(CDlgAutoMipModeling::IDD, pParent)
 {
-	//{{AFX_DATA_INIT(CDlgAutoMipModeling)
-	m_iVerticesToRemove = 0;
-	m_iSurfacePreservingFactor = 0;
-	//}}AFX_DATA_INIT
+  //{{AFX_DATA_INIT(CDlgAutoMipModeling)
+  m_iVerticesToRemove = 0;
+  m_iSurfacePreservingFactor = 0;
+  //}}AFX_DATA_INIT
 
   m_iVerticesToRemove = theApp.GetProfileInt( L"Modeler prefs", L"Auto mip modeling vertex removal rate", 10);
   m_iSurfacePreservingFactor = theApp.GetProfileInt( L"Modeler prefs", L"Surface preserving factor", 30);
@@ -44,13 +44,13 @@ CDlgAutoMipModeling::CDlgAutoMipModeling(CWnd* pParent /*=NULL*/)
 
 void CDlgAutoMipModeling::DoDataExchange(CDataExchange* pDX)
 {
-	CDialog::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CDlgAutoMipModeling)
-	DDX_Text(pDX, IDC_VERTICES_TO_REMOVE, m_iVerticesToRemove);
-	DDV_MinMaxInt(pDX, m_iVerticesToRemove, 1, 32767);
-	DDX_Text(pDX, IDC_SURFACE_PRESERVING_FACTOR, m_iSurfacePreservingFactor);
-	DDV_MinMaxInt(pDX, m_iSurfacePreservingFactor, 1, 99);
-	//}}AFX_DATA_MAP
+  CDialog::DoDataExchange(pDX);
+  //{{AFX_DATA_MAP(CDlgAutoMipModeling)
+  DDX_Text(pDX, IDC_VERTICES_TO_REMOVE, m_iVerticesToRemove);
+  DDV_MinMaxInt(pDX, m_iVerticesToRemove, 1, 32767);
+  DDX_Text(pDX, IDC_SURFACE_PRESERVING_FACTOR, m_iSurfacePreservingFactor);
+  DDV_MinMaxInt(pDX, m_iSurfacePreservingFactor, 1, 99);
+  //}}AFX_DATA_MAP
 
   // if dialog gives data
   if( pDX->m_bSaveAndValidate)
@@ -62,9 +62,9 @@ void CDlgAutoMipModeling::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CDlgAutoMipModeling, CDialog)
-	//{{AFX_MSG_MAP(CDlgAutoMipModeling)
-		// NOTE: the ClassWizard will add message map macros here
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CDlgAutoMipModeling)
+    // NOTE: the ClassWizard will add message map macros here
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////

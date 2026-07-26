@@ -43,22 +43,22 @@ public:
 public:
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CCSGDesitnationCombo)
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CCSGDesitnationCombo)
+  //}}AFX_VIRTUAL
 
 // Implementation
 public:
-	virtual ~CCSGDesitnationCombo();
+  virtual ~CCSGDesitnationCombo();
 
-	// Generated message map functions
+  // Generated message map functions
 protected:
-	//{{AFX_MSG(CCSGDesitnationCombo)
-	afx_msg void OnSelchange();
-	afx_msg void OnDropdown();
-	//}}AFX_MSG
+  //{{AFX_MSG(CCSGDesitnationCombo)
+  afx_msg void OnSelchange();
+  afx_msg void OnDropdown();
+  //}}AFX_MSG
 
-	DECLARE_MESSAGE_MAP()
+  DECLARE_MESSAGE_MAP()
 };
 
 /////////////////////////////////////////////////////////////////////////////

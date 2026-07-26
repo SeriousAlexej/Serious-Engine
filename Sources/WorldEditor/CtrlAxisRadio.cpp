@@ -44,9 +44,9 @@ void CCtrlAxisRadio::SetDialogPtr( CPropertyComboBar *pDialog)
 }
 
 BEGIN_MESSAGE_MAP(CCtrlAxisRadio, CButton)
-	//{{AFX_MSG_MAP(CCtrlAxisRadio)
-	ON_CONTROL_REFLECT(BN_CLICKED, OnClicked)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CCtrlAxisRadio)
+  ON_CONTROL_REFLECT(BN_CLICKED, OnClicked)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -59,5 +59,5 @@ void CCtrlAxisRadio::OnClicked()
   // select clicked axis radio
   m_pDialog->SelectAxisRadio( this);
   // show that second axis have been selected
-	m_pDialog->ArrangeControls();
+  m_pDialog->ArrangeControls();
 }

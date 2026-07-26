@@ -29,7 +29,7 @@ class CPrimitiveHistoryCombo : public CComboBox
 {  
 // Construction
 public:
-	CPrimitiveHistoryCombo();
+  CPrimitiveHistoryCombo();
 
 // Attributes
 public:
@@ -38,24 +38,24 @@ public:
 public:
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CPrimitiveHistoryCombo)
-	public:
-	virtual void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
-	virtual void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CPrimitiveHistoryCombo)
+  public:
+  virtual void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
+  virtual void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);
+  //}}AFX_VIRTUAL
 
 // Implementation
 public:
-	virtual ~CPrimitiveHistoryCombo();
+  virtual ~CPrimitiveHistoryCombo();
 
-	// Generated message map functions
+  // Generated message map functions
 protected:
-	//{{AFX_MSG(CPrimitiveHistoryCombo)
-		// NOTE - the ClassWizard will add and remove member functions here.
-	//}}AFX_MSG
+  //{{AFX_MSG(CPrimitiveHistoryCombo)
+    // NOTE - the ClassWizard will add and remove member functions here.
+  //}}AFX_MSG
 
-	DECLARE_MESSAGE_MAP()
+  DECLARE_MESSAGE_MAP()
 };
 
 /////////////////////////////////////////////////////////////////////////////

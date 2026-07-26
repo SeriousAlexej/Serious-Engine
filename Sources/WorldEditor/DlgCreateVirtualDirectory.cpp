@@ -32,18 +32,18 @@ static char THIS_FILE[] = __FILE__;
 
 CDlgCreateVirtualDirectory::CDlgCreateVirtualDirectory(CTString strOldName /*= ""*/,
               CTString strTitle /*="Create virtual directory"*/, CWnd* pParent /*=NULL*/)
-	: CDialog(CDlgCreateVirtualDirectory::IDD, pParent)
+  : CDialog(CDlgCreateVirtualDirectory::IDD, pParent)
 {
-	m_strTitle = strTitle;
+  m_strTitle = strTitle;
   //{{AFX_DATA_INIT(CDlgCreateVirtualDirectory)
-	m_strDirectoryName = CString(strOldName);
-	//}}AFX_DATA_INIT
+  m_strDirectoryName = CString(strOldName);
+  //}}AFX_DATA_INIT
 }
 
 
 void CDlgCreateVirtualDirectory::DoDataExchange(CDataExchange* pDX)
 {
-	INDEX i;
+  INDEX i;
   CDialog::DoDataExchange(pDX);
 
   // if dialog is receiving data
@@ -51,11 +51,11 @@ void CDlgCreateVirtualDirectory::DoDataExchange(CDataExchange* pDX)
   {
   }
 
-	//{{AFX_DATA_MAP(CDlgCreateVirtualDirectory)
-	DDX_Control(pDX, IDC_DIRECTORY_ICON_LIST, m_DirectoryIconsList);
-	DDX_Text(pDX, IDC_EDIT1, m_strDirectoryName);
-	DDV_MaxChars(pDX, m_strDirectoryName, 32);
-	//}}AFX_DATA_MAP
+  //{{AFX_DATA_MAP(CDlgCreateVirtualDirectory)
+  DDX_Control(pDX, IDC_DIRECTORY_ICON_LIST, m_DirectoryIconsList);
+  DDX_Text(pDX, IDC_EDIT1, m_strDirectoryName);
+  DDV_MaxChars(pDX, m_strDirectoryName, 32);
+  //}}AFX_DATA_MAP
 
   // if dialog gives data
   if( pDX->m_bSaveAndValidate != FALSE)
@@ -76,9 +76,9 @@ void CDlgCreateVirtualDirectory::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CDlgCreateVirtualDirectory, CDialog)
-	//{{AFX_MSG_MAP(CDlgCreateVirtualDirectory)
-	ON_NOTIFY(NM_DBLCLK, IDC_DIRECTORY_ICON_LIST, OnDblclkDirectoryIconList)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CDlgCreateVirtualDirectory)
+  ON_NOTIFY(NM_DBLCLK, IDC_DIRECTORY_ICON_LIST, OnDblclkDirectoryIconList)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -86,8 +86,8 @@ END_MESSAGE_MAP()
 
 BOOL CDlgCreateVirtualDirectory::OnInitDialog() 
 {
-	CDialog::OnInitDialog();
-	
+  CDialog::OnInitDialog();
+  
   SetWindowText( CString(m_strTitle));
 
   m_IconsImageList.Create( IDB_DIRECTORY_ICONS, 16, 1, CLR_NONE);
@@ -99,13 +99,13 @@ BOOL CDlgCreateVirtualDirectory::OnInitDialog()
   }
 
   return TRUE;  // return TRUE unless you set the focus to a control
-	              // EXCEPTION: OCX Property Pages should return FALSE
+                // EXCEPTION: OCX Property Pages should return FALSE
 }
 
 void CDlgCreateVirtualDirectory::OnDblclkDirectoryIconList(NMHDR* pNMHDR, LRESULT* pResult) 
 {
-	UpdateData();
+  UpdateData();
   if( m_strCreatedDirName != "")
     EndDialog(IDOK);
-	*pResult = 0;
+  *pResult = 0;
 }

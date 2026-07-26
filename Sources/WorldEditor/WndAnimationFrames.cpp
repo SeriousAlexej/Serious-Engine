@@ -46,12 +46,12 @@ CWndAnimationFrames::~CWndAnimationFrames()
 
 
 BEGIN_MESSAGE_MAP(CWndAnimationFrames, CWnd)
-	//{{AFX_MSG_MAP(CWndAnimationFrames)
-	ON_WM_PAINT()
-	ON_WM_LBUTTONDOWN()
-	ON_WM_LBUTTONDBLCLK()
-	ON_WM_DESTROY()
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CWndAnimationFrames)
+  ON_WM_PAINT()
+  ON_WM_LBUTTONDOWN()
+  ON_WM_LBUTTONDBLCLK()
+  ON_WM_DESTROY()
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 
@@ -238,13 +238,13 @@ void CWndAnimationFrames::OnLButtonDown(UINT nFlags, CPoint point)
     m_pParentDlg->UpdateData( FALSE);
     m_pParentDlg->m_bChanged = TRUE;
   }
-	CWnd::OnLButtonDown(nFlags, point);
+  CWnd::OnLButtonDown(nFlags, point);
 }
 
 void CWndAnimationFrames::OnLButtonDblClk(UINT nFlags, CPoint point) 
 {
-	OnLButtonDown(nFlags, point);	
-	CWnd::OnLButtonDblClk(nFlags, point);
+  OnLButtonDown(nFlags, point);  
+  CWnd::OnLButtonDblClk(nFlags, point);
 }
 
 void CWndAnimationFrames::ScrollLeft(void)
@@ -321,8 +321,8 @@ void CWndAnimationFrames::ScrollPgRight()
 
 void CWndAnimationFrames::OnDestroy() 
 {
-	CWnd::OnDestroy();
-	
+  CWnd::OnDestroy();
+  
   if( m_pViewPort)
   {
     _pGfx_DestroyWindowCanvas( m_pViewPort);

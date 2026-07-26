@@ -27,38 +27,38 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class CDlgPgTerrain : public CPropertyPage
 {
-	DECLARE_DYNCREATE(CDlgPgTerrain)
+  DECLARE_DYNCREATE(CDlgPgTerrain)
 
 // Construction
 public:
-	CDlgPgTerrain();
-	~CDlgPgTerrain();  
+  CDlgPgTerrain();
+  ~CDlgPgTerrain();  
 
   BOOL OnIdle(LONG lCount);
-	CTerrainInterface	m_wndTerrainInterface;
+  CTerrainInterface  m_wndTerrainInterface;
 
 // Dialog Data
-	//{{AFX_DATA(CDlgPgTerrain)
-	enum { IDD = IDD_PG_TERRAIN };
-		// NOTE - ClassWizard will add data members here.
-		//    DO NOT EDIT what you see in these blocks of generated code !
-	//}}AFX_DATA
+  //{{AFX_DATA(CDlgPgTerrain)
+  enum { IDD = IDD_PG_TERRAIN };
+    // NOTE - ClassWizard will add data members here.
+    //    DO NOT EDIT what you see in these blocks of generated code !
+  //}}AFX_DATA
 
 
 // Overrides
-	// ClassWizard generate virtual function overrides
-	//{{AFX_VIRTUAL(CDlgPgTerrain)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
+  // ClassWizard generate virtual function overrides
+  //{{AFX_VIRTUAL(CDlgPgTerrain)
+  protected:
+  virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+  //}}AFX_VIRTUAL
 
 // Implementation
 protected:
-	// Generated message map functions
-	//{{AFX_MSG(CDlgPgTerrain)
-	virtual BOOL OnInitDialog();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+  // Generated message map functions
+  //{{AFX_MSG(CDlgPgTerrain)
+  virtual BOOL OnInitDialog();
+  //}}AFX_MSG
+  DECLARE_MESSAGE_MAP()
 };
 
 //{{AFX_INSERT_LOCATION}}

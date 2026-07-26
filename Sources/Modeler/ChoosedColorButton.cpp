@@ -38,9 +38,9 @@ CChoosedColorButton::~CChoosedColorButton()
 
 
 BEGIN_MESSAGE_MAP(CChoosedColorButton, CButton)
-	//{{AFX_MSG_MAP(CChoosedColorButton)
-	ON_WM_LBUTTONDOWN()
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CChoosedColorButton)
+  ON_WM_LBUTTONDOWN()
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -79,6 +79,6 @@ void CChoosedColorButton::OnLButtonDown(UINT nFlags, CPoint point)
     CMainFrame* pMainFrame = STATIC_DOWNCAST(CMainFrame, AfxGetMainWnd());
     pMainFrame->m_dlgPaletteDialog->UpdateData(FALSE);
   }
-	
-	CButton::OnLButtonDown(nFlags, point);
+  
+  CButton::OnLButtonDown(nFlags, point);
 }

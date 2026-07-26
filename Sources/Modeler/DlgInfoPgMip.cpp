@@ -32,17 +32,17 @@ IMPLEMENT_DYNCREATE(CDlgInfoPgMip, CPropertyPage)
 
 CDlgInfoPgMip::CDlgInfoPgMip() : CPropertyPage(CDlgInfoPgMip::IDD)
 {
-	//{{AFX_DATA_INIT(CDlgInfoPgMip)
-	m_strCurrentMipModel = _T("");
-	m_strModelDistance = _T("");
-	m_strCurrentMipFactor = _T("");
-	m_strModelMipSwitchFactor = _T("");
-	m_strNoOfPolygons = _T("");
-	m_strNoOfVertices = _T("");
-	m_strNoOfTriangles = _T("");
-	m_bHasPatches = FALSE;
-	m_bHasAttachedModels = FALSE;
-	//}}AFX_DATA_INIT
+  //{{AFX_DATA_INIT(CDlgInfoPgMip)
+  m_strCurrentMipModel = _T("");
+  m_strModelDistance = _T("");
+  m_strCurrentMipFactor = _T("");
+  m_strModelMipSwitchFactor = _T("");
+  m_strNoOfPolygons = _T("");
+  m_strNoOfVertices = _T("");
+  m_strNoOfTriangles = _T("");
+  m_bHasPatches = FALSE;
+  m_bHasAttachedModels = FALSE;
+  //}}AFX_DATA_INIT
   theApp.m_pPgInfoMip = this;
 }
 
@@ -124,18 +124,18 @@ void CDlgInfoPgMip::DoDataExchange(CDataExchange* pDX)
     m_udAllValues.MarkUpdated();
   }
 
-	CPropertyPage::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CDlgInfoPgMip)
-	DDX_Text(pDX, IDC_CURRENT_MIP_MODEL, m_strCurrentMipModel);
-	DDX_Text(pDX, IDC_MODEL_DISTANCE, m_strModelDistance);
-	DDX_Text(pDX, IDC_CURRENT_FACTOR, m_strCurrentMipFactor);
-	DDX_Text(pDX, IDC_MODEL_SWITCH_FACTOR, m_strModelMipSwitchFactor);
-	DDX_Text(pDX, IDC_NO_OF_POLYGONS, m_strNoOfPolygons);
-	DDX_Text(pDX, IDC_NO_OF_VERTICES, m_strNoOfVertices);
-	DDX_Text(pDX, IDC_NO_OF_TRIANGLES, m_strNoOfTriangles);
-	DDX_Check(pDX, IDC_HAS_PATCHES, m_bHasPatches);
-	DDX_Check(pDX, IDC_HAS_ATTACHED_MODELS, m_bHasAttachedModels);
-	//}}AFX_DATA_MAP
+  CPropertyPage::DoDataExchange(pDX);
+  //{{AFX_DATA_MAP(CDlgInfoPgMip)
+  DDX_Text(pDX, IDC_CURRENT_MIP_MODEL, m_strCurrentMipModel);
+  DDX_Text(pDX, IDC_MODEL_DISTANCE, m_strModelDistance);
+  DDX_Text(pDX, IDC_CURRENT_FACTOR, m_strCurrentMipFactor);
+  DDX_Text(pDX, IDC_MODEL_SWITCH_FACTOR, m_strModelMipSwitchFactor);
+  DDX_Text(pDX, IDC_NO_OF_POLYGONS, m_strNoOfPolygons);
+  DDX_Text(pDX, IDC_NO_OF_VERTICES, m_strNoOfVertices);
+  DDX_Text(pDX, IDC_NO_OF_TRIANGLES, m_strNoOfTriangles);
+  DDX_Check(pDX, IDC_HAS_PATCHES, m_bHasPatches);
+  DDX_Check(pDX, IDC_HAS_ATTACHED_MODELS, m_bHasAttachedModels);
+  //}}AFX_DATA_MAP
 
   if( pDX->m_bSaveAndValidate)
   {
@@ -145,10 +145,10 @@ void CDlgInfoPgMip::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CDlgInfoPgMip, CPropertyPage)
-	//{{AFX_MSG_MAP(CDlgInfoPgMip)
-	ON_BN_CLICKED(IDC_HAS_PATCHES, OnHasPatches)
-	ON_BN_CLICKED(IDC_HAS_ATTACHED_MODELS, OnHasAttachedModels)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CDlgInfoPgMip)
+  ON_BN_CLICKED(IDC_HAS_PATCHES, OnHasPatches)
+  ON_BN_CLICKED(IDC_HAS_ATTACHED_MODELS, OnHasAttachedModels)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////

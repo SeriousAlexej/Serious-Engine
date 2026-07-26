@@ -35,13 +35,13 @@ static BOOL _bWasForced32 = FALSE;
 
 
 CDlgCreateNormalTexture::CDlgCreateNormalTexture( CTFileName fnInputFile, CWnd* pParent /*=NULL*/)
-	: CDialog(CDlgCreateNormalTexture::IDD, pParent)
+  : CDialog(CDlgCreateNormalTexture::IDD, pParent)
 {
   //{{AFX_DATA_INIT(CDlgCreateNormalTexture)
-	m_strCreatedTextureName = _T("");
-	m_strSizeInPixels = _T("");
-	m_bCreateMipmaps = FALSE;
-	//}}AFX_DATA_INIT
+  m_strCreatedTextureName = _T("");
+  m_strSizeInPixels = _T("");
+  m_bCreateMipmaps = FALSE;
+  //}}AFX_DATA_INIT
 
   m_bSourcePictureValid = FALSE;
   m_bPreviewWindowsCreated = FALSE;
@@ -165,21 +165,21 @@ void CDlgCreateNormalTexture::ReleaseCreatedTexture(void)
 
 void CDlgCreateNormalTexture::DoDataExchange(CDataExchange* pDX)
 {
-	CDialog::DoDataExchange(pDX);
+  CDialog::DoDataExchange(pDX);
 
   // if dialog is recieving data
   if(pDX->m_bSaveAndValidate == FALSE)
   {
   }
 
-	//{{AFX_DATA_MAP(CDlgCreateNormalTexture)
-	DDX_Control(pDX, IDC_FORCE32, m_ctrlForce32);
-	DDX_Control(pDX, IDC_CHEQUERED_ALPHA, m_ctrlCheckButton);
-	DDX_Control(pDX, IDC_MEX_SIZE, m_ctrlMexSizeCombo);
-	DDX_Text(pDX, IDC_CREATED_TEXTURE_NAME, m_strCreatedTextureName);
-	DDX_Text(pDX, IDC_SIZE_IN_PIXELS, m_strSizeInPixels);
-	DDX_Check(pDX, IDC_CREATE_MIPMAPS, m_bCreateMipmaps);
-	//}}AFX_DATA_MAP
+  //{{AFX_DATA_MAP(CDlgCreateNormalTexture)
+  DDX_Control(pDX, IDC_FORCE32, m_ctrlForce32);
+  DDX_Control(pDX, IDC_CHEQUERED_ALPHA, m_ctrlCheckButton);
+  DDX_Control(pDX, IDC_MEX_SIZE, m_ctrlMexSizeCombo);
+  DDX_Text(pDX, IDC_CREATED_TEXTURE_NAME, m_strCreatedTextureName);
+  DDX_Text(pDX, IDC_SIZE_IN_PIXELS, m_strSizeInPixels);
+  DDX_Check(pDX, IDC_CREATE_MIPMAPS, m_bCreateMipmaps);
+  //}}AFX_DATA_MAP
   
   // if dialog is giving data
   if(pDX->m_bSaveAndValidate != FALSE)
@@ -189,13 +189,13 @@ void CDlgCreateNormalTexture::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CDlgCreateNormalTexture, CDialog)
-	//{{AFX_MSG_MAP(CDlgCreateNormalTexture)
-	ON_WM_PAINT()
-	ON_BN_CLICKED(IDC_CHEQUERED_ALPHA, OnChequeredAlpha)
-	ON_BN_CLICKED(IDC_FORCE32, OnForce32)
-	ON_BN_CLICKED(ID_CREATE_TEXTURE, OnCreateTexture)
-	ON_BN_CLICKED(IDC_CREATE_MIPMAPS, OnCreateMipmaps)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CDlgCreateNormalTexture)
+  ON_WM_PAINT()
+  ON_BN_CLICKED(IDC_CHEQUERED_ALPHA, OnChequeredAlpha)
+  ON_BN_CLICKED(IDC_FORCE32, OnForce32)
+  ON_BN_CLICKED(ID_CREATE_TEXTURE, OnCreateTexture)
+  ON_BN_CLICKED(IDC_CREATE_MIPMAPS, OnCreateMipmaps)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -203,8 +203,8 @@ END_MESSAGE_MAP()
 
 void CDlgCreateNormalTexture::OnPaint() 
 {
-	CPaintDC dc(this); // device context for painting
-	
+  CPaintDC dc(this); // device context for painting
+  
   // if texture preview windows are not yet created
   if( !m_bPreviewWindowsCreated)
   {
@@ -227,7 +227,7 @@ void CDlgCreateNormalTexture::OnPaint()
 
 BOOL CDlgCreateNormalTexture::OnInitDialog() 
 {
-	CDialog::OnInitDialog();
+  CDialog::OnInitDialog();
   char strSize[ 64];
 
   // set default created texture's size
@@ -269,7 +269,7 @@ BOOL CDlgCreateNormalTexture::OnInitDialog()
     m_wndViewCreatedTexture.m_bForce32 = FALSE;
   }
   // return TRUE unless you set the focus to a control
-	return TRUE;  
+  return TRUE;  
 }
 
 
@@ -313,6 +313,6 @@ void CDlgCreateNormalTexture::OnForce32()
 
 void CDlgCreateNormalTexture::OnCreateMipmaps() 
 {
-	m_bCreateMipmaps = !m_bCreateMipmaps;
+  m_bCreateMipmaps = !m_bCreateMipmaps;
   UpdateData(FALSE);
 }

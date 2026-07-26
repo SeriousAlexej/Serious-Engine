@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class CInfoFrame : public CMiniFrameWnd
 {
-	DECLARE_DYNCREATE(CInfoFrame)
+  DECLARE_DYNCREATE(CInfoFrame)
 protected:
 
 // Attributes
@@ -34,24 +34,24 @@ public:
 
 // Operations
 public:
-	CInfoFrame();           // protected constructor used by dynamic creation
-	virtual ~CInfoFrame();
+  CInfoFrame();           // protected constructor used by dynamic creation
+  virtual ~CInfoFrame();
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CInfoFrame)
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CInfoFrame)
+  //}}AFX_VIRTUAL
 
 // Implementation
 protected:
 public:
 
-	// Generated message map functions
-	//{{AFX_MSG(CInfoFrame)
-	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
-	afx_msg void OnClose();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+  // Generated message map functions
+  //{{AFX_MSG(CInfoFrame)
+  afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
+  afx_msg void OnClose();
+  //}}AFX_MSG
+  DECLARE_MESSAGE_MAP()
 };
 
 /////////////////////////////////////////////////////////////////////////////

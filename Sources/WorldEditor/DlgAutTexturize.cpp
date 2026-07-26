@@ -32,11 +32,11 @@ static char THIS_FILE[] = __FILE__;
 
 
 CDlgAutTexturize::CDlgAutTexturize(CWnd* pParent /*=NULL*/)
-	: CDialog(CDlgAutTexturize::IDD, pParent)
+  : CDialog(CDlgAutTexturize::IDD, pParent)
 {
-	//{{AFX_DATA_INIT(CDlgAutTexturize)
-	m_bExpandEdges = FALSE;
-	//}}AFX_DATA_INIT
+  //{{AFX_DATA_INIT(CDlgAutTexturize)
+  m_bExpandEdges = FALSE;
+  //}}AFX_DATA_INIT
 
   m_pixWidth=1;
   m_pixHeight=1;
@@ -49,7 +49,7 @@ void CDlgAutTexturize::DoDataExchange(CDataExchange* pDX)
   if( pDX->m_bSaveAndValidate == FALSE)
   {
     CWorldEditorDoc* pDoc = theApp.GetActiveDocument();
-  	COLOR colOld=pDoc->m_woWorld.wo_colBackground;
+    COLOR colOld=pDoc->m_woWorld.wo_colBackground;
     colOld=AfxGetApp()->GetProfileInt( L"World editor", L"Pretender bcg color", colOld);
     m_bExpandEdges=TRUE;
     m_bExpandEdges=AfxGetApp()->GetProfileInt( L"World editor", L"Auto expand edges", m_bExpandEdges);
@@ -57,19 +57,19 @@ void CDlgAutTexturize::DoDataExchange(CDataExchange* pDX)
     m_colBcg.SetPickerType( CColoredButton::PT_MFC);
   }
 
-	CDialog::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CDlgAutTexturize)
-	DDX_Control(pDX, IDC_PRETENDER_TEXTURE_STYLE, m_ctrlPretenderTextureStyle);
-	DDX_Control(pDX, ID_SECTOR_COLOR, m_colBcg);
-	DDX_Control(pDX, IDC_PRETENDER_TEXTURE_SIZE, m_ctrPretenderTextureSize);
-	DDX_Check(pDX, IDC_EXPAND_EDGES, m_bExpandEdges);
-	//}}AFX_DATA_MAP
+  CDialog::DoDataExchange(pDX);
+  //{{AFX_DATA_MAP(CDlgAutTexturize)
+  DDX_Control(pDX, IDC_PRETENDER_TEXTURE_STYLE, m_ctrlPretenderTextureStyle);
+  DDX_Control(pDX, ID_SECTOR_COLOR, m_colBcg);
+  DDX_Control(pDX, IDC_PRETENDER_TEXTURE_SIZE, m_ctrPretenderTextureSize);
+  DDX_Check(pDX, IDC_EXPAND_EDGES, m_bExpandEdges);
+  //}}AFX_DATA_MAP
 
   // if dialog gives data
   if( pDX->m_bSaveAndValidate != FALSE)
   {
     INDEX iSelected=m_ctrPretenderTextureSize.GetCurSel();
-	  if( iSelected==CB_ERR) return;
+    if( iSelected==CB_ERR) return;
     m_pixWidth=1<<iSelected;
     m_pixHeight=1<<iSelected;
     COLOR colResult=m_colBcg.GetColor();
@@ -84,8 +84,8 @@ void CDlgAutTexturize::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CDlgAutTexturize, CDialog)
-	//{{AFX_MSG_MAP(CDlgAutTexturize)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CDlgAutTexturize)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -93,9 +93,9 @@ END_MESSAGE_MAP()
 
 BOOL CDlgAutTexturize::OnInitDialog() 
 {
-	CDialog::OnInitDialog();
-	
-	m_ctrPretenderTextureSize.ResetContent();
+  CDialog::OnInitDialog();
+  
+  m_ctrPretenderTextureSize.ResetContent();
   // add all available frictions
   for(INDEX iW=0; iW<10; iW++)
   {
@@ -107,12 +107,12 @@ BOOL CDlgAutTexturize::OnInitDialog()
   iSelected=AfxGetApp()->GetProfileInt( L"World editor", L"Pretender resolution", iSelected);
   m_ctrPretenderTextureSize.SetCurSel(iSelected);
 
-	m_ctrlPretenderTextureStyle.ResetContent();
+  m_ctrlPretenderTextureStyle.ResetContent();
   m_ctrlPretenderTextureStyle.AddString( L"Front view only");
   m_ctrlPretenderTextureStyle.AddString( L"Cylindrical view (FRBL)");
   m_ctrlPretenderTextureStyle.AddString( L"Boxed view (FRBLUD)");
   iSelected=1;
   iSelected=AfxGetApp()->GetProfileInt( L"World editor", L"Pretender style", iSelected);
   m_ctrlPretenderTextureStyle.SetCurSel(iSelected);
-	return TRUE;
+  return TRUE;
 }

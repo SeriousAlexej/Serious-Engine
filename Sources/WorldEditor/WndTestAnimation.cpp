@@ -42,11 +42,11 @@ CWndTestAnimation::~CWndTestAnimation()
 
 
 BEGIN_MESSAGE_MAP(CWndTestAnimation, CWnd)
-	//{{AFX_MSG_MAP(CWndTestAnimation)
-	ON_WM_PAINT()
-	ON_WM_TIMER()
-	ON_WM_DESTROY()
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CWndTestAnimation)
+  ON_WM_PAINT()
+  ON_WM_TIMER()
+  ON_WM_DESTROY()
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 
@@ -103,7 +103,7 @@ void CWndTestAnimation::OnPaint()
 static TIME timeLastTick=TIME(0);
 void CWndTestAnimation::OnTimer(UINT nIDEvent) 
 {
-	// on our timer discard test animation window
+  // on our timer discard test animation window
   if( nIDEvent == 1)
   {
     TIME timeCurrentTick = _pTimer_GetRealTimeTick();
@@ -112,17 +112,17 @@ void CWndTestAnimation::OnTimer(UINT nIDEvent)
       _pTimer_SetCurrentTick( timeCurrentTick);
       timeLastTick = timeCurrentTick;
     }
-    Invalidate(FALSE);	
+    Invalidate(FALSE);  
   }
 
-	CWnd::OnTimer(nIDEvent);
+  CWnd::OnTimer(nIDEvent);
 }
 
 void CWndTestAnimation::OnDestroy() 
 {
   KillTimer( m_iTimerID);
   _pTimer_SetCurrentTick( 0.0f);
-	CWnd::OnDestroy();
+  CWnd::OnDestroy();
 
   if( m_pViewPort )
   {

@@ -52,7 +52,7 @@ static char THIS_FILE[] = __FILE__;
 IMPLEMENT_DYNAMIC(CInfoSheet, CPropertySheet)
 
 CInfoSheet::CInfoSheet(CWnd* pWndParent)
-	: CPropertySheet(AFX_IDS_APP_TITLE, pWndParent)
+  : CPropertySheet(AFX_IDS_APP_TITLE, pWndParent)
 {
   // Add all pages so frame could get bounding sizes of all of them
   AddPage( &m_PgGlobal);
@@ -86,8 +86,8 @@ void CInfoSheet::SoftSetActivePage( INDEX iActivePage)
 }
 
 BEGIN_MESSAGE_MAP(CInfoSheet, CPropertySheet)
-	//{{AFX_MSG_MAP(CInfoSheet)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CInfoSheet)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -97,7 +97,7 @@ void CInfoSheet::DoDataExchange(CDataExchange* pDX)
 {
   CPropertyPage *pgActivPage = GetActivePage();
   CALLACTIVEPAGE(UpdateData, pDX->m_bSaveAndValidate);
-	
+  
   CPropertySheet::DoDataExchange(pDX);
 }
 
@@ -274,8 +274,8 @@ BOOL CInfoSheet::OnIdle(LONG lCount)
 
 void CInfoSheet::PostNcDestroy() 
 {
-	CPropertySheet::PostNcDestroy();
-	delete this;
+  CPropertySheet::PostNcDestroy();
+  delete this;
 }
 
 BOOL CInfoSheet::PreTranslateMessage(MSG* pMsg) 
@@ -283,7 +283,7 @@ BOOL CInfoSheet::PreTranslateMessage(MSG* pMsg)
   CWorldEditorDoc* pDoc = theApp.GetActiveDocument();
   CMainFrame* pMainFrame = STATIC_DOWNCAST(CMainFrame, AfxGetMainWnd());
   BOOL bAlt = (GetKeyState( VK_MENU)&0x8000) != 0;
-	if(pMsg->message==WM_KEYDOWN)
+  if(pMsg->message==WM_KEYDOWN)
   {
     // get active document 
     BOOL bSectorNameTyping = FALSE;
@@ -316,6 +316,6 @@ BOOL CInfoSheet::PreTranslateMessage(MSG* pMsg)
       }
     }
   }
-	
-	return CPropertySheet::PreTranslateMessage(pMsg);
+  
+  return CPropertySheet::PreTranslateMessage(pMsg);
 }

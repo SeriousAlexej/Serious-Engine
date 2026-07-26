@@ -32,29 +32,29 @@ static char THIS_FILE[] = __FILE__;
 
 
 CDlgEditTerrainBrush::CDlgEditTerrainBrush(CWnd* pParent /*=NULL*/)
-	: CDialog(CDlgEditTerrainBrush::IDD, pParent)
+  : CDialog(CDlgEditTerrainBrush::IDD, pParent)
 {
-	//{{AFX_DATA_INIT(CDlgEditTerrainBrush)
-	m_fFallOff = 0.0f;
-	m_fHotSpot = 0.0f;
-	//}}AFX_DATA_INIT
+  //{{AFX_DATA_INIT(CDlgEditTerrainBrush)
+  m_fFallOff = 0.0f;
+  m_fHotSpot = 0.0f;
+  //}}AFX_DATA_INIT
 }
 
 void CDlgEditTerrainBrush::DoDataExchange(CDataExchange* pDX)
 {
-	CDialog::DoDataExchange(pDX);
+  CDialog::DoDataExchange(pDX);
   // if dialog is reciving data
   if( pDX->m_bSaveAndValidate == FALSE)
   {
     m_fHotSpot=atebCustomEditBrushes[m_iBrush].teb_fHotSpot;
     m_fFallOff=atebCustomEditBrushes[m_iBrush].teb_fFallOff;
   }
-	//{{AFX_DATA_MAP(CDlgEditTerrainBrush)
-	DDX_Text(pDX, IDC_FALLOFF, m_fFallOff);
-	DDV_MinMaxFloat(pDX, m_fFallOff, 0.f, 1.e+008f);
-	DDX_Text(pDX, IDC_HOTSPOT, m_fHotSpot);
-	DDV_MinMaxFloat(pDX, m_fHotSpot, 0.f, 1.e+007f);
-	//}}AFX_DATA_MAP
+  //{{AFX_DATA_MAP(CDlgEditTerrainBrush)
+  DDX_Text(pDX, IDC_FALLOFF, m_fFallOff);
+  DDV_MinMaxFloat(pDX, m_fFallOff, 0.f, 1.e+008f);
+  DDX_Text(pDX, IDC_HOTSPOT, m_fHotSpot);
+  DDV_MinMaxFloat(pDX, m_fHotSpot, 0.f, 1.e+007f);
+  //}}AFX_DATA_MAP
 
   // if dialog is giving data
   if( pDX->m_bSaveAndValidate != FALSE)
@@ -66,10 +66,10 @@ void CDlgEditTerrainBrush::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CDlgEditTerrainBrush, CDialog)
-	//{{AFX_MSG_MAP(CDlgEditTerrainBrush)
-	ON_BN_CLICKED(ID_GENERATE_TERRAIN_BRUSH, OnGenerateTerrainBrush)
-	ON_BN_CLICKED(IDC_IMPORT_TERRAIN_BRUSH, OnImportTerrainBrush)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CDlgEditTerrainBrush)
+  ON_BN_CLICKED(ID_GENERATE_TERRAIN_BRUSH, OnGenerateTerrainBrush)
+  ON_BN_CLICKED(IDC_IMPORT_TERRAIN_BRUSH, OnImportTerrainBrush)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////

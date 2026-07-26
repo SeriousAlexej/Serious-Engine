@@ -33,11 +33,11 @@ static char THIS_FILE[] = __FILE__;
 
 
 CDlgTipOfTheDay::CDlgTipOfTheDay(CWnd* pParent /*=NULL*/)
-	: CDialog(CDlgTipOfTheDay::IDD, pParent)
+  : CDialog(CDlgTipOfTheDay::IDD, pParent)
 {
-	//{{AFX_DATA_INIT(CDlgTipOfTheDay)
-	m_bShowTipsAtStartup = FALSE;
-	//}}AFX_DATA_INIT
+  //{{AFX_DATA_INIT(CDlgTipOfTheDay)
+  m_bShowTipsAtStartup = FALSE;
+  //}}AFX_DATA_INIT
   m_bShowTipsAtStartup = theApp.m_bShowTipOfTheDay;
 
   try {
@@ -54,7 +54,7 @@ CDlgTipOfTheDay::CDlgTipOfTheDay(CWnd* pParent /*=NULL*/)
 
 void CDlgTipOfTheDay::DoDataExchange(CDataExchange* pDX)
 {
-	CDialog::DoDataExchange(pDX);
+  CDialog::DoDataExchange(pDX);
 
   INDEX ctTips = m_astrTips.size();
   if (ctTips>0) {
@@ -66,21 +66,21 @@ void CDlgTipOfTheDay::DoDataExchange(CDataExchange* pDX)
     m_wndTipText.m_strTipText = "error";
   }
 
-	//{{AFX_DATA_MAP(CDlgTipOfTheDay)
-	DDX_Control(pDX, IDC_TIPTEXT, m_wndTipText);
-	DDX_Check(pDX, IDC_SHOWTIPSATSTARTUP, m_bShowTipsAtStartup);
-	//}}AFX_DATA_MAP
+  //{{AFX_DATA_MAP(CDlgTipOfTheDay)
+  DDX_Control(pDX, IDC_TIPTEXT, m_wndTipText);
+  DDX_Check(pDX, IDC_SHOWTIPSATSTARTUP, m_bShowTipsAtStartup);
+  //}}AFX_DATA_MAP
 
   theApp.m_bShowTipOfTheDay = m_bShowTipsAtStartup;
 }
 
 
 BEGIN_MESSAGE_MAP(CDlgTipOfTheDay, CDialog)
-	//{{AFX_MSG_MAP(CDlgTipOfTheDay)
-	ON_WM_CLOSE()
-	ON_BN_CLICKED(IDC_NEXTTIP, OnNextTip)
-	ON_BN_CLICKED(IDC_PREVTIP, OnPrevTip)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CDlgTipOfTheDay)
+  ON_WM_CLOSE()
+  ON_BN_CLICKED(IDC_NEXTTIP, OnNextTip)
+  ON_BN_CLICKED(IDC_PREVTIP, OnPrevTip)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -88,17 +88,17 @@ END_MESSAGE_MAP()
 
 void CDlgTipOfTheDay::OnCancel() 
 {
-	CDlgTipOfTheDay::OnOK();
+  CDlgTipOfTheDay::OnOK();
 }
 
 void CDlgTipOfTheDay::OnClose() 
 {
-	CDlgTipOfTheDay::OnOK();
+  CDlgTipOfTheDay::OnOK();
 }
 void CDlgTipOfTheDay::OnOK()
 {
   theApp.m_iCurrentTipOfTheDay++;
-	CDialog::OnOK();
+  CDialog::OnOK();
 }
 
 void CDlgTipOfTheDay::OnNextTip() 

@@ -32,12 +32,12 @@ IMPLEMENT_DYNCREATE(CDlgPgInfoAttachingSound, CPropertyPage)
 
 CDlgPgInfoAttachingSound::CDlgPgInfoAttachingSound() : CPropertyPage(CDlgPgInfoAttachingSound::IDD)
 {
-	//{{AFX_DATA_INIT(CDlgPgInfoAttachingSound)
-	m_strAttachedSound = _T("");
-	m_bLooping = FALSE;
-	m_bPlaying = FALSE;
-	m_fDelay = 0.0f;
-	//}}AFX_DATA_INIT
+  //{{AFX_DATA_INIT(CDlgPgInfoAttachingSound)
+  m_strAttachedSound = _T("");
+  m_bLooping = FALSE;
+  m_bPlaying = FALSE;
+  m_fDelay = 0.0f;
+  //}}AFX_DATA_INIT
 }
 
 CDlgPgInfoAttachingSound::~CDlgPgInfoAttachingSound()
@@ -46,7 +46,7 @@ CDlgPgInfoAttachingSound::~CDlgPgInfoAttachingSound()
 
 void CDlgPgInfoAttachingSound::DoDataExchange(CDataExchange* pDX)
 {
-	CPropertyPage::DoDataExchange(pDX);
+  CPropertyPage::DoDataExchange(pDX);
 
   CModelerView *pModelerView = CModelerView::GetActiveView();
   if(pModelerView == NULL) return;
@@ -67,11 +67,11 @@ void CDlgPgInfoAttachingSound::DoDataExchange(CDataExchange* pDX)
   }
   
   //{{AFX_DATA_MAP(CDlgPgInfoAttachingSound)
-	DDX_Text(pDX, IDC_ATTACHING_SOUND_T, m_strAttachedSound);
-	DDX_Check(pDX, IDC_IS_LOOPING, m_bLooping);
-	DDX_Check(pDX, IDC_IS_PLAYING, m_bPlaying);
-	DDX_SkyFloat(pDX, IDC_SOUND_START_DELAY, m_fDelay);
-	//}}AFX_DATA_MAP
+  DDX_Text(pDX, IDC_ATTACHING_SOUND_T, m_strAttachedSound);
+  DDX_Check(pDX, IDC_IS_LOOPING, m_bLooping);
+  DDX_Check(pDX, IDC_IS_PLAYING, m_bPlaying);
+  DDX_SkyFloat(pDX, IDC_SOUND_START_DELAY, m_fDelay);
+  //}}AFX_DATA_MAP
 
   // if transfering data from dialog to document
   if( pDX->m_bSaveAndValidate)
@@ -92,13 +92,13 @@ void CDlgPgInfoAttachingSound::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CDlgPgInfoAttachingSound, CPropertyPage)
-	//{{AFX_MSG_MAP(CDlgPgInfoAttachingSound)
-	ON_BN_CLICKED(IDC_BROWSE_SOUND, OnBrowseSound)
-	ON_BN_CLICKED(IDC_IS_LOOPING, OnIsLooping)
-	ON_BN_CLICKED(IDC_IS_PLAYING, OnIsPlaying)
-	ON_BN_CLICKED(IDC_ATTACHING_SOUND_NONE, OnAttachingSoundNone)
-	ON_EN_CHANGE(IDC_SOUND_START_DELAY, OnChangeSoundStartDelay)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CDlgPgInfoAttachingSound)
+  ON_BN_CLICKED(IDC_BROWSE_SOUND, OnBrowseSound)
+  ON_BN_CLICKED(IDC_IS_LOOPING, OnIsLooping)
+  ON_BN_CLICKED(IDC_IS_PLAYING, OnIsPlaying)
+  ON_BN_CLICKED(IDC_ATTACHING_SOUND_NONE, OnAttachingSoundNone)
+  ON_EN_CHANGE(IDC_SOUND_START_DELAY, OnChangeSoundStartDelay)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -106,8 +106,8 @@ END_MESSAGE_MAP()
 
 BOOL CDlgPgInfoAttachingSound::OnInitDialog() 
 {
-	CPropertyPage::OnInitDialog();
-	return TRUE;
+  CPropertyPage::OnInitDialog();
+  return TRUE;
 }
 
 BOOL CDlgPgInfoAttachingSound::OnIdle(LONG lCount)

@@ -28,9 +28,9 @@ class CWndAnimationFrames : public CWnd
 {
 // Construction
 public:
-	CWndAnimationFrames();
-	inline void SetParentDlg( CDlgLightAnimationEditor *pParentDlg) {m_pParentDlg=pParentDlg;};
-	void DeleteSelectedFrame( void);
+  CWndAnimationFrames();
+  inline void SetParentDlg( CDlgLightAnimationEditor *pParentDlg) {m_pParentDlg=pParentDlg;};
+  void DeleteSelectedFrame( void);
   INDEX GetFrame( INDEX iFramePosition);
   BOOL IsFrameVisible(INDEX iFrame);
   BOOL IsSelectedFrameKeyFrame(void);
@@ -52,23 +52,23 @@ public:
 public:
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CWndAnimationFrames)
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CWndAnimationFrames)
+  //}}AFX_VIRTUAL
 
 // Implementation
 public:
-	virtual ~CWndAnimationFrames();
+  virtual ~CWndAnimationFrames();
 
-	// Generated message map functions
+  // Generated message map functions
 protected:
-	//{{AFX_MSG(CWndAnimationFrames)
-	afx_msg void OnPaint();
-	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
-	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
-	afx_msg void OnDestroy();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+  //{{AFX_MSG(CWndAnimationFrames)
+  afx_msg void OnPaint();
+  afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+  afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
+  afx_msg void OnDestroy();
+  //}}AFX_MSG
+  DECLARE_MESSAGE_MAP()
 };
 
 /////////////////////////////////////////////////////////////////////////////

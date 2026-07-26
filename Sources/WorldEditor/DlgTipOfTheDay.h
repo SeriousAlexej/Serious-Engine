@@ -33,35 +33,35 @@ public:
   std::list<CTString> m_astrTips;
 // Construction
 public:
-	CDlgTipOfTheDay(CWnd* pParent = NULL);   // standard constructor
+  CDlgTipOfTheDay(CWnd* pParent = NULL);   // standard constructor
 
 // Dialog Data
-	//{{AFX_DATA(CDlgTipOfTheDay)
-	enum { IDD = IDD_TIPOFTHEDAY };
-	CCtlTipOfTheDayText	m_wndTipText;
-	BOOL	m_bShowTipsAtStartup;
-	//}}AFX_DATA
+  //{{AFX_DATA(CDlgTipOfTheDay)
+  enum { IDD = IDD_TIPOFTHEDAY };
+  CCtlTipOfTheDayText  m_wndTipText;
+  BOOL  m_bShowTipsAtStartup;
+  //}}AFX_DATA
 
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CDlgTipOfTheDay)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CDlgTipOfTheDay)
+  protected:
+  virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+  //}}AFX_VIRTUAL
 
 // Implementation
 protected:
 
-	// Generated message map functions
-	//{{AFX_MSG(CDlgTipOfTheDay)
-	virtual void OnCancel();
-	virtual void OnOK();
-	afx_msg void OnClose();
-	afx_msg void OnNextTip();
-	afx_msg void OnPrevTip();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+  // Generated message map functions
+  //{{AFX_MSG(CDlgTipOfTheDay)
+  virtual void OnCancel();
+  virtual void OnOK();
+  afx_msg void OnClose();
+  afx_msg void OnNextTip();
+  afx_msg void OnPrevTip();
+  //}}AFX_MSG
+  DECLARE_MESSAGE_MAP()
 };
 
 //{{AFX_INSERT_LOCATION}}

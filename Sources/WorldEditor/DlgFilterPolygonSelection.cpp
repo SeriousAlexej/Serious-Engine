@@ -41,31 +41,31 @@ static char THIS_FILE[] = __FILE__;
   if(((CButton *)GetDlgItem(ctrl))->GetCheck()==1) varvalue|=flag;}
 
 CDlgFilterPolygonSelection::CDlgFilterPolygonSelection(CWnd* pParent /*=NULL*/)
-	: CDialog(CDlgFilterPolygonSelection::IDD, pParent)
+  : CDialog(CDlgFilterPolygonSelection::IDD, pParent)
 {
-	//{{AFX_DATA_INIT(CDlgFilterPolygonSelection)
-	m_fMinH = 0.0f;
-	m_fMinP = 0.0f;
-	m_fMaxH = 0.0f;
-	m_fMaxP = 0.0f;
-	m_fMinX = 0.0f;
-	m_fMinY = 0.0f;
-	m_fMinZ = 0.0f;
-	m_fMaxX = 0.0f;
-	m_fMaxY = 0.0f;
-	m_fMaxZ = 0.0f;
-	//}}AFX_DATA_INIT
+  //{{AFX_DATA_INIT(CDlgFilterPolygonSelection)
+  m_fMinH = 0.0f;
+  m_fMinP = 0.0f;
+  m_fMaxH = 0.0f;
+  m_fMaxP = 0.0f;
+  m_fMinX = 0.0f;
+  m_fMinY = 0.0f;
+  m_fMinZ = 0.0f;
+  m_fMaxX = 0.0f;
+  m_fMaxY = 0.0f;
+  m_fMaxZ = 0.0f;
+  //}}AFX_DATA_INIT
 
   m_fMinH =-100000.0f;
-	m_fMinP =-100000.0f;
-	m_fMaxH = 100000.0f;
-	m_fMaxP = 100000.0f;
-	m_fMinX =-100000.0f;
-	m_fMinY =-100000.0f;
-	m_fMinZ =-100000.0f;
-	m_fMaxX = 100000.0f;
-	m_fMaxY = 100000.0f;
-	m_fMaxZ = 100000.0f;
+  m_fMinP =-100000.0f;
+  m_fMaxH = 100000.0f;
+  m_fMaxP = 100000.0f;
+  m_fMinX =-100000.0f;
+  m_fMinY =-100000.0f;
+  m_fMinZ =-100000.0f;
+  m_fMaxX = 100000.0f;
+  m_fMaxY = 100000.0f;
+  m_fMaxZ = 100000.0f;
   m_ctrlMultiplyColor.SetPickerType(  CColoredButton::PT_MFC);
 }
 
@@ -103,23 +103,23 @@ void CDlgFilterPolygonSelection::DoDataExchange(CDataExchange* pDX)
   }
 
   CDialog::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CDlgFilterPolygonSelection)
-	DDX_Control(pDX, ID_COMBINE_COLOR, m_ctrlMultiplyColor);
-	DDX_Control(pDX, IDC_FILTER_POLYGON_MIRROR, m_ctrlFilterPolygonMirror);
-	DDX_Control(pDX, IDC_FILTER_POLYGON_SURFACE, m_ctrFilterPolygonSurface);
-	DDX_Control(pDX, IDC_FILTER_CLUSTER_MEMORY, m_ctrlClusterMemoryCombo);
-	DDX_Control(pDX, IDC_FILTER_CLUSTER_SIZE, m_ctrlClusterSizeCombo);
-	DDX_Text(pDX, IDC_MIN_H, m_fMinH);
-	DDX_Text(pDX, IDC_MIN_P, m_fMinP);
-	DDX_Text(pDX, IDC_MAX_H, m_fMaxH);
-	DDX_Text(pDX, IDC_MAX_P, m_fMaxP);
-	DDX_Text(pDX, IDC_MIN_X, m_fMinX);
-	DDX_Text(pDX, IDC_MIN_Y, m_fMinY);
-	DDX_Text(pDX, IDC_MIN_Z, m_fMinZ);
-	DDX_Text(pDX, IDC_MAX_X, m_fMaxX);
-	DDX_Text(pDX, IDC_MAX_Y, m_fMaxY);
-	DDX_Text(pDX, IDC_MAX_Z, m_fMaxZ);
-	//}}AFX_DATA_MAP
+  //{{AFX_DATA_MAP(CDlgFilterPolygonSelection)
+  DDX_Control(pDX, ID_COMBINE_COLOR, m_ctrlMultiplyColor);
+  DDX_Control(pDX, IDC_FILTER_POLYGON_MIRROR, m_ctrlFilterPolygonMirror);
+  DDX_Control(pDX, IDC_FILTER_POLYGON_SURFACE, m_ctrFilterPolygonSurface);
+  DDX_Control(pDX, IDC_FILTER_CLUSTER_MEMORY, m_ctrlClusterMemoryCombo);
+  DDX_Control(pDX, IDC_FILTER_CLUSTER_SIZE, m_ctrlClusterSizeCombo);
+  DDX_Text(pDX, IDC_MIN_H, m_fMinH);
+  DDX_Text(pDX, IDC_MIN_P, m_fMinP);
+  DDX_Text(pDX, IDC_MAX_H, m_fMaxH);
+  DDX_Text(pDX, IDC_MAX_P, m_fMaxP);
+  DDX_Text(pDX, IDC_MIN_X, m_fMinX);
+  DDX_Text(pDX, IDC_MIN_Y, m_fMinY);
+  DDX_Text(pDX, IDC_MIN_Z, m_fMinZ);
+  DDX_Text(pDX, IDC_MAX_X, m_fMaxX);
+  DDX_Text(pDX, IDC_MAX_Y, m_fMaxY);
+  DDX_Text(pDX, IDC_MAX_Z, m_fMaxZ);
+  //}}AFX_DATA_MAP
 
   // if dialog is giving data
   if( pDX->m_bSaveAndValidate != FALSE)
@@ -207,8 +207,8 @@ void CDlgFilterPolygonSelection::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CDlgFilterPolygonSelection, CDialog)
-	//{{AFX_MSG_MAP(CDlgFilterPolygonSelection)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CDlgFilterPolygonSelection)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -216,7 +216,7 @@ END_MESSAGE_MAP()
 
 BOOL CDlgFilterPolygonSelection::OnInitDialog() 
 {
-	CDialog::OnInitDialog();
+  CDialog::OnInitDialog();
 
   m_ctrlClusterSizeCombo.AddString( L"3.125 cm");
   m_ctrlClusterSizeCombo.AddString( L"6.25 cm");
@@ -267,6 +267,6 @@ BOOL CDlgFilterPolygonSelection::OnInitDialog()
     INDEX iAddedAs = m_ctrFilterPolygonSurface.AddString( CString(strFrictionName));
   }
 
-	return TRUE;  // return TRUE unless you set the focus to a control
-	              // EXCEPTION: OCX Property Pages should return FALSE
+  return TRUE;  // return TRUE unless you set the focus to a control
+                // EXCEPTION: OCX Property Pages should return FALSE
 }

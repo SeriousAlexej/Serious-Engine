@@ -75,8 +75,8 @@ public:
 class CWorldEditorDoc : public CDocument
 {
 protected: // create from serialization only
-	CWorldEditorDoc();
-	DECLARE_DYNCREATE(CWorldEditorDoc)
+  CWorldEditorDoc();
+  DECLARE_DYNCREATE(CWorldEditorDoc)
 
 // Attributes
 public:
@@ -255,11 +255,11 @@ public:
 
   // show/hide functoins
   void OnHideSelectedEntities(void);
-	void OnHideUnselectedEntities(void);
-	void OnShowAllEntities(void);
+  void OnHideUnselectedEntities(void);
+  void OnShowAllEntities(void);
   void OnHideSelectedSectors(void);
-	void OnHideUnselectedSectors(void);
-	void OnShowAllSectors(void);
+  void OnHideUnselectedSectors(void);
+  void OnShowAllSectors(void);
   void SetModifiedFlag( BOOL bModified = TRUE);
 
   void ReloadWorld(void);
@@ -268,109 +268,109 @@ public:
 
   void OnIdle(void);
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CWorldEditorDoc)
-	public:
-	virtual BOOL OnNewDocument();
-	virtual void Serialize(CArchive& ar);
-	virtual BOOL OnOpenDocument(LPCTSTR lpszPathName);
-	virtual BOOL OnSaveDocument(LPCTSTR lpszPathName);
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CWorldEditorDoc)
+  public:
+  virtual BOOL OnNewDocument();
+  virtual void Serialize(CArchive& ar);
+  virtual BOOL OnOpenDocument(LPCTSTR lpszPathName);
+  virtual BOOL OnSaveDocument(LPCTSTR lpszPathName);
+  //}}AFX_VIRTUAL
 
 // Implementation
 public:
-	virtual ~CWorldEditorDoc();
+  virtual ~CWorldEditorDoc();
 #ifdef _DEBUG
-	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
+  virtual void AssertValid() const;
+  virtual void Dump(CDumpContext& dc) const;
 #endif
 
 protected:
 
 // Generated message map functions
 public:
-	//{{AFX_MSG(CWorldEditorDoc)
-	afx_msg void OnCsgSplitSectors();
-	afx_msg void OnUpdateCsgSplitSectors(CCmdUI* pCmdUI);
-	afx_msg void OnCsgCancel();
-	afx_msg void OnShowOrientation();
-	afx_msg void OnUpdateShowOrientation(CCmdUI* pCmdUI);
-	afx_msg void OnEditUndo();
-	afx_msg void OnEditRedo();
-	afx_msg void OnUpdateEditUndo(CCmdUI* pCmdUI);
-	afx_msg void OnUpdateEditRedo(CCmdUI* pCmdUI);
-	afx_msg void OnWorldSettings();
-	afx_msg void OnCsgJoinSectors();
-	afx_msg void OnUpdateCsgJoinSectors(CCmdUI* pCmdUI);
-	afx_msg void OnAutoSnap();
-	afx_msg void OnCsgAdd();
-	afx_msg void OnUpdateCsgAdd(CCmdUI* pCmdUI);
-	afx_msg void OnCsgRemove();
-	afx_msg void OnUpdateCsgRemove(CCmdUI* pCmdUI);
-	afx_msg void OnCsgSplitPolygons();
-	afx_msg void OnUpdateCsgSplitPolygons(CCmdUI* pCmdUI);
-	afx_msg void OnCsgJoinPolygons();
-	afx_msg void OnUpdateCsgJoinPolygons(CCmdUI* pCmdUI);
-	afx_msg void OnCalculateShadows();
-	afx_msg void OnBrowseEntitiesMode();
-	afx_msg void OnUpdateBrowseEntitiesMode(CCmdUI* pCmdUI);
-	afx_msg void OnPreviousSelectedEntity();
-	afx_msg void OnUpdatePreviousSelectedEntity(CCmdUI* pCmdUI);
-	afx_msg void OnNextSelectedEntity();
-	afx_msg void OnUpdateNextSelectedEntity(CCmdUI* pCmdUI);
-	afx_msg void OnJoinLayers();
-	afx_msg void OnUpdateAutoSnap(CCmdUI* pCmdUI);
-	afx_msg void OnSelectByClass();
-	afx_msg void OnUpdateSelectByClass(CCmdUI* pCmdUI);
-	afx_msg void OnCsgJoinAllPolygons();
-	afx_msg void OnUpdateCsgJoinAllPolygons(CCmdUI* pCmdUI);
-	afx_msg void OnTexture1();
-	afx_msg void OnUpdateTexture1(CCmdUI* pCmdUI);
-	afx_msg void OnTexture2();
-	afx_msg void OnUpdateTexture2(CCmdUI* pCmdUI);
-	afx_msg void OnTexture3();
-	afx_msg void OnUpdateTexture3(CCmdUI* pCmdUI);
-	afx_msg void OnTextureMode1();
-	afx_msg void OnTextureMode2();
-	afx_msg void OnTextureMode3();
-	afx_msg void OnSaveThumbnail();
-	afx_msg void OnUpdateLinks();
-	afx_msg void OnSnapshot();
-	afx_msg void OnMirrorAndStretch();
-	afx_msg void OnFlipLayer();
-	afx_msg void OnUpdateFlipLayer(CCmdUI* pCmdUI);
-	afx_msg void OnFilterSelection();
-	afx_msg void OnUpdateClones();
-	afx_msg void OnUpdateUpdateClones(CCmdUI* pCmdUI);
-	afx_msg void OnSelectByClassAll();
-	afx_msg void OnHideSelected();
-	afx_msg void OnUpdateHideSelected(CCmdUI* pCmdUI);
-	afx_msg void OnHideUnselected();
-	afx_msg void OnShowAll();
-	afx_msg void OnCheckEdit();
-	afx_msg void OnCheckAdd();
+  //{{AFX_MSG(CWorldEditorDoc)
+  afx_msg void OnCsgSplitSectors();
+  afx_msg void OnUpdateCsgSplitSectors(CCmdUI* pCmdUI);
+  afx_msg void OnCsgCancel();
+  afx_msg void OnShowOrientation();
+  afx_msg void OnUpdateShowOrientation(CCmdUI* pCmdUI);
+  afx_msg void OnEditUndo();
+  afx_msg void OnEditRedo();
+  afx_msg void OnUpdateEditUndo(CCmdUI* pCmdUI);
+  afx_msg void OnUpdateEditRedo(CCmdUI* pCmdUI);
+  afx_msg void OnWorldSettings();
+  afx_msg void OnCsgJoinSectors();
+  afx_msg void OnUpdateCsgJoinSectors(CCmdUI* pCmdUI);
+  afx_msg void OnAutoSnap();
+  afx_msg void OnCsgAdd();
+  afx_msg void OnUpdateCsgAdd(CCmdUI* pCmdUI);
+  afx_msg void OnCsgRemove();
+  afx_msg void OnUpdateCsgRemove(CCmdUI* pCmdUI);
+  afx_msg void OnCsgSplitPolygons();
+  afx_msg void OnUpdateCsgSplitPolygons(CCmdUI* pCmdUI);
+  afx_msg void OnCsgJoinPolygons();
+  afx_msg void OnUpdateCsgJoinPolygons(CCmdUI* pCmdUI);
+  afx_msg void OnCalculateShadows();
+  afx_msg void OnBrowseEntitiesMode();
+  afx_msg void OnUpdateBrowseEntitiesMode(CCmdUI* pCmdUI);
+  afx_msg void OnPreviousSelectedEntity();
+  afx_msg void OnUpdatePreviousSelectedEntity(CCmdUI* pCmdUI);
+  afx_msg void OnNextSelectedEntity();
+  afx_msg void OnUpdateNextSelectedEntity(CCmdUI* pCmdUI);
+  afx_msg void OnJoinLayers();
+  afx_msg void OnUpdateAutoSnap(CCmdUI* pCmdUI);
+  afx_msg void OnSelectByClass();
+  afx_msg void OnUpdateSelectByClass(CCmdUI* pCmdUI);
+  afx_msg void OnCsgJoinAllPolygons();
+  afx_msg void OnUpdateCsgJoinAllPolygons(CCmdUI* pCmdUI);
+  afx_msg void OnTexture1();
+  afx_msg void OnUpdateTexture1(CCmdUI* pCmdUI);
+  afx_msg void OnTexture2();
+  afx_msg void OnUpdateTexture2(CCmdUI* pCmdUI);
+  afx_msg void OnTexture3();
+  afx_msg void OnUpdateTexture3(CCmdUI* pCmdUI);
+  afx_msg void OnTextureMode1();
+  afx_msg void OnTextureMode2();
+  afx_msg void OnTextureMode3();
+  afx_msg void OnSaveThumbnail();
+  afx_msg void OnUpdateLinks();
+  afx_msg void OnSnapshot();
+  afx_msg void OnMirrorAndStretch();
+  afx_msg void OnFlipLayer();
+  afx_msg void OnUpdateFlipLayer(CCmdUI* pCmdUI);
+  afx_msg void OnFilterSelection();
+  afx_msg void OnUpdateClones();
+  afx_msg void OnUpdateUpdateClones(CCmdUI* pCmdUI);
+  afx_msg void OnSelectByClassAll();
+  afx_msg void OnHideSelected();
+  afx_msg void OnUpdateHideSelected(CCmdUI* pCmdUI);
+  afx_msg void OnHideUnselected();
+  afx_msg void OnShowAll();
+  afx_msg void OnCheckEdit();
+  afx_msg void OnCheckAdd();
         afx_msg void OnCheckDelete();
-	afx_msg void OnUpdateCheckEdit(CCmdUI* pCmdUI);
-	afx_msg void OnUpdateCheckAdd(CCmdUI* pCmdUI);
+  afx_msg void OnUpdateCheckEdit(CCmdUI* pCmdUI);
+  afx_msg void OnUpdateCheckAdd(CCmdUI* pCmdUI);
         afx_msg void OnUpdateCheckDelete(CCmdUI* pCmdUI);
-	afx_msg void OnUpdateBrushes();
-	afx_msg void OnSelectByClassImportant();
-	afx_msg void OnInsert3dObject();
-	afx_msg void OnExport3dObject();
-	afx_msg void OnUpdateExport3dObject(CCmdUI* pCmdUI);
-	afx_msg void OnCrossroadForN();
-	afx_msg void OnPopupVtxAllign();
-	afx_msg void OnPopupVtxFilter();
-	afx_msg void OnPopupVtxNumeric();
-	afx_msg void OnTextureMode4();
-	afx_msg void OnTextureMode5();
-	afx_msg void OnTextureMode6();
-	afx_msg void OnTextureMode7();
-	afx_msg void OnTextureMode8();
-	afx_msg void OnTextureMode9();
-	afx_msg void OnTextureMode10();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+  afx_msg void OnUpdateBrushes();
+  afx_msg void OnSelectByClassImportant();
+  afx_msg void OnInsert3dObject();
+  afx_msg void OnExport3dObject();
+  afx_msg void OnUpdateExport3dObject(CCmdUI* pCmdUI);
+  afx_msg void OnCrossroadForN();
+  afx_msg void OnPopupVtxAllign();
+  afx_msg void OnPopupVtxFilter();
+  afx_msg void OnPopupVtxNumeric();
+  afx_msg void OnTextureMode4();
+  afx_msg void OnTextureMode5();
+  afx_msg void OnTextureMode6();
+  afx_msg void OnTextureMode7();
+  afx_msg void OnTextureMode8();
+  afx_msg void OnTextureMode9();
+  afx_msg void OnTextureMode10();
+  //}}AFX_MSG
+  DECLARE_MESSAGE_MAP()
   afx_msg void OnExportPlacements();
   afx_msg void OnExportEntities();
 };

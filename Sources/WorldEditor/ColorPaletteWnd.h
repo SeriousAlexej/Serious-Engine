@@ -27,7 +27,7 @@ class CColorPaletteWnd : public CWnd
 {
 // Construction
 public:
-	CColorPaletteWnd();
+  CColorPaletteWnd();
 
 // Attributes
 public:
@@ -42,23 +42,23 @@ public:
   PIXaabbox2D GetColorBBox( INDEX iColor);
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CColorPaletteWnd)
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CColorPaletteWnd)
+  //}}AFX_VIRTUAL
 
 // Implementation
 public:
-	virtual ~CColorPaletteWnd();
+  virtual ~CColorPaletteWnd();
 
-	// Generated message map functions
+  // Generated message map functions
 protected:
-	//{{AFX_MSG(CColorPaletteWnd)
-	afx_msg void OnPaint();
-	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
-	afx_msg void OnKillFocus(CWnd* pNewWnd);
-	afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+  //{{AFX_MSG(CColorPaletteWnd)
+  afx_msg void OnPaint();
+  afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+  afx_msg void OnKillFocus(CWnd* pNewWnd);
+  afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
+  //}}AFX_MSG
+  DECLARE_MESSAGE_MAP()
 };
 
 /////////////////////////////////////////////////////////////////////////////

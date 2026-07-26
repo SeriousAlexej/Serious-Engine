@@ -34,36 +34,36 @@ public:
   enum GfxAPIType *m_pGfxAPI;
 // Construction
 public:
-	CDlgSelectMode( CDisplayMode &dm, enum GfxAPIType &gfxAPI, CWnd* pParent = NULL);
+  CDlgSelectMode( CDisplayMode &dm, enum GfxAPIType &gfxAPI, CWnd* pParent = NULL);
   ~CDlgSelectMode();
   void ApplySettings( CDisplayMode *pdm, enum GfxAPIType *pGfxAPI);
 
 // Dialog Data
-	//{{AFX_DATA(CDlgSelectMode)
-	enum { IDD = IDD_SELECT_MODE_DIALOG };
-	CComboBox	m_ctrlResCombo;
-	CComboBox	m_ctrlDriverCombo;
-	CString	m_strCurrentMode;
-	CString	m_strCurrentDriver;
-	int		m_iColor;
-	//}}AFX_DATA
+  //{{AFX_DATA(CDlgSelectMode)
+  enum { IDD = IDD_SELECT_MODE_DIALOG };
+  CComboBox  m_ctrlResCombo;
+  CComboBox  m_ctrlDriverCombo;
+  CString  m_strCurrentMode;
+  CString  m_strCurrentDriver;
+  int    m_iColor;
+  //}}AFX_DATA
 
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CDlgSelectMode)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CDlgSelectMode)
+  protected:
+  virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+  //}}AFX_VIRTUAL
 
 // Implementation
 protected:
 
-	// Generated message map functions
-	//{{AFX_MSG(CDlgSelectMode)
-	afx_msg void OnTestButton();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+  // Generated message map functions
+  //{{AFX_MSG(CDlgSelectMode)
+  afx_msg void OnTestButton();
+  //}}AFX_MSG
+  DECLARE_MESSAGE_MAP()
 
 public:
 };

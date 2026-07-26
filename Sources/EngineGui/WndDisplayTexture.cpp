@@ -48,15 +48,15 @@ CWndDisplayTexture::~CWndDisplayTexture()
 
 
 BEGIN_MESSAGE_MAP(CWndDisplayTexture, CWnd)
-	//{{AFX_MSG_MAP(CWndDisplayTexture)
-	ON_WM_DESTROY()
-	ON_WM_PAINT()
-	ON_WM_TIMER()
-	ON_WM_LBUTTONDOWN()
-	ON_WM_RBUTTONDOWN()
-	ON_WM_LBUTTONUP()
-	ON_WM_MOUSEMOVE()
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CWndDisplayTexture)
+  ON_WM_DESTROY()
+  ON_WM_PAINT()
+  ON_WM_TIMER()
+  ON_WM_LBUTTONDOWN()
+  ON_WM_RBUTTONDOWN()
+  ON_WM_LBUTTONUP()
+  ON_WM_MOUSEMOVE()
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 
@@ -72,7 +72,7 @@ static void ConvertCoords( CTextureData *pTD, PIX &pixU, PIX &pixV)
 void CWndDisplayTexture::OnPaint() 
 {
   { CPaintDC dc(this); } // device context for painting
-	
+  
   if( m_iTimerID==-1) m_iTimerID = (int)SetTimer( 1, 50, NULL);
 
   if( !m_pViewPort && !m_pDrawPort)
@@ -179,7 +179,7 @@ void CWndDisplayTexture::OnPaint()
 
 void CWndDisplayTexture::OnTimer(UINT nIDEvent) 
 {
-	// on our timer discard test animation window
+  // on our timer discard test animation window
   if( nIDEvent == 1)
   {
     TIME timeCurrentTick = _pTimer_GetRealTimeTick();
@@ -191,7 +191,7 @@ void CWndDisplayTexture::OnTimer(UINT nIDEvent)
     Invalidate(FALSE);
   }
 
-	CWnd::OnTimer(nIDEvent);
+  CWnd::OnTimer(nIDEvent);
 }
 
 
@@ -205,7 +205,7 @@ void CWndDisplayTexture::OnDestroy()
 
   KillTimer( m_iTimerID);
   _pTimer_SetCurrentTick( 0.0f);
-	CWnd::OnDestroy();
+  CWnd::OnDestroy();
 }
 
 
@@ -233,7 +233,7 @@ void CWndDisplayTexture::OnLButtonDown(UINT nFlags, CPoint point)
     m_pLeftMouseButtonClicked(pixU, pixV);
   }
 
-	CWnd::OnLButtonDown(nFlags, point);
+  CWnd::OnLButtonDown(nFlags, point);
 }
 
 void CWndDisplayTexture::OnLButtonUp(UINT nFlags, CPoint point) 
@@ -255,7 +255,7 @@ void CWndDisplayTexture::OnLButtonUp(UINT nFlags, CPoint point)
     m_pLeftMouseButtonReleased(pixU, pixV);
   }
 
-	CWnd::OnLButtonUp(nFlags, point);
+  CWnd::OnLButtonUp(nFlags, point);
 }
 
 void CWndDisplayTexture::OnRButtonDown(UINT nFlags, CPoint point) 
@@ -274,7 +274,7 @@ void CWndDisplayTexture::OnRButtonDown(UINT nFlags, CPoint point)
     m_pRightMouseButtonClicked(pixU, pixV);
   }
 
-	CWnd::OnRButtonDown(nFlags, point);
+  CWnd::OnRButtonDown(nFlags, point);
 }
 
 void CWndDisplayTexture::OnMouseMove(UINT nFlags, CPoint point) 
@@ -300,6 +300,6 @@ void CWndDisplayTexture::OnMouseMove(UINT nFlags, CPoint point)
     m_pixLineStopU = point.x;
     m_pixLineStopV = point.y;
   }
-	
-	CWnd::OnMouseMove(nFlags, point);
+  
+  CWnd::OnMouseMove(nFlags, point);
 }

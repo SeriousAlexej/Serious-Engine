@@ -29,25 +29,25 @@ void AFXAPI DDX_SkyFloat(CDataExchange* pDX, int nIDC, float &fNumber)
 
 void AFXAPI DDX_SkyFloat(CDataExchange* pDX, int nIDC, float &fNumber, BOOL &bValid)
 {
-	HWND hWndCtrl = pDX->PrepareEditCtrl(nIDC);
-	if (pDX->m_bSaveAndValidate)
-	{
+  HWND hWndCtrl = pDX->PrepareEditCtrl(nIDC);
+  if (pDX->m_bSaveAndValidate)
+  {
     if (!FloatFromString(hWndCtrl, fNumber, bValid))
-		{
-			AfxMessageBox(L"Invalid character entered");
-			pDX->Fail();
-		}
-	}
-	else
-	{
-		StringFromFloat(hWndCtrl, fNumber, bValid);
-	}
+    {
+      AfxMessageBox(L"Invalid character entered");
+      pDX->Fail();
+    }
+  }
+  else
+  {
+    StringFromFloat(hWndCtrl, fNumber, bValid);
+  }
 }
 
 BOOL FloatFromString(HWND hWnd, float &fNumber, BOOL &bValid)
 {
-	TCHAR szWindowText[20];
-	::GetWindowText(hWnd, szWindowText, 19);
+  TCHAR szWindowText[20];
+  ::GetWindowText(hWnd, szWindowText, 19);
   if( CTString( CStringA(szWindowText)) == "")
   {
     bValid = FALSE;
@@ -72,13 +72,13 @@ BOOL FloatFromString(HWND hWnd, float &fNumber, BOOL &bValid)
 
 void StringFromFloat(HWND hWnd, float fNumber, BOOL &bValid)
 {
-	if( !bValid) 
+  if( !bValid) 
   {
     ::SetWindowText(hWnd, L"");
     return;
   }
   CString str;
-	str.Format(_T("%g"), fNumber);
-	::SetWindowText(hWnd, str.GetBufferSetLength(20));
+  str.Format(_T("%g"), fNumber);
+  ::SetWindowText(hWnd, str.GetBufferSetLength(20));
 }
 //--------------------------------------------------------------------------------------------

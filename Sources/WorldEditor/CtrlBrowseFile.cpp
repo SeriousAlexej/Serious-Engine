@@ -44,9 +44,9 @@ void CCtrlBrowseFile::SetDialogPtr( CPropertyComboBar *pDialog)
 
 
 BEGIN_MESSAGE_MAP(CCtrlBrowseFile, CButton)
-	//{{AFX_MSG_MAP(CCtrlBrowseFile)
-	ON_CONTROL_REFLECT(BN_CLICKED, OnClicked)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CCtrlBrowseFile)
+  ON_CONTROL_REFLECT(BN_CLICKED, OnClicked)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////

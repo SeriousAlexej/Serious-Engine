@@ -23,42 +23,42 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class CDlgPgPosition : public CPropertyPage
 {
-	DECLARE_DYNCREATE(CDlgPgPosition)
+  DECLARE_DYNCREATE(CDlgPgPosition)
 
 // Construction
 public:
-	CDlgPgPosition();
+  CDlgPgPosition();
   ~CDlgPgPosition();
   BOOL OnInitDialog() override;
   BOOL OnIdle(LONG lCount);
   CUpdateableRT m_udSelection;
 
 // Dialog Data
-	//{{AFX_DATA(CDlgPgPosition)
-	enum { IDD = IDD_PG_POSITION };
-	float	m_fBanking;
-	float	m_fHeading;
-	float	m_fPitch;
-	float	m_fX;
-	float	m_fY;
-	float	m_fZ;
-	//}}AFX_DATA
+  //{{AFX_DATA(CDlgPgPosition)
+  enum { IDD = IDD_PG_POSITION };
+  float  m_fBanking;
+  float  m_fHeading;
+  float  m_fPitch;
+  float  m_fX;
+  float  m_fY;
+  float  m_fZ;
+  //}}AFX_DATA
 
 
 // Overrides
-	// ClassWizard generate virtual function overrides
-	//{{AFX_VIRTUAL(CDlgPgPosition)
-	public:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
+  // ClassWizard generate virtual function overrides
+  //{{AFX_VIRTUAL(CDlgPgPosition)
+  public:
+  virtual BOOL PreTranslateMessage(MSG* pMsg);
+  protected:
+  virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+  //}}AFX_VIRTUAL
 
 // Implementation
 protected:
-	// Generated message map functions
-	//{{AFX_MSG(CDlgPgPosition)
-		// NOTE: the ClassWizard will add member functions here
+  // Generated message map functions
+  //{{AFX_MSG(CDlgPgPosition)
+    // NOTE: the ClassWizard will add member functions here
   //}}AFX_MSG
   afx_msg void OnPickRotation();
   afx_msg void OnUpdatePickRotation(CCmdUI* pCmdUI);
@@ -66,9 +66,9 @@ protected:
   afx_msg void OnUpdateAbsoluteRotation(CCmdUI* pCmdUI);
   afx_msg void OnSnapToGrid();
   afx_msg void OnUpdateSnapToGrid(CCmdUI* pCmdUI);
-	DECLARE_MESSAGE_MAP()
+  DECLARE_MESSAGE_MAP()
 
 private:
-	std::unique_ptr<QObject> mp_context;
+  std::unique_ptr<QObject> mp_context;
 };
 #endif // DLGPGPOSITION_H

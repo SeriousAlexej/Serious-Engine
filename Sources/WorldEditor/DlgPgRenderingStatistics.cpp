@@ -33,9 +33,9 @@ IMPLEMENT_DYNCREATE(CDlgPgRenderingStatistics, CPropertyPage)
 
 CDlgPgRenderingStatistics::CDlgPgRenderingStatistics() : CPropertyPage(CDlgPgRenderingStatistics::IDD)
 {
-	//{{AFX_DATA_INIT(CDlgPgRenderingStatistics)
-	m_strRenderingStatistics = _T("");
-	//}}AFX_DATA_INIT
+  //{{AFX_DATA_INIT(CDlgPgRenderingStatistics)
+  m_strRenderingStatistics = _T("");
+  //}}AFX_DATA_INIT
 }
 
 CDlgPgRenderingStatistics::~CDlgPgRenderingStatistics()
@@ -46,7 +46,7 @@ void CDlgPgRenderingStatistics::DoDataExchange(CDataExchange* pDX)
 {
   if( theApp.m_bDisableDataExchange) return;
 
-	CPropertyPage::DoDataExchange(pDX);
+  CPropertyPage::DoDataExchange(pDX);
 
   // if dialog is recieving data
   if( pDX->m_bSaveAndValidate == FALSE)
@@ -82,16 +82,16 @@ void CDlgPgRenderingStatistics::DoDataExchange(CDataExchange* pDX)
     m_udStatsUpdated.MarkUpdated();
   }
   
-	//{{AFX_DATA_MAP(CDlgPgRenderingStatistics)
-	DDX_Text(pDX, IDC_RENDERING_STATISTICS, m_strRenderingStatistics);
-	//}}AFX_DATA_MAP
+  //{{AFX_DATA_MAP(CDlgPgRenderingStatistics)
+  DDX_Text(pDX, IDC_RENDERING_STATISTICS, m_strRenderingStatistics);
+  //}}AFX_DATA_MAP
 }
 
 
 BEGIN_MESSAGE_MAP(CDlgPgRenderingStatistics, CPropertyPage)
-	//{{AFX_MSG_MAP(CDlgPgRenderingStatistics)
-		// NOTE: the ClassWizard will add message map macros here
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CDlgPgRenderingStatistics)
+    // NOTE: the ClassWizard will add message map macros here
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////

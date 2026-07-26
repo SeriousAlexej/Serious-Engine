@@ -29,32 +29,32 @@ static char THIS_FILE[] = __FILE__;
 /////////////////////////////////////////////////////////////////////////////
 // CDlgPreferences dialog
 #define PREF_COMBO_HEIGHT 100
-extern UINT APIENTRY ModelerFileRequesterHook( HWND hdlg, UINT uiMsg, WPARAM wParam,	LPARAM lParam);
+extern UINT APIENTRY ModelerFileRequesterHook( HWND hdlg, UINT uiMsg, WPARAM wParam,  LPARAM lParam);
 
 CDlgPreferences::CDlgPreferences(CWnd* pParent /*=NULL*/)
-	: CDialog(CDlgPreferences::IDD, pParent)
+  : CDialog(CDlgPreferences::IDD, pParent)
 {
-	//{{AFX_DATA_INIT(CDlgPreferences)
-	m_AllwaysLamp = FALSE;
-	m_PrefsCopy = FALSE;
-	m_AutoMaximize = FALSE;
-	m_SetDefaultColors = FALSE;
-	m_WindowFit = FALSE;
-	m_bIsFloorVisibleByDefault = FALSE;
-	m_fDefaultBanking = 0.0f;
-	m_fDefaultHeading = 0.0f;
-	m_fDefaultPitch = 0.0f;
-	m_fDefaultFOW = 0.0f;
-	m_bIsBcgVisibleByDefault = FALSE;
-	m_bAllowSoundLock = FALSE;
-	//}}AFX_DATA_INIT
+  //{{AFX_DATA_INIT(CDlgPreferences)
+  m_AllwaysLamp = FALSE;
+  m_PrefsCopy = FALSE;
+  m_AutoMaximize = FALSE;
+  m_SetDefaultColors = FALSE;
+  m_WindowFit = FALSE;
+  m_bIsFloorVisibleByDefault = FALSE;
+  m_fDefaultBanking = 0.0f;
+  m_fDefaultHeading = 0.0f;
+  m_fDefaultPitch = 0.0f;
+  m_fDefaultFOW = 0.0f;
+  m_bIsBcgVisibleByDefault = FALSE;
+  m_bAllowSoundLock = FALSE;
+  //}}AFX_DATA_INIT
   m_Prefs = theApp.m_Preferences;
 }
 
 
 void CDlgPreferences::DoDataExchange(CDataExchange* pDX)
 {
-	CDialog::DoDataExchange(pDX);
+  CDialog::DoDataExchange(pDX);
   
   // if dialog is recieving data
   if( pDX->m_bSaveAndValidate == FALSE )
@@ -73,38 +73,38 @@ void CDlgPreferences::DoDataExchange(CDataExchange* pDX)
     m_AllwaysLamp = m_Prefs.ap_AllwaysSeeLamp;
     m_WindowFit = m_Prefs.ap_AutoWindowFit;
     m_SetDefaultColors = m_Prefs.ap_SetDefaultColors;
-	  m_colorDefaultAmbientColor.SetColor( m_Prefs.ap_colDefaultAmbientColor);
-	  m_fDefaultBanking = m_Prefs.ap_fDefaultBanking;
-	  m_fDefaultHeading = m_Prefs.ap_fDefaultHeading;
-	  m_fDefaultPitch = m_Prefs.ap_fDefaultPitch;
-	  m_fDefaultFOW = m_Prefs.ap_fDefaultFOW;
+    m_colorDefaultAmbientColor.SetColor( m_Prefs.ap_colDefaultAmbientColor);
+    m_fDefaultBanking = m_Prefs.ap_fDefaultBanking;
+    m_fDefaultHeading = m_Prefs.ap_fDefaultHeading;
+    m_fDefaultPitch = m_Prefs.ap_fDefaultPitch;
+    m_fDefaultFOW = m_Prefs.ap_fDefaultFOW;
     m_bAllowSoundLock = m_Prefs.ap_bAllowSoundLock;
   }
-	//{{AFX_DATA_MAP(CDlgPreferences)
-	DDX_Control(pDX, IDC_API, m_ctrlGfxApi);
-	DDX_Control(pDX, IDC_DEFAULT_AMBIENT_COLOR, m_colorDefaultAmbientColor);
-	DDX_Control(pDX, IDC_WIN_BCG_COLOR, m_MappingWinBcgColor);
-	DDX_Control(pDX, IDOK, m_OkButton);
-	DDX_Control(pDX, IDC_COMBO_WIN_BCG_TEXTURE, m_ComboWinBcgTexture);
-	DDX_Control(pDX, IDC_MAPPING_PAPER, m_MappingPaper);
-	DDX_Control(pDX, IDC_MODEL_PAPER, m_ModelPaper);
-	DDX_Control(pDX, IDC_MODEL_INK, m_ModelInk);
-	DDX_Control(pDX, IDC_MAPPING_INACTIVE_INK, m_MappingInactiveInk);
-	DDX_Control(pDX, IDC_MAPPING_ACTIVE_INK, m_MappingActiveInk);
-	DDX_Check(pDX, IDC_PREFS_ALLWAYS_LAMP, m_AllwaysLamp);
-	DDX_Check(pDX, IDC_PREFS_COPY, m_PrefsCopy);
-	DDX_Check(pDX, IDC_PREFS_MAXIMIZE, m_AutoMaximize);
-	DDX_Check(pDX, IDC_PREFS_SET_DEFAULT_COLORS, m_SetDefaultColors);
-	DDX_Check(pDX, IDC_PREFS_WINDOW_FIT, m_WindowFit);
-	DDX_Check(pDX, IDC_FLOOR_IS_VISIBLE_BY_DEFAULT, m_bIsFloorVisibleByDefault);
-	DDX_Text(pDX, IDC_DEFAULT_BANKING, m_fDefaultBanking);
-	DDX_Text(pDX, IDC_DEFAULT_HEADING, m_fDefaultHeading);
-	DDX_Text(pDX, IDC_DEFAULT_PITCH, m_fDefaultPitch);
-	DDX_Text(pDX, IDC_DEFAULT_FOW, m_fDefaultFOW);
-	DDV_MinMaxFloat(pDX, m_fDefaultFOW, 1.f, 179.f);
-	DDX_Check(pDX, IDC_PREFS_ALLWAYS_BCG, m_bIsBcgVisibleByDefault);
-	DDX_Check(pDX, IDC_PREFS_ALLOW_SOUND_LOCK, m_bAllowSoundLock);
-	//}}AFX_DATA_MAP
+  //{{AFX_DATA_MAP(CDlgPreferences)
+  DDX_Control(pDX, IDC_API, m_ctrlGfxApi);
+  DDX_Control(pDX, IDC_DEFAULT_AMBIENT_COLOR, m_colorDefaultAmbientColor);
+  DDX_Control(pDX, IDC_WIN_BCG_COLOR, m_MappingWinBcgColor);
+  DDX_Control(pDX, IDOK, m_OkButton);
+  DDX_Control(pDX, IDC_COMBO_WIN_BCG_TEXTURE, m_ComboWinBcgTexture);
+  DDX_Control(pDX, IDC_MAPPING_PAPER, m_MappingPaper);
+  DDX_Control(pDX, IDC_MODEL_PAPER, m_ModelPaper);
+  DDX_Control(pDX, IDC_MODEL_INK, m_ModelInk);
+  DDX_Control(pDX, IDC_MAPPING_INACTIVE_INK, m_MappingInactiveInk);
+  DDX_Control(pDX, IDC_MAPPING_ACTIVE_INK, m_MappingActiveInk);
+  DDX_Check(pDX, IDC_PREFS_ALLWAYS_LAMP, m_AllwaysLamp);
+  DDX_Check(pDX, IDC_PREFS_COPY, m_PrefsCopy);
+  DDX_Check(pDX, IDC_PREFS_MAXIMIZE, m_AutoMaximize);
+  DDX_Check(pDX, IDC_PREFS_SET_DEFAULT_COLORS, m_SetDefaultColors);
+  DDX_Check(pDX, IDC_PREFS_WINDOW_FIT, m_WindowFit);
+  DDX_Check(pDX, IDC_FLOOR_IS_VISIBLE_BY_DEFAULT, m_bIsFloorVisibleByDefault);
+  DDX_Text(pDX, IDC_DEFAULT_BANKING, m_fDefaultBanking);
+  DDX_Text(pDX, IDC_DEFAULT_HEADING, m_fDefaultHeading);
+  DDX_Text(pDX, IDC_DEFAULT_PITCH, m_fDefaultPitch);
+  DDX_Text(pDX, IDC_DEFAULT_FOW, m_fDefaultFOW);
+  DDV_MinMaxFloat(pDX, m_fDefaultFOW, 1.f, 179.f);
+  DDX_Check(pDX, IDC_PREFS_ALLWAYS_BCG, m_bIsBcgVisibleByDefault);
+  DDX_Check(pDX, IDC_PREFS_ALLOW_SOUND_LOCK, m_bAllowSoundLock);
+  //}}AFX_DATA_MAP
   
   // if dialog is giving data
   if( pDX->m_bSaveAndValidate != FALSE)
@@ -125,11 +125,11 @@ void CDlgPreferences::DoDataExchange(CDataExchange* pDX)
     m_Prefs.ap_SetDefaultColors = m_SetDefaultColors;
     m_Prefs.ap_bAllowSoundLock = m_bAllowSoundLock;
 
-	  m_Prefs.ap_colDefaultAmbientColor = m_colorDefaultAmbientColor.GetColor();
-	  m_Prefs.ap_fDefaultHeading = m_fDefaultHeading;
-	  m_Prefs.ap_fDefaultPitch = m_fDefaultPitch;
-	  m_Prefs.ap_fDefaultBanking = m_fDefaultBanking;
-	  m_Prefs.ap_fDefaultFOW = m_fDefaultFOW;
+    m_Prefs.ap_colDefaultAmbientColor = m_colorDefaultAmbientColor.GetColor();
+    m_Prefs.ap_fDefaultHeading = m_fDefaultHeading;
+    m_Prefs.ap_fDefaultPitch = m_fDefaultPitch;
+    m_Prefs.ap_fDefaultBanking = m_fDefaultBanking;
+    m_Prefs.ap_fDefaultFOW = m_fDefaultFOW;
 
     if( !theApp.m_WorkingTextures.empty())
     {
@@ -166,10 +166,10 @@ void CDlgPreferences::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CDlgPreferences, CDialog)
-	//{{AFX_MSG_MAP(CDlgPreferences)
-	ON_BN_CLICKED(IDC_ADD_WORKING_TEXTURE, OnAddWorkingTexture)
-	ON_BN_CLICKED(IDC_REMOVE_WORKING_TEXTURE, OnRemoveWorkingTexture)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CDlgPreferences)
+  ON_BN_CLICKED(IDC_ADD_WORKING_TEXTURE, OnAddWorkingTexture)
+  ON_BN_CLICKED(IDC_REMOVE_WORKING_TEXTURE, OnRemoveWorkingTexture)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////

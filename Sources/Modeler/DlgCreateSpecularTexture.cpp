@@ -51,14 +51,14 @@ static ANGLE3D GetRotForDelta(CPoint ptDelta, BOOL bInvertY)
 #define DEFAULT_EXPONENT_POS 50
 
 CDlgCreateSpecularTexture::CDlgCreateSpecularTexture(CWnd* pParent /*=NULL*/)
-	: CDialog(CDlgCreateSpecularTexture::IDD, pParent)
+  : CDialog(CDlgCreateSpecularTexture::IDD, pParent)
 {
-	//{{AFX_DATA_INIT(CDlgCreateSpecularTexture)
-	m_strNumericalExponent = _T("");
-	m_bAutoRotate = FALSE;
-	//}}AFX_DATA_INIT
+  //{{AFX_DATA_INIT(CDlgCreateSpecularTexture)
+  m_strNumericalExponent = _T("");
+  m_bAutoRotate = FALSE;
+  //}}AFX_DATA_INIT
   
-	m_bAutoRotate = TRUE;
+  m_bAutoRotate = TRUE;
   m_colorSpecular.m_pwndParentDialog = this;
   m_colorLight.m_pwndParentDialog = this;
   m_colorAmbient.m_pwndParentDialog = this;
@@ -77,7 +77,7 @@ CDlgCreateSpecularTexture::CDlgCreateSpecularTexture(CWnd* pParent /*=NULL*/)
 
 void CDlgCreateSpecularTexture::DoDataExchange(CDataExchange* pDX)
 {
-	CDialog::DoDataExchange(pDX);
+  CDialog::DoDataExchange(pDX);
 
   if( !pDX->m_bSaveAndValidate)
   {
@@ -90,16 +90,16 @@ void CDlgCreateSpecularTexture::DoDataExchange(CDataExchange* pDX)
     strNumericalExponent.PrintF( "Value: %.1f", GetFactorForPercentage(iExponent));
     m_strNumericalExponent = strNumericalExponent;
   }
-	
+  
   //{{AFX_DATA_MAP(CDlgCreateSpecularTexture)
-	DDX_Control(pDX, IDC_SPECULAR_EXPONENT, m_sliderSpecularExponent);
-	DDX_Control(pDX, IDC_SPECULAR_COLOR, m_colorSpecular);
-	DDX_Control(pDX, IDC_SIZE_IN_PIXELS, m_comboSizeInPixels);
-	DDX_Control(pDX, IDC_LIGHT_COLOR, m_colorLight);
-	DDX_Control(pDX, IDC_AMBIENT_COLOR, m_colorAmbient);
-	DDX_Text(pDX, IDC_NUMERIC_EXPONENT_T, m_strNumericalExponent);
-	DDX_Check(pDX, IDC_AUTO_ROTATE, m_bAutoRotate);
-	//}}AFX_DATA_MAP
+  DDX_Control(pDX, IDC_SPECULAR_EXPONENT, m_sliderSpecularExponent);
+  DDX_Control(pDX, IDC_SPECULAR_COLOR, m_colorSpecular);
+  DDX_Control(pDX, IDC_SIZE_IN_PIXELS, m_comboSizeInPixels);
+  DDX_Control(pDX, IDC_LIGHT_COLOR, m_colorLight);
+  DDX_Control(pDX, IDC_AMBIENT_COLOR, m_colorAmbient);
+  DDX_Text(pDX, IDC_NUMERIC_EXPONENT_T, m_strNumericalExponent);
+  DDX_Check(pDX, IDC_AUTO_ROTATE, m_bAutoRotate);
+  //}}AFX_DATA_MAP
   
   if( (pDX->m_bSaveAndValidate) && IsWindow( m_sliderSpecularExponent.m_hWnd) )
   {                    
@@ -113,14 +113,14 @@ void CDlgCreateSpecularTexture::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CDlgCreateSpecularTexture, CDialog)
-	//{{AFX_MSG_MAP(CDlgCreateSpecularTexture)
-	ON_WM_HSCROLL()
-	ON_WM_PAINT()
-	ON_WM_TIMER()
-	ON_WM_DESTROY()
-	ON_BN_CLICKED(IDC_AUTO_ROTATE, OnAutoRotate)
-	ON_CBN_SELCHANGE(IDC_SIZE_IN_PIXELS, OnSelchangeSizeInPixels)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CDlgCreateSpecularTexture)
+  ON_WM_HSCROLL()
+  ON_WM_PAINT()
+  ON_WM_TIMER()
+  ON_WM_DESTROY()
+  ON_BN_CLICKED(IDC_AUTO_ROTATE, OnAutoRotate)
+  ON_CBN_SELCHANGE(IDC_SIZE_IN_PIXELS, OnSelchangeSizeInPixels)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -332,7 +332,7 @@ void CDlgCreateSpecularTexture::RenderPreview(void)
 
 void CDlgCreateSpecularTexture::OnPaint() 
 {
-	CPaintDC dc(this); // device context for painting
+  CPaintDC dc(this); // device context for painting
 
   if( m_iTimerID == -1)
   {
@@ -369,8 +369,8 @@ void CDlgCreateSpecularTexture::OnPaint()
 
 BOOL CDlgCreateSpecularTexture::OnInitDialog() 
 {
-	CDialog::OnInitDialog();
-	
+  CDialog::OnInitDialog();
+  
   if(::IsWindow( m_comboSizeInPixels.m_hWnd))
   {
     m_comboSizeInPixels.SetCurSel( 6);
@@ -384,12 +384,12 @@ BOOL CDlgCreateSpecularTexture::OnInitDialog()
 
   UpdateData( TRUE);
 
-	return TRUE;
+  return TRUE;
 }
 
 void CDlgCreateSpecularTexture::OnTimer(UINT nIDEvent) 
 {
-	// on our timer discard preview window
+  // on our timer discard preview window
   if( nIDEvent == 1)
   {
     TIME timeCurrentTick = _pTimer_GetRealTimeTick();
@@ -398,10 +398,10 @@ void CDlgCreateSpecularTexture::OnTimer(UINT nIDEvent)
       _pTimer_SetCurrentTick( timeCurrentTick);
       timeLastTick = timeCurrentTick;
     }
-    RenderPreview();	
+    RenderPreview();  
   }
 
-	CDialog::OnTimer(nIDEvent);
+  CDialog::OnTimer(nIDEvent);
 }
 
 void CDlgCreateSpecularTexture::OnDestroy() 
@@ -411,7 +411,7 @@ void CDlgCreateSpecularTexture::OnDestroy()
 
   KillTimer( m_iTimerID);
   _pTimer_SetCurrentTick( 0.0f);
-	CDialog::OnDestroy();
+  CDialog::OnDestroy();
 }
 
 void CDlgCreateSpecularTexture::OnAutoRotate() 
@@ -493,5 +493,5 @@ void CDlgCreateSpecularTexture::OnOK()
     CopyFileA( fnTemp, _fnmApplicationPath+fnFinal, FALSE);
   }
 
-	CDialog::OnOK();
+  CDialog::OnOK();
 }

@@ -81,282 +81,282 @@ static INDEX aiForAllowedSizing[14][6] =
 IMPLEMENT_DYNCREATE(CWorldEditorView, CView)
 
 BEGIN_MESSAGE_MAP(CWorldEditorView, CView)
-	//{{AFX_MSG_MAP(CWorldEditorView)
-	ON_WM_CREATE()
-	ON_WM_SIZE()
-	ON_WM_KILLFOCUS()
-	ON_WM_LBUTTONDOWN()
-	ON_WM_KEYDOWN()
-	ON_WM_KEYUP()
-	ON_WM_MOUSEMOVE()
-	ON_WM_RBUTTONDOWN()
-	ON_WM_LBUTTONUP()
-	ON_WM_RBUTTONUP()
-	ON_WM_DROPFILES()
-	ON_COMMAND(ID_ISOMETRIC_FRONT, OnIsometricFront)
-	ON_COMMAND(ID_ISOMETRIC_BACK, OnIsometricBack)
-	ON_COMMAND(ID_ISOMETRIC_BOTTOM, OnIsometricBottom)
-	ON_COMMAND(ID_ISOMETRIC_LEFT, OnIsometricLeft)
-	ON_COMMAND(ID_ISOMETRIC_RIGHT, OnIsometricRight)
-	ON_COMMAND(ID_ISOMETRIC_TOP, OnIsometricTop)
-	ON_COMMAND(ID_PERSPECTIVE, OnPerspective)
-	ON_COMMAND(ID_ZOOM_LESS, OnZoomLess)
-	ON_COMMAND(ID_ZOOM_MORE, OnZoomMore)
-	ON_COMMAND(ID_MOVE_DOWN, OnMoveDown)
-	ON_COMMAND(ID_MOVE_UP, OnMoveUp)
-	ON_WM_LBUTTONDBLCLK()
-	ON_COMMAND(ID_MEASUREMENT_TAPE, OnMeasurementTape)
-	ON_UPDATE_COMMAND_UI(ID_MEASUREMENT_TAPE, OnUpdateMeasurementTape)
-	ON_COMMAND(ID_CIRCLE_MODES, OnCircleModes)
-	ON_UPDATE_COMMAND_UI(ID_CIRCLE_MODES, OnUpdateCircleModes)
-	ON_COMMAND(ID_DESELECT_ALL, OnDeselectAll)
-	ON_COMMAND(ID_DELETE_ENTITIES, OnDeleteEntities)
-	ON_UPDATE_COMMAND_UI(ID_DELETE_ENTITIES, OnUpdateDeleteEntities)
-	ON_WM_SETCURSOR()
-	ON_COMMAND(ID_TAKE_SS, OnTakeSs)
-	ON_UPDATE_COMMAND_UI(ID_ENTITY_MODE, OnUpdateEntityMode)
-	ON_COMMAND(ID_SECTOR_MODE, OnSectorMode)
-	ON_UPDATE_COMMAND_UI(ID_SECTOR_MODE, OnUpdateSectorMode)
-	ON_COMMAND(ID_POLYGON_MODE, OnPolygonMode)
-	ON_UPDATE_COMMAND_UI(ID_POLYGON_MODE, OnUpdatePolygonMode)
-	ON_COMMAND(ID_EDIT_PASTE, OnEditPaste)
-	ON_COMMAND(ID_EDIT_COPY, OnEditCopy)
-	ON_COMMAND(ID_CLONE_CSG, OnCloneCSG)
-	ON_UPDATE_COMMAND_UI(ID_CLONE_CSG, OnUpdateCloneCsg)
-	ON_COMMAND(ID_MEASURE_ON, OnMeasureOn)
-	ON_UPDATE_COMMAND_UI(ID_MEASURE_ON, OnUpdateMeasureOn)
-	ON_COMMAND(ID_RESET_VIEWER, OnResetViewer)
-	ON_COMMAND(ID_COPY_TEXTURE, OnCopyTexture)
-	ON_COMMAND(ID_PASTE_TEXTURE, OnPasteTexture)
-	ON_COMMAND(ID_CENTER_ENTITY, OnCenterEntity)
-	ON_COMMAND(ID_FUNCTION, OnFunction)
-	ON_UPDATE_COMMAND_UI(ID_CENTER_ENTITY, OnUpdateCenterEntity)
-	ON_COMMAND(ID_DROP_MARKER, OnDropMarker)
-	ON_UPDATE_COMMAND_UI(ID_DROP_MARKER, OnUpdateDropMarker)
-	ON_COMMAND(ID_TEST_CONNECTIONS, OnTestConnections)
-	ON_UPDATE_COMMAND_UI(ID_TEST_CONNECTIONS, OnUpdateTestConnections)
-	ON_COMMAND(ID_ALIGN_VOLUME, OnAlignVolume)
-	ON_UPDATE_COMMAND_UI(ID_ALIGN_VOLUME, OnUpdateAlignVolume)
-	ON_COMMAND(ID_CURRENT_VIEW_PROPERTIES, OnCurrentViewProperties)
+  //{{AFX_MSG_MAP(CWorldEditorView)
+  ON_WM_CREATE()
+  ON_WM_SIZE()
+  ON_WM_KILLFOCUS()
+  ON_WM_LBUTTONDOWN()
+  ON_WM_KEYDOWN()
+  ON_WM_KEYUP()
+  ON_WM_MOUSEMOVE()
+  ON_WM_RBUTTONDOWN()
+  ON_WM_LBUTTONUP()
+  ON_WM_RBUTTONUP()
+  ON_WM_DROPFILES()
+  ON_COMMAND(ID_ISOMETRIC_FRONT, OnIsometricFront)
+  ON_COMMAND(ID_ISOMETRIC_BACK, OnIsometricBack)
+  ON_COMMAND(ID_ISOMETRIC_BOTTOM, OnIsometricBottom)
+  ON_COMMAND(ID_ISOMETRIC_LEFT, OnIsometricLeft)
+  ON_COMMAND(ID_ISOMETRIC_RIGHT, OnIsometricRight)
+  ON_COMMAND(ID_ISOMETRIC_TOP, OnIsometricTop)
+  ON_COMMAND(ID_PERSPECTIVE, OnPerspective)
+  ON_COMMAND(ID_ZOOM_LESS, OnZoomLess)
+  ON_COMMAND(ID_ZOOM_MORE, OnZoomMore)
+  ON_COMMAND(ID_MOVE_DOWN, OnMoveDown)
+  ON_COMMAND(ID_MOVE_UP, OnMoveUp)
+  ON_WM_LBUTTONDBLCLK()
+  ON_COMMAND(ID_MEASUREMENT_TAPE, OnMeasurementTape)
+  ON_UPDATE_COMMAND_UI(ID_MEASUREMENT_TAPE, OnUpdateMeasurementTape)
+  ON_COMMAND(ID_CIRCLE_MODES, OnCircleModes)
+  ON_UPDATE_COMMAND_UI(ID_CIRCLE_MODES, OnUpdateCircleModes)
+  ON_COMMAND(ID_DESELECT_ALL, OnDeselectAll)
+  ON_COMMAND(ID_DELETE_ENTITIES, OnDeleteEntities)
+  ON_UPDATE_COMMAND_UI(ID_DELETE_ENTITIES, OnUpdateDeleteEntities)
+  ON_WM_SETCURSOR()
+  ON_COMMAND(ID_TAKE_SS, OnTakeSs)
+  ON_UPDATE_COMMAND_UI(ID_ENTITY_MODE, OnUpdateEntityMode)
+  ON_COMMAND(ID_SECTOR_MODE, OnSectorMode)
+  ON_UPDATE_COMMAND_UI(ID_SECTOR_MODE, OnUpdateSectorMode)
+  ON_COMMAND(ID_POLYGON_MODE, OnPolygonMode)
+  ON_UPDATE_COMMAND_UI(ID_POLYGON_MODE, OnUpdatePolygonMode)
+  ON_COMMAND(ID_EDIT_PASTE, OnEditPaste)
+  ON_COMMAND(ID_EDIT_COPY, OnEditCopy)
+  ON_COMMAND(ID_CLONE_CSG, OnCloneCSG)
+  ON_UPDATE_COMMAND_UI(ID_CLONE_CSG, OnUpdateCloneCsg)
+  ON_COMMAND(ID_MEASURE_ON, OnMeasureOn)
+  ON_UPDATE_COMMAND_UI(ID_MEASURE_ON, OnUpdateMeasureOn)
+  ON_COMMAND(ID_RESET_VIEWER, OnResetViewer)
+  ON_COMMAND(ID_COPY_TEXTURE, OnCopyTexture)
+  ON_COMMAND(ID_PASTE_TEXTURE, OnPasteTexture)
+  ON_COMMAND(ID_CENTER_ENTITY, OnCenterEntity)
+  ON_COMMAND(ID_FUNCTION, OnFunction)
+  ON_UPDATE_COMMAND_UI(ID_CENTER_ENTITY, OnUpdateCenterEntity)
+  ON_COMMAND(ID_DROP_MARKER, OnDropMarker)
+  ON_UPDATE_COMMAND_UI(ID_DROP_MARKER, OnUpdateDropMarker)
+  ON_COMMAND(ID_TEST_CONNECTIONS, OnTestConnections)
+  ON_UPDATE_COMMAND_UI(ID_TEST_CONNECTIONS, OnUpdateTestConnections)
+  ON_COMMAND(ID_ALIGN_VOLUME, OnAlignVolume)
+  ON_UPDATE_COMMAND_UI(ID_ALIGN_VOLUME, OnUpdateAlignVolume)
+  ON_COMMAND(ID_CURRENT_VIEW_PROPERTIES, OnCurrentViewProperties)
   ON_COMMAND(ID_DELETE_MIP, OnDeleteMip)
-	ON_UPDATE_COMMAND_UI(ID_DELETE_MIP, OnUpdateDeleteMip)
-	ON_COMMAND(ID_PREVIOUS_MIP_BRUSH, OnPreviousMipBrush)
-	ON_UPDATE_COMMAND_UI(ID_PREVIOUS_MIP_BRUSH, OnUpdatePreviousMipBrush)
-	ON_COMMAND(ID_NEXT_MIP_BRUSH, OnNextMipBrush)
-	ON_UPDATE_COMMAND_UI(ID_NEXT_MIP_BRUSH, OnUpdateNextMipBrush)
-	ON_COMMAND(ID_CROSSROAD_FOR_C, OnCrossroadForC)
-	ON_COMMAND(ID_CHOOSE_COLOR, OnChooseColor)
-	ON_UPDATE_COMMAND_UI(ID_CHOOSE_COLOR, OnUpdateChooseColor)
-	ON_COMMAND(ID_MENU_COPY_MAPPING, OnMenuCopyMapping)
-	ON_COMMAND(ID_MENU_PASTE_MAPPING, OnMenuPasteMapping)
-	ON_COMMAND(ID_SET_AS_CSG_TARGET, OnSetAsCsgTarget)
-	ON_COMMAND(ID_KEY_PASTE, OnKeyPaste)
-	ON_WM_RBUTTONDBLCLK()
-	ON_COMMAND(ID_SELECT_BY_TEXTURE_ADJACENT, OnSelectByTextureAdjacent)
-	ON_COMMAND(ID_SELECT_BY_TEXTURE_IN_SECTOR, OnSelectByTextureInSector)
-	ON_COMMAND(ID_SELECT_BY_COLOR_IN_SECTOR, OnSelectByColorInSector)
-	ON_COMMAND(ID_CONUS_PRIMITIVE, OnConusPrimitive)
-	ON_COMMAND(ID_TORUS_PRIMITIVE, OnTorusPrimitive)
-	ON_COMMAND(ID_TERRAIN_PRIMITIVE, OnTerrainPrimitive)
-	ON_COMMAND(ID_SPHERE_PRIMITIVE, OnSpherePrimitive)
-	ON_COMMAND(ID_STAIRCASE_PRIMITIVE, OnStaircasePrimitive)
-	ON_UPDATE_COMMAND_UI(ID_CONUS_PRIMITIVE, OnUpdateConusPrimitive)
-	ON_UPDATE_COMMAND_UI(ID_SPHERE_PRIMITIVE, OnUpdateSpherePrimitive)
-	ON_UPDATE_COMMAND_UI(ID_TERRAIN_PRIMITIVE, OnUpdateTerrainPrimitive)
-	ON_UPDATE_COMMAND_UI(ID_TORUS_PRIMITIVE, OnUpdateTorusPrimitive)
-	ON_UPDATE_COMMAND_UI(ID_STAIRCASE_PRIMITIVE, OnUpdateStaircasePrimitive)
-	ON_COMMAND(ID_POPUP_CONUS, OnPopupConus)
-	ON_COMMAND(ID_POPUP_SPHERE, OnPopupSphere)
-	ON_COMMAND(ID_POPUP_STAIRS, OnPopupStairs)
-	ON_COMMAND(ID_POPUP_TERRAIN, OnPopupTerrain)
-	ON_COMMAND(ID_POPUP_TORUS, OnPopupTorus)
-	ON_UPDATE_COMMAND_UI(ID_MOVE_DOWN, OnUpdateMoveDown)
-	ON_UPDATE_COMMAND_UI(ID_MOVE_UP, OnUpdateMoveUp)
-	ON_COMMAND(ID_SELECT_LIGHTS, OnSelectLights)
-	ON_COMMAND(ID_DISCARD_SHADOWS, OnDiscardShadows)
-	ON_COMMAND(ID_COPY_SECTOR_AMBIENT, OnCopySectorAmbient)
-	ON_COMMAND(ID_PASTE_SECTOR_AMBIENT, OnPasteSectorAmbient)
-	ON_COMMAND(ID_SELECT_ALL_POLYGONS, OnSelectAllPolygons)
-	ON_COMMAND(ID_COPY_SECTORS, OnCopySectors)
-	ON_COMMAND(ID_DELETE_SECTORS, OnDeleteSectors)
-	ON_COMMAND(ID_PASTE_SECTORS, OnPasteSectors)
-	ON_COMMAND(ID_CENTER_BCG_VIEWER, OnCenterBcgViewer)
-	ON_COMMAND(ID_MENU_PASTE_AS_PROJECTED_MAPPING, OnMenuPasteAsProjectedMapping)
-	ON_COMMAND(ID_KEY_PASTE_AS_PROJECTED, OnKeyPasteAsProjected)
-	ON_COMMAND(ID_SELECT_ALL_ENTITIES, OnSelectAllEntitiesInSectors)
-	ON_COMMAND(ID_SELECT_ALL_SECTORS, OnSelectAllSectors)
-	ON_COMMAND(ID_LAST_PRIMITIVE, OnLastPrimitive)
-	ON_UPDATE_COMMAND_UI(ID_LAST_PRIMITIVE, OnUpdateLastPrimitive)
+  ON_UPDATE_COMMAND_UI(ID_DELETE_MIP, OnUpdateDeleteMip)
+  ON_COMMAND(ID_PREVIOUS_MIP_BRUSH, OnPreviousMipBrush)
+  ON_UPDATE_COMMAND_UI(ID_PREVIOUS_MIP_BRUSH, OnUpdatePreviousMipBrush)
+  ON_COMMAND(ID_NEXT_MIP_BRUSH, OnNextMipBrush)
+  ON_UPDATE_COMMAND_UI(ID_NEXT_MIP_BRUSH, OnUpdateNextMipBrush)
+  ON_COMMAND(ID_CROSSROAD_FOR_C, OnCrossroadForC)
+  ON_COMMAND(ID_CHOOSE_COLOR, OnChooseColor)
+  ON_UPDATE_COMMAND_UI(ID_CHOOSE_COLOR, OnUpdateChooseColor)
+  ON_COMMAND(ID_MENU_COPY_MAPPING, OnMenuCopyMapping)
+  ON_COMMAND(ID_MENU_PASTE_MAPPING, OnMenuPasteMapping)
+  ON_COMMAND(ID_SET_AS_CSG_TARGET, OnSetAsCsgTarget)
+  ON_COMMAND(ID_KEY_PASTE, OnKeyPaste)
+  ON_WM_RBUTTONDBLCLK()
+  ON_COMMAND(ID_SELECT_BY_TEXTURE_ADJACENT, OnSelectByTextureAdjacent)
+  ON_COMMAND(ID_SELECT_BY_TEXTURE_IN_SECTOR, OnSelectByTextureInSector)
+  ON_COMMAND(ID_SELECT_BY_COLOR_IN_SECTOR, OnSelectByColorInSector)
+  ON_COMMAND(ID_CONUS_PRIMITIVE, OnConusPrimitive)
+  ON_COMMAND(ID_TORUS_PRIMITIVE, OnTorusPrimitive)
+  ON_COMMAND(ID_TERRAIN_PRIMITIVE, OnTerrainPrimitive)
+  ON_COMMAND(ID_SPHERE_PRIMITIVE, OnSpherePrimitive)
+  ON_COMMAND(ID_STAIRCASE_PRIMITIVE, OnStaircasePrimitive)
+  ON_UPDATE_COMMAND_UI(ID_CONUS_PRIMITIVE, OnUpdateConusPrimitive)
+  ON_UPDATE_COMMAND_UI(ID_SPHERE_PRIMITIVE, OnUpdateSpherePrimitive)
+  ON_UPDATE_COMMAND_UI(ID_TERRAIN_PRIMITIVE, OnUpdateTerrainPrimitive)
+  ON_UPDATE_COMMAND_UI(ID_TORUS_PRIMITIVE, OnUpdateTorusPrimitive)
+  ON_UPDATE_COMMAND_UI(ID_STAIRCASE_PRIMITIVE, OnUpdateStaircasePrimitive)
+  ON_COMMAND(ID_POPUP_CONUS, OnPopupConus)
+  ON_COMMAND(ID_POPUP_SPHERE, OnPopupSphere)
+  ON_COMMAND(ID_POPUP_STAIRS, OnPopupStairs)
+  ON_COMMAND(ID_POPUP_TERRAIN, OnPopupTerrain)
+  ON_COMMAND(ID_POPUP_TORUS, OnPopupTorus)
+  ON_UPDATE_COMMAND_UI(ID_MOVE_DOWN, OnUpdateMoveDown)
+  ON_UPDATE_COMMAND_UI(ID_MOVE_UP, OnUpdateMoveUp)
+  ON_COMMAND(ID_SELECT_LIGHTS, OnSelectLights)
+  ON_COMMAND(ID_DISCARD_SHADOWS, OnDiscardShadows)
+  ON_COMMAND(ID_COPY_SECTOR_AMBIENT, OnCopySectorAmbient)
+  ON_COMMAND(ID_PASTE_SECTOR_AMBIENT, OnPasteSectorAmbient)
+  ON_COMMAND(ID_SELECT_ALL_POLYGONS, OnSelectAllPolygons)
+  ON_COMMAND(ID_COPY_SECTORS, OnCopySectors)
+  ON_COMMAND(ID_DELETE_SECTORS, OnDeleteSectors)
+  ON_COMMAND(ID_PASTE_SECTORS, OnPasteSectors)
+  ON_COMMAND(ID_CENTER_BCG_VIEWER, OnCenterBcgViewer)
+  ON_COMMAND(ID_MENU_PASTE_AS_PROJECTED_MAPPING, OnMenuPasteAsProjectedMapping)
+  ON_COMMAND(ID_KEY_PASTE_AS_PROJECTED, OnKeyPasteAsProjected)
+  ON_COMMAND(ID_SELECT_ALL_ENTITIES, OnSelectAllEntitiesInSectors)
+  ON_COMMAND(ID_SELECT_ALL_SECTORS, OnSelectAllSectors)
+  ON_COMMAND(ID_LAST_PRIMITIVE, OnLastPrimitive)
+  ON_UPDATE_COMMAND_UI(ID_LAST_PRIMITIVE, OnUpdateLastPrimitive)
   ON_COMMAND(ID_CLONE_TO_MORE_PRECISE_MIP, OnCloneToMorePreciseMip)
-	ON_COMMAND(ID_CLONE_TO_ROUGHER_MIP_LEVEL, OnCloneToRougherMipLevel)
-	ON_COMMAND(ID_CREATE_EMPTY_MORE_PRECISE_MIP, OnCreateEmptyMorePreciseMip)
-	ON_COMMAND(ID_CREATE_EMPTY_ROUGHER_MIP, OnCreateEmptyRougherMip)
-	ON_UPDATE_COMMAND_UI(ID_CLONE_TO_MORE_PRECISE_MIP, OnUpdateCloneToMorePreciseMip)
-	ON_UPDATE_COMMAND_UI(ID_CLONE_TO_ROUGHER_MIP_LEVEL, OnUpdateCloneToRougherMipLevel)
-	ON_UPDATE_COMMAND_UI(ID_CREATE_EMPTY_MORE_PRECISE_MIP, OnUpdateCreateEmptyMorePreciseMip)
-	ON_UPDATE_COMMAND_UI(ID_CREATE_EMPTY_ROUGHER_MIP, OnUpdateCreateEmptyRougherMip)
+  ON_COMMAND(ID_CLONE_TO_ROUGHER_MIP_LEVEL, OnCloneToRougherMipLevel)
+  ON_COMMAND(ID_CREATE_EMPTY_MORE_PRECISE_MIP, OnCreateEmptyMorePreciseMip)
+  ON_COMMAND(ID_CREATE_EMPTY_ROUGHER_MIP, OnCreateEmptyRougherMip)
+  ON_UPDATE_COMMAND_UI(ID_CLONE_TO_MORE_PRECISE_MIP, OnUpdateCloneToMorePreciseMip)
+  ON_UPDATE_COMMAND_UI(ID_CLONE_TO_ROUGHER_MIP_LEVEL, OnUpdateCloneToRougherMipLevel)
+  ON_UPDATE_COMMAND_UI(ID_CREATE_EMPTY_MORE_PRECISE_MIP, OnUpdateCreateEmptyMorePreciseMip)
+  ON_UPDATE_COMMAND_UI(ID_CREATE_EMPTY_ROUGHER_MIP, OnUpdateCreateEmptyRougherMip)
   ON_COMMAND(ID_EDIT_PASTE_ALTERNATIVE, OnEditPasteAlternative)
-	ON_COMMAND(ID_SELECT_ALL_ENTITIES_IN_WORLD, OnSelectAllEntitiesInWorld)
-	ON_UPDATE_COMMAND_UI(ID_EDIT_PASTE_ALTERNATIVE, OnUpdateEditPasteAlternative)
-	ON_COMMAND(ID_ENTITY_MODE, OnEntityMode)
-	ON_COMMAND(ID_FIND_TEXTURE, OnFindTexture)
-	ON_COMMAND(ID_SELECT_SECTORS_WITH_SAME_NAME, OnSelectSectorsWithSameName)
-	ON_COMMAND(ID_SELECT_SECTORS_ARROUND_ENTITY, OnSelectSectorsArroundEntity)
-	ON_COMMAND(ID_SELECT_SECTORS_ARROUND_ENTITY_ON_CONTEXT, OnSelectSectorsArroundEntityOnContext)
-	ON_COMMAND(ID_INSERT_VERTEX, OnInsertVertex)
-	ON_COMMAND(ID_DELETE_VERTEX, OnDeleteVertex)
-	ON_COMMAND(ID_SAVE_PICTURES_FOR_ENVIRONMENT, OnSavePicturesForEnvironment)
-	ON_UPDATE_COMMAND_UI(ID_SAVE_PICTURES_FOR_ENVIRONMENT, OnUpdateSavePicturesForEnvironment)
-	ON_WM_ERASEBKGND()
-	ON_COMMAND(ID_CSG_SELECT_SECTOR, OnCsgSelectSector)
-	ON_COMMAND(ID_MENU_ALIGN_MAPPING_U, OnMenuAlignMappingU)
-	ON_COMMAND(ID_MENU_ALIGN_MAPPING_V, OnMenuAlignMappingV)
-	ON_WM_DESTROY()
-	ON_COMMAND(ID_FALL_DOWN, OnFallDown)
-	ON_COMMAND(ID_PREVIOUS, OnPrevious)
-	ON_COMMAND(ID_NEXT, OnNext)
-	ON_UPDATE_COMMAND_UI(ID_PREVIOUS, OnUpdatePrevious)
-	ON_UPDATE_COMMAND_UI(ID_NEXT, OnUpdateNext)
-	ON_COMMAND(ID_REMOVE_UNUSED_TEXTURES, OnRemoveUnusedTextures)
-	ON_COMMAND(ID_ROTATE, OnRotate)
-	ON_COMMAND(ID_ROTATE_BACK, OnRotateBack)
-	ON_COMMAND(ID_SELECT_VISIBLE_SECTORS, OnSelectVisibleSectors)
-	ON_COMMAND(ID_EDIT_COPY_ALTERNATIVE, OnEditCopyAlternative)
-	ON_COMMAND(ID_ROTATE_LEFT, OnRotateLeft)
-	ON_COMMAND(ID_ROTATE_RIGHT, OnRotateRight)
-	ON_COMMAND(ID_ROTATE_UP, OnRotateUp)
-	ON_COMMAND(ID_ROTATE_DOWN, OnRotateDown)
-	ON_COMMAND(ID_SELECT_WHO_TARGETS, OnSelectWhoTargets)
-	ON_COMMAND(ID_SELECT_INVALIDTRIS, OnSelectInvalidTris)
-	ON_COMMAND(ID_TEST_CONNECTIONS_BACK, OnTestConnectionsBack)
-	ON_UPDATE_COMMAND_UI(ID_TEST_CONNECTIONS_BACK, OnUpdateTestConnectionsBack)
-	ON_WM_MOUSEWHEEL()
-	ON_COMMAND(ID_SELECT_SECTORS_OTHER_SIDE, OnSelectSectorsOtherSide)
-	ON_COMMAND(ID_SELECT_LINKS_TO_SECTOR, OnSelectLinksToSector)
-	ON_COMMAND(ID_REMAIN_SELECTEDBY_ORIENTATION, OnRemainSelectedByOrientation)
-	ON_COMMAND(ID_DESELECT_BY_ORIENTATION, OnDeselectByOrientation)
-	ON_COMMAND(ID_VERTEX_MODE, OnVertexMode)
-	ON_COMMAND(ID_REOPTIMIZE_BRUSHES, OnReoptimizeBrushes)
-	ON_COMMAND(ID_MERGE_VERTICES, OnMergeVertices)
-	ON_COMMAND(ID_EXPORT_DISPLACE_MAP, OnExportDisplaceMap)
-	ON_COMMAND(ID_CUT_MODE, OnCutMode)
-	ON_UPDATE_COMMAND_UI(ID_CUT_MODE, OnUpdateCutMode)
-	ON_COMMAND(ID_SELECT_ALL_TARGETS, OnSelectAllTargets)
-	ON_COMMAND(ID_SELECT_ALL_TARGETS_ON_CONTEXT, OnSelectAllTargetsOnContext)
-	ON_COMMAND(ID_SELECT_CLONES, OnSelectClones)
-	ON_COMMAND(ID_SELECT_CLONES_ON_CONTEXT, OnSelectClonesOnContext)
-	ON_UPDATE_COMMAND_UI(ID_SELECT_CLONES, OnUpdateSelectClones)
-	ON_COMMAND(ID_SELECT_ALL_VERTICES, OnSelectAllVertices)
-	ON_COMMAND(ID_SELECT_OF_SAME_CLASS, OnSelectOfSameClass)
-	ON_COMMAND(ID_SELECT_OF_SAME_CLASS_ON_CONTEXT, OnSelectOfSameClassOnContext)
-	ON_COMMAND(ID_ALTERNATIVE_MOVING_MODE, OnAlternativeMovingMode)
-	ON_COMMAND(ID_RE_TRIPLE, OnReTriple)
-	ON_COMMAND(ID_SELECT_WHO_TARGETS_ON_CONTEXT, OnSelectWhoTargetsOnContext)
-	ON_COMMAND(ID_CLEAR_ALL_TARGETS, OnClearAllTargets)
-	ON_COMMAND(ID_SELECT_CSG_TARGET, OnSelectCsgTarget)
-	ON_UPDATE_COMMAND_UI(ID_SELECT_CSG_TARGET, OnUpdateSelectCsgTarget)
-	ON_COMMAND(ID_REMAIN_SELECTEDBY_ORIENTATION_SINGLE, OnRemainSelectedbyOrientationSingle)
-	ON_UPDATE_COMMAND_UI(ID_RE_TRIPLE, OnUpdateReTriple)
-	ON_COMMAND(ID_TRIANGULARIZE_POLYGON, OnTriangularizePolygon)
-	ON_COMMAND(ID_ENTITY_CONTEXT_HELP, OnEntityContextHelp)
-	ON_COMMAND(ID_POPUP_AUTO_FIT_MAPPING, OnPopupAutoFitMapping)
-	ON_COMMAND(ID_TRIANGULARIZE_SELECTION, OnTriangularizeSelection)
-	ON_UPDATE_COMMAND_UI(ID_TRIANGULARIZE_SELECTION, OnUpdateTriangularizeSelection)
-	ON_COMMAND(ID_POPUP_AUTO_FIT_MAPPING_SMALL, OnPopupAutoFitMappingSmall)
-	ON_COMMAND(ID_POPUP_AUTO_FIT_MAPPING_BOTH, OnPopupAutoFitMappingBoth)
-	ON_COMMAND(ID_RESET_MAPPING_OFFSET, OnResetMappingOffset)
-	ON_COMMAND(ID_RESET_MAPPING_ROTATION, OnResetMappingRotation)
-	ON_COMMAND(ID_RESET_MAPPING_STRETCH, OnResetMappingStretch)
-	ON_COMMAND(ID_CROSSROAD_FOR_L, OnCrossroadForL)
-	ON_COMMAND(ID_SELECT_USING_TARGET_TREE, OnSelectUsingTargetTree)
-	ON_COMMAND(ID_TARGET_TREE, OnTargetTree)
-	ON_UPDATE_COMMAND_UI(ID_TARGET_TREE, OnUpdateTargetTree)
-	ON_COMMAND(ID_SWAP_LAYERS_12, OnSwapLayers12)
-	ON_COMMAND(ID_SWAP_LAYERS_23, OnSwapLayers23)
-	ON_COMMAND(ID_SELECT_DESCENDANTS, OnSelectDescendants)
-	ON_COMMAND(ID_CROSSROAD_FOR_CTRL_F, OnCrossroadForCtrlF)
-	ON_COMMAND(ID_ROTATE_TO_TARGET_CENTER, OnRotateToTargetCenter)
-	ON_COMMAND(ID_ROTATE_TO_TARGET_ORIGIN, OnRotateToTargetOrigin)
-	ON_COMMAND(ID_COPY_ORIENTATION, OnCopyOrientation)
-	ON_COMMAND(ID_COPY_PLACEMENT, OnCopyPlacement)
-	ON_COMMAND(ID_COPY_POSITION, OnCopyPosition)
-	ON_COMMAND(ID_PASTE_ORIENTATION, OnPasteOrientation)
-	ON_COMMAND(ID_PASTE_PLACEMENT, OnPastePlacement)
-	ON_COMMAND(ID_PASTE_POSITION, OnPastePosition)
-	ON_COMMAND(ID_ALIGN_B, OnAlignB)
-	ON_COMMAND(ID_ALIGN_H, OnAlignH)
-	ON_COMMAND(ID_ALIGN_P, OnAlignP)
-	ON_COMMAND(ID_ALIGN_X, OnAlignX)
-	ON_COMMAND(ID_ALIGN_Y, OnAlignY)
-	ON_COMMAND(ID_ALIGN_Z, OnAlignZ)
-	ON_COMMAND(ID_AUTOTEXTURIZE_MIPS, OnAutotexturizeMips)
-	ON_UPDATE_COMMAND_UI(ID_AUTOTEXTURIZE_MIPS, OnUpdateAutotexturizeMips)
-	ON_COMMAND(ID_RANDOM_OFFSET_U, OnRandomOffsetU)
-	ON_COMMAND(ID_RANDOM_OFFSET_V, OnRandomOffsetV)
-	ON_COMMAND(ID_STRETCH_RELATIVE_OFFSET, OnStretchRelativeOffset)
-	ON_COMMAND(ID_DESELECT_HIDDEN, OnDeselectHidden)
-	ON_COMMAND(ID_SELECT_HIDDEN, OnSelectHidden)
-	ON_COMMAND(ID_SECTORS_TO_BRUSH, OnSectorsToBrush)
-	ON_COMMAND(ID_POLYGONS_TO_BRUSH, OnPolygonsToBrush)
-	ON_COMMAND(ID_CLONE_POLYGONS, OnClonePolygons)
-	ON_COMMAND(ID_DELETE_POLYGONS, OnDeletePolygons)
-	ON_COMMAND(ID_KEY_U, OnKeyU)
-	ON_COMMAND(ID_KEY_D, OnKeyD)
-	ON_COMMAND(ID_FLIP_POLYGON, OnFlipPolygon)
-	ON_COMMAND(ID_TERRAIN_MODE, OnTerrainMode)
-	ON_UPDATE_COMMAND_UI(ID_TERRAIN_MODE, OnUpdateTerrainMode)
-	ON_COMMAND(ID_KEY_M, OnKeyM)
-	ON_COMMAND(ID_KEY_BACKSLASH, OnKeyBackslash)
-	ON_COMMAND(ID_SELECT_BRUSH, OnSelectBrush)
-	ON_COMMAND(ID_SELECT_TERRAIN, OnSelectTerrain)
-	ON_COMMAND(ID_ALTITUDE_EDIT_MODE, OnAltitudeEditMode)
-	ON_COMMAND(ID_LAYER_TEXTURE_EDIT_MODE, OnLayerTextureEditMode)
-	ON_COMMAND(ID_TBRUSH_ALTITUDE, OnTbrushAltitude)
-	ON_COMMAND(ID_TBRUSH_EQUILAZE, OnTbrushEquilaze)
-	ON_COMMAND(ID_TBRUSH_ERASE, OnTbrushErase)
-	ON_COMMAND(ID_TBRUSH_NOISE, OnTbrushNoise)
-	ON_COMMAND(ID_TBRUSH_SMOOTH, OnTbrushSmooth)
-	ON_COMMAND(ID_OPTIMIZE_TERRAIN, OnOptimizeTerrain)
-	ON_COMMAND(ID_RECALCULATE_TERRAIN_SHADOWS, OnRecalculateTerrainShadows)
-	ON_COMMAND(ID_VIEW_HEIGHTMAP, OnViewHeightmap)
-	ON_COMMAND(ID_IMPORT_HEIGHTMAP, OnImportHeightmap)
-	ON_COMMAND(ID_EXPORT_HEIGHTMAP, OnExportHeightmap)
-	ON_COMMAND(ID_IMPORT_HEIGHTMAP16, OnImportHeightmap16)
-	ON_COMMAND(ID_EXPORT_HEIGHTMAP16, OnExportHeightmap16)
-	ON_COMMAND(ID_SELECT_LAYER, OnSelectLayer)
-	ON_COMMAND(ID_PICK_LAYER, OnPickLayer)
-	ON_COMMAND(ID_KEY_O, OnKeyO)
-	ON_UPDATE_COMMAND_UI(ID_KEY_O, OnUpdateKeyO)
-	ON_COMMAND(ID_POSTERIZE, OnPosterize)
-	ON_COMMAND(ID_EQUILIZE, OnFlatten)
-	ON_COMMAND(ID_APPLY_FILTER, OnApplyFilter)
-	ON_COMMAND(ID_TE_SMOOTH, OnTeSmooth)
-	ON_COMMAND(ID_EDIT_TERRAIN_PREFS, OnEditTerrainPrefs)
-	ON_UPDATE_COMMAND_UI(ID_EDIT_TERRAIN_PREFS, OnUpdateEditTerrainPrefs)
-	ON_COMMAND(ID_KEY_CTRL_SHIFT_E, OnKeyCtrlShiftE)
-	ON_COMMAND(ID_KEY_CTRL_SHIFT_G, OnKeyCtrlShiftG)
-	ON_UPDATE_COMMAND_UI(ID_KEY_CTRL_SHIFT_G, OnUpdateKeyCtrlShiftG)
-	ON_COMMAND(ID_TERRAIN_LAYER_OPTIONS, OnTerrainLayerOptions)
-	ON_UPDATE_COMMAND_UI(ID_TERRAIN_LAYER_OPTIONS, OnUpdateTerrainLayerOptions)
-	ON_COMMAND(ID_KEY_CTRL_SHIFT_K, OnKeyCtrlShiftK)
-	ON_COMMAND(ID_APPLY_CONTINOUS_NOISE, OnApplyContinousNoise)
-	ON_COMMAND(ID_APPLY_MINIMUM, OnApplyMinimum)
-	ON_COMMAND(ID_APPLY_MAXIMUM, OnApplyMaximum)
-	ON_COMMAND(ID_APPLY_FLATTEN, OnApplyFlatten)
-	ON_COMMAND(ID_APPLY_POSTERIZE, OnApplyPosterize)
-	ON_COMMAND(ID_OPTIMIZE_LAYERS, OnOptimizeLayers)
-	ON_COMMAND(ID_TBRUSH_CONTINOUS_NOISE, OnTbrushContinousNoise)
-	ON_COMMAND(ID_TBRUSH_FILTER, OnTbrushFilter)
-	ON_COMMAND(ID_TBRUSH_FLATTEN, OnTbrushFlatten)
-	ON_COMMAND(ID_TBRUSH_MAXIMUM, OnTbrushMaximum)
-	ON_COMMAND(ID_TBRUSH_MINIMUM, OnTbrushMinimum)
-	ON_COMMAND(ID_TBRUSH_POSTERIZE, OnTbrushPosterize)
-	ON_COMMAND(ID_TERRAIN_PROPERTIES, OnTerrainProperties)
+  ON_COMMAND(ID_SELECT_ALL_ENTITIES_IN_WORLD, OnSelectAllEntitiesInWorld)
+  ON_UPDATE_COMMAND_UI(ID_EDIT_PASTE_ALTERNATIVE, OnUpdateEditPasteAlternative)
+  ON_COMMAND(ID_ENTITY_MODE, OnEntityMode)
+  ON_COMMAND(ID_FIND_TEXTURE, OnFindTexture)
+  ON_COMMAND(ID_SELECT_SECTORS_WITH_SAME_NAME, OnSelectSectorsWithSameName)
+  ON_COMMAND(ID_SELECT_SECTORS_ARROUND_ENTITY, OnSelectSectorsArroundEntity)
+  ON_COMMAND(ID_SELECT_SECTORS_ARROUND_ENTITY_ON_CONTEXT, OnSelectSectorsArroundEntityOnContext)
+  ON_COMMAND(ID_INSERT_VERTEX, OnInsertVertex)
+  ON_COMMAND(ID_DELETE_VERTEX, OnDeleteVertex)
+  ON_COMMAND(ID_SAVE_PICTURES_FOR_ENVIRONMENT, OnSavePicturesForEnvironment)
+  ON_UPDATE_COMMAND_UI(ID_SAVE_PICTURES_FOR_ENVIRONMENT, OnUpdateSavePicturesForEnvironment)
+  ON_WM_ERASEBKGND()
+  ON_COMMAND(ID_CSG_SELECT_SECTOR, OnCsgSelectSector)
+  ON_COMMAND(ID_MENU_ALIGN_MAPPING_U, OnMenuAlignMappingU)
+  ON_COMMAND(ID_MENU_ALIGN_MAPPING_V, OnMenuAlignMappingV)
+  ON_WM_DESTROY()
+  ON_COMMAND(ID_FALL_DOWN, OnFallDown)
+  ON_COMMAND(ID_PREVIOUS, OnPrevious)
+  ON_COMMAND(ID_NEXT, OnNext)
+  ON_UPDATE_COMMAND_UI(ID_PREVIOUS, OnUpdatePrevious)
+  ON_UPDATE_COMMAND_UI(ID_NEXT, OnUpdateNext)
+  ON_COMMAND(ID_REMOVE_UNUSED_TEXTURES, OnRemoveUnusedTextures)
+  ON_COMMAND(ID_ROTATE, OnRotate)
+  ON_COMMAND(ID_ROTATE_BACK, OnRotateBack)
+  ON_COMMAND(ID_SELECT_VISIBLE_SECTORS, OnSelectVisibleSectors)
+  ON_COMMAND(ID_EDIT_COPY_ALTERNATIVE, OnEditCopyAlternative)
+  ON_COMMAND(ID_ROTATE_LEFT, OnRotateLeft)
+  ON_COMMAND(ID_ROTATE_RIGHT, OnRotateRight)
+  ON_COMMAND(ID_ROTATE_UP, OnRotateUp)
+  ON_COMMAND(ID_ROTATE_DOWN, OnRotateDown)
+  ON_COMMAND(ID_SELECT_WHO_TARGETS, OnSelectWhoTargets)
+  ON_COMMAND(ID_SELECT_INVALIDTRIS, OnSelectInvalidTris)
+  ON_COMMAND(ID_TEST_CONNECTIONS_BACK, OnTestConnectionsBack)
+  ON_UPDATE_COMMAND_UI(ID_TEST_CONNECTIONS_BACK, OnUpdateTestConnectionsBack)
+  ON_WM_MOUSEWHEEL()
+  ON_COMMAND(ID_SELECT_SECTORS_OTHER_SIDE, OnSelectSectorsOtherSide)
+  ON_COMMAND(ID_SELECT_LINKS_TO_SECTOR, OnSelectLinksToSector)
+  ON_COMMAND(ID_REMAIN_SELECTEDBY_ORIENTATION, OnRemainSelectedByOrientation)
+  ON_COMMAND(ID_DESELECT_BY_ORIENTATION, OnDeselectByOrientation)
+  ON_COMMAND(ID_VERTEX_MODE, OnVertexMode)
+  ON_COMMAND(ID_REOPTIMIZE_BRUSHES, OnReoptimizeBrushes)
+  ON_COMMAND(ID_MERGE_VERTICES, OnMergeVertices)
+  ON_COMMAND(ID_EXPORT_DISPLACE_MAP, OnExportDisplaceMap)
+  ON_COMMAND(ID_CUT_MODE, OnCutMode)
+  ON_UPDATE_COMMAND_UI(ID_CUT_MODE, OnUpdateCutMode)
+  ON_COMMAND(ID_SELECT_ALL_TARGETS, OnSelectAllTargets)
+  ON_COMMAND(ID_SELECT_ALL_TARGETS_ON_CONTEXT, OnSelectAllTargetsOnContext)
+  ON_COMMAND(ID_SELECT_CLONES, OnSelectClones)
+  ON_COMMAND(ID_SELECT_CLONES_ON_CONTEXT, OnSelectClonesOnContext)
+  ON_UPDATE_COMMAND_UI(ID_SELECT_CLONES, OnUpdateSelectClones)
+  ON_COMMAND(ID_SELECT_ALL_VERTICES, OnSelectAllVertices)
+  ON_COMMAND(ID_SELECT_OF_SAME_CLASS, OnSelectOfSameClass)
+  ON_COMMAND(ID_SELECT_OF_SAME_CLASS_ON_CONTEXT, OnSelectOfSameClassOnContext)
+  ON_COMMAND(ID_ALTERNATIVE_MOVING_MODE, OnAlternativeMovingMode)
+  ON_COMMAND(ID_RE_TRIPLE, OnReTriple)
+  ON_COMMAND(ID_SELECT_WHO_TARGETS_ON_CONTEXT, OnSelectWhoTargetsOnContext)
+  ON_COMMAND(ID_CLEAR_ALL_TARGETS, OnClearAllTargets)
+  ON_COMMAND(ID_SELECT_CSG_TARGET, OnSelectCsgTarget)
+  ON_UPDATE_COMMAND_UI(ID_SELECT_CSG_TARGET, OnUpdateSelectCsgTarget)
+  ON_COMMAND(ID_REMAIN_SELECTEDBY_ORIENTATION_SINGLE, OnRemainSelectedbyOrientationSingle)
+  ON_UPDATE_COMMAND_UI(ID_RE_TRIPLE, OnUpdateReTriple)
+  ON_COMMAND(ID_TRIANGULARIZE_POLYGON, OnTriangularizePolygon)
+  ON_COMMAND(ID_ENTITY_CONTEXT_HELP, OnEntityContextHelp)
+  ON_COMMAND(ID_POPUP_AUTO_FIT_MAPPING, OnPopupAutoFitMapping)
+  ON_COMMAND(ID_TRIANGULARIZE_SELECTION, OnTriangularizeSelection)
+  ON_UPDATE_COMMAND_UI(ID_TRIANGULARIZE_SELECTION, OnUpdateTriangularizeSelection)
+  ON_COMMAND(ID_POPUP_AUTO_FIT_MAPPING_SMALL, OnPopupAutoFitMappingSmall)
+  ON_COMMAND(ID_POPUP_AUTO_FIT_MAPPING_BOTH, OnPopupAutoFitMappingBoth)
+  ON_COMMAND(ID_RESET_MAPPING_OFFSET, OnResetMappingOffset)
+  ON_COMMAND(ID_RESET_MAPPING_ROTATION, OnResetMappingRotation)
+  ON_COMMAND(ID_RESET_MAPPING_STRETCH, OnResetMappingStretch)
+  ON_COMMAND(ID_CROSSROAD_FOR_L, OnCrossroadForL)
+  ON_COMMAND(ID_SELECT_USING_TARGET_TREE, OnSelectUsingTargetTree)
+  ON_COMMAND(ID_TARGET_TREE, OnTargetTree)
+  ON_UPDATE_COMMAND_UI(ID_TARGET_TREE, OnUpdateTargetTree)
+  ON_COMMAND(ID_SWAP_LAYERS_12, OnSwapLayers12)
+  ON_COMMAND(ID_SWAP_LAYERS_23, OnSwapLayers23)
+  ON_COMMAND(ID_SELECT_DESCENDANTS, OnSelectDescendants)
+  ON_COMMAND(ID_CROSSROAD_FOR_CTRL_F, OnCrossroadForCtrlF)
+  ON_COMMAND(ID_ROTATE_TO_TARGET_CENTER, OnRotateToTargetCenter)
+  ON_COMMAND(ID_ROTATE_TO_TARGET_ORIGIN, OnRotateToTargetOrigin)
+  ON_COMMAND(ID_COPY_ORIENTATION, OnCopyOrientation)
+  ON_COMMAND(ID_COPY_PLACEMENT, OnCopyPlacement)
+  ON_COMMAND(ID_COPY_POSITION, OnCopyPosition)
+  ON_COMMAND(ID_PASTE_ORIENTATION, OnPasteOrientation)
+  ON_COMMAND(ID_PASTE_PLACEMENT, OnPastePlacement)
+  ON_COMMAND(ID_PASTE_POSITION, OnPastePosition)
+  ON_COMMAND(ID_ALIGN_B, OnAlignB)
+  ON_COMMAND(ID_ALIGN_H, OnAlignH)
+  ON_COMMAND(ID_ALIGN_P, OnAlignP)
+  ON_COMMAND(ID_ALIGN_X, OnAlignX)
+  ON_COMMAND(ID_ALIGN_Y, OnAlignY)
+  ON_COMMAND(ID_ALIGN_Z, OnAlignZ)
+  ON_COMMAND(ID_AUTOTEXTURIZE_MIPS, OnAutotexturizeMips)
+  ON_UPDATE_COMMAND_UI(ID_AUTOTEXTURIZE_MIPS, OnUpdateAutotexturizeMips)
+  ON_COMMAND(ID_RANDOM_OFFSET_U, OnRandomOffsetU)
+  ON_COMMAND(ID_RANDOM_OFFSET_V, OnRandomOffsetV)
+  ON_COMMAND(ID_STRETCH_RELATIVE_OFFSET, OnStretchRelativeOffset)
+  ON_COMMAND(ID_DESELECT_HIDDEN, OnDeselectHidden)
+  ON_COMMAND(ID_SELECT_HIDDEN, OnSelectHidden)
+  ON_COMMAND(ID_SECTORS_TO_BRUSH, OnSectorsToBrush)
+  ON_COMMAND(ID_POLYGONS_TO_BRUSH, OnPolygonsToBrush)
+  ON_COMMAND(ID_CLONE_POLYGONS, OnClonePolygons)
+  ON_COMMAND(ID_DELETE_POLYGONS, OnDeletePolygons)
+  ON_COMMAND(ID_KEY_U, OnKeyU)
+  ON_COMMAND(ID_KEY_D, OnKeyD)
+  ON_COMMAND(ID_FLIP_POLYGON, OnFlipPolygon)
+  ON_COMMAND(ID_TERRAIN_MODE, OnTerrainMode)
+  ON_UPDATE_COMMAND_UI(ID_TERRAIN_MODE, OnUpdateTerrainMode)
+  ON_COMMAND(ID_KEY_M, OnKeyM)
+  ON_COMMAND(ID_KEY_BACKSLASH, OnKeyBackslash)
+  ON_COMMAND(ID_SELECT_BRUSH, OnSelectBrush)
+  ON_COMMAND(ID_SELECT_TERRAIN, OnSelectTerrain)
+  ON_COMMAND(ID_ALTITUDE_EDIT_MODE, OnAltitudeEditMode)
+  ON_COMMAND(ID_LAYER_TEXTURE_EDIT_MODE, OnLayerTextureEditMode)
+  ON_COMMAND(ID_TBRUSH_ALTITUDE, OnTbrushAltitude)
+  ON_COMMAND(ID_TBRUSH_EQUILAZE, OnTbrushEquilaze)
+  ON_COMMAND(ID_TBRUSH_ERASE, OnTbrushErase)
+  ON_COMMAND(ID_TBRUSH_NOISE, OnTbrushNoise)
+  ON_COMMAND(ID_TBRUSH_SMOOTH, OnTbrushSmooth)
+  ON_COMMAND(ID_OPTIMIZE_TERRAIN, OnOptimizeTerrain)
+  ON_COMMAND(ID_RECALCULATE_TERRAIN_SHADOWS, OnRecalculateTerrainShadows)
+  ON_COMMAND(ID_VIEW_HEIGHTMAP, OnViewHeightmap)
+  ON_COMMAND(ID_IMPORT_HEIGHTMAP, OnImportHeightmap)
+  ON_COMMAND(ID_EXPORT_HEIGHTMAP, OnExportHeightmap)
+  ON_COMMAND(ID_IMPORT_HEIGHTMAP16, OnImportHeightmap16)
+  ON_COMMAND(ID_EXPORT_HEIGHTMAP16, OnExportHeightmap16)
+  ON_COMMAND(ID_SELECT_LAYER, OnSelectLayer)
+  ON_COMMAND(ID_PICK_LAYER, OnPickLayer)
+  ON_COMMAND(ID_KEY_O, OnKeyO)
+  ON_UPDATE_COMMAND_UI(ID_KEY_O, OnUpdateKeyO)
+  ON_COMMAND(ID_POSTERIZE, OnPosterize)
+  ON_COMMAND(ID_EQUILIZE, OnFlatten)
+  ON_COMMAND(ID_APPLY_FILTER, OnApplyFilter)
+  ON_COMMAND(ID_TE_SMOOTH, OnTeSmooth)
+  ON_COMMAND(ID_EDIT_TERRAIN_PREFS, OnEditTerrainPrefs)
+  ON_UPDATE_COMMAND_UI(ID_EDIT_TERRAIN_PREFS, OnUpdateEditTerrainPrefs)
+  ON_COMMAND(ID_KEY_CTRL_SHIFT_E, OnKeyCtrlShiftE)
+  ON_COMMAND(ID_KEY_CTRL_SHIFT_G, OnKeyCtrlShiftG)
+  ON_UPDATE_COMMAND_UI(ID_KEY_CTRL_SHIFT_G, OnUpdateKeyCtrlShiftG)
+  ON_COMMAND(ID_TERRAIN_LAYER_OPTIONS, OnTerrainLayerOptions)
+  ON_UPDATE_COMMAND_UI(ID_TERRAIN_LAYER_OPTIONS, OnUpdateTerrainLayerOptions)
+  ON_COMMAND(ID_KEY_CTRL_SHIFT_K, OnKeyCtrlShiftK)
+  ON_COMMAND(ID_APPLY_CONTINOUS_NOISE, OnApplyContinousNoise)
+  ON_COMMAND(ID_APPLY_MINIMUM, OnApplyMinimum)
+  ON_COMMAND(ID_APPLY_MAXIMUM, OnApplyMaximum)
+  ON_COMMAND(ID_APPLY_FLATTEN, OnApplyFlatten)
+  ON_COMMAND(ID_APPLY_POSTERIZE, OnApplyPosterize)
+  ON_COMMAND(ID_OPTIMIZE_LAYERS, OnOptimizeLayers)
+  ON_COMMAND(ID_TBRUSH_CONTINOUS_NOISE, OnTbrushContinousNoise)
+  ON_COMMAND(ID_TBRUSH_FILTER, OnTbrushFilter)
+  ON_COMMAND(ID_TBRUSH_FLATTEN, OnTbrushFlatten)
+  ON_COMMAND(ID_TBRUSH_MAXIMUM, OnTbrushMaximum)
+  ON_COMMAND(ID_TBRUSH_MINIMUM, OnTbrushMinimum)
+  ON_COMMAND(ID_TBRUSH_POSTERIZE, OnTbrushPosterize)
+  ON_COMMAND(ID_TERRAIN_PROPERTIES, OnTerrainProperties)
   ON_COMMAND(ID_ADV_MAPPING_ROTATION_ALIGN, OnAdvMapping_AlignRotation)
   ON_COMMAND(ID_ADV_MAPPING_ALIGN_TANGENT, OnAdvMapping_AlignTangent)
   ON_COMMAND(ID_ADV_MAPPING_ALIGN_ADJACENT, OnAdvMapping_AlignAdjacent)
   ON_COMMAND(ID_ADV_MAPPING_ALIGN_ADJACENT_TANGENT, OnAdvMapping_AlignAdjacentAndTangent)
-	//}}AFX_MSG_MAP
+  //}}AFX_MSG_MAP
   ON_COMMAND_RANGE(ID_BUFFER01, ID_BUFFER10, OnKeyBuffer)
   ON_COMMAND_RANGE(ID_EDIT_BUFFER01, ID_EDIT_BUFFER10, OnKeyEditBuffer)
 END_MESSAGE_MAP()
@@ -705,7 +705,7 @@ CWorldEditorView::~CWorldEditorView()
 
 BOOL CWorldEditorView::PreCreateWindow(CREATESTRUCT& cs)
 {
-	return CView::PreCreateWindow(cs);
+  return CView::PreCreateWindow(cs);
 }
 
 static void GetToolTipText(void *pView, char *pToolTipText)
@@ -721,7 +721,7 @@ void CWorldEditorView::RenderBackdropTexture(CDrawPortPtr pDP,
                                              FLOAT3D v0, FLOAT3D v1, FLOAT3D v2, FLOAT3D v3,
                                              CTextureObject &to)
 {
-	if( !to.GetData()) return;
+  if( !to.GetData()) return;
   CWorldEditorDoc* pDoc = GetDocument();
   FLOAT3D v0p, v1p, v2p, v3p;
   // create a slave viewer
@@ -756,8 +756,8 @@ void CWorldEditorView::RenderBackdropTexture(CDrawPortPtr pDP,
 BOOL _bCursorMoved=FALSE;
 void CWorldEditorView::RenderView( CDrawPortPtr pDP)
 {
-	CWorldEditorDoc* pDoc = GetDocument();
-	ASSERT_VALID(pDoc);
+  CWorldEditorDoc* pDoc = GetDocument();
+  ASSERT_VALID(pDoc);
 
   CMainFrame* pMainFrame = STATIC_DOWNCAST(CMainFrame, AfxGetMainWnd());
   CChildFrame *pChild = GetChildFrame();
@@ -1741,8 +1741,8 @@ extern BOOL _bInOnDraw = FALSE;
 void CWorldEditorView::OnDraw(CDC* pDC)
 {
   // skip if already drawing
-	if( _bInOnDraw) return;
-	_bInOnDraw = TRUE;
+  if( _bInOnDraw) return;
+  _bInOnDraw = TRUE;
 
   // get some view variables
   CWorldEditorDoc* pDoc = GetDocument();
@@ -1797,7 +1797,7 @@ void CWorldEditorView::OnDraw(CDC* pDC)
     }
   }
   // all done
-	_bInOnDraw = FALSE;
+  _bInOnDraw = FALSE;
 }
 
 
@@ -1807,18 +1807,18 @@ void CWorldEditorView::OnDraw(CDC* pDC)
 #ifdef _DEBUG
 void CWorldEditorView::AssertValid() const
 {
-	CView::AssertValid();
+  CView::AssertValid();
 }
 
 void CWorldEditorView::Dump(CDumpContext& dc) const
 {
-	CView::Dump(dc);
+  CView::Dump(dc);
 }
 
 CWorldEditorDoc* CWorldEditorView::GetDocument() // non-debug version is inline
 {
-	ASSERT(m_pDocument->IsKindOf(RUNTIME_CLASS(CWorldEditorDoc)));
-	return (CWorldEditorDoc*)m_pDocument;
+  ASSERT(m_pDocument->IsKindOf(RUNTIME_CLASS(CWorldEditorDoc)));
+  return (CWorldEditorDoc*)m_pDocument;
 }
 #endif //_DEBUG
 
@@ -1827,13 +1827,13 @@ CWorldEditorDoc* CWorldEditorView::GetDocument() // non-debug version is inline
 
 void CWorldEditorView::OnInitialUpdate()
 {
-	CView::OnInitialUpdate();
+  CView::OnInitialUpdate();
 
   // allow file drop
   DragAcceptFiles();
 
   // at this time, m_hWnd is valid, so we do canvas initialization here
- 	_pGfx_CreateWindowCanvas(m_hWnd, m_pvpViewPort, m_pdpDrawPort);
+   _pGfx_CreateWindowCanvas(m_hWnd, m_pvpViewPort, m_pdpDrawPort);
 
   // get active view
   CWorldEditorView *pWorldEditorView = theApp.GetActiveView();
@@ -1871,7 +1871,7 @@ void CWorldEditorView::OnInitialUpdate()
 
 void CWorldEditorView::OnSize(UINT nType, int cx, int cy)
 {
-	CView::OnSize(nType, cx, cy);
+  CView::OnSize(nType, cx, cy);
 
   // if we are not in game mode and changing of display mode is not on
   if( !theApp.m_bChangeDisplayModeInProgress)
@@ -1885,13 +1885,13 @@ void CWorldEditorView::OnSize(UINT nType, int cx, int cy)
 
 int CWorldEditorView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
-	if (CView::OnCreate(lpCreateStruct) == -1)
-		return -1;
+  if (CView::OnCreate(lpCreateStruct) == -1)
+    return -1;
 
   // register drop target
-	m_DropTarget.Register(this);
+  m_DropTarget.Register(this);
 
-	return 0;
+  return 0;
 }
 
 /*
@@ -1899,14 +1899,14 @@ int CWorldEditorView::OnCreate(LPCREATESTRUCT lpCreateStruct)
  */
 CMainFrame *CWorldEditorView::GetMainFrame()
 {
-	// get the MDIChildFrame of this window
-	CChildFrame *pfrChild = (CChildFrame *)this->GetParentFrame();
+  // get the MDIChildFrame of this window
+  CChildFrame *pfrChild = (CChildFrame *)this->GetParentFrame();
   ASSERT(pfrChild!=NULL);
   // get the MDIFrameWnd
   CMainFrame *pfrMain = (CMainFrame *)pfrChild->GetParentFrame();
   ASSERT(pfrMain!=NULL);
 
-	return pfrMain;
+  return pfrMain;
 }
 
 
@@ -1940,12 +1940,12 @@ void CWorldEditorView::OnActivateView(BOOL bActivate,
   // mark that new document will be activated
   theApp.ActivateDocument(GetDocument());
 
-	CView::OnActivateView(bActivate, pActivateView, pDeactiveView);
+  CView::OnActivateView(bActivate, pActivateView, pDeactiveView);
 }
 
 BOOL MyChooseColor( COLORREF &clrNewColor, CWnd &wndOwner)
 {
-	COLORREF MyCustColors[ 16];
+  COLORREF MyCustColors[ 16];
   CHOOSECOLOR ccInit;
 
   ASSERT( &wndOwner != NULL);
@@ -1985,7 +1985,7 @@ BOOL MyChooseColor( COLORREF &clrNewColor, CWnd &wndOwner)
 FLOAT CWorldEditorView::GetCurrentlyActiveMipFactor(void)
 {
   // get document
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   CMainFrame* pMainFrame = STATIC_DOWNCAST(CMainFrame, AfxGetMainWnd());
 
   CEntityPtr penBrush = pMainFrame->m_CSGDesitnationCombo.GetSelectedBrushEntity();
@@ -2016,7 +2016,7 @@ FLOAT CWorldEditorView::GetCurrentlyActiveMipFactor(void)
 void CWorldEditorView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
   // find window under mouse pointer
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   pDoc->SetStatusLineModeInfoMessage();
 
   POINT point;
@@ -2029,7 +2029,7 @@ void CWorldEditorView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
     return;
   }
 
-	CView::OnKeyDown( nChar, nRepCnt, nFlags);
+  CView::OnKeyDown( nChar, nRepCnt, nFlags);
   BOOL bShift = (GetKeyState(VK_SHIFT)  &0x8000) != 0;
   BOOL bCtrl  = (GetKeyState(VK_CONTROL)&0x8000) != 0;
   BOOL bAlt   = (GetKeyState(VK_MENU)   &0x8000) != 0;
@@ -2059,7 +2059,7 @@ void CWorldEditorView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 void CWorldEditorView::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   pDoc->SetStatusLineModeInfoMessage();
 
   // if we are in mip mode for setting, set new brush switch factor
@@ -2105,7 +2105,7 @@ void CWorldEditorView::SetMipBrushFactor(void)
   GetChildFrame()->m_bAutoMipBrushingOn = TRUE;
 
   // get document
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   // document has changed
   pDoc->SetModifiedFlag();
   // update all views
@@ -2755,8 +2755,8 @@ void CWorldEditorView::OnLButtonDown(UINT nFlags, CPoint point)
 
   m_pbpoTranslationPlane.Reset();
   CMainFrame* pMainFrame = STATIC_DOWNCAST(CMainFrame, AfxGetMainWnd());
-	CWorldEditorDoc* pDoc = GetDocument();
-	ASSERT_VALID(pDoc);
+  CWorldEditorDoc* pDoc = GetDocument();
+  ASSERT_VALID(pDoc);
 
   // key statuses
   BOOL bAlt = (GetKeyState( VK_MENU)&0x8000) != 0;
@@ -3334,8 +3334,8 @@ void CWorldEditorView::OnRButtonDown(UINT nFlags, CPoint point)
   if (m_iaInputAction != IA_MIP_SETTING)
     ResetInteraction();
 
-	CWorldEditorDoc* pDoc = GetDocument();
-	ASSERT_VALID(pDoc);
+  CWorldEditorDoc* pDoc = GetDocument();
+  ASSERT_VALID(pDoc);
   CMainFrame* pMainFrame = STATIC_DOWNCAST(CMainFrame, AfxGetMainWnd());
 
   BOOL bShift = nFlags & MK_SHIFT;
@@ -3556,12 +3556,12 @@ void CWorldEditorView::OnRButtonDown(UINT nFlags, CPoint point)
     InvokeSelectLayerCombo();
   }
 
-	CView::OnRButtonDown(nFlags, point);
+  CView::OnRButtonDown(nFlags, point);
 }
 
 void CWorldEditorView::OnLButtonUp(UINT nFlags, CPoint point)
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   CMainFrame* pMainFrame = STATIC_DOWNCAST(CMainFrame, AfxGetMainWnd());
   BOOL bShift = nFlags & MK_SHIFT;
   BOOL bSpace = (GetKeyState( VK_SPACE)&0x8000) != 0;
@@ -3675,7 +3675,7 @@ void CWorldEditorView::OnLButtonUp(UINT nFlags, CPoint point)
 
 void CWorldEditorView::OnRButtonUp(UINT nFlags, CPoint point)
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   if( m_iaInputAction == IA_MIP_SETTING)
   {
     SetMipBrushFactor();
@@ -3922,15 +3922,15 @@ void CWorldEditorView::OnLButtonDblClk(UINT nFlags, CPoint point)
     pDoc->RefreshCurrentInfoPage();
   }
 
-	CView::OnLButtonDblClk(nFlags, point);
+  CView::OnLButtonDblClk(nFlags, point);
 }
 
 void CWorldEditorView::CallPopupMenu(CPoint point)
 {
   CMainFrame* pMainFrame = STATIC_DOWNCAST(CMainFrame, AfxGetMainWnd());
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
 
-	ASSERT_VALID(pDoc);
+  ASSERT_VALID(pDoc);
   BOOL bHitFields = (pDoc->GetEditingMode() == ENTITY_MODE);
   // obtain information about where mouse pointed into the world in the moment of mouse down
   CCastRay crRayHitOnContext = GetMouseHitInformation( point, FALSE, TRUE, bHitFields);
@@ -4193,7 +4193,7 @@ void CWorldEditorView::CallPopupMenu(CPoint point)
 
     // call popup menu
     pPopup->TrackPopupMenu( TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_LEFTALIGN,
-								            point.x, point.y, this);
+                            point.x, point.y, this);
   }
 }
 
@@ -4482,7 +4482,7 @@ void CWorldEditorView::OnMouseMove(UINT nFlags, CPoint point)
   if( !pdpValidDrawPort ) return;
 
   CView::OnMouseMove(nFlags, point);
-	CPoint ptScreen = point;
+  CPoint ptScreen = point;
   LONG lOffsetX = point.x - m_ptMouse.x;
   LONG lOffsetY = point.y - m_ptMouse.y;
   float fOriginOffsetX = (FLOAT) (point.x - m_ptMouseDown.x);
@@ -4566,12 +4566,12 @@ void CWorldEditorView::OnMouseMove(UINT nFlags, CPoint point)
               INDEX2D pt=Calculate2dHitPoint(*ptrTerrain, crRayHit.cr_vHit);
               INDEX iWidth=ptrTerrain->tr_pixHeightMapWidth;
               UWORD uwAltitude=*(ptrTerrain->tr_auwHeightMap+iWidth*pt(2) + pt(1));
-  	          FLOAT fAltitudeBeneath=FLOAT(uwAltitude)/65535*ptrTerrain->tr_vTerrainSize(2);
+              FLOAT fAltitudeBeneath=FLOAT(uwAltitude)/65535*ptrTerrain->tr_vTerrainSize(2);
               m_strTerrainDataPaneText.PrintF("Altitude: %g", fAltitudeBeneath);
             }
             else
             {
-  	          FLOAT fReferenceAltitude=FLOAT(theApp.m_uwEditAltitude)/65535*ptrTerrain->tr_vTerrainSize(2);
+              FLOAT fReferenceAltitude=FLOAT(theApp.m_uwEditAltitude)/65535*ptrTerrain->tr_vTerrainSize(2);
               m_strTerrainDataPaneText.PrintF("Reference altitude: %g", fReferenceAltitude);
             }
           }
@@ -5262,12 +5262,12 @@ void CWorldEditorView::AtStopCSG(void)
 void CWorldEditorView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 {
   // just invalidate the whole window area
-	Invalidate(FALSE);
+  Invalidate(FALSE);
 }
 
 void CWorldEditorView::OnDropFiles(HDROP hDropInfo)
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   CMainFrame* pMainFrame = STATIC_DOWNCAST(CMainFrame, AfxGetMainWnd());
 
   BOOL bCSGOn = pDoc->m_pwoSecondLayer != NULL;
@@ -5287,7 +5287,7 @@ void CWorldEditorView::OnDropFiles(HDROP hDropInfo)
     return;
   }
 
-	// buffer for dropped file name
+  // buffer for dropped file name
   char chrFile[ 256];
   // place dropped file name into buffer
   DragQueryFileA( hDropInfo, 0, chrFile, 256);
@@ -5464,43 +5464,43 @@ CChildFrame *CWorldEditorView::GetChildFrame(void)
 
 void CWorldEditorView::OnIsometricFront()
 {
-	m_ptProjectionType = CSlaveViewer::PT_ISOMETRIC_FRONT;
+  m_ptProjectionType = CSlaveViewer::PT_ISOMETRIC_FRONT;
   Invalidate( FALSE);
 }
 
 void CWorldEditorView::OnIsometricBack()
 {
-	m_ptProjectionType = CSlaveViewer::PT_ISOMETRIC_BACK;
+  m_ptProjectionType = CSlaveViewer::PT_ISOMETRIC_BACK;
   Invalidate( FALSE);
 }
 
 void CWorldEditorView::OnIsometricBottom()
 {
-	m_ptProjectionType = CSlaveViewer::PT_ISOMETRIC_BOTTOM;
+  m_ptProjectionType = CSlaveViewer::PT_ISOMETRIC_BOTTOM;
   Invalidate( FALSE);
 }
 
 void CWorldEditorView::OnIsometricLeft()
 {
-	m_ptProjectionType = CSlaveViewer::PT_ISOMETRIC_LEFT;
+  m_ptProjectionType = CSlaveViewer::PT_ISOMETRIC_LEFT;
   Invalidate( FALSE);
 }
 
 void CWorldEditorView::OnIsometricRight()
 {
-	m_ptProjectionType = CSlaveViewer::PT_ISOMETRIC_RIGHT;
+  m_ptProjectionType = CSlaveViewer::PT_ISOMETRIC_RIGHT;
   Invalidate( FALSE);
 }
 
 void CWorldEditorView::OnIsometricTop()
 {
-	m_ptProjectionType = CSlaveViewer::PT_ISOMETRIC_TOP;
+  m_ptProjectionType = CSlaveViewer::PT_ISOMETRIC_TOP;
   Invalidate( FALSE);
 }
 
 void CWorldEditorView::OnPerspective()
 {
-	m_ptProjectionType = CSlaveViewer::PT_PERSPECTIVE;
+  m_ptProjectionType = CSlaveViewer::PT_PERSPECTIVE;
   Invalidate( FALSE);
 }
 
@@ -5842,8 +5842,8 @@ void CWorldEditorView::OnKeyEditBuffer(UINT nID)
 
 void CWorldEditorView::OnCircleModes()
 {
-	CWorldEditorDoc* pDoc = GetDocument();
-	ASSERT_VALID(pDoc);
+  CWorldEditorDoc* pDoc = GetDocument();
+  ASSERT_VALID(pDoc);
 
   switch( pDoc->GetEditingMode())
   {
@@ -5858,15 +5858,15 @@ void CWorldEditorView::OnCircleModes()
 
 void CWorldEditorView::OnUpdateCircleModes(CCmdUI* pCmdUI)
 {
-	CWorldEditorDoc* pDoc = GetDocument();
-	ASSERT_VALID(pDoc);
+  CWorldEditorDoc* pDoc = GetDocument();
+  ASSERT_VALID(pDoc);
   pCmdUI->Enable( pDoc->GetEditingMode() != CSG_MODE);
 }
 
 void CWorldEditorView::OnDeselectAll()
 {
-	CWorldEditorDoc* pDoc = GetDocument();
-	ASSERT_VALID(pDoc);
+  CWorldEditorDoc* pDoc = GetDocument();
+  ASSERT_VALID(pDoc);
   pDoc->DeselectAll();
 
   BOOL bCSGOn = pDoc->m_pwoSecondLayer != NULL;
@@ -5925,7 +5925,7 @@ void CWorldEditorView::RemoveFromLinkedChain(CEntityPtr pen)
 void CWorldEditorView::OnDeleteEntities()
 {
   CMainFrame* pMainFrame = STATIC_DOWNCAST(CMainFrame, AfxGetMainWnd());
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
 
   if( pDoc->GetEditingMode() == CSG_MODE)  return;
 
@@ -6049,7 +6049,7 @@ void CWorldEditorView::UpdateCursor(void)
 {
   BOOL bAlt = (GetKeyState( VK_MENU)&0x8000) != 0;
   BOOL bCtrl = (GetKeyState( VK_CONTROL)&0x8000) != 0;
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
 
   CTerrainLayerPtr ptlLayer=GetLayer();
 
@@ -6178,57 +6178,57 @@ void CWorldEditorView::OnTakeSs()
 
 void CWorldEditorView::OnEntityMode()
 {
-	CWorldEditorDoc* pDoc = GetDocument();
-	ASSERT_VALID(pDoc);
+  CWorldEditorDoc* pDoc = GetDocument();
+  ASSERT_VALID(pDoc);
   pDoc->SetEditingMode( ENTITY_MODE);
 }
 
 void CWorldEditorView::OnUpdateEntityMode(CCmdUI* pCmdUI)
 {
-	CWorldEditorDoc* pDoc = GetDocument();
-	ASSERT_VALID(pDoc);
+  CWorldEditorDoc* pDoc = GetDocument();
+  ASSERT_VALID(pDoc);
   pCmdUI->Enable( pDoc->GetEditingMode() != CSG_MODE);
 }
 
 void CWorldEditorView::OnTerrainMode()
 {
-	CWorldEditorDoc* pDoc = GetDocument();
-	ASSERT_VALID(pDoc);
+  CWorldEditorDoc* pDoc = GetDocument();
+  ASSERT_VALID(pDoc);
   pDoc->SetEditingMode( TERRAIN_MODE);
 }
 
 void CWorldEditorView::OnUpdateTerrainMode(CCmdUI* pCmdUI)
 {
-	CWorldEditorDoc* pDoc = GetDocument();
-	ASSERT_VALID(pDoc);
+  CWorldEditorDoc* pDoc = GetDocument();
+  ASSERT_VALID(pDoc);
   pCmdUI->Enable( pDoc->GetEditingMode() != CSG_MODE);
 }
 
 void CWorldEditorView::OnSectorMode()
 {
-	CWorldEditorDoc* pDoc = GetDocument();
-	ASSERT_VALID(pDoc);
+  CWorldEditorDoc* pDoc = GetDocument();
+  ASSERT_VALID(pDoc);
   pDoc->SetEditingMode( SECTOR_MODE);
 }
 
 void CWorldEditorView::OnUpdateSectorMode(CCmdUI* pCmdUI)
 {
-	CWorldEditorDoc* pDoc = GetDocument();
-	ASSERT_VALID(pDoc);
+  CWorldEditorDoc* pDoc = GetDocument();
+  ASSERT_VALID(pDoc);
   pCmdUI->Enable( pDoc->GetEditingMode() != CSG_MODE);
 }
 
 void CWorldEditorView::OnPolygonMode()
 {
-	CWorldEditorDoc* pDoc = GetDocument();
-	ASSERT_VALID(pDoc);
+  CWorldEditorDoc* pDoc = GetDocument();
+  ASSERT_VALID(pDoc);
   pDoc->SetEditingMode( POLYGON_MODE);
 }
 
 void CWorldEditorView::OnUpdatePolygonMode(CCmdUI* pCmdUI)
 {
-	CWorldEditorDoc* pDoc = GetDocument();
-	ASSERT_VALID(pDoc);
+  CWorldEditorDoc* pDoc = GetDocument();
+  ASSERT_VALID(pDoc);
   pCmdUI->Enable( pDoc->GetEditingMode() != CSG_MODE);
 }
 
@@ -6239,14 +6239,14 @@ void CWorldEditorView::OnEditCopy()
 
 void CWorldEditorView::OnVertexMode() 
 {
-	CWorldEditorDoc* pDoc = GetDocument();
-	ASSERT_VALID(pDoc);
+  CWorldEditorDoc* pDoc = GetDocument();
+  ASSERT_VALID(pDoc);
   pDoc->OnCsgCancel();
 }
 
 void CWorldEditorView::EditCopy( BOOL bAlternative)
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   BOOL bCopyWorld = FALSE;
   // if we are in entity mode
   if( pDoc->GetEditingMode() == ENTITY_MODE)
@@ -6446,7 +6446,7 @@ void CWorldEditorView::EditCopy( BOOL bAlternative)
 // obtain point in the world where mouse pointed last time it was moved
 CPlacement3D CWorldEditorView::GetMouseInWorldPlacement(void)
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   CCastRay crRayHit = GetMouseHitInformation( m_ptMouse);
 
   // get hitted point
@@ -6472,7 +6472,7 @@ CPlacement3D CWorldEditorView::GetMouseInWorldPlacement(void)
 
 void CWorldEditorView::OnEditPaste()
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
 
   BOOL bCSGOn = pDoc->m_pwoSecondLayer != NULL;
   // You can't paste anything while CSG is on
@@ -7089,7 +7089,7 @@ BOOL CWorldEditorView::PreTranslateMessage(MSG* pMsg)
     }
   }
 
-	return CView::PreTranslateMessage(pMsg);
+  return CView::PreTranslateMessage(pMsg);
 }
 
 void CWorldEditorView::OnKeyO()
@@ -7185,7 +7185,7 @@ void CWorldEditorView::OnCloneCSG()
         dlgProgressDialog.SetProgressMessageAndPosition( achrProgressMessage, iClone+1);
       }
       // create new placement from delta placement
-	    CPlacement3D plNewPlacement = pDoc->m_plDeltaPlacement;
+      CPlacement3D plNewPlacement = pDoc->m_plDeltaPlacement;
       // convert it into absolute space of last used placement (delta applyed)
       plNewPlacement.RelativeToAbsolute( pDoc->m_plLastPlacement);
       // copy last used values for primitive as initial values for this new primitive
@@ -7237,7 +7237,7 @@ void CWorldEditorView::OnCloneCSG()
         dlgProgressDialog.SetProgressMessageAndPosition( achrProgressMessage, iClone+1);
       }
       // create new placement from delta placement
-	    CPlacement3D plNewPlacement = pDoc->m_plDeltaPlacement;
+      CPlacement3D plNewPlacement = pDoc->m_plDeltaPlacement;
       // convert it into absolute space of last used placement (delta applyed)
       plNewPlacement.RelativeToAbsolute( pDoc->m_plLastPlacement);
 
@@ -7356,8 +7356,8 @@ void CWorldEditorView::CreatePrimitiveCalledFromPopup()
 
 void CWorldEditorView::OnMeasureOn()
 {
-	theApp.m_bMeasureModeOn = !theApp.m_bMeasureModeOn;
-	theApp.m_bCutModeOn = FALSE;
+  theApp.m_bMeasureModeOn = !theApp.m_bMeasureModeOn;
+  theApp.m_bCutModeOn = FALSE;
 }
 
 void CWorldEditorView::OnUpdateMeasureOn(CCmdUI* pCmdUI)
@@ -7369,7 +7369,7 @@ void CWorldEditorView::OnResetViewer()
 {
   CWorldEditorDoc* pDoc = GetDocument();
   CMainFrame* pMainFrame = STATIC_DOWNCAST(CMainFrame, AfxGetMainWnd());
-	// set new target
+  // set new target
   GetChildFrame()->m_mvViewer.SetTargetPlacement( FLOAT3D(0.0f, 0.0f, 0.0f));
   _fFlyModeSpeedMultiplier=theApp.m_Preferences.ap_fDefaultFlyModeSpeed;
   pMainFrame->ResetInfoWindowPos();
@@ -7383,7 +7383,7 @@ void CWorldEditorView::OnCenterBcgViewer()
   CEntityPtr penBackgroundViewer = pDoc->m_woWorld.GetBackgroundViewer();
   if( penBackgroundViewer )
   {
-	  // set new target
+    // set new target
     GetChildFrame()->m_mvViewer.SetTargetPlacement(
       penBackgroundViewer->GetPlacement().pl_PositionVector);
     pDoc->UpdateAllViews( NULL);
@@ -7426,7 +7426,7 @@ void CWorldEditorView::OnCopyTexture()
 
 void CWorldEditorView::OnPasteTexture()
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   
   if( pDoc->GetEditingMode() == TERRAIN_MODE)
   {
@@ -7456,7 +7456,7 @@ void CWorldEditorView::OnPasteTexture()
 
 void CWorldEditorView::OnSelectByTextureAdjacent()
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   // obtain information about where mouse points into the world
   CCastRay crRayHit = GetMouseHitInformation( m_ptMouse);
   // if we hit brush entity
@@ -7472,7 +7472,7 @@ void CWorldEditorView::OnSelectByTextureAdjacent()
 
 void CWorldEditorView::OnSelectByTextureInSector()
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   // obtain information about where mouse points into the world
   CCastRay crRayHit = GetMouseHitInformation( m_ptMouse);
   // if we hit brush entity
@@ -7488,7 +7488,7 @@ void CWorldEditorView::OnSelectByTextureInSector()
 
 void CWorldEditorView::OnSelectByColorInSector()
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   // obtain information about where mouse points into the world
   CCastRay crRayHit = GetMouseHitInformation( m_ptMouse);
   // if we hit brush entity
@@ -7504,7 +7504,7 @@ void CWorldEditorView::OnSelectByColorInSector()
 
 void CWorldEditorView::OnFunction() 
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   if( pDoc->m_iMode == ENTITY_MODE)
   {
     pDoc->m_cenEntitiesSelectedByVolume.Clear();
@@ -7546,7 +7546,7 @@ void CWorldEditorView::OnFunction()
 
 void CWorldEditorView::SnapSelectedVerticesToPlane(void)
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   pDoc->RememberUndo();
   pDoc->m_woWorld.TriangularizeForVertices( pDoc->m_selVertexSelection);
   // obtain information about where mouse points into the world
@@ -7606,7 +7606,7 @@ void CWorldEditorView::OnCrossroadForCtrlF()
 
 void CWorldEditorView::OnFindTexture()
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   // obtain information about where mouse points into the world
   CCastRay crRayHit = GetMouseHitInformation( m_ptMouse);
   // if we hit brush entity
@@ -7627,7 +7627,7 @@ void CWorldEditorView::OnFindTexture()
 
 void CWorldEditorView::OnCenterEntity()
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
 
   if(pDoc->GetEditingMode() == CSG_MODE)
   {
@@ -7700,7 +7700,7 @@ void CWorldEditorView::OnCenterEntity(CEntityPtr entity)
 
 void CWorldEditorView::OnUpdateCenterEntity(CCmdUI* pCmdUI)
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   // if we are in entity mode and we have at least 1 entity selected
   pCmdUI->Enable( (pDoc->GetEditingMode() == CSG_MODE) ||
                   ((pDoc->GetEditingMode() == TERRAIN_MODE) &&
@@ -7711,7 +7711,7 @@ void CWorldEditorView::OnUpdateCenterEntity(CCmdUI* pCmdUI)
 
 void CWorldEditorView::OnDropMarker()
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   CTFileName fnDropClass;
   CTString strTargetProperty;
 
@@ -7727,7 +7727,7 @@ void CWorldEditorView::OnDropMarker()
 
 void CWorldEditorView::OnDropMarker(CPlacement3D plMarker)
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
 
   CTFileName fnDropClass, fnDummy;
   CTString strTargetProperty;
@@ -7808,7 +7808,7 @@ void CWorldEditorView::OnDropMarker(CPlacement3D plMarker)
 
 void CWorldEditorView::OnUpdateDropMarker(CCmdUI* pCmdUI)
 {
-	CTFileName fnDropClass;
+  CTFileName fnDropClass;
   CTString strTargetProperty;
 
   CWorldEditorDoc* pDoc = GetDocument();
@@ -7827,7 +7827,7 @@ void CWorldEditorView::OnUpdateDropMarker(CCmdUI* pCmdUI)
 
 void CWorldEditorView::OnTestConnections()
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   CEntityPropertyPtr penpProperty;
 
   CEntityPtr penOnly = pDoc->m_selEntitySelection.GetFirstInSelection();
@@ -7880,7 +7880,7 @@ void CWorldEditorView::OnTestConnections()
 
 void CWorldEditorView::OnTestConnectionsBack() 
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   CEntityPropertyPtr penpProperty;
 
   CEntityPtr penOnly = pDoc->m_selEntitySelection.GetFirstInSelection();
@@ -7944,7 +7944,7 @@ void CWorldEditorView::OnTestConnectionsBack()
 
 void CWorldEditorView::OnUpdateTestConnections(CCmdUI* pCmdUI)
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   BOOL bModeAndCount = (pDoc->GetEditingMode() == ENTITY_MODE) &&
                        ( pDoc->m_selEntitySelection.Count() == 1);
   BOOL bEnableCommand = FALSE;
@@ -7977,7 +7977,7 @@ void CWorldEditorView::OnAlignVolume()
   {
     return;
   }
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   // create a slave viewer
   CSlaveViewer svViewer(GetChildFrame()->m_mvViewer, m_ptProjectionType, pDoc->m_plGrid,
                         pdpValidDrawPort);
@@ -8013,7 +8013,7 @@ void CWorldEditorView::OnAlignPrimitive()
   {
     return;
   }
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   // create a slave viewer
   CSlaveViewer svViewer(GetChildFrame()->m_mvViewer, m_ptProjectionType, pDoc->m_plGrid,
                         pdpValidDrawPort);
@@ -8064,7 +8064,7 @@ void CWorldEditorView::OnAlignPrimitive()
 
 void CWorldEditorView::OnUpdateAlignVolume(CCmdUI* pCmdUI)
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   pCmdUI->Enable( pDoc->m_bBrowseEntitiesMode);
 }
 
@@ -8095,7 +8095,7 @@ void CWorldEditorView::OnChooseColor()
   m_wndSelectionTools.GetWindowRect( &rectToolBar);
   // Then we find tool button's index
   INDEX iToolButton = m_wndSelectionTools.CommandToIndex( ID_CHOOSE_COLOR);
-	// Using given index, we obtain button's rectangle
+  // Using given index, we obtain button's rectangle
   RECT rectButton;
   m_wndSelectionTools.GetItemRect( iToolButton, &rectButton);
   // set screen coordinates of LU point of clicked tool button
@@ -8190,12 +8190,12 @@ LRESULT CWorldEditorView::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
       }
       break;
     case WM_DESTROY:
-	    PostQuitMessage(0);
-	    break;
+      PostQuitMessage(0);
+      break;
     }
   }
 
-	return CView::WindowProc(message, wParam, lParam);
+  return CView::WindowProc(message, wParam, lParam);
 }
 
 void CWorldEditorView::OnRButtonDblClk(UINT nFlags, CPoint point)
@@ -8235,7 +8235,7 @@ void CWorldEditorView::OnRButtonDblClk(UINT nFlags, CPoint point)
     }
   }
 
-	CView::OnRButtonDblClk(nFlags, point);
+  CView::OnRButtonDblClk(nFlags, point);
 }
 
 void CWorldEditorView::OnLastPrimitive()
@@ -8361,7 +8361,7 @@ void CWorldEditorView::OnUpdateMoveUp(CCmdUI* pCmdUI)
 
 void CWorldEditorView::OnSelectLights()
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   // obtain information about where mouse points into the world
   CCastRay crRayHit = GetMouseHitInformation( m_ptMouse);
   CBrushPolygonPtr pbpoPolygon = crRayHit.cr_pbpoBrushPolygon;
@@ -8404,7 +8404,7 @@ void CWorldEditorView::OnSelectLights()
 
 void CWorldEditorView::OnDiscardShadows()
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   CEntityPtr penEntity;
   CBrushSectorPtr pbscSector;
   CBrushPolygonPtr pbpoPolygon;
@@ -9143,7 +9143,7 @@ void CWorldEditorView::OnMenuCopyMapping()
 
 void CWorldEditorView::OnKeyPaste()
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   if( pDoc->GetEditingMode() == TERRAIN_MODE)
   {
     theApp.m_iTerrainBrushMode=TBM_PAINT;
@@ -9165,7 +9165,7 @@ void CWorldEditorView::OnKeyPaste()
 
 void CWorldEditorView::OnKeyPasteAsProjected()
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   CCastRay crRayHit = GetMouseHitInformation( m_ptMouse);
   // if we hit brush entity
   if( (crRayHit.cr_penHit != NULL) &&
@@ -9662,7 +9662,7 @@ void CWorldEditorView::OnPreviousMipBrush()
   GetChildFrame()->m_fManualMipBrushingFactor = pbmPrevMip->GetMipDistance()-0.01f;
 
   // update all views
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   pDoc->UpdateAllViews( NULL);
   // set text describing data that is edited
   SetEditingDataPaneInfo( TRUE);
@@ -9687,7 +9687,7 @@ void CWorldEditorView::OnNextMipBrush()
   GetChildFrame()->m_fManualMipBrushingFactor = pbmNextMip->GetMipDistance()-0.01f;
 
   // update all views
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   pDoc->UpdateAllViews( NULL);
   // set text describing data that is edited
   SetEditingDataPaneInfo( TRUE);
@@ -10052,7 +10052,7 @@ void CWorldEditorView::CopySectorAmbient( CBrushSectorPtr pbscSector)
 
 void CWorldEditorView::PasteSectorAmbient( CBrushSectorPtr pbscSector)
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   if( (!pbscSector) || (pbscSector->IsSelected()) )
   {
     FOREACHINDYNAMICCONTAINER(pDoc->m_selSectorSelection, CBrushSector, itbsc)
@@ -10121,7 +10121,7 @@ void CWorldEditorView::RestorePolygonSelection(CBrushPolygonSelection &selPolygo
 
 void CWorldEditorView::DiscardShadows( CEntityPtr penEntity)
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   
   CDynamicContainer_CBrushPolygon dcPolygons;
   StorePolygonSelection( pDoc->m_selPolygonSelection, dcPolygons);
@@ -10709,7 +10709,7 @@ void CWorldEditorView::OnAdvMapping_AlignAdjacentAndTangent()
 
 void CWorldEditorView::OnDestroy()
 {
-	// destroy canvas that is currently used
+  // destroy canvas that is currently used
   _pGfx_DestroyWindowCanvas( m_pvpViewPort);
   m_pvpViewPort.Reset();
 
@@ -11546,7 +11546,7 @@ BOOL CWorldEditorView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
   BOOL bShift = (GetKeyState( VK_SHIFT)&0x8000) != 0;
 
   CWorldEditorDoc* pDoc = GetDocument();
-	ASSERT_VALID(pDoc);
+  ASSERT_VALID(pDoc);
 
   // space+ctrl+lmb zoomes in 2x
   if( bSpace && bCtrl)
@@ -11585,7 +11585,7 @@ BOOL CWorldEditorView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 
 void CWorldEditorView::OnSelectSectorsOtherSide() 
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   // obtain information about where mouse points into the world
   CCastRay crRayHit = GetMouseHitInformation( m_ptMouse);
   // if we hit brush entity
@@ -11611,7 +11611,7 @@ void CWorldEditorView::OnSelectSectorsOtherSide()
 
 void CWorldEditorView::OnSelectLinksToSector() 
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   // obtain information about where mouse points into the world
   CCastRay crRayHit = GetMouseHitInformation( m_ptMouse);
   // if we hit brush entity
@@ -11647,7 +11647,7 @@ void CWorldEditorView::OnRemainSelectedbyOrientationSingle()
 
 void CWorldEditorView::OnRemainSelectedByOrientation(BOOL bBothSides) 
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   // obtain information about where mouse points into the world
   CCastRay crRayHit = GetMouseHitInformation( m_ptMouse);
   CBrushPolygonPtr pbpoPolygon = crRayHit.cr_pbpoBrushPolygon;
@@ -11687,7 +11687,7 @@ void CWorldEditorView::OnRemainSelectedByOrientation(BOOL bBothSides)
 
 void CWorldEditorView::OnDeselectByOrientation() 
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   // obtain information about where mouse points into the world
   CCastRay crRayHit = GetMouseHitInformation( m_ptMouse);
   CBrushPolygonPtr pbpoPolygon = crRayHit.cr_pbpoBrushPolygon;
@@ -11719,7 +11719,7 @@ void CWorldEditorView::OnDeselectByOrientation()
 
 void CWorldEditorView::OnReoptimizeBrushes() 
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
 
   CWaitCursor wc;
 
@@ -11817,7 +11817,7 @@ void CWorldEditorView::OnReoptimizeBrushes()
 
 void CWorldEditorView::OnMergeVertices() 
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   pDoc->RememberUndo();
   pDoc->ClearSelections( ST_VERTEX);
 
@@ -12028,13 +12028,13 @@ void CWorldEditorView::OnCutMode()
       return;
     }
   }
-	theApp.m_bCutModeOn = !theApp.m_bCutModeOn;
-	theApp.m_bMeasureModeOn = FALSE;
+  theApp.m_bCutModeOn = !theApp.m_bCutModeOn;
+  theApp.m_bMeasureModeOn = FALSE;
 }
 
 void CWorldEditorView::OnUpdateCutMode(CCmdUI* pCmdUI) 
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
 
   // cut is enabled only in sector and polygon mode
   if( (pDoc->GetEditingMode() == POLYGON_MODE) ||
@@ -12053,7 +12053,7 @@ void CWorldEditorView::OnUpdateCutMode(CCmdUI* pCmdUI)
 
 BOOL CWorldEditorView::IsCutEnabled(CTString &strError)
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   
   if( pDoc->GetEditingMode() == ENTITY_MODE)
   {
@@ -12127,7 +12127,7 @@ BOOL CWorldEditorView::IsCutEnabled(CTString &strError)
 
 void CWorldEditorView::OnUpdateSelectClones(CCmdUI* pCmdUI) 
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   // allow clone selecting only if we have only one entity selected
   if( pDoc->m_selEntitySelection.Count() == 1)
   {
@@ -12139,7 +12139,7 @@ void CWorldEditorView::OnUpdateSelectClones(CCmdUI* pCmdUI)
 
 void CWorldEditorView::OnSelectClones() 
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   CEntityPtr pen = pDoc->m_selEntitySelection.GetFirstInSelection();
 
   // for each entity in the world
@@ -12173,7 +12173,7 @@ BOOL CWorldEditorView::IsSelectClonesOnContextEnabled( void)
 
 void CWorldEditorView::OnSelectClonesOnContext() 
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   CCastRay crRayHit = GetMouseHitInformation( m_ptMouse);
   if( crRayHit.cr_penHit != NULL)
   {
@@ -12215,7 +12215,7 @@ void CWorldEditorView::OnKeyCtrlShiftE()
 
 void CWorldEditorView::OnSelectOfSameClass() 
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   CEntityPtr pen = pDoc->m_selEntitySelection.GetFirstInSelection();
 
   // to hold entities for selecting
@@ -12266,7 +12266,7 @@ void CWorldEditorView::OnSelectOfSameClass()
 
 void CWorldEditorView::OnSelectOfSameClassOnContext() 
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   CCastRay crRayHit = GetMouseHitInformation( m_ptMouse);
   if( crRayHit.cr_penHit != NULL)
   {
@@ -12337,7 +12337,7 @@ void LimitFrameRate(void)
 void CWorldEditorView::ApplyFreeModeControls( CPlacement3D &pl, ANGLE3D &aAbs, FLOAT &fSpeedMultiplier, BOOL bPrescan)
 {
   CChildFrame *pcf = GetChildFrame();
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
 #define FB_SPEED 1.0f
 #define LR_SPEED 1.0f
 #define UD_SPEED 1.0f
@@ -12485,7 +12485,7 @@ static ANGLE3D _aAbs;
 void CWorldEditorView::PumpWindowsMessagesInFreeMode(BOOL &bRunning, FLOAT &fSpeedMultiplier)
 {
   CChildFrame *pcf = GetChildFrame();
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
 
   // additional key indentifiers are not on
   BOOL bShift = _pInput_GetButtonState( KID_LSHIFT) || _pInput_GetButtonState( KID_RSHIFT);
@@ -12640,7 +12640,7 @@ void CWorldEditorView::OnAlternativeMovingMode()
   _pShell_SetINDEX("inp_bAllowMouseAcceleration", 1);
   _pShell_SetINDEX("inp_bFilterMouse", 1);
 
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   CViewPrefs vpOrg = m_vpViewPrefs;
   // obtain child frame ptr
   CChildFrame *pcf = GetChildFrame();
@@ -12709,7 +12709,7 @@ void CWorldEditorView::OnAlternativeMovingMode()
 
 void CWorldEditorView::OnReTriple() 
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   CBrushPolygonPtr pbpo = pDoc->m_selPolygonSelection.GetFirstInSelection();
   CBrushSectorPtr(pbpo->bpo_pbscSector)->ReTriple( pDoc->m_selPolygonSelection);
 }
@@ -12717,7 +12717,7 @@ void CWorldEditorView::OnReTriple()
 void CWorldEditorView::OnClearAllTargets(void) 
 {
   CMainFrame* pMainFrame = STATIC_DOWNCAST(CMainFrame, AfxGetMainWnd());
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
 
   if( m_bEntityHitedOnContext && m_penEntityHitOnContext )
   {
@@ -12737,7 +12737,7 @@ void CWorldEditorView::OnClearAllTargets(void)
 
 void CWorldEditorView::OnSelectCsgTarget() 
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   CBrushMipPtr pbmCurrentMip = GetCurrentBrushMip();
   if (pbmCurrentMip)
   {
@@ -12754,7 +12754,7 @@ void CWorldEditorView::OnSelectCsgTarget()
 
 void CWorldEditorView::OnUpdateSelectCsgTarget(CCmdUI* pCmdUI) 
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   CBrushMipPtr pbmCurrentMip = GetCurrentBrushMip();
   pCmdUI->Enable(pbmCurrentMip);
 }
@@ -12763,7 +12763,7 @@ void CWorldEditorView::OnUpdateSelectCsgTarget(CCmdUI* pCmdUI)
 void CWorldEditorView::OnUpdateReTriple(CCmdUI* pCmdUI) 
 {
   BOOL bEnableRetripling = FALSE;
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   if( pDoc->m_selPolygonSelection.Count() != 0)
   {
     CBrushPolygonPtr pbpo = pDoc->m_selPolygonSelection.GetFirstInSelection();
@@ -13082,7 +13082,7 @@ void CWorldEditorView::OnResetMappingStretch()
 
 void CWorldEditorView::ShowLinkTree(CEntityPtr pen, BOOL bWhoTargets/*=FALSE*/, BOOL bPropertyNames/*=FALSE*/)
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   CPoint ptScr=m_ptMouse;
   ClientToScreen( &ptScr);
   if( pen || (pDoc->m_selEntitySelection.Count() != 0))
@@ -13094,7 +13094,7 @@ void CWorldEditorView::ShowLinkTree(CEntityPtr pen, BOOL bWhoTargets/*=FALSE*/, 
 
 void CWorldEditorView::OnCrossroadForL() 
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   if( pDoc->GetEditingMode() == ENTITY_MODE)
   {
     ShowLinkTree({});
@@ -13123,7 +13123,7 @@ void CWorldEditorView::OnTargetTree()
 
 void CWorldEditorView::OnUpdateTargetTree(CCmdUI* pCmdUI) 
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   pCmdUI->Enable(pDoc->m_selEntitySelection.Count() != 0);
 }
 
@@ -13138,7 +13138,7 @@ void SwapLayers( CBrushPolygon &bpo, INDEX il1, INDEX il2)
 
 void CWorldEditorView::OnSwapLayers12() 
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   FOREACHINDYNAMICCONTAINER(pDoc->m_selPolygonSelection, CBrushPolygon, itbpo)
   {
     SwapLayers( *itbpo.Current(), 0, 1);
@@ -13149,7 +13149,7 @@ void CWorldEditorView::OnSwapLayers12()
 
 void CWorldEditorView::OnSwapLayers23() 
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   FOREACHINDYNAMICCONTAINER(pDoc->m_selPolygonSelection, CBrushPolygon, itbpo)
   {
     SwapLayers( *itbpo.Current(), 1, 2);
@@ -13160,7 +13160,7 @@ void CWorldEditorView::OnSwapLayers23()
 
 void CWorldEditorView::OnSelectDescendants() 
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   for (CEntityPtr iten : pDoc->m_selEntitySelection)
   {
     SelectDescendents( pDoc->m_selEntitySelection, *iten);
@@ -13174,7 +13174,7 @@ void CWorldEditorView::OnRotateToTargetOrigin()
 {
   if(m_penEntityHitOnContext )
   {
-   	CWorldEditorDoc* pDoc = GetDocument();
+     CWorldEditorDoc* pDoc = GetDocument();
     for (CEntityPtr iten : pDoc->m_selEntitySelection)
     {
       const CPlacement3D &plDst=iten->GetPlacement();
@@ -13196,7 +13196,7 @@ void CWorldEditorView::OnRotateToTargetCenter()
 {
   if(m_penEntityHitOnContext )
   {
-   	CWorldEditorDoc* pDoc = GetDocument();
+     CWorldEditorDoc* pDoc = GetDocument();
     for (CEntityPtr iten : pDoc->m_selEntitySelection)
     {
       const CPlacement3D &plDst=iten->GetPlacement();
@@ -13236,7 +13236,7 @@ void CWorldEditorView::OnCopyPosition()
 
 void CWorldEditorView::OnPastePlacement() 
 {
- 	CWorldEditorDoc* pDoc = GetDocument();
+   CWorldEditorDoc* pDoc = GetDocument();
   if(!m_penEntityHitOnContext) return;
   if( m_penEntityHitOnContext->IsSelected())
   {
@@ -13255,7 +13255,7 @@ void CWorldEditorView::OnPastePlacement()
 
 void CWorldEditorView::OnPasteOrientation() 
 {
- 	CWorldEditorDoc* pDoc = GetDocument();
+   CWorldEditorDoc* pDoc = GetDocument();
   if(!m_penEntityHitOnContext) return;
   if( m_penEntityHitOnContext->IsSelected())
   {
@@ -13278,7 +13278,7 @@ void CWorldEditorView::OnPasteOrientation()
 
 void CWorldEditorView::OnPastePosition() 
 {
- 	CWorldEditorDoc* pDoc = GetDocument();
+   CWorldEditorDoc* pDoc = GetDocument();
   if(!m_penEntityHitOnContext) return;
   if( m_penEntityHitOnContext->IsSelected())
   {
@@ -13301,7 +13301,7 @@ void CWorldEditorView::OnPastePosition()
 
 void CWorldEditorView::Align(BOOL bX,BOOL bY,BOOL bZ,BOOL bH,BOOL bP,BOOL bB)
 {
- 	CWorldEditorDoc* pDoc = GetDocument();
+   CWorldEditorDoc* pDoc = GetDocument();
   INDEX ctSelected=pDoc->m_woWorld.wo_cenEntities.Count();
   CEntityPtr penLast;
   {for (CEntityPtr iten : pDoc->m_selEntitySelection)
@@ -13734,13 +13734,13 @@ void CWorldEditorView::OnAutotexturizeMips()
 
 void CWorldEditorView::OnUpdateAutotexturizeMips(CCmdUI* pCmdUI) 
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   pCmdUI->Enable(pDoc->m_selEntitySelection.Count()!=0);
 }
 
 void CWorldEditorView::OnRandomOffsetU() 
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   // for each selected polygon
   FOREACHINDYNAMICCONTAINER(pDoc->m_selPolygonSelection, CBrushPolygon, itbpo)
   {
@@ -13755,7 +13755,7 @@ void CWorldEditorView::OnRandomOffsetU()
 
 void CWorldEditorView::OnRandomOffsetV() 
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   // for each selected polygon
   FOREACHINDYNAMICCONTAINER(pDoc->m_selPolygonSelection, CBrushPolygon, itbpo)
   {
@@ -13770,7 +13770,7 @@ void CWorldEditorView::OnRandomOffsetV()
 
 void CWorldEditorView::OnStretchRelativeOffset() 
 {
- 	CWorldEditorDoc* pDoc = GetDocument();
+   CWorldEditorDoc* pDoc = GetDocument();
   if(!m_penEntityHitOnContext) return;
   CDlgStretchChildOffset dlg;
   if( dlg.DoModal()!=IDOK) return;
@@ -13813,7 +13813,7 @@ void CWorldEditorView::OnStretchRelativeOffset()
 
 void CWorldEditorView::OnDeselectHidden() 
 {
- 	CWorldEditorDoc* pDoc = GetDocument();
+   CWorldEditorDoc* pDoc = GetDocument();
   // for all of the world's entities
   FOREACHINDYNAMICCONTAINER(pDoc->m_woWorld.wo_cenEntities, CEntity, iten)
   {
@@ -13829,7 +13829,7 @@ void CWorldEditorView::OnDeselectHidden()
 
 void CWorldEditorView::OnSelectHidden() 
 {
- 	CWorldEditorDoc* pDoc = GetDocument();
+   CWorldEditorDoc* pDoc = GetDocument();
   // for all of the world's entities
   FOREACHINDYNAMICCONTAINER(pDoc->m_woWorld.wo_cenEntities, CEntity, iten)
   {
@@ -13846,7 +13846,7 @@ void CWorldEditorView::OnSelectHidden()
 void CWorldEditorView::OnSectorsToBrush() 
 {
   CBrushPolygonSelection selPolygons;
- 	CWorldEditorDoc* pDoc = GetDocument();
+   CWorldEditorDoc* pDoc = GetDocument();
   if(pDoc->m_selSectorSelection.Count()==0) return;
 
   pDoc->RememberUndo();
@@ -13865,7 +13865,7 @@ void CWorldEditorView::OnSectorsToBrush()
 
 void CWorldEditorView::PolygonsToBrush(CBrushPolygonSelection &selPolygons, BOOL bDeleteSectors, BOOL bZoning)
 {
- 	CWorldEditorDoc* pDoc = GetDocument();
+   CWorldEditorDoc* pDoc = GetDocument();
 
   FLOATaabbox3D boxPolygons;
   // get bbox of selected polygons
@@ -13895,7 +13895,7 @@ void CWorldEditorView::PolygonsToBrush(CBrushPolygonSelection &selPolygons, BOOL
 
 void CWorldEditorView::OnPolygonsToBrush() 
 {
- 	CWorldEditorDoc* pDoc = GetDocument();
+   CWorldEditorDoc* pDoc = GetDocument();
   if( pDoc->m_selPolygonSelection.Count()==0) return;
   pDoc->RememberUndo();
 
@@ -13908,7 +13908,7 @@ void CWorldEditorView::OnPolygonsToBrush()
 
 void CWorldEditorView::OnClonePolygons() 
 {
- 	CWorldEditorDoc* pDoc = GetDocument();
+   CWorldEditorDoc* pDoc = GetDocument();
   if( pDoc->m_selPolygonSelection.Count()==0) return;
   pDoc->RememberUndo();
   PolygonsToBrush(pDoc->m_selPolygonSelection, FALSE, FALSE);
@@ -13917,7 +13917,7 @@ void CWorldEditorView::OnClonePolygons()
 void CWorldEditorView::OnDeletePolygons() 
 {
   CDynamicContainer_CBrushPolygon dcPolygons;
- 	CWorldEditorDoc* pDoc = GetDocument();
+   CWorldEditorDoc* pDoc = GetDocument();
   if( pDoc->m_selPolygonSelection.Count()==0) return;
   pDoc->RememberUndo();
 
@@ -13932,7 +13932,7 @@ void CWorldEditorView::OnDeletePolygons()
 
 void CWorldEditorView::OnKeyU() 
 {
- 	CWorldEditorDoc* pDoc = GetDocument();
+   CWorldEditorDoc* pDoc = GetDocument();
   if( pDoc->GetEditingMode() == POLYGON_MODE)
   {
     OnKeyPasteAsProjected();
@@ -13947,7 +13947,7 @@ void CWorldEditorView::OnKeyU()
 
 void CWorldEditorView::OnKeyD() 
 {
- 	CWorldEditorDoc* pDoc = GetDocument();
+   CWorldEditorDoc* pDoc = GetDocument();
   if( pDoc->GetEditingMode() == ENTITY_MODE)
   {
     OnDropMarker();
@@ -14024,7 +14024,7 @@ void CWorldEditorView::OnFlipPolygon()
 
 void CWorldEditorView::OnKeyM() 
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   if( pDoc->GetEditingMode() == POLYGON_MODE)
   {
     // obtain information about where mouse points into the world
@@ -14057,7 +14057,7 @@ void CWorldEditorView::OnSelectBrush()
 
 void CWorldEditorView::OnSelectTerrain() 
 {
-	CWorldEditorDoc* pDoc = GetDocument();
+  CWorldEditorDoc* pDoc = GetDocument();
   CCastRay crRayHit = GetMouseHitInformation( m_ptMouse);
   CEntityPtr penHit(crRayHit.cr_penHit);
   if( (penHit) && (penHit->GetRenderType() == CEntity::RT_TERRAIN) &&

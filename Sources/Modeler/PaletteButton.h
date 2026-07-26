@@ -25,7 +25,7 @@ class CPaletteButton : public CButton
 {
 // Construction
 public:
-	CPaletteButton();
+  CPaletteButton();
 
 // Attributes
 public:
@@ -34,24 +34,24 @@ public:
 public:
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CPaletteButton)
-	public:
-	virtual void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CPaletteButton)
+  public:
+  virtual void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
+  //}}AFX_VIRTUAL
 
 // Implementation
 public:
-	virtual ~CPaletteButton();
+  virtual ~CPaletteButton();
 
-	// Generated message map functions
+  // Generated message map functions
 protected:
-	//{{AFX_MSG(CPaletteButton)
-	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
-	afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
-	//}}AFX_MSG
+  //{{AFX_MSG(CPaletteButton)
+  afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+  afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
+  //}}AFX_MSG
 
-	DECLARE_MESSAGE_MAP()
+  DECLARE_MESSAGE_MAP()
 };
 
 /////////////////////////////////////////////////////////////////////////////

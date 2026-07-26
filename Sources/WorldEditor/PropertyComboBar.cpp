@@ -148,16 +148,16 @@ BOOL CPropertyComboBar::Create( CWnd* pParentWnd, UINT nIDTemplate,
 }
 
 BEGIN_MESSAGE_MAP(CPropertyComboBar, CDialogBar)
-	//{{AFX_MSG_MAP(CPropertyComboBar)
-	ON_WM_HSCROLL()
-	//}}AFX_MSG_MAP
-	ON_UPDATE_COMMAND_UI(IDC_BROWSE_FILE, OnUpdateBrowseFile)
-	ON_UPDATE_COMMAND_UI(IDC_NO_FILE, OnUpdateNoFile)
-	ON_UPDATE_COMMAND_UI(IDC_NO_TARGET, OnUpdateNoTarget)
-	ON_UPDATE_COMMAND_UI(IDC_EDIT_COLOR, OnUpdateEditColor)
-	ON_UPDATE_COMMAND_UI(ID_FLAGS_PROPERTY, OnUpdateEditFlags)
-	ON_COMMAND(IDC_NO_FILE, OnNoFile)
-	ON_COMMAND(IDC_NO_TARGET, OnNoTarget)
+  //{{AFX_MSG_MAP(CPropertyComboBar)
+  ON_WM_HSCROLL()
+  //}}AFX_MSG_MAP
+  ON_UPDATE_COMMAND_UI(IDC_BROWSE_FILE, OnUpdateBrowseFile)
+  ON_UPDATE_COMMAND_UI(IDC_NO_FILE, OnUpdateNoFile)
+  ON_UPDATE_COMMAND_UI(IDC_NO_TARGET, OnUpdateNoTarget)
+  ON_UPDATE_COMMAND_UI(IDC_EDIT_COLOR, OnUpdateEditColor)
+  ON_UPDATE_COMMAND_UI(ID_FLAGS_PROPERTY, OnUpdateEditFlags)
+  ON_COMMAND(IDC_NO_FILE, OnNoFile)
+  ON_COMMAND(IDC_NO_TARGET, OnNoTarget)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -242,7 +242,7 @@ void CPropertyComboBar::DoDataExchange(CDataExchange* pDX)
   DDX_Text(pDX, IDC_ENTITY_CLASS, m_strEntityClass);
   DDX_Text(pDX, IDC_ENTITY_NAME, m_strEntityName);
   DDX_Text(pDX, IDC_ENTITY_DESCRIPTION, m_strEntityDescription);
-	
+  
   if( m_EditBBoxMinCtrl.IsWindowVisible())
   {
     DDX_SkyFloat(pDX, IDC_EDIT_BBOX_MIN, m_fEditingBBoxMin);
@@ -600,8 +600,8 @@ void CPropertyComboBar::DoDataExchange(CDataExchange* pDX)
     }
     EventHub::instance().PropertyChanged(pDoc->m_selEntitySelection.Set(), ppidProperty, nullptr);
   }
-	
-	CDialogBar::DoDataExchange(pDX);
+  
+  CDialogBar::DoDataExchange(pDX);
 }
 //--------------------------------------------------------------------------------------------
 CSize CPropertyComboBar::CalcDynamicLayout(int nLength, DWORD nMode)
@@ -1831,7 +1831,7 @@ void CPropertyComboBar::SetIntersectingEntityClassName(void)
 
 void CPropertyComboBar::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
 {
-	CDialogBar::OnHScroll(nSBCode, nPos, pScrollBar);
+  CDialogBar::OnHScroll(nSBCode, nPos, pScrollBar);
   // copy color to selected entities
   SetColorPropertyToEntities( m_EditColorCtrl.GetColor());
 
@@ -1849,8 +1849,8 @@ CEntityPtr CPropertyComboBar::GetSelectedEntityPtr(void)
   CPropertyID *ppidProperty = GetSelectedProperty();
   // if there is valid property selected
   if( (ppidProperty == NULL) || 
-	 ((ppidProperty->pid_eptType != CEntityProperty::EPT_ENTITYPTR) &&
-	  (ppidProperty->pid_eptType != CEntityProperty::EPT_PARENT)) )
+   ((ppidProperty->pid_eptType != CEntityProperty::EPT_ENTITYPTR) &&
+    (ppidProperty->pid_eptType != CEntityProperty::EPT_PARENT)) )
   {
     return {};
   }

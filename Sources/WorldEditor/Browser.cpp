@@ -60,7 +60,7 @@ BOOL CBrowser::Create( CWnd* pParentWnd, UINT nIDTemplate,
   
   m_IconsImageList.Create( IDB_DIRECTORY_ICONS, 16, 1, CLR_NONE);
   m_TreeCtrl.SetImageList( &m_IconsImageList, TVSIL_NORMAL);
-	
+  
   return TRUE;
 }
  
@@ -136,19 +136,19 @@ CSize CBrowser::CalcDynamicLayout(int nLength, DWORD nMode)
  
 BEGIN_MESSAGE_MAP(CBrowser, CDialogBar)
   //{{AFX_MSG_MAP(CBrowser)
-	ON_COMMAND(ID_CREATE_DIRECTORY, OnCreateDirectory)
-	ON_COMMAND(ID_DELETE_DIRECTORY, OnDeleteDirectory)
-	ON_COMMAND(ID_SAVE_VIRTUAL_TREE, OnSaveVirtualTree)
-	ON_COMMAND(ID_LOAD_VIRTUAL_TREE, OnLoadVirtualTree)
-	ON_COMMAND(ID_RENAME_DIRECTORY, OnRenameDirectory)
-	ON_WM_CONTEXTMENU()
-	ON_COMMAND(ID_SAVE_AS_VIRTUAL_TREE, OnSaveAsVirtualTree)
-	ON_COMMAND(ID_IMPORT_VIRTUAL_TREE, OnImportVirtualTree)
-	ON_COMMAND(ID_EXPORT_VIRTUAL_TREE, OnExportVirtualTree)
-	ON_UPDATE_COMMAND_UI(ID_IMPORT_VIRTUAL_TREE, OnUpdateImportVirtualTree)
-	ON_UPDATE_COMMAND_UI(ID_EXPORT_VIRTUAL_TREE, OnUpdateExportVirtualTree)
-	ON_COMMAND(ID_DUMP_VT, OnDumpVt)
-	//}}AFX_MSG_MAP
+  ON_COMMAND(ID_CREATE_DIRECTORY, OnCreateDirectory)
+  ON_COMMAND(ID_DELETE_DIRECTORY, OnDeleteDirectory)
+  ON_COMMAND(ID_SAVE_VIRTUAL_TREE, OnSaveVirtualTree)
+  ON_COMMAND(ID_LOAD_VIRTUAL_TREE, OnLoadVirtualTree)
+  ON_COMMAND(ID_RENAME_DIRECTORY, OnRenameDirectory)
+  ON_WM_CONTEXTMENU()
+  ON_COMMAND(ID_SAVE_AS_VIRTUAL_TREE, OnSaveAsVirtualTree)
+  ON_COMMAND(ID_IMPORT_VIRTUAL_TREE, OnImportVirtualTree)
+  ON_COMMAND(ID_EXPORT_VIRTUAL_TREE, OnExportVirtualTree)
+  ON_UPDATE_COMMAND_UI(ID_IMPORT_VIRTUAL_TREE, OnUpdateImportVirtualTree)
+  ON_UPDATE_COMMAND_UI(ID_EXPORT_VIRTUAL_TREE, OnUpdateExportVirtualTree)
+  ON_COMMAND(ID_DUMP_VT, OnDumpVt)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
  
 /////////////////////////////////////////////////////////////////////
@@ -778,7 +778,7 @@ void CBrowser::OnRenameDirectory()
 
 void CBrowser::OnContextMenu(CWnd* pWnd, CPoint point) 
 {
-	CRect rectBrowser;
+  CRect rectBrowser;
   
   GetWindowRect( &rectBrowser);
   CPoint ptInBrowser = CPoint( point.x - rectBrowser.TopLeft().x, 
@@ -788,11 +788,11 @@ void CBrowser::OnContextMenu(CWnd* pWnd, CPoint point)
   if( (m_boxBrowseWnd & boxPoint) == boxPoint)
   {
     m_BrowseWindow.OnContextMenu( point);
-  }	
+  }  
   else if( (m_boxTreeWnd & boxPoint) == boxPoint)
   {
     m_TreeCtrl.OnContextMenu( point);
-  }	
+  }  
 }
 
 CVirtualTreeNode *CBrowser::GetSelectedDirectory(void)

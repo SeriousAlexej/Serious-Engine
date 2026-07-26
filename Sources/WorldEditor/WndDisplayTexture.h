@@ -29,7 +29,7 @@ class CWndDisplayTexture : public CWnd
 {
 // Construction
 public:
-	CWndDisplayTexture();
+  CWndDisplayTexture();
 
 // Attributes
 public:
@@ -46,24 +46,24 @@ public:
 public:
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CWndDisplayTexture)
-	public:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CWndDisplayTexture)
+  public:
+  virtual BOOL PreTranslateMessage(MSG* pMsg);
+  //}}AFX_VIRTUAL
 
 // Implementation
 public:
-	virtual ~CWndDisplayTexture();
+  virtual ~CWndDisplayTexture();
   BOOL Initialize(PIX pixX, PIX pixY, CTextureDataPtr ptd, CTString strText1="", CTString strText2="", BOOL bDown=FALSE);
 
-	// Generated message map functions
+  // Generated message map functions
 protected:
-	//{{AFX_MSG(CWndDisplayTexture)
-	afx_msg void OnPaint();
-	afx_msg void OnKillFocus(CWnd* pNewWnd);
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+  //{{AFX_MSG(CWndDisplayTexture)
+  afx_msg void OnPaint();
+  afx_msg void OnKillFocus(CWnd* pNewWnd);
+  //}}AFX_MSG
+  DECLARE_MESSAGE_MAP()
 };
 
 /////////////////////////////////////////////////////////////////////////////

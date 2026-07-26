@@ -58,7 +58,7 @@ class CPropertyComboBox : public CComboBox
 {
 // Construction
 public:
-	CPropertyComboBox();
+  CPropertyComboBox();
   BOOL OnIdle(LONG lCount);
   void DisableCombo();
 
@@ -82,24 +82,24 @@ public:
   void JoinProperties( CEntityPtr penEntity, BOOL bIntersect);
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CPropertyComboBox)
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CPropertyComboBox)
+  //}}AFX_VIRTUAL
 
 // Implementation
 public:
-	virtual ~CPropertyComboBox();
+  virtual ~CPropertyComboBox();
   void SelectProperty(void);
 
-	// Generated message map functions
+  // Generated message map functions
 protected:
-	//{{AFX_MSG(CPropertyComboBox)
-	afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
-	afx_msg void OnSelchange();
-	afx_msg void OnDropdown();
-	//}}AFX_MSG
+  //{{AFX_MSG(CPropertyComboBox)
+  afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
+  afx_msg void OnSelchange();
+  afx_msg void OnDropdown();
+  //}}AFX_MSG
 
-	DECLARE_MESSAGE_MAP()
+  DECLARE_MESSAGE_MAP()
 };
 
 /////////////////////////////////////////////////////////////////////////////

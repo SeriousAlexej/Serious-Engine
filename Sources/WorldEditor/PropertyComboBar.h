@@ -111,11 +111,11 @@ public:
   CCtrlEditFlags m_ctrlEditFlags;
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CPropertyComboBar)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CPropertyComboBar)
+  protected:
+  virtual void DoDataExchange(CDataExchange* pDX);
+  //}}AFX_VIRTUAL
 
 // Implementation
 public:
@@ -123,17 +123,17 @@ public:
   void SetIntersectingEntityClassName(void);
   CEntityPtr GetSelectedEntityPtr(void);
 
-	// Generated message map functions
-	//{{AFX_MSG(CPropertyComboBar)
-	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+  // Generated message map functions
+  //{{AFX_MSG(CPropertyComboBar)
+  afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
   afx_msg void OnNoFile();
-	afx_msg void OnNoTarget();
-	//}}AFX_MSG
+  afx_msg void OnNoTarget();
+  //}}AFX_MSG
   afx_msg void OnUpdateBrowseFile( CCmdUI* pCmdUI );
   afx_msg void OnUpdateNoFile( CCmdUI* pCmdUI );
   afx_msg void OnUpdateNoTarget( CCmdUI* pCmdUI );
   afx_msg void OnUpdateEditColor( CCmdUI* pCmdUI );
   afx_msg void OnUpdateEditFlags( CCmdUI* pCmdUI );
-	DECLARE_MESSAGE_MAP()
+  DECLARE_MESSAGE_MAP()
 };
 #endif // PROPERTYCOMBOBAR_H

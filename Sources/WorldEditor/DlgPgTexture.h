@@ -28,15 +28,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class CDlgPgTexture : public CPropertyPage
 {
 private:
-	DECLARE_DYNCREATE(CDlgPgTexture)
+  DECLARE_DYNCREATE(CDlgPgTexture)
 
-	bool m_dirty = true;
-	CWorldPtr mp_last_world;
+  bool m_dirty = true;
+  CWorldPtr mp_last_world;
 
 // Construction
 public:
-	CDlgPgTexture();
-	~CDlgPgTexture();
+  CDlgPgTexture();
+  ~CDlgPgTexture();
 
   BOOL OnIdle(LONG lCount);
 
@@ -44,63 +44,63 @@ public:
   CUpdateableRT m_udTextureData;
 
 // Dialog Data
-	//{{AFX_DATA(CDlgPgTexture)
-	enum { IDD = IDD_PG_TEXTURE };
-	CCtrlEditBoolean	m_checkAfterShadow;
-	CColoredButton	m_ctrlCombineColor;
-	CComboBox	m_comboBlend;
-	CCtrlEditBoolean	m_checkReflective;
-	CCtrlEditBoolean	m_checkClampV;
-	CCtrlEditBoolean	m_checkClampU;
-	CComboBox	m_comboScroll;
-	CString	m_strTextureFile;
-	float	m_fOffsetV;
-	float	m_fOffsetU;
-	int		m_radioTexture;
-	float	m_fRotationU;
-	float	m_fRotationV;
-	float	m_fStrength;
-	float	m_fStretchU;
-	float	m_fStretchV;
-	CString	m_strTextureDim;
-	//}}AFX_DATA
-	
+  //{{AFX_DATA(CDlgPgTexture)
+  enum { IDD = IDD_PG_TEXTURE };
+  CCtrlEditBoolean  m_checkAfterShadow;
+  CColoredButton  m_ctrlCombineColor;
+  CComboBox  m_comboBlend;
+  CCtrlEditBoolean  m_checkReflective;
+  CCtrlEditBoolean  m_checkClampV;
+  CCtrlEditBoolean  m_checkClampU;
+  CComboBox  m_comboScroll;
+  CString  m_strTextureFile;
+  float  m_fOffsetV;
+  float  m_fOffsetU;
+  int    m_radioTexture;
+  float  m_fRotationU;
+  float  m_fRotationV;
+  float  m_fStrength;
+  float  m_fStretchU;
+  float  m_fStretchV;
+  CString  m_strTextureDim;
+  //}}AFX_DATA
+  
   BOOL m_bOffsetV;
-	BOOL m_bOffsetU;
-	BOOL m_bRotationU;
-	BOOL m_bRotationV;
-	BOOL m_bStrength;
-	BOOL m_bStretchU;
-	BOOL m_bStretchV;
+  BOOL m_bOffsetU;
+  BOOL m_bRotationU;
+  BOOL m_bRotationV;
+  BOOL m_bStrength;
+  BOOL m_bStretchU;
+  BOOL m_bStretchV;
 
 
 // Overrides
-	// ClassWizard generate virtual function overrides
-	//{{AFX_VIRTUAL(CDlgPgTexture)
-	public:
-	virtual BOOL OnSetActive() override final;
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
+  // ClassWizard generate virtual function overrides
+  //{{AFX_VIRTUAL(CDlgPgTexture)
+  public:
+  virtual BOOL OnSetActive() override final;
+  virtual BOOL PreTranslateMessage(MSG* pMsg);
+  protected:
+  virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+  //}}AFX_VIRTUAL
 
 // Implementation
 protected:
-	// Generated message map functions
-	//{{AFX_MSG(CDlgPgTexture)
-	afx_msg void OnBrowseTexture();
-	afx_msg void OnRadioTexture();
-	afx_msg void OnTexture2();
-	afx_msg void OnTexture3();
-	afx_msg void OnRemoveTexture();
-	afx_msg void OnSelchangeScrollCombo();
-	virtual BOOL OnInitDialog();
-	afx_msg void OnDropFiles(HDROP hDropInfo);
-	afx_msg void OnSelchangeBlendType();
-	afx_msg void OnDropdownScrollCombo();
-	afx_msg void OnDropdownBlendType();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+  // Generated message map functions
+  //{{AFX_MSG(CDlgPgTexture)
+  afx_msg void OnBrowseTexture();
+  afx_msg void OnRadioTexture();
+  afx_msg void OnTexture2();
+  afx_msg void OnTexture3();
+  afx_msg void OnRemoveTexture();
+  afx_msg void OnSelchangeScrollCombo();
+  virtual BOOL OnInitDialog();
+  afx_msg void OnDropFiles(HDROP hDropInfo);
+  afx_msg void OnSelchangeBlendType();
+  afx_msg void OnDropdownScrollCombo();
+  afx_msg void OnDropdownBlendType();
+  //}}AFX_MSG
+  DECLARE_MESSAGE_MAP()
 
 };
 

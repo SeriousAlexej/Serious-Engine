@@ -30,25 +30,25 @@ static char THIS_FILE[] = __FILE__;
 // CDlgExportForSkinning dialog
 
 CDlgExportForSkinning::CDlgExportForSkinning(CTFileName fnExportFile, CWnd* pParent /*=NULL*/)
-	: CDialog(CDlgExportForSkinning::IDD, pParent)
+  : CDialog(CDlgExportForSkinning::IDD, pParent)
 {
-	//{{AFX_DATA_INIT(CDlgExportForSkinning)
-	m_bColoredSurfaces = FALSE;
-	m_bSurfaceNumbers = FALSE;
-	m_bWireFrame = FALSE;
-	m_strExportedFileName = _T("");
-	m_strSurfaceListFile = _T("");
-	//}}AFX_DATA_INIT
+  //{{AFX_DATA_INIT(CDlgExportForSkinning)
+  m_bColoredSurfaces = FALSE;
+  m_bSurfaceNumbers = FALSE;
+  m_bWireFrame = FALSE;
+  m_strExportedFileName = _T("");
+  m_strSurfaceListFile = _T("");
+  //}}AFX_DATA_INIT
 
   m_bWireFrame =                    GetFlagFromProfile(   "Export mapping wire frame", TRUE);
   m_bColoredSurfaces =              GetFlagFromProfile(   "Export mapping colored surfaces", TRUE);
   m_bSurfaceNumbers =               GetFlagFromProfile(   "Export surface numbers", TRUE);
-	m_strExportedFileName = fnExportFile;
-	m_strSurfaceListFile = fnExportFile.FileDir()+fnExportFile.FileName()+".txt";
-	
+  m_strExportedFileName = fnExportFile;
+  m_strSurfaceListFile = fnExportFile.FileDir()+fnExportFile.FileName()+".txt";
+  
   COLOR colPaper = GetColorFromProfile( "Paper color", C_WHITE);
   m_ctrlPaperColor.SetColor( colPaper);
-	COLOR colWire = GetColorFromProfile( "Wire color", C_BLACK);
+  COLOR colWire = GetColorFromProfile( "Wire color", C_BLACK);
   m_ctrlWireColor.SetColor( colWire);
 
   m_strExportedFileName = fnExportFile;
@@ -57,22 +57,22 @@ CDlgExportForSkinning::CDlgExportForSkinning(CTFileName fnExportFile, CWnd* pPar
 
 void CDlgExportForSkinning::DoDataExchange(CDataExchange* pDX)
 {
-	CDialog::DoDataExchange(pDX);
+  CDialog::DoDataExchange(pDX);
   
   // if dialog is recieving data
   if( pDX->m_bSaveAndValidate == FALSE )
   {
   }
-	//{{AFX_DATA_MAP(CDlgExportForSkinning)
-	DDX_Control(pDX, IDC_EXPORT_WIRE_COLOR, m_ctrlWireColor);
-	DDX_Control(pDX, IDC_EXPORT_PAPER_COLOR, m_ctrlPaperColor);
-	DDX_Control(pDX, IDC_EXPORT_PICTURE_SIZE, m_ctrlExportPictureSize);
-	DDX_Check(pDX, IDC_COLORED_SURFACES, m_bColoredSurfaces);
-	DDX_Check(pDX, IDC_COLORED_SURFACES_WITH_NUMBERS, m_bSurfaceNumbers);
-	DDX_Check(pDX, IDC_WIRE_FRAME, m_bWireFrame);
-	DDX_Text(pDX, IDC_EXPORT_FILE_NAME_T, m_strExportedFileName);
-	DDX_Text(pDX, IDC_SURFACE_LIST_T, m_strSurfaceListFile);
-	//}}AFX_DATA_MAP
+  //{{AFX_DATA_MAP(CDlgExportForSkinning)
+  DDX_Control(pDX, IDC_EXPORT_WIRE_COLOR, m_ctrlWireColor);
+  DDX_Control(pDX, IDC_EXPORT_PAPER_COLOR, m_ctrlPaperColor);
+  DDX_Control(pDX, IDC_EXPORT_PICTURE_SIZE, m_ctrlExportPictureSize);
+  DDX_Check(pDX, IDC_COLORED_SURFACES, m_bColoredSurfaces);
+  DDX_Check(pDX, IDC_COLORED_SURFACES_WITH_NUMBERS, m_bSurfaceNumbers);
+  DDX_Check(pDX, IDC_WIRE_FRAME, m_bWireFrame);
+  DDX_Text(pDX, IDC_EXPORT_FILE_NAME_T, m_strExportedFileName);
+  DDX_Text(pDX, IDC_SURFACE_LIST_T, m_strSurfaceListFile);
+  //}}AFX_DATA_MAP
 
   // if dialog is giving data
   if( pDX->m_bSaveAndValidate != FALSE )
@@ -87,14 +87,14 @@ void CDlgExportForSkinning::DoDataExchange(CDataExchange* pDX)
     COLOR colPaper = m_ctrlPaperColor.GetColor();
     SetColorToProfile( "Paper color", colPaper);
     COLOR colWire = m_ctrlWireColor.GetColor();
-	  SetColorToProfile( "Wire color", colWire);
+    SetColorToProfile( "Wire color", colWire);
   }
 }
 
 
 BEGIN_MESSAGE_MAP(CDlgExportForSkinning, CDialog)
-	//{{AFX_MSG_MAP(CDlgExportForSkinning)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CDlgExportForSkinning)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -102,7 +102,7 @@ END_MESSAGE_MAP()
 
 BOOL CDlgExportForSkinning::OnInitDialog() 
 {
-	CDialog::OnInitDialog();
+  CDialog::OnInitDialog();
   
   m_iTextureWidth = GetIndexFromProfile(  "Export mapping width", 256);
   CModelerDoc* pDoc = theApp.GetDocument();
@@ -123,7 +123,7 @@ BOOL CDlgExportForSkinning::OnInitDialog()
   }
   // select last used export picture size
   m_ctrlExportPictureSize.SetCurSel( iToSelect);
-	
-	return TRUE;  // return TRUE unless you set the focus to a control
-	              // EXCEPTION: OCX Property Pages should return FALSE
+  
+  return TRUE;  // return TRUE unless you set the focus to a control
+                // EXCEPTION: OCX Property Pages should return FALSE
 }

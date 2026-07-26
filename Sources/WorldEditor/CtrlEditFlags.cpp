@@ -124,12 +124,12 @@ void CCtrlEditFlags::SetFirstEditableBank( void)
 }
 
 BEGIN_MESSAGE_MAP(CCtrlEditFlags, CButton)
-	//{{AFX_MSG_MAP(CCtrlEditFlags)
-	ON_WM_LBUTTONDOWN()
-	ON_WM_MOUSEMOVE()
-	ON_WM_LBUTTONUP()
-	ON_WM_KILLFOCUS()
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CCtrlEditFlags)
+  ON_WM_LBUTTONDOWN()
+  ON_WM_MOUSEMOVE()
+  ON_WM_LBUTTONUP()
+  ON_WM_KILLFOCUS()
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -273,7 +273,7 @@ void CCtrlEditFlags::OnLButtonDown(UINT nFlags, CPoint point)
   INDEX iArea=GetAreaUnderMouse( point);
   m_iMouseDownArea=iArea;
 
-	CButton::OnLButtonDown(nFlags, point);
+  CButton::OnLButtonDown(nFlags, point);
 }
 
 void CCtrlEditFlags::OnLButtonUp(UINT nFlags, CPoint point) 
@@ -307,16 +307,16 @@ void CCtrlEditFlags::OnLButtonUp(UINT nFlags, CPoint point)
   }
   Invalidate(FALSE);
 
-	CButton::OnLButtonUp(nFlags, point);
+  CButton::OnLButtonUp(nFlags, point);
 }
 
 void CCtrlEditFlags::OnMouseMove(UINT nFlags, CPoint point) 
 {
   m_iLastArea=GetAreaUnderMouse( point);
-	CButton::OnMouseMove(nFlags, point);
+  CButton::OnMouseMove(nFlags, point);
 }
 
 void CCtrlEditFlags::OnKillFocus(CWnd* pNewWnd) 
 {
-	CButton::OnKillFocus(pNewWnd);
+  CButton::OnKillFocus(pNewWnd);
 }

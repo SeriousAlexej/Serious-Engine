@@ -30,7 +30,7 @@ class CEditMipSwitchDistance : public CEdit
 // Construction
 public:
   BOOL OnIdle(LONG lCount);
-	CEditMipSwitchDistance();
+  CEditMipSwitchDistance();
   CBrushMipPtr m_pbrmBrushMipSelected;
   FLOAT m_fLastValue;
 
@@ -41,22 +41,22 @@ public:
 public:
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CEditMipSwitchDistance)
-	public:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CEditMipSwitchDistance)
+  public:
+  virtual BOOL PreTranslateMessage(MSG* pMsg);
+  //}}AFX_VIRTUAL
 
 // Implementation
 public:
-	virtual ~CEditMipSwitchDistance();
+  virtual ~CEditMipSwitchDistance();
 
-	// Generated message map functions
+  // Generated message map functions
 protected:
-	//{{AFX_MSG(CEditMipSwitchDistance)
-	//}}AFX_MSG
+  //{{AFX_MSG(CEditMipSwitchDistance)
+  //}}AFX_MSG
 
-	DECLARE_MESSAGE_MAP()
+  DECLARE_MESSAGE_MAP()
 };
 
 /////////////////////////////////////////////////////////////////////////////

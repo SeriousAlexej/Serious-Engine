@@ -28,7 +28,7 @@ CDrawPortPtr _pDrawPort;
 CViewPortPtr _pViewPort;
 static INDEX gui_bEnableRequesterThumbnails=TRUE;
 
-UINT APIENTRY FileOpenRequesterHook( HWND hdlg, UINT uiMsg, WPARAM wParam,	LPARAM lParam)
+UINT APIENTRY FileOpenRequesterHook( HWND hdlg, UINT uiMsg, WPARAM wParam,  LPARAM lParam)
 {
   if (uiMsg == WM_NOTIFY)
   {

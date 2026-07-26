@@ -158,10 +158,10 @@ CDlgSelectMode::CDlgSelectMode( CDisplayMode &dm, enum GfxAPIType &gfxAPI,
   m_pGfxAPI = &gfxAPI;
 
   //{{AFX_DATA_INIT(CDlgSelectMode)
-	m_strCurrentMode = _T("");
-	m_strCurrentDriver = _T("");
-	m_iColor = -1;
-	//}}AFX_DATA_INIT
+  m_strCurrentMode = _T("");
+  m_strCurrentDriver = _T("");
+  m_iColor = -1;
+  //}}AFX_DATA_INIT
 
   // set current mode and driver strings
   CTString str;
@@ -221,7 +221,7 @@ void CDlgSelectMode::ApplySettings( CDisplayMode *pdm, enum GfxAPIType *m_pGfxAP
 
 void CDlgSelectMode::DoDataExchange(CDataExchange* pDX)
 {
-	CDialog::DoDataExchange(pDX);
+  CDialog::DoDataExchange(pDX);
 
   // prepare radio buttons
   if( !pDX->m_bSaveAndValidate)
@@ -235,13 +235,13 @@ void CDlgSelectMode::DoDataExchange(CDataExchange* pDX)
     }
   }
 
-	//{{AFX_DATA_MAP(CDlgSelectMode)
-	DDX_Control(pDX, IDC_RESOLUTIONS, m_ctrlResCombo);
-	DDX_Control(pDX, IDC_API, m_ctrlDriverCombo);
-	DDX_Text(pDX, IDC_CURRENT_MODE, m_strCurrentMode);
-	DDX_Text(pDX, IDC_CURRENT_DRIVER, m_strCurrentDriver);
-	DDX_Radio(pDX, IDC_COLOR_DEFAULT, m_iColor);
-	//}}AFX_DATA_MAP
+  //{{AFX_DATA_MAP(CDlgSelectMode)
+  DDX_Control(pDX, IDC_RESOLUTIONS, m_ctrlResCombo);
+  DDX_Control(pDX, IDC_API, m_ctrlDriverCombo);
+  DDX_Text(pDX, IDC_CURRENT_MODE, m_strCurrentMode);
+  DDX_Text(pDX, IDC_CURRENT_DRIVER, m_strCurrentDriver);
+  DDX_Radio(pDX, IDC_COLOR_DEFAULT, m_iColor);
+  //}}AFX_DATA_MAP
 
   // if dialog is recieving data
   if( !pDX->m_bSaveAndValidate)
@@ -299,9 +299,9 @@ void CDlgSelectMode::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CDlgSelectMode, CDialog)
-	//{{AFX_MSG_MAP(CDlgSelectMode)
-	ON_BN_CLICKED(ID_TEST_BUTTON, OnTestButton)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CDlgSelectMode)
+  ON_BN_CLICKED(ID_TEST_BUTTON, OnTestButton)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 
@@ -336,8 +336,8 @@ void CDlgSelectMode::OnTestButton()
   CViewPortPtr pViewPort;
 
   // get the windows dimensions for this display
-	int iScreenX = ::GetSystemMetrics(SM_CXSCREEN);	// screen size
-	int iScreenY = ::GetSystemMetrics(SM_CYSCREEN);
+  int iScreenX = ::GetSystemMetrics(SM_CXSCREEN);  // screen size
+  int iScreenY = ::GetSystemMetrics(SM_CYSCREEN);
 
   // open window of display mode size
   const wchar_t *strWindowClass = AfxRegisterWndClass( CS_OWNDC|CS_NOCLOSE);
@@ -367,7 +367,7 @@ void CDlgSelectMode::OnTestButton()
     if( tvElapsed.GetSeconds() > 5.0f) break;
   }
   
-	// destroy windowed canvas
+  // destroy windowed canvas
   _pGfx_DestroyWindowCanvas( pViewPort);
   pViewPort.Reset();
   // destroy window

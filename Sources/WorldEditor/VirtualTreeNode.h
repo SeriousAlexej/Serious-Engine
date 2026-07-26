@@ -48,12 +48,12 @@ public:
   CTFileName vtn_fnItem;              // (if item) file name
 
   // Functions
-	CVirtualTreeNode();			            // constructor and
-	~CVirtualTreeNode();			          // destructor 
+  CVirtualTreeNode();                  // constructor and
+  ~CVirtualTreeNode();                // destructor 
   void MakeRoot(void);
   void Dump(CTStream *pFile);
-	void Read_t( CTStream *pFile);	// read function
-	void Write_t( CTStream *pFile);	    	// write function
+  void Read_t( CTStream *pFile);  // read function
+  void Write_t( CTStream *pFile);        // write function
   void MoveToDirectory(CVirtualTreeNode *pVTNDst);
 };
 

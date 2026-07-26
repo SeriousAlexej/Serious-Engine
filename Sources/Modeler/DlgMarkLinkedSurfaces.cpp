@@ -30,11 +30,11 @@ static char THIS_FILE[] = __FILE__;
 
 
 CDlgMarkLinkedSurfaces::CDlgMarkLinkedSurfaces( CWnd* pParent /*=NULL*/)
-	: CDialog(CDlgMarkLinkedSurfaces::IDD, pParent)
+  : CDialog(CDlgMarkLinkedSurfaces::IDD, pParent)
 {
   //{{AFX_DATA_INIT(CDlgMarkLinkedSurfaces)
-		// NOTE: the ClassWizard will add member initialization here
-	//}}AFX_DATA_INIT
+    // NOTE: the ClassWizard will add member initialization here
+  //}}AFX_DATA_INIT
   m_listSurfaces.m_pdlgParentDialog = this;
 }
 
@@ -45,9 +45,9 @@ void CDlgMarkLinkedSurfaces::DoDataExchange(CDataExchange* pDX)
   if( pDoc == NULL) return;
 
   CDialog::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CDlgMarkLinkedSurfaces)
-	DDX_Control(pDX, IDC_SURFACE_LIST, m_listSurfaces);
-	//}}AFX_DATA_MAP
+  //{{AFX_DATA_MAP(CDlgMarkLinkedSurfaces)
+  DDX_Control(pDX, IDC_SURFACE_LIST, m_listSurfaces);
+  //}}AFX_DATA_MAP
 
   // if dialog is giving data
   if( pDX->m_bSaveAndValidate != FALSE)
@@ -65,10 +65,10 @@ void CDlgMarkLinkedSurfaces::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CDlgMarkLinkedSurfaces, CDialog)
-	//{{AFX_MSG_MAP(CDlgMarkLinkedSurfaces)
-	ON_BN_CLICKED(ID_CLEAR_SELECTION, OnClearSelection)
-	ON_BN_CLICKED(ID_SELECT_ALL, OnSelectAll)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CDlgMarkLinkedSurfaces)
+  ON_BN_CLICKED(ID_CLEAR_SELECTION, OnClearSelection)
+  ON_BN_CLICKED(ID_SELECT_ALL, OnSelectAll)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -76,7 +76,7 @@ END_MESSAGE_MAP()
 
 BOOL CDlgMarkLinkedSurfaces::OnInitDialog() 
 {
-	CDialog::OnInitDialog();
+  CDialog::OnInitDialog();
   
   CModelerDoc* pDoc = theApp.GetDocument();
   // get cont of surfaces

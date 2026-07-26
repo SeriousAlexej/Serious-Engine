@@ -37,17 +37,17 @@ IMPLEMENT_DYNCREATE(CDlgPgTexture, CPropertyPage)
 
 CDlgPgTexture::CDlgPgTexture() : CPropertyPage(CDlgPgTexture::IDD)
 {
-	//{{AFX_DATA_INIT(CDlgPgTexture)
-	m_strTextureFile = _T("");
-	m_fOffsetV = 0.0f;
-	m_fOffsetU = 0.0f;
-	m_radioTexture = -1;
-	m_fRotationU = 0.0f;
-	m_fRotationV = 0.0f;
-	m_fStretchU = 0.0f;
-	m_fStretchV = 0.0f;
-	m_strTextureDim = _T("");
-	//}}AFX_DATA_INIT
+  //{{AFX_DATA_INIT(CDlgPgTexture)
+  m_strTextureFile = _T("");
+  m_fOffsetV = 0.0f;
+  m_fOffsetU = 0.0f;
+  m_radioTexture = -1;
+  m_fRotationU = 0.0f;
+  m_fRotationV = 0.0f;
+  m_fStretchU = 0.0f;
+  m_fStretchV = 0.0f;
+  m_strTextureDim = _T("");
+  //}}AFX_DATA_INIT
 
   m_ctrlCombineColor.SetPickerType(  CColoredButton::PT_MFC);
 }
@@ -178,13 +178,13 @@ void CDlgPgTexture::DoDataExchange(CDataExchange* pDX)
           CTString strTexture = ptdTexture->GetName();
           if( ctPolygons == 0)
           {
-        	  m_ctrlCombineColor.SetColor( bpo.bpo_abptTextures[pDoc->m_iTexture].bpt_colColor);
+            m_ctrlCombineColor.SetColor( bpo.bpo_abptTextures[pDoc->m_iTexture].bpt_colColor);
             m_strTextureFile = strTexture;
             m_strTextureDim = ptdTexture->GetDescription();
           }
           else
           {
-        	  if( m_ctrlCombineColor.GetColor() != bpo.bpo_abptTextures[pDoc->m_iTexture].bpt_colColor)
+            if( m_ctrlCombineColor.GetColor() != bpo.bpo_abptTextures[pDoc->m_iTexture].bpt_colColor)
             {
               m_ctrlCombineColor.SetMixedColor();
             }
@@ -241,18 +241,18 @@ void CDlgPgTexture::DoDataExchange(CDataExchange* pDX)
     }
   }
 
-	//{{AFX_DATA_MAP(CDlgPgTexture)
-	DDX_Control(pDX, IDC_AFTER_SHADOW, m_checkAfterShadow);
-	DDX_Control(pDX, ID_COMBINE_COLOR, m_ctrlCombineColor);
-	DDX_Control(pDX, IDC_BLEND_TYPE, m_comboBlend);
-	DDX_Control(pDX, IDC_REFLECTIVE, m_checkReflective);
-	DDX_Control(pDX, IDC_CLAMP_V, m_checkClampV);
-	DDX_Control(pDX, IDC_CLAMP_U, m_checkClampU);
-	DDX_Control(pDX, IDC_SCROLL_COMBO, m_comboScroll);
-	DDX_Text(pDX, IDC_TEXTURE_FILE_T, m_strTextureFile);
-	DDX_Radio(pDX, IDC_RADIO_TEXTURE, m_radioTexture);
-	DDX_Text(pDX, IDC_TEXTURE_DIM_T, m_strTextureDim);
-	//}}AFX_DATA_MAP
+  //{{AFX_DATA_MAP(CDlgPgTexture)
+  DDX_Control(pDX, IDC_AFTER_SHADOW, m_checkAfterShadow);
+  DDX_Control(pDX, ID_COMBINE_COLOR, m_ctrlCombineColor);
+  DDX_Control(pDX, IDC_BLEND_TYPE, m_comboBlend);
+  DDX_Control(pDX, IDC_REFLECTIVE, m_checkReflective);
+  DDX_Control(pDX, IDC_CLAMP_V, m_checkClampV);
+  DDX_Control(pDX, IDC_CLAMP_U, m_checkClampU);
+  DDX_Control(pDX, IDC_SCROLL_COMBO, m_comboScroll);
+  DDX_Text(pDX, IDC_TEXTURE_FILE_T, m_strTextureFile);
+  DDX_Radio(pDX, IDC_RADIO_TEXTURE, m_radioTexture);
+  DDX_Text(pDX, IDC_TEXTURE_DIM_T, m_strTextureDim);
+  //}}AFX_DATA_MAP
 
   DDX_SkyFloat(pDX, IDC_OFFSET_U, m_fOffsetU, m_bOffsetU);
   DDX_SkyFloat(pDX, IDC_OFFSET_V, m_fOffsetV, m_bOffsetV);
@@ -332,18 +332,18 @@ void CDlgPgTexture::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CDlgPgTexture, CPropertyPage)
-	//{{AFX_MSG_MAP(CDlgPgTexture)
-	ON_BN_CLICKED(IDC_BROWSE_TEXTURE, OnBrowseTexture)
-	ON_BN_CLICKED(IDC_RADIO_TEXTURE, OnRadioTexture)
-	ON_BN_CLICKED(IDC_TEXTURE_2, OnTexture2)
-	ON_BN_CLICKED(IDC_TEXTURE_3, OnTexture3)
-	ON_BN_CLICKED(IDC_REMOVE_TEXTURE, OnRemoveTexture)
-	ON_CBN_SELCHANGE(IDC_SCROLL_COMBO, OnSelchangeScrollCombo)
-	ON_WM_DROPFILES()
-	ON_CBN_SELCHANGE(IDC_BLEND_TYPE, OnSelchangeBlendType)
-	ON_CBN_DROPDOWN(IDC_SCROLL_COMBO, OnDropdownScrollCombo)
-	ON_CBN_DROPDOWN(IDC_BLEND_TYPE, OnDropdownBlendType)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CDlgPgTexture)
+  ON_BN_CLICKED(IDC_BROWSE_TEXTURE, OnBrowseTexture)
+  ON_BN_CLICKED(IDC_RADIO_TEXTURE, OnRadioTexture)
+  ON_BN_CLICKED(IDC_TEXTURE_2, OnTexture2)
+  ON_BN_CLICKED(IDC_TEXTURE_3, OnTexture3)
+  ON_BN_CLICKED(IDC_REMOVE_TEXTURE, OnRemoveTexture)
+  ON_CBN_SELCHANGE(IDC_SCROLL_COMBO, OnSelchangeScrollCombo)
+  ON_WM_DROPFILES()
+  ON_CBN_SELCHANGE(IDC_BLEND_TYPE, OnSelchangeBlendType)
+  ON_CBN_DROPDOWN(IDC_SCROLL_COMBO, OnDropdownScrollCombo)
+  ON_CBN_DROPDOWN(IDC_BLEND_TYPE, OnDropdownBlendType)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -351,7 +351,7 @@ END_MESSAGE_MAP()
 
 BOOL CDlgPgTexture::OnInitDialog()
 {
-	CPropertyPage::OnInitDialog();
+  CPropertyPage::OnInitDialog();
 
   // obtain document
   CWorldEditorDoc* pDoc = theApp.GetDocument();
@@ -375,7 +375,7 @@ BOOL CDlgPgTexture::OnInitDialog()
   {
     m_radioTexture = pDoc->m_iTexture;
   }
-	return TRUE;
+  return TRUE;
 }
 
 BOOL CDlgPgTexture::OnIdle(LONG lCount)
@@ -412,14 +412,14 @@ void CDlgPgTexture::OnBrowseTexture()
     GetDlgItem( IDC_TEXTURE_FILE_T)->SetWindowText( CString(fnTexture));
   }
   // to reflect data change
-	UpdateData( TRUE);
+  UpdateData( TRUE);
 }
 
 void CDlgPgTexture::OnRemoveTexture()
 {
   GetDlgItem( IDC_TEXTURE_FILE_T)->SetWindowText( L"No texture");
   // apply data change
-	UpdateData( TRUE);
+  UpdateData( TRUE);
 }
 
 void CDlgPgTexture::OnRadioTexture()
@@ -427,7 +427,7 @@ void CDlgPgTexture::OnRadioTexture()
   CWorldEditorDoc* pDoc = theApp.GetDocument();
   if( pDoc == NULL)  return;
   pDoc->m_iTexture = 0;
-	UpdateData( FALSE);
+  UpdateData( FALSE);
 }
 
 void CDlgPgTexture::OnTexture2()
@@ -435,7 +435,7 @@ void CDlgPgTexture::OnTexture2()
   CWorldEditorDoc* pDoc = theApp.GetDocument();
   if( pDoc == NULL)  return;
   pDoc->m_iTexture = 1;
-	UpdateData( FALSE);
+  UpdateData( FALSE);
 }
 
 void CDlgPgTexture::OnTexture3()
@@ -443,7 +443,7 @@ void CDlgPgTexture::OnTexture3()
   CWorldEditorDoc* pDoc = theApp.GetDocument();
   if( pDoc == NULL)  return;
   pDoc->m_iTexture = 2;
-	UpdateData( FALSE);
+  UpdateData( FALSE);
 }
 
 void CDlgPgTexture::OnSelchangeScrollCombo()
@@ -471,7 +471,7 @@ void CDlgPgTexture::OnDropFiles(HDROP hDropInfo)
     return;
   }
 
-	// buffer for dropped file name
+  // buffer for dropped file name
   char chrFile[ 256];
   // place dropped file name into buffer
   DragQueryFileA( hDropInfo, 0, chrFile, 256);
@@ -488,7 +488,7 @@ void CDlgPgTexture::OnDropFiles(HDROP hDropInfo)
     fnDropped.RemoveApplicationPath_t();
     GetDlgItem( IDC_TEXTURE_FILE_T)->SetWindowText( CString(static_cast<const char*>(fnDropped)));
     // apply data change
-	  UpdateData( TRUE);
+    UpdateData( TRUE);
   }
   catch( char *err_str)
   {
@@ -504,14 +504,14 @@ BOOL CDlgPgTexture::OnSetActive()
 
 BOOL CDlgPgTexture::PreTranslateMessage(MSG* pMsg)
 {
-	if(pMsg->message==WM_KEYDOWN && pMsg->wParam==VK_RETURN)
+  if(pMsg->message==WM_KEYDOWN && pMsg->wParam==VK_RETURN)
   {
     UpdateData( TRUE);
     UpdateData( FALSE);
     // the message is handled
     return TRUE;
   }
-	return CPropertyPage::PreTranslateMessage(pMsg);
+  return CPropertyPage::PreTranslateMessage(pMsg);
 }
 
 void CDlgPgTexture::OnDropdownScrollCombo()

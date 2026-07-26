@@ -29,11 +29,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 static char THIS_FILE[] = __FILE__;
 #endif
 
-#define UPDATE_DATA_AND_REFRESH 				      \
-  ASSERT( m_iActivePlacement != -1);				      \
-  UpdateData(TRUE);						      \
-  CModelerDoc* pDoc = theApp.GetDocument();			      \
-  ASSERT( pDoc != NULL);					      \
+#define UPDATE_DATA_AND_REFRESH               \
+  ASSERT( m_iActivePlacement != -1);              \
+  UpdateData(TRUE);                  \
+  CModelerDoc* pDoc = theApp.GetDocument();            \
+  ASSERT( pDoc != NULL);                \
   pDoc->UpdateAllViews( NULL);
 
 /////////////////////////////////////////////////////////////////////////////
@@ -43,19 +43,19 @@ IMPLEMENT_DYNCREATE(CDlgPgInfoAttachingPlacement, CPropertyPage)
 
 CDlgPgInfoAttachingPlacement::CDlgPgInfoAttachingPlacement() : CPropertyPage(CDlgPgInfoAttachingPlacement::IDD)
 {
-	//{{AFX_DATA_INIT(CDlgPgInfoAttachingPlacement)
-	m_fBanking = 0.0f;
-	m_fHeading = 0.0f;
-	m_fPitch = 0.0f;
-	m_fXOffset = 0.0f;
-	m_fYOffset = 0.0f;
-	m_fZOffset = 0.0f;
-	m_strName = _T("");
-	m_strAttachingVertices = _T("");
-	m_strPlacementIndex = _T("");
-	m_strAttachingModel = _T("");
-	m_bIsVisible = FALSE;
-	//}}AFX_DATA_INIT
+  //{{AFX_DATA_INIT(CDlgPgInfoAttachingPlacement)
+  m_fBanking = 0.0f;
+  m_fHeading = 0.0f;
+  m_fPitch = 0.0f;
+  m_fXOffset = 0.0f;
+  m_fYOffset = 0.0f;
+  m_fZOffset = 0.0f;
+  m_strName = _T("");
+  m_strAttachingVertices = _T("");
+  m_strPlacementIndex = _T("");
+  m_strAttachingModel = _T("");
+  m_bIsVisible = FALSE;
+  //}}AFX_DATA_INIT
 
   theApp.m_pPgAttachingPlacement = this;
   m_iActivePlacement = -1;
@@ -182,7 +182,7 @@ BOOL CDlgPgInfoAttachingPlacement::OnGetTooltip(UINT, NMHDR* pNMHDR, LRESULT* pR
 
 void CDlgPgInfoAttachingPlacement::DoDataExchange(CDataExchange* pDX)
 {
-	CPropertyPage::DoDataExchange(pDX);
+  CPropertyPage::DoDataExchange(pDX);
 
   CModelerView *pModelerView = CModelerView::GetActiveView();
   if(pModelerView == NULL) return;
@@ -206,8 +206,8 @@ void CDlgPgInfoAttachingPlacement::DoDataExchange(CDataExchange* pDX)
     GetDlgItem( IDC_PICK_ATTACHMENT_BONE            )->EnableWindow( (bAttachmentExists && hasBoneTriangleMapping) ? SW_SHOW : SW_HIDE);
     GetDlgItem( IDC_ATTACHING_PLACEMENT_INDEX_T     )->EnableWindow( bAttachmentExists);
     GetDlgItem( IDC_PREVIOUS_ATTACHING_PLACEMENT    )->EnableWindow( bAttachmentExists);
-    GetDlgItem( IDC_ATTACHING_PLACEMENT_NAME	      )->EnableWindow( bAttachmentExists);
-    GetDlgItem( IDC_NEXT_ATTACHING_PLACEMENT	      )->EnableWindow( bAttachmentExists);
+    GetDlgItem( IDC_ATTACHING_PLACEMENT_NAME        )->EnableWindow( bAttachmentExists);
+    GetDlgItem( IDC_NEXT_ATTACHING_PLACEMENT        )->EnableWindow( bAttachmentExists);
     GetDlgItem( IDC_REMOVE_ATTACHING_PLACEMENT      )->EnableWindow( bAttachmentExists);
     GetDlgItem( IDC_ATTACHING_PLACEMENT_X_OFFSET_T  )->EnableWindow( bAttachmentExists);
     GetDlgItem( IDC_ATTACHING_PLACEMENT_X_OFFSET    )->EnableWindow( bAttachmentExists);
@@ -221,24 +221,24 @@ void CDlgPgInfoAttachingPlacement::DoDataExchange(CDataExchange* pDX)
     GetDlgItem( IDC_ATTACHING_PLACEMENT_PITCH       )->EnableWindow( bAttachmentExists);
     GetDlgItem( IDC_ATTACHING_PLACEMENT_BANKING_T   )->EnableWindow( bAttachmentExists);
     GetDlgItem( IDC_ATTACHING_PLACEMENT_BANKING     )->EnableWindow( bAttachmentExists);
-    GetDlgItem( IDC_IS_VISIBLE		      )->EnableWindow( bAttachmentExists);
-    GetDlgItem( IDC_BROWSE_MODEL		      )->EnableWindow( bAttachmentExists);
-    GetDlgItem( IDC_MODEL_T			      )->EnableWindow( bAttachmentExists);
-    GetDlgItem( IDC_ATTACHING_MODEL_T			      )->EnableWindow( bAttachmentExists);
-    GetDlgItem( IDC_MODEL_ANIMATION_T 	      )->EnableWindow( bAttachmentExists);
+    GetDlgItem( IDC_IS_VISIBLE          )->EnableWindow( bAttachmentExists);
+    GetDlgItem( IDC_BROWSE_MODEL          )->EnableWindow( bAttachmentExists);
+    GetDlgItem( IDC_MODEL_T            )->EnableWindow( bAttachmentExists);
+    GetDlgItem( IDC_ATTACHING_MODEL_T            )->EnableWindow( bAttachmentExists);
+    GetDlgItem( IDC_MODEL_ANIMATION_T         )->EnableWindow( bAttachmentExists);
     GetDlgItem( IDC_ATTACHMENT_MODEL_ANIMATION_COMBO)->EnableWindow( bAttachmentExists);
-    GetDlgItem( IDC_VERTICES_T		      )->EnableWindow( bAttachmentExists);
+    GetDlgItem( IDC_VERTICES_T          )->EnableWindow( bAttachmentExists);
     GetDlgItem( IDC_ATTACHING_VERTICES              )->EnableWindow( bAttachmentExists);
     
     if( bAttachmentExists)
     {
       CPlacement3D plCurrent = pMD->md_aampAttachedPosition[ m_iActivePlacement]->amp_plRelativePlacement;
-      m_fHeading	= DegAngle( plCurrent.pl_OrientationAngle(1));
-      m_fPitch	= DegAngle( plCurrent.pl_OrientationAngle(2));
+      m_fHeading  = DegAngle( plCurrent.pl_OrientationAngle(1));
+      m_fPitch  = DegAngle( plCurrent.pl_OrientationAngle(2));
       m_fBanking  = DegAngle( plCurrent.pl_OrientationAngle(3));
-      m_fXOffset	= plCurrent.pl_PositionVector(1);
-      m_fYOffset	= plCurrent.pl_PositionVector(2);
-      m_fZOffset	= plCurrent.pl_PositionVector(3);
+      m_fXOffset  = plCurrent.pl_PositionVector(1);
+      m_fYOffset  = plCurrent.pl_PositionVector(2);
+      m_fZOffset  = plCurrent.pl_PositionVector(3);
 
       CAttachedModel* pam = pDoc->m_emEditModel.edm_aamAttachedModels[ m_iActivePlacement].get();
       m_strName  = pam->am_strName;
@@ -307,24 +307,24 @@ void CDlgPgInfoAttachingPlacement::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CDlgPgInfoAttachingPlacement, CPropertyPage)
-	//{{AFX_MSG_MAP(CDlgPgInfoAttachingPlacement)
-	ON_BN_CLICKED(IDC_ADD_ATTACHING_PLACEMENT, OnAddAttachingPlacement)
-	ON_EN_CHANGE(IDC_ATTACHING_PLACEMENT_BANKING, OnChangeAttachingPlacementBanking)
-	ON_EN_CHANGE(IDC_ATTACHING_PLACEMENT_HEADING, OnChangeAttachingPlacementHeading)
-	ON_EN_CHANGE(IDC_ATTACHING_PLACEMENT_NAME, OnChangeAttachingPlacementName)
-	ON_EN_CHANGE(IDC_ATTACHING_PLACEMENT_PITCH, OnChangeAttachingPlacementPitch)
-	ON_EN_CHANGE(IDC_ATTACHING_PLACEMENT_X_OFFSET, OnChangeAttachingPlacementXOffset)
-	ON_EN_CHANGE(IDC_ATTACHING_PLACEMENT_Y_OFFSET, OnChangeAttachingPlacementYOffset)
-	ON_EN_CHANGE(IDC_ATTACHING_PLACEMENT_Z_OFFSET, OnChangeAttachingPlacementZOffset)
-	ON_BN_CLICKED(IDC_BROWSE_MODEL, OnBrowseModel)
-	ON_BN_CLICKED(IDC_NEXT_ATTACHING_PLACEMENT, OnNextAttachingPlacement)
-	ON_BN_CLICKED(IDC_PREVIOUS_ATTACHING_PLACEMENT, OnPreviousAttachingPlacement)
-	ON_BN_CLICKED(IDC_REMOVE_ATTACHING_PLACEMENT, OnRemoveAttachingPlacement)
-	ON_BN_CLICKED(IDC_IS_VISIBLE, OnIsVisible)
-	ON_CBN_SELCHANGE(IDC_ATTACHMENT_MODEL_ANIMATION_COMBO, OnSelchangeAttachmentModelAnimationCombo)
+  //{{AFX_MSG_MAP(CDlgPgInfoAttachingPlacement)
+  ON_BN_CLICKED(IDC_ADD_ATTACHING_PLACEMENT, OnAddAttachingPlacement)
+  ON_EN_CHANGE(IDC_ATTACHING_PLACEMENT_BANKING, OnChangeAttachingPlacementBanking)
+  ON_EN_CHANGE(IDC_ATTACHING_PLACEMENT_HEADING, OnChangeAttachingPlacementHeading)
+  ON_EN_CHANGE(IDC_ATTACHING_PLACEMENT_NAME, OnChangeAttachingPlacementName)
+  ON_EN_CHANGE(IDC_ATTACHING_PLACEMENT_PITCH, OnChangeAttachingPlacementPitch)
+  ON_EN_CHANGE(IDC_ATTACHING_PLACEMENT_X_OFFSET, OnChangeAttachingPlacementXOffset)
+  ON_EN_CHANGE(IDC_ATTACHING_PLACEMENT_Y_OFFSET, OnChangeAttachingPlacementYOffset)
+  ON_EN_CHANGE(IDC_ATTACHING_PLACEMENT_Z_OFFSET, OnChangeAttachingPlacementZOffset)
+  ON_BN_CLICKED(IDC_BROWSE_MODEL, OnBrowseModel)
+  ON_BN_CLICKED(IDC_NEXT_ATTACHING_PLACEMENT, OnNextAttachingPlacement)
+  ON_BN_CLICKED(IDC_PREVIOUS_ATTACHING_PLACEMENT, OnPreviousAttachingPlacement)
+  ON_BN_CLICKED(IDC_REMOVE_ATTACHING_PLACEMENT, OnRemoveAttachingPlacement)
+  ON_BN_CLICKED(IDC_IS_VISIBLE, OnIsVisible)
+  ON_CBN_SELCHANGE(IDC_ATTACHMENT_MODEL_ANIMATION_COMBO, OnSelchangeAttachmentModelAnimationCombo)
   ON_BN_CLICKED(IDC_PICK_ATTACHMENT_BONE, PickAttachmentBone)
   ON_NOTIFY_EX(TTN_NEEDTEXT, 0, OnGetTooltip)
-	//}}AFX_MSG_MAP
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -347,37 +347,37 @@ BOOL CDlgPgInfoAttachingPlacement::OnIdle(LONG lCount)
 
 void CDlgPgInfoAttachingPlacement::OnChangeAttachingPlacementXOffset()
 {
-	UPDATE_DATA_AND_REFRESH;
+  UPDATE_DATA_AND_REFRESH;
 }
 
 void CDlgPgInfoAttachingPlacement::OnChangeAttachingPlacementYOffset()
 {
-	UPDATE_DATA_AND_REFRESH;
+  UPDATE_DATA_AND_REFRESH;
 }
 
 void CDlgPgInfoAttachingPlacement::OnChangeAttachingPlacementZOffset()
 {
-	UPDATE_DATA_AND_REFRESH;
+  UPDATE_DATA_AND_REFRESH;
 }
 
 void CDlgPgInfoAttachingPlacement::OnChangeAttachingPlacementHeading()
 {
-	UPDATE_DATA_AND_REFRESH;
+  UPDATE_DATA_AND_REFRESH;
 }
 
 void CDlgPgInfoAttachingPlacement::OnChangeAttachingPlacementPitch()
 {
-	UPDATE_DATA_AND_REFRESH;
+  UPDATE_DATA_AND_REFRESH;
 }
 
 void CDlgPgInfoAttachingPlacement::OnChangeAttachingPlacementBanking()
 {
-	UPDATE_DATA_AND_REFRESH;
+  UPDATE_DATA_AND_REFRESH;
 }
 
 void CDlgPgInfoAttachingPlacement::OnChangeAttachingPlacementName()
 {
-	UPDATE_DATA_AND_REFRESH;
+  UPDATE_DATA_AND_REFRESH;
 }
 
 BOOL CDlgPgInfoAttachingPlacement::BrowseAttachement( CAttachedModel *pam)

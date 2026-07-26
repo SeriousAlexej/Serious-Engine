@@ -27,7 +27,7 @@ class CCtrlBrowseFile : public CButton
 {
 // Construction
 public:
-	CCtrlBrowseFile();
+  CCtrlBrowseFile();
 
 // Attributes
 public:
@@ -42,21 +42,21 @@ public:
   CTFileName GetIntersectingFile();
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CCtrlBrowseFile)
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CCtrlBrowseFile)
+  //}}AFX_VIRTUAL
 
 // Implementation
 public:
-	virtual ~CCtrlBrowseFile();
+  virtual ~CCtrlBrowseFile();
 
-	// Generated message map functions
+  // Generated message map functions
 protected:
-	//{{AFX_MSG(CCtrlBrowseFile)
-	afx_msg void OnClicked();
-	//}}AFX_MSG
+  //{{AFX_MSG(CCtrlBrowseFile)
+  afx_msg void OnClicked();
+  //}}AFX_MSG
 
-	DECLARE_MESSAGE_MAP()
+  DECLARE_MESSAGE_MAP()
 };
 
 /////////////////////////////////////////////////////////////////////////////

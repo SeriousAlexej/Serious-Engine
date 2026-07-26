@@ -53,31 +53,31 @@ IMPLEMENT_DYNAMIC(CDlgInfoSheet, CPropertySheet)
     m_PgAttachingSound.function( parameter);
 
 CDlgInfoSheet::CDlgInfoSheet(CWnd* pWndParent)
-	: CPropertySheet(AFX_IDS_APP_TITLE, pWndParent)
+  : CPropertySheet(AFX_IDS_APP_TITLE, pWndParent)
 {
   m_LastViewUpdated = NULL;
   m_InfoMode = -1;
 
   // Add all pages so frame could get bounding sizes of all of them
   AddPage( &m_PgInfoNone);
-	AddPage( &m_PgInfoGlobal);
-	AddPage( &m_PgInfoMip);
-	AddPage( &m_PgInfoRendering);
-	AddPage( &m_PgInfoPos);
-	AddPage( &m_PgInfoAnim);
-	AddPage( &m_PgInfoCollision);
-	AddPage( &m_PgAttachingPlacement);
-	AddPage( &m_PgAttachingSound);
+  AddPage( &m_PgInfoGlobal);
+  AddPage( &m_PgInfoMip);
+  AddPage( &m_PgInfoRendering);
+  AddPage( &m_PgInfoPos);
+  AddPage( &m_PgInfoAnim);
+  AddPage( &m_PgInfoCollision);
+  AddPage( &m_PgAttachingPlacement);
+  AddPage( &m_PgAttachingSound);
   SetActivePage(0);
 }
 
 CDlgInfoSheet::CDlgInfoSheet(UINT nIDCaption, CWnd* pParentWnd, UINT iSelectPage)
-	:CPropertySheet(nIDCaption, pParentWnd, iSelectPage)
+  :CPropertySheet(nIDCaption, pParentWnd, iSelectPage)
 {
 }
 
 CDlgInfoSheet::CDlgInfoSheet(LPCTSTR pszCaption, CWnd* pParentWnd, UINT iSelectPage)
-	:CPropertySheet(pszCaption, pParentWnd, iSelectPage)
+  :CPropertySheet(pszCaption, pParentWnd, iSelectPage)
 {
 }
 
@@ -87,8 +87,8 @@ CDlgInfoSheet::~CDlgInfoSheet()
 
 
 BEGIN_MESSAGE_MAP(CDlgInfoSheet, CPropertySheet)
-	//{{AFX_MSG_MAP(CDlgInfoSheet)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CDlgInfoSheet)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -96,8 +96,8 @@ END_MESSAGE_MAP()
 
 void CDlgInfoSheet::PostNcDestroy() 
 {
-	CPropertySheet::PostNcDestroy();
-	delete this;
+  CPropertySheet::PostNcDestroy();
+  delete this;
 }
 
 void CDlgInfoSheet::DoDataExchange(CDataExchange* pDX) 
@@ -106,7 +106,7 @@ void CDlgInfoSheet::DoDataExchange(CDataExchange* pDX)
 
   CALLACTIVEPAGE(UpdateData, pDX->m_bSaveAndValidate);
 
-	CPropertySheet::DoDataExchange(pDX);
+  CPropertySheet::DoDataExchange(pDX);
 }
 
 static INDEX iLastNormalPage = 2;
@@ -149,7 +149,7 @@ BOOL CDlgInfoSheet::OnIdle(LONG lCount)
       for( INDEX iPage=0; iPage<ctPages; iPage++) RemovePage( 0);
       AddPage(&m_PgInfoGlobal);
       AddPage(&m_PgInfoMip);
-  	  AddPage(&m_PgInfoRendering);
+      AddPage(&m_PgInfoRendering);
 
       ctPages = GetPageCount();
       if( iLastMappingPage<ctPages) SetActivePage( iLastMappingPage);
@@ -162,9 +162,9 @@ BOOL CDlgInfoSheet::OnIdle(LONG lCount)
     HWND hwndActive = ::GetActiveWindow();
     m_InfoMode = IM_NORMAL;
     for( INDEX iPage=0; iPage<ctPages; iPage++) RemovePage( 0);
-  	AddPage(&m_PgInfoGlobal);
-  	AddPage(&m_PgInfoMip);
-  	AddPage(&m_PgInfoRendering);
+    AddPage(&m_PgInfoGlobal);
+    AddPage(&m_PgInfoMip);
+    AddPage(&m_PgInfoRendering);
     AddPage(&m_PgInfoPos);
     AddPage(&m_PgInfoCollision);
     AddPage(&m_PgAttachingPlacement);
@@ -198,7 +198,7 @@ BOOL CDlgInfoSheet::PreTranslateMessage(MSG* pMsg)
 {
   CMainFrame* pMainFrame = STATIC_DOWNCAST(CMainFrame, AfxGetMainWnd());
   BOOL bAlt = (GetKeyState( VK_MENU)&0x8000) != 0;
-	if(pMsg->message==WM_KEYDOWN)
+  if(pMsg->message==WM_KEYDOWN)
   {
     // if any of string edit controls has input
     BOOL bEditingString = 
@@ -211,47 +211,47 @@ BOOL CDlgInfoSheet::PreTranslateMessage(MSG* pMsg)
     {
       return TRUE;
     }
-	  else if( pMsg->wParam=='Q' && !bEditingString)
+    else if( pMsg->wParam=='Q' && !bEditingString)
     {
       pMainFrame->ToggleInfoWindow();
       return TRUE;
     }
-	  else if( pMsg->wParam=='C' && !bEditingString)
+    else if( pMsg->wParam=='C' && !bEditingString)
     {
       CustomSetActivePage( &m_PgInfoCollision);
       return FALSE;
     }
-	  else if( pMsg->wParam=='R' && !bEditingString)
+    else if( pMsg->wParam=='R' && !bEditingString)
     {
       CustomSetActivePage( &m_PgInfoRendering);
       return TRUE;
     }
-	  else if( pMsg->wParam=='A' && !bEditingString)
+    else if( pMsg->wParam=='A' && !bEditingString)
     {
       CustomSetActivePage( &m_PgAttachingPlacement);
       return TRUE;
     }
-	  else if( pMsg->wParam=='S' && !bEditingString)
+    else if( pMsg->wParam=='S' && !bEditingString)
     {
       CustomSetActivePage( &m_PgAttachingSound);
       return TRUE;
     }
-	  else if( pMsg->wParam=='P' && !bEditingString)
+    else if( pMsg->wParam=='P' && !bEditingString)
     {
       CustomSetActivePage( &m_PgInfoPos);
       return TRUE;
     }
-	  else if( pMsg->wParam=='G' && !bEditingString)
+    else if( pMsg->wParam=='G' && !bEditingString)
     {
       CustomSetActivePage( &m_PgInfoGlobal);
       return TRUE;
     }
-	  else if( pMsg->wParam=='M' && !bEditingString)
+    else if( pMsg->wParam=='M' && !bEditingString)
     {
       CustomSetActivePage( &m_PgInfoMip);
       return TRUE;
     }
-	  else if( pMsg->wParam=='N' && !bEditingString)
+    else if( pMsg->wParam=='N' && !bEditingString)
     {
       CustomSetActivePage( &m_PgInfoAnim);
       return TRUE;
@@ -262,7 +262,7 @@ BOOL CDlgInfoSheet::PreTranslateMessage(MSG* pMsg)
       return TRUE;
     }
   }
-	return CPropertySheet::PreTranslateMessage(pMsg);
+  return CPropertySheet::PreTranslateMessage(pMsg);
 }
 
 void CDlgInfoSheet::CustomSetActivePage( CPropertyPage *pppToActivate)

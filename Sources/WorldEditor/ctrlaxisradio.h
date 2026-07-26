@@ -27,7 +27,7 @@ class CCtrlAxisRadio : public CButton
 {
 // Construction
 public:
-	CCtrlAxisRadio();
+  CCtrlAxisRadio();
 
 // Attributes
 public:
@@ -40,21 +40,21 @@ public:
   void SetDialogPtr( CPropertyComboBar *pDialog);
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CCtrlAxisRadio)
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CCtrlAxisRadio)
+  //}}AFX_VIRTUAL
 
 // Implementation
 public:
-	virtual ~CCtrlAxisRadio();
+  virtual ~CCtrlAxisRadio();
 
-	// Generated message map functions
+  // Generated message map functions
 protected:
-	//{{AFX_MSG(CCtrlAxisRadio)
-	afx_msg void OnClicked();
-	//}}AFX_MSG
+  //{{AFX_MSG(CCtrlAxisRadio)
+  afx_msg void OnClicked();
+  //}}AFX_MSG
 
-	DECLARE_MESSAGE_MAP()
+  DECLARE_MESSAGE_MAP()
 };
 
 /////////////////////////////////////////////////////////////////////////////

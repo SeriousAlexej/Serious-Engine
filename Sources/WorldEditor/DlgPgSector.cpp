@@ -33,21 +33,21 @@ IMPLEMENT_DYNCREATE(CDlgPgSector, CPropertyPage)
 
 CDlgPgSector::CDlgPgSector() : CPropertyPage(CDlgPgSector::IDD)
 {
-	//{{AFX_DATA_INIT(CDlgPgSector)
-	m_iBrowseModeRadio = -1;
-	m_strSectorName = _T("");
-	m_radioInclude = -1;
-	//}}AFX_DATA_INIT
+  //{{AFX_DATA_INIT(CDlgPgSector)
+  m_iBrowseModeRadio = -1;
+  m_strSectorName = _T("");
+  m_radioInclude = -1;
+  //}}AFX_DATA_INIT
   
   if( 
     CTString( CStringA(theApp.GetProfileString(L"World editor", L"Color browsing mode (info)"))) ==
     CTString("RGB"))
   {
-	  m_iBrowseModeRadio = 0;
+    m_iBrowseModeRadio = 0;
   }
   else
   {
-	  m_iBrowseModeRadio = 1;
+    m_iBrowseModeRadio = 1;
   }
   
   m_colLastSectorAmbientColor = -1;
@@ -240,8 +240,8 @@ void CDlgPgSector::DoDataExchange(CDataExchange* pDX)
     m_colLastSectorAmbientColor = m_SectorAmbientColor.GetColor();
     m_bLastSectorAmbientColorMixed = !m_SectorAmbientColor.IsColorValid();
     m_SectorAmbientColor.EnableWindow( bSelectionExists);
-	  m_comboContentType.EnableWindow( bSelectionExists);
-	  m_comboEnvironmentType.EnableWindow( bSelectionExists);
+    m_comboContentType.EnableWindow( bSelectionExists);
+    m_comboEnvironmentType.EnableWindow( bSelectionExists);
 
     GetDlgItem( IDC_STATIC_CONTENT_TYPE_T)->EnableWindow( bSelectionExists);
     GetDlgItem( IDC_STATIC_ENVIRONMENT_TYPE_T)->EnableWindow( bSelectionExists);
@@ -260,18 +260,18 @@ void CDlgPgSector::DoDataExchange(CDataExchange* pDX)
     m_udSectorsData.MarkUpdated();
   }
 
-	//{{AFX_DATA_MAP(CDlgPgSector)
-	DDX_Control(pDX, ID_CLASSIFICATION_FLAGS, m_ctrlClassificationFlags);
-	DDX_Control(pDX, ID_VISIBILITY_FLAGS, m_ctrlVisibilityFlags);
-	DDX_Control(pDX, IDC_STATIC_ENVIRONMENT_TYPE, m_comboEnvironmentType);
-	DDX_Control(pDX, IDC_HAZE_COMBO, m_comboHaze);
-	DDX_Control(pDX, IDC_FOG_COMBO, m_comboFog);
-	DDX_Control(pDX, IDC_FORCE_FIELD_COMBO, m_comboForceField);
-	DDX_Control(pDX, IDC_CONTENT_TYPE_COMBO, m_comboContentType);
-	DDX_Control(pDX, ID_SECTOR_COLOR, m_SectorAmbientColor);
-	DDX_Text(pDX, IDC_SECTOR_NAME, m_strSectorName);
-	DDX_Radio(pDX, IDC_SECTOR_INCLUDE, m_radioInclude);
-	//}}AFX_DATA_MAP
+  //{{AFX_DATA_MAP(CDlgPgSector)
+  DDX_Control(pDX, ID_CLASSIFICATION_FLAGS, m_ctrlClassificationFlags);
+  DDX_Control(pDX, ID_VISIBILITY_FLAGS, m_ctrlVisibilityFlags);
+  DDX_Control(pDX, IDC_STATIC_ENVIRONMENT_TYPE, m_comboEnvironmentType);
+  DDX_Control(pDX, IDC_HAZE_COMBO, m_comboHaze);
+  DDX_Control(pDX, IDC_FOG_COMBO, m_comboFog);
+  DDX_Control(pDX, IDC_FORCE_FIELD_COMBO, m_comboForceField);
+  DDX_Control(pDX, IDC_CONTENT_TYPE_COMBO, m_comboContentType);
+  DDX_Control(pDX, ID_SECTOR_COLOR, m_SectorAmbientColor);
+  DDX_Text(pDX, IDC_SECTOR_NAME, m_strSectorName);
+  DDX_Radio(pDX, IDC_SECTOR_INCLUDE, m_radioInclude);
+  //}}AFX_DATA_MAP
 
   // if dialog is giving data and control windows are valid
   if( (pDX->m_bSaveAndValidate != FALSE) && IsWindow( m_SectorAmbientColor.m_hWnd) )
@@ -336,21 +336,21 @@ void CDlgPgSector::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CDlgPgSector, CPropertyPage)
-	//{{AFX_MSG_MAP(CDlgPgSector)
-	ON_WM_HSCROLL()
-	ON_CBN_DROPDOWN(IDC_CONTENT_TYPE_COMBO, OnDropdownContentTypeCombo)
-	ON_CBN_SELCHANGE(IDC_CONTENT_TYPE_COMBO, OnSelchangeContentTypeCombo)
-	ON_CBN_SELCHANGE(IDC_FORCE_FIELD_COMBO, OnSelchangeForceFieldCombo)
-	ON_CBN_DROPDOWN(IDC_FORCE_FIELD_COMBO, OnDropdownForceFieldCombo)
-	ON_CBN_DROPDOWN(IDC_FOG_COMBO, OnDropdownFogCombo)
-	ON_CBN_SELCHANGE(IDC_FOG_COMBO, OnSelchangeFogCombo)
-	ON_CBN_DROPDOWN(IDC_HAZE_COMBO, OnDropdownHazeCombo)
-	ON_CBN_SELCHANGE(IDC_HAZE_COMBO, OnSelchangeHazeCombo)
-	ON_CBN_DROPDOWN(IDC_STATIC_ENVIRONMENT_TYPE, OnDropdownStaticEnvironmentType)
-	ON_CBN_SELCHANGE(IDC_STATIC_ENVIRONMENT_TYPE, OnSelchangeStaticEnvironmentType)
-	ON_BN_CLICKED(IDC_SECTOR_INCLUDE, OnSectorInclude)
-	ON_BN_CLICKED(IDC_SECTOR_EXCLUDE, OnSectorExclude)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CDlgPgSector)
+  ON_WM_HSCROLL()
+  ON_CBN_DROPDOWN(IDC_CONTENT_TYPE_COMBO, OnDropdownContentTypeCombo)
+  ON_CBN_SELCHANGE(IDC_CONTENT_TYPE_COMBO, OnSelchangeContentTypeCombo)
+  ON_CBN_SELCHANGE(IDC_FORCE_FIELD_COMBO, OnSelchangeForceFieldCombo)
+  ON_CBN_DROPDOWN(IDC_FORCE_FIELD_COMBO, OnDropdownForceFieldCombo)
+  ON_CBN_DROPDOWN(IDC_FOG_COMBO, OnDropdownFogCombo)
+  ON_CBN_SELCHANGE(IDC_FOG_COMBO, OnSelchangeFogCombo)
+  ON_CBN_DROPDOWN(IDC_HAZE_COMBO, OnDropdownHazeCombo)
+  ON_CBN_SELCHANGE(IDC_HAZE_COMBO, OnSelchangeHazeCombo)
+  ON_CBN_DROPDOWN(IDC_STATIC_ENVIRONMENT_TYPE, OnDropdownStaticEnvironmentType)
+  ON_CBN_SELCHANGE(IDC_STATIC_ENVIRONMENT_TYPE, OnSelchangeStaticEnvironmentType)
+  ON_BN_CLICKED(IDC_SECTOR_INCLUDE, OnSectorInclude)
+  ON_BN_CLICKED(IDC_SECTOR_EXCLUDE, OnSectorExclude)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -389,7 +389,7 @@ BOOL CDlgPgSector::OnIdle(LONG lCount)
 
 void CDlgPgSector::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
 {
-	CPropertyPage::OnHScroll(nSBCode, nPos, pScrollBar);
+  CPropertyPage::OnHScroll(nSBCode, nPos, pScrollBar);
   UpdateData( TRUE);
   m_colLastSectorAmbientColor = m_SectorAmbientColor.GetColor();
   m_bLastSectorAmbientColorMixed = FALSE;
@@ -427,7 +427,7 @@ void CDlgPgSector::OnSelchangeHazeCombo()
 
 BOOL CDlgPgSector::PreTranslateMessage(MSG* pMsg) 
 {
-	if(pMsg->message==WM_KEYDOWN && pMsg->wParam==VK_RETURN)
+  if(pMsg->message==WM_KEYDOWN && pMsg->wParam==VK_RETURN)
   {
     // move coordinates from page to entity and snap them
     UpdateData( TRUE);
@@ -436,7 +436,7 @@ BOOL CDlgPgSector::PreTranslateMessage(MSG* pMsg)
     // the message is handled
     return TRUE;
   }
-	return CPropertyPage::PreTranslateMessage(pMsg);
+  return CPropertyPage::PreTranslateMessage(pMsg);
 }
 
 

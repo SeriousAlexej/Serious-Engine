@@ -71,13 +71,13 @@ void _OnRightMouseMove( PIX pixU, PIX pixV)
 }
 
 CDlgCreateEffectTexture::CDlgCreateEffectTexture(CTFileName fnInputFile/*=""*/, CWnd* pParent /*=NULL*/)
-	: CDialog(CDlgCreateEffectTexture::IDD, pParent)
+  : CDialog(CDlgCreateEffectTexture::IDD, pParent)
 {
-	//{{AFX_DATA_INIT(CDlgCreateEffectTexture)
-	m_strCreatedTextureName = _T("");
-	m_strBaseTextureName = _T("");
-	m_strRendSpeed = _T("");
-	//}}AFX_DATA_INIT
+  //{{AFX_DATA_INIT(CDlgCreateEffectTexture)
+  m_strCreatedTextureName = _T("");
+  m_strBaseTextureName = _T("");
+  m_strRendSpeed = _T("");
+  //}}AFX_DATA_INIT
 
   // set dialog ptr
   pDialog = this;
@@ -161,7 +161,7 @@ CDlgCreateEffectTexture::~CDlgCreateEffectTexture()
 
 void CDlgCreateEffectTexture::SetNewBaseTexture( CTFileName fnNewBase)
 {
-	if( fnNewBase != "")
+  if( fnNewBase != "")
   {
     // try to
     try
@@ -198,7 +198,7 @@ void CDlgCreateEffectTexture::SetNewBaseTexture( CTFileName fnNewBase)
 
 void CDlgCreateEffectTexture::DoDataExchange(CDataExchange* pDX)
 {
-	CDialog::DoDataExchange(pDX);
+  CDialog::DoDataExchange(pDX);
 
   // if dialog is receiving data
   if(pDX->m_bSaveAndValidate == FALSE)
@@ -219,17 +219,17 @@ void CDlgCreateEffectTexture::DoDataExchange(CDataExchange* pDX)
     }
   }
 
-	//{{AFX_DATA_MAP(CDlgCreateEffectTexture)
-	DDX_Control(pDX, IDC_CHEQUERED_ALPHA, m_ctrlCheckButton);
-	DDX_Control(pDX, IDC_MEX_SIZE, m_ctrlMexSizeCombo);
-	DDX_Control(pDX, IDC_PIX_WIDTH, m_ctrlPixWidthCombo);
-	DDX_Control(pDX, IDC_PIX_HEIGHT, m_ctrlPixHeightCombo);
-	DDX_Control(pDX, IDC_EFFECT_CLASS, m_ctrlEffectClassCombo);
-	DDX_Control(pDX, IDC_EFFECT_TYPE, m_ctrlEffectTypeCombo);
-	DDX_Text(pDX, IDC_CREATED_TEXTURE_NAME, m_strCreatedTextureName);
-	DDX_Text(pDX, IDC_BASE_TEXTURE_NAME, m_strBaseTextureName);
-	DDX_Text(pDX, IDC_REND_SPEED, m_strRendSpeed);
-	//}}AFX_DATA_MAP
+  //{{AFX_DATA_MAP(CDlgCreateEffectTexture)
+  DDX_Control(pDX, IDC_CHEQUERED_ALPHA, m_ctrlCheckButton);
+  DDX_Control(pDX, IDC_MEX_SIZE, m_ctrlMexSizeCombo);
+  DDX_Control(pDX, IDC_PIX_WIDTH, m_ctrlPixWidthCombo);
+  DDX_Control(pDX, IDC_PIX_HEIGHT, m_ctrlPixHeightCombo);
+  DDX_Control(pDX, IDC_EFFECT_CLASS, m_ctrlEffectClassCombo);
+  DDX_Control(pDX, IDC_EFFECT_TYPE, m_ctrlEffectTypeCombo);
+  DDX_Text(pDX, IDC_CREATED_TEXTURE_NAME, m_strCreatedTextureName);
+  DDX_Text(pDX, IDC_BASE_TEXTURE_NAME, m_strBaseTextureName);
+  DDX_Text(pDX, IDC_REND_SPEED, m_strRendSpeed);
+  //}}AFX_DATA_MAP
   
   // if dialog is giving data
   if(pDX->m_bSaveAndValidate != FALSE)
@@ -239,19 +239,19 @@ void CDlgCreateEffectTexture::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CDlgCreateEffectTexture, CDialog)
-	//{{AFX_MSG_MAP(CDlgCreateEffectTexture)
-	ON_WM_PAINT()
-	ON_BN_CLICKED(IDC_CHEQUERED_ALPHA, OnChequeredAlpha)
-	ON_BN_CLICKED(ID_BROWSE_BASE, OnBrowseBase)
-	ON_BN_CLICKED(ID_CREATE_AS, OnCreateAs)
-	ON_BN_CLICKED(ID_REMOVE_ALL_EFFECTS, OnRemoveAllEffects)
-	ON_CBN_SELCHANGE(IDC_PIX_HEIGHT, OnSelchangePixHeight)
-	ON_CBN_SELCHANGE(IDC_PIX_WIDTH, OnSelchangePixWidth)
-	ON_CBN_SELCHANGE(IDC_MEX_SIZE, OnSelchangeMexSize)
-	ON_BN_CLICKED(ID_CREATE, OnCreate)
-	ON_CBN_SELCHANGE(IDC_EFFECT_CLASS, OnSelchangeEffectClass)
-	ON_CBN_SELCHANGE(IDC_EFFECT_TYPE, OnSelchangeEffectType)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CDlgCreateEffectTexture)
+  ON_WM_PAINT()
+  ON_BN_CLICKED(IDC_CHEQUERED_ALPHA, OnChequeredAlpha)
+  ON_BN_CLICKED(ID_BROWSE_BASE, OnBrowseBase)
+  ON_BN_CLICKED(ID_CREATE_AS, OnCreateAs)
+  ON_BN_CLICKED(ID_REMOVE_ALL_EFFECTS, OnRemoveAllEffects)
+  ON_CBN_SELCHANGE(IDC_PIX_HEIGHT, OnSelchangePixHeight)
+  ON_CBN_SELCHANGE(IDC_PIX_WIDTH, OnSelchangePixWidth)
+  ON_CBN_SELCHANGE(IDC_MEX_SIZE, OnSelchangeMexSize)
+  ON_BN_CLICKED(ID_CREATE, OnCreate)
+  ON_CBN_SELCHANGE(IDC_EFFECT_CLASS, OnSelchangeEffectClass)
+  ON_CBN_SELCHANGE(IDC_EFFECT_TYPE, OnSelchangeEffectType)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -259,7 +259,7 @@ END_MESSAGE_MAP()
 
 void CDlgCreateEffectTexture::OnPaint() 
 {
-	CPaintDC dc(this); // device context for painting
+  CPaintDC dc(this); // device context for painting
 
   // if texture preview windows are not yet created
   if( !m_bPreviewWindowsCreated)
@@ -363,8 +363,8 @@ void CDlgCreateEffectTexture::SelectPixSizeCombo(void)
 
 BOOL CDlgCreateEffectTexture::OnInitDialog() 
 {
-	CDialog::OnInitDialog();
-	
+  CDialog::OnInitDialog();
+  
   // set default created texture's size
   INDEX iInitialSelectedSize = 0;
   // first combo entry is selected by default (requesting maximum mip maps to be created)
@@ -407,9 +407,9 @@ BOOL CDlgCreateEffectTexture::OnInitDialog()
   InitializeEffectTypeCombo();
 
   m_ctrlCheckButton.SetCheck( 1);
-	
+  
   SelectPixSizeCombo();
-	return TRUE;
+  return TRUE;
 }
 
 void CDlgCreateEffectTexture::OnBrowseBase() 
@@ -433,7 +433,7 @@ void CDlgCreateEffectTexture::OnBrowseBase()
 
 void CDlgCreateEffectTexture::OnRemoveAllEffects() 
 {
-	CreateTexture();
+  CreateTexture();
 }
 
 void CDlgCreateEffectTexture::OnSelchangeMexSize() 
@@ -520,7 +520,7 @@ void CDlgCreateEffectTexture::OnCreate()
   }
   if( m_strCreatedTextureName != "Unnamed")
   {
-  	EndDialog( IDOK);
+    EndDialog( IDOK);
   }
 }
 

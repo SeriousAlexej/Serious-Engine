@@ -33,12 +33,12 @@ IMPLEMENT_DYNCREATE(CDlgPgGlobal, CPropertyPage)
 
 CDlgPgGlobal::CDlgPgGlobal() : CPropertyPage(CDlgPgGlobal::IDD)
 {
-	//{{AFX_DATA_INIT(CDlgPgGlobal)
-	m_strTextureInfo = _T("");
-	m_strSelectedEntitiesCt = _T("");
-	m_strSelectedPolygonsCt = _T("");
-	m_strSelectedSectorsCt = _T("");
-	//}}AFX_DATA_INIT
+  //{{AFX_DATA_INIT(CDlgPgGlobal)
+  m_strTextureInfo = _T("");
+  m_strSelectedEntitiesCt = _T("");
+  m_strSelectedPolygonsCt = _T("");
+  m_strSelectedSectorsCt = _T("");
+  //}}AFX_DATA_INIT
 }
 
 CDlgPgGlobal::~CDlgPgGlobal()
@@ -89,19 +89,19 @@ void CDlgPgGlobal::DoDataExchange(CDataExchange* pDX)
   }
 
   CPropertyPage::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CDlgPgGlobal)
-	DDX_Text(pDX, IDC_TEXTURE_INFO, m_strTextureInfo);
-	DDX_Text(pDX, IDC_SELECTED_ENTITIES, m_strSelectedEntitiesCt);
-	DDX_Text(pDX, IDC_SELECTED_POLYGONS, m_strSelectedPolygonsCt);
-	DDX_Text(pDX, IDC_SELECTED_SECTORS, m_strSelectedSectorsCt);
-	//}}AFX_DATA_MAP
+  //{{AFX_DATA_MAP(CDlgPgGlobal)
+  DDX_Text(pDX, IDC_TEXTURE_INFO, m_strTextureInfo);
+  DDX_Text(pDX, IDC_SELECTED_ENTITIES, m_strSelectedEntitiesCt);
+  DDX_Text(pDX, IDC_SELECTED_POLYGONS, m_strSelectedPolygonsCt);
+  DDX_Text(pDX, IDC_SELECTED_SECTORS, m_strSelectedSectorsCt);
+  //}}AFX_DATA_MAP
 }
 
 
 BEGIN_MESSAGE_MAP(CDlgPgGlobal, CPropertyPage)
-	//{{AFX_MSG_MAP(CDlgPgGlobal)
-	ON_WM_DROPFILES()
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CDlgPgGlobal)
+  ON_WM_DROPFILES()
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -109,7 +109,7 @@ END_MESSAGE_MAP()
 
 BOOL CDlgPgGlobal::OnInitDialog() 
 {
-	CPropertyPage::OnInitDialog();
+  CPropertyPage::OnInitDialog();
   
   PIX pixLeft = 10;
   PIX pixTop = 10;
@@ -121,7 +121,7 @@ BOOL CDlgPgGlobal::OnInitDialog()
 
   DragAcceptFiles();
   return TRUE;  // return TRUE unless you set the focus to a control
-	              // EXCEPTION: OCX Property Pages should return FALSE
+                // EXCEPTION: OCX Property Pages should return FALSE
 }
 
 BOOL CDlgPgGlobal::OnIdle(LONG lCount)
@@ -156,7 +156,7 @@ void CDlgPgGlobal::OnDropFiles(HDROP hDropInfo)
     return;
   }
 
-	// buffer for dropped file name
+  // buffer for dropped file name
   char chrFile[ 256];
   // place dropped file name into buffer
   DragQueryFileA( hDropInfo, 0, chrFile, 256);

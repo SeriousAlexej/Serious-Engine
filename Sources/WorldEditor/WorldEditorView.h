@@ -90,12 +90,12 @@ enum InputAction {
 class CWorldEditorView : public CView      
 {
 protected: // create from serialization only
-	CWorldEditorView();
-	DECLARE_DYNCREATE(CWorldEditorView)
+  CWorldEditorView();
+  DECLARE_DYNCREATE(CWorldEditorView)
 
 // Attributes
 public:
-	InputAction m_iaInputAction;
+  InputAction m_iaInputAction;
   InputAction m_iaLastInputAction;
   BOOL m_bTestGameOn;
 
@@ -123,7 +123,7 @@ public:
   BOOL m_bOnSelectEntityAltDown;    // if alt was down during entity lasso select start
   BOOL m_bOnSelectEntityShiftDown;  // if shift was down during entity lasso select start
   FLOAT3D m_vHitOnMouseDown;
-	CPoint m_ptMouse;             // current mouse position
+  CPoint m_ptMouse;             // current mouse position
   FLOAT m_fpixGridSteep;        // steep in float pixels f of grid line
   FLOAT3D m_f3dRotationOrigin;  // used as rotation origin while changing mapping coordinates
   FLOATplane3D m_plTranslationPlane;  // plane used for polgon mapping translation
@@ -159,17 +159,17 @@ public:
   CViewPortPtr m_pvpViewPort;
   COleDropTarget m_DropTarget;
 
-	CTFileName m_fnWinBcgTexture;
+  CTFileName m_fnWinBcgTexture;
   COLORREF m_SelectionColor;
-	COLORREF m_PaperColor;
-	COLORREF m_InkColor;
-	BOOL m_IsWinBcgTexture;
-	std::optional<GizmoAxis> m_selected_axis;
-	FLOAT2D m_axis_projection;
+  COLORREF m_PaperColor;
+  COLORREF m_InkColor;
+  BOOL m_IsWinBcgTexture;
+  std::optional<GizmoAxis> m_selected_axis;
+  FLOAT2D m_axis_projection;
 public:
-	void ResetInteraction();
-	void AdjustGizmoProjection(CAnyProjection3D& proj, FLOAT& scale, const FLOAT view_width, const FLOAT view_height);
-	std::optional<std::pair<GizmoAxis, FLOAT2D>> HoveredAxis();
+  void ResetInteraction();
+  void AdjustGizmoProjection(CAnyProjection3D& proj, FLOAT& scale, const FLOAT view_width, const FLOAT view_height);
+  std::optional<std::pair<GizmoAxis, FLOAT2D>> HoveredAxis();
   // obtain draw port
   inline CDrawPortPtr GetDrawPort( void) {
     if( theApp.m_bChangeDisplayModeInProgress)
@@ -190,7 +190,7 @@ public:
   void RenderView( CDrawPortPtr pDP);
   // obtain information about what was hit with mouse
   CCastRay GetMouseHitInformation( CPoint point, BOOL bHitPortals = FALSE,
-		BOOL bHitModels = TRUE, BOOL bHitFields = TRUE, CEntityPtr penSourceEntity = {}, BOOL bHitBrushes = TRUE);
+    BOOL bHitModels = TRUE, BOOL bHitFields = TRUE, CEntityPtr penSourceEntity = {}, BOOL bHitBrushes = TRUE);
   FLOAT3D GetMouseHitOnPlane( CPoint point, const FLOATplane3D &plPlane);
   // Start and stop functions that are called for start moving/rotating 
   void ToggleHittedPolygon( CCastRay &crRayHit);
@@ -204,9 +204,9 @@ public:
   void RotateOrStretchBrushVertex(FLOAT fDX, FLOAT fDY, BOOL bRotate);
   // Fills status line's editing data info pane
   void SetEditingDataPaneInfo(BOOL bImidiateRepainting);
-	CWorldEditorDoc* GetDocument(void);
-	/* gets pointer to MDIFrameWnd main frame of application */
-	CMainFrame *GetMainFrame(void);
+  CWorldEditorDoc* GetDocument(void);
+  /* gets pointer to MDIFrameWnd main frame of application */
+  CMainFrame *GetMainFrame(void);
   /* set parameters for projection depending on current rendering preferences. */
   //void SetProjection(CDrawPort *pDP);
   /* called by document at the beginning of CSG */
@@ -277,7 +277,7 @@ public:
   void ApplyFreeModeControls( CPlacement3D &pl, ANGLE3D &a, FLOAT &fSpeedMultiplier, BOOL bPrescan);
   void PumpWindowsMessagesInFreeMode(BOOL &bRunning, FLOAT &fSpeedMultiplier);
   void SelectWhoTargets( CDynamicContainer_CEntity &dcTargetedEntities);
-	void OnRemainSelectedByOrientation(BOOL bBothSides);
+  void OnRemainSelectedByOrientation(BOOL bBothSides);
   void OnDropMarker(CPlacement3D plMarker);
   // functions for mapping fitting
   void AutoFitMapping(CBrushPolygonPtr pbpo, BOOL bInvert=FALSE, BOOL bFitBoth=FALSE);
@@ -297,25 +297,25 @@ public:
   void UpdateCursor(void);
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CWorldEditorView)
-	public:
-	virtual void OnDraw(CDC* pDC);  // overridden to draw this view
-	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
-	virtual void OnInitialUpdate();
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	protected:
-	virtual void OnActivateView(BOOL bActivate, CView* pActivateView, CView* pDeactiveView);
-	virtual void OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint);
-	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CWorldEditorView)
+  public:
+  virtual void OnDraw(CDC* pDC);  // overridden to draw this view
+  virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
+  virtual void OnInitialUpdate();
+  virtual BOOL PreTranslateMessage(MSG* pMsg);
+  protected:
+  virtual void OnActivateView(BOOL bActivate, CView* pActivateView, CView* pDeactiveView);
+  virtual void OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint);
+  virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+  //}}AFX_VIRTUAL
 
 // Implementation
 public:
-	virtual ~CWorldEditorView();
+  virtual ~CWorldEditorView();
 #ifdef _DEBUG
-	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
+  virtual void AssertValid() const;
+  virtual void Dump(CDumpContext& dc) const;
 #endif
 
 protected:
@@ -323,288 +323,288 @@ protected:
 // Generated message map functions
 protected:
 public:
-	//{{AFX_MSG(CWorldEditorView)
-	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
-	afx_msg void OnSize(UINT nType, int cx, int cy);
-	afx_msg void OnKillFocus(CWnd* pNewWnd);
-	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
-	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
-	afx_msg void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);
-	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-	afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
-	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
-	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
-	afx_msg void OnDropFiles(HDROP hDropInfo);
-	afx_msg void OnIsometricFront();
-	afx_msg void OnIsometricBack();
-	afx_msg void OnIsometricBottom();
-	afx_msg void OnIsometricLeft();
-	afx_msg void OnIsometricRight();
-	afx_msg void OnIsometricTop();
-	afx_msg void OnPerspective();
-	afx_msg void OnZoomLess();
-	afx_msg void OnZoomMore();
-	afx_msg void OnMoveDown();
-	afx_msg void OnMoveUp();
-	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
-	afx_msg void OnMeasurementTape();
-	afx_msg void OnUpdateMeasurementTape(CCmdUI* pCmdUI);
-	afx_msg void OnCircleModes();
-	afx_msg void OnUpdateCircleModes(CCmdUI* pCmdUI);
-	afx_msg void OnDeselectAll();
-	afx_msg void OnDeleteEntities();
-	afx_msg void OnUpdateDeleteEntities(CCmdUI* pCmdUI);
-	afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
-	afx_msg void OnTakeSs();
-	afx_msg void OnUpdateEntityMode(CCmdUI* pCmdUI);
-	afx_msg void OnSectorMode();
-	afx_msg void OnUpdateSectorMode(CCmdUI* pCmdUI);
-	afx_msg void OnPolygonMode();
-	afx_msg void OnUpdatePolygonMode(CCmdUI* pCmdUI);
-	afx_msg void OnEditPaste();
-	afx_msg void OnEditCopy();
-	afx_msg void OnCloneCSG();
-	afx_msg void OnUpdateCloneCsg(CCmdUI* pCmdUI);
-	afx_msg void OnMeasureOn();
-	afx_msg void OnUpdateMeasureOn(CCmdUI* pCmdUI);
-	afx_msg void OnResetViewer();
-	afx_msg void OnCopyTexture();
-	afx_msg void OnPasteTexture();
-	afx_msg void OnCenterEntity();
-	afx_msg void OnCenterEntity(CEntityPtr entity);
-	afx_msg void OnFunction();
-	afx_msg void OnUpdateCenterEntity(CCmdUI* pCmdUI);
-	afx_msg void OnDropMarker();
-	afx_msg void OnUpdateDropMarker(CCmdUI* pCmdUI);
-	afx_msg void OnTestConnections();
-	afx_msg void OnUpdateTestConnections(CCmdUI* pCmdUI);
-	afx_msg void OnAlignVolume();
-	afx_msg void OnUpdateAlignVolume(CCmdUI* pCmdUI);
-	afx_msg void OnCurrentViewProperties();
-	afx_msg void OnDeleteMip();
-	afx_msg void OnUpdateDeleteMip(CCmdUI* pCmdUI);
-	afx_msg void OnPreviousMipBrush();
-	afx_msg void OnUpdatePreviousMipBrush(CCmdUI* pCmdUI);
-	afx_msg void OnNextMipBrush();
-	afx_msg void OnUpdateNextMipBrush(CCmdUI* pCmdUI);
-	afx_msg void OnCrossroadForC();
-	afx_msg void OnChooseColor();
-	afx_msg void OnUpdateChooseColor(CCmdUI* pCmdUI);
-	afx_msg void OnMenuCopyMapping();
-	afx_msg void OnMenuPasteMapping();
-	afx_msg void OnSetAsCsgTarget();
-	afx_msg void OnKeyPaste();
-	afx_msg void OnRButtonDblClk(UINT nFlags, CPoint point);
-	afx_msg void OnSelectByTextureAdjacent();
-	afx_msg void OnSelectByTextureInSector();
-	afx_msg void OnSelectByColorInSector();
-	afx_msg void OnConusPrimitive();
-	afx_msg void OnTorusPrimitive();
-	afx_msg void OnTerrainPrimitive();
-	afx_msg void OnSpherePrimitive();
-	afx_msg void OnStaircasePrimitive();
-	afx_msg void OnUpdateConusPrimitive(CCmdUI* pCmdUI);
-	afx_msg void OnUpdateSpherePrimitive(CCmdUI* pCmdUI);
-	afx_msg void OnUpdateTerrainPrimitive(CCmdUI* pCmdUI);
-	afx_msg void OnUpdateTorusPrimitive(CCmdUI* pCmdUI);
-	afx_msg void OnUpdateStaircasePrimitive(CCmdUI* pCmdUI);
-	afx_msg void OnPopupConus();
-	afx_msg void OnPopupSphere();
-	afx_msg void OnPopupStairs();
-	afx_msg void OnPopupTerrain();
-	afx_msg void OnPopupTorus();
-	afx_msg void OnUpdateMoveDown(CCmdUI* pCmdUI);
-	afx_msg void OnUpdateMoveUp(CCmdUI* pCmdUI);
-	afx_msg void OnSelectLights();
-	afx_msg void OnDiscardShadows();
-	afx_msg void OnCopySectorAmbient();
-	afx_msg void OnPasteSectorAmbient();
-	afx_msg void OnSelectAllPolygons();
-	afx_msg void OnCopySectors();
-	afx_msg void OnDeleteSectors();
-	afx_msg void OnPasteSectors();
-	afx_msg void OnCenterBcgViewer();
-	afx_msg void OnMenuPasteAsProjectedMapping();
-	afx_msg void OnKeyPasteAsProjected();
-	afx_msg void OnSelectAllEntitiesInSectors();
-	afx_msg void OnSelectAllSectors();
-	afx_msg void OnLastPrimitive();
-	afx_msg void OnUpdateLastPrimitive(CCmdUI* pCmdUI);
-	afx_msg void OnCloneToMorePreciseMip();
-	afx_msg void OnCloneToRougherMipLevel();
-	afx_msg void OnCreateEmptyMorePreciseMip();
-	afx_msg void OnCreateEmptyRougherMip();
-	afx_msg void OnUpdateCloneToMorePreciseMip(CCmdUI* pCmdUI);
-	afx_msg void OnUpdateCloneToRougherMipLevel(CCmdUI* pCmdUI);
-	afx_msg void OnUpdateCreateEmptyMorePreciseMip(CCmdUI* pCmdUI);
-	afx_msg void OnUpdateCreateEmptyRougherMip(CCmdUI* pCmdUI);
-	afx_msg void OnEditPasteAlternative();
-	afx_msg void OnSelectAllEntitiesInWorld();
-	afx_msg void OnUpdateEditPasteAlternative(CCmdUI* pCmdUI);
-	afx_msg void OnEntityMode();
-	afx_msg void OnFindTexture();
-	afx_msg void OnSelectSectorsWithSameName();
-	afx_msg void OnSelectSectorsArroundEntity();
-	afx_msg void OnSelectSectorsArroundEntityOnContext();
-	afx_msg void OnInsertVertex();
-	afx_msg void OnDeleteVertex();
-	afx_msg void OnSavePicturesForEnvironment();
-	afx_msg void OnUpdateSavePicturesForEnvironment(CCmdUI* pCmdUI);
-	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
-	afx_msg void OnCsgSelectSector();
-	afx_msg void OnMenuAlignMappingU();
-	afx_msg void OnMenuAlignMappingV();
-	afx_msg void OnDestroy();
-	afx_msg void OnFallDown();
-	afx_msg void OnPrevious();
-	afx_msg void OnNext();
-	afx_msg void OnUpdatePrevious(CCmdUI* pCmdUI);
-	afx_msg void OnUpdateNext(CCmdUI* pCmdUI);
-	afx_msg void OnRemoveUnusedTextures();
-	afx_msg void OnRotate();
-	afx_msg void OnRotateBack();
-	afx_msg void OnSelectVisibleSectors();
-	afx_msg void OnEditCopyAlternative();
-	afx_msg void OnRotateLeft();
-	afx_msg void OnRotateRight();
-	afx_msg void OnRotateUp();
-	afx_msg void OnRotateDown();
-	afx_msg void OnSelectWhoTargets();
-	afx_msg void OnSelectInvalidTris();
-	afx_msg void OnTestConnectionsBack();
-	afx_msg void OnUpdateTestConnectionsBack(CCmdUI* pCmdUI);
-	afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
-	afx_msg void OnSelectSectorsOtherSide();
-	afx_msg void OnSelectLinksToSector();
-	afx_msg void OnRemainSelectedByOrientation();
-	afx_msg void OnDeselectByOrientation();
-	afx_msg void OnVertexMode();
-	afx_msg void OnReoptimizeBrushes();
-	afx_msg void OnMergeVertices();
-	afx_msg void OnExportDisplaceMap();
-	afx_msg void OnCutMode();
-	afx_msg void OnUpdateCutMode(CCmdUI* pCmdUI);
-	afx_msg void OnSelectAllTargets();
-	afx_msg void OnSelectAllTargetsOnContext();
-	afx_msg void OnSelectClones();
-	afx_msg void OnSelectClonesOnContext();
-	afx_msg void OnUpdateSelectClones(CCmdUI* pCmdUI);
-	afx_msg void OnSelectAllVertices();
-	afx_msg void OnSelectOfSameClass();
-	afx_msg void OnSelectOfSameClassOnContext();
-	afx_msg void OnAlternativeMovingMode();
-	afx_msg void OnReTriple();
-	afx_msg void OnSelectWhoTargetsOnContext();
-	afx_msg void OnClearAllTargets();
-	afx_msg void OnSelectCsgTarget();
-	afx_msg void OnUpdateSelectCsgTarget(CCmdUI* pCmdUI);
-	afx_msg void OnRemainSelectedbyOrientationSingle();
-	afx_msg void OnUpdateReTriple(CCmdUI* pCmdUI);
-	afx_msg void OnTriangularizePolygon();
-	afx_msg void OnEntityContextHelp();
-	afx_msg void OnPopupAutoFitMapping();
-	afx_msg void OnTriangularizeSelection();
-	afx_msg void OnUpdateTriangularizeSelection(CCmdUI* pCmdUI);
-	afx_msg void OnPopupAutoFitMappingSmall();
-	afx_msg void OnPopupAutoFitMappingBoth();
-	afx_msg void OnResetMappingOffset();
-	afx_msg void OnResetMappingRotation();
-	afx_msg void OnResetMappingStretch();
-	afx_msg void OnCrossroadForL();
-	afx_msg void OnSelectUsingTargetTree();
-	afx_msg void OnTargetTree();
-	afx_msg void OnUpdateTargetTree(CCmdUI* pCmdUI);
-	afx_msg void OnSwapLayers12();
-	afx_msg void OnSwapLayers23();
-	afx_msg void OnSelectDescendants();
-	afx_msg void OnCrossroadForCtrlF();
-	afx_msg void OnRotateToTargetCenter();
-	afx_msg void OnRotateToTargetOrigin();
-	afx_msg void OnCopyOrientation();
-	afx_msg void OnCopyPlacement();
-	afx_msg void OnCopyPosition();
-	afx_msg void OnPasteOrientation();
-	afx_msg void OnPastePlacement();
-	afx_msg void OnPastePosition();
-	afx_msg void OnAlignB();
-	afx_msg void OnAlignH();
-	afx_msg void OnAlignP();
-	afx_msg void OnAlignX();
-	afx_msg void OnAlignY();
-	afx_msg void OnAlignZ();
-	afx_msg void OnAutotexturizeMips();
-	afx_msg void OnUpdateAutotexturizeMips(CCmdUI* pCmdUI);
-	afx_msg void OnRandomOffsetU();
-	afx_msg void OnRandomOffsetV();
-	afx_msg void OnStretchRelativeOffset();
-	afx_msg void OnDeselectHidden();
-	afx_msg void OnSelectHidden();
-	afx_msg void OnSectorsToBrush();
-	afx_msg void OnPolygonsToBrush();
-	afx_msg void OnClonePolygons();
-	afx_msg void OnDeletePolygons();
-	afx_msg void OnKeyU();
-	afx_msg void OnKeyD();
-	afx_msg void OnFlipPolygon();
-	afx_msg void OnTerrainMode();
-	afx_msg void OnUpdateTerrainMode(CCmdUI* pCmdUI);
-	afx_msg void OnKeyM();
-	afx_msg void OnKeyBackslash();
-	afx_msg void OnSelectBrush();
-	afx_msg void OnSelectTerrain();
-	afx_msg void OnAltitudeEditMode();
-	afx_msg void OnLayerTextureEditMode();
-	afx_msg void OnTbrushAltitude();
-	afx_msg void OnTbrushEquilaze();
-	afx_msg void OnTbrushErase();
-	afx_msg void OnTbrushNoise();
-	afx_msg void OnTbrushSmooth();
-	afx_msg void OnOptimizeTerrain();
-	afx_msg void OnRecalculateTerrainShadows();
-	afx_msg void OnViewHeightmap();
-	afx_msg void OnImportHeightmap();
-	afx_msg void OnExportHeightmap();
-	afx_msg void OnImportHeightmap16();
-	afx_msg void OnExportHeightmap16();
-	afx_msg void OnSelectLayer();
-	afx_msg void OnPickLayer();
-	afx_msg void OnKeyO();
-	afx_msg void OnUpdateKeyO(CCmdUI* pCmdUI);
-	afx_msg void OnPosterize();
-	afx_msg void OnFlatten();
-	afx_msg void OnApplyFilter();
-	afx_msg void OnTeSmooth();
-	afx_msg void OnEditTerrainPrefs();
-	afx_msg void OnUpdateEditTerrainPrefs(CCmdUI* pCmdUI);
-	afx_msg void OnKeyCtrlShiftE();
-	afx_msg void OnKeyCtrlShiftG();
-	afx_msg void OnUpdateKeyCtrlShiftG(CCmdUI* pCmdUI);
-	afx_msg void OnTerrainLayerOptions();
-	afx_msg void OnUpdateTerrainLayerOptions(CCmdUI* pCmdUI);
-	afx_msg void OnKeyCtrlShiftK();
-	afx_msg void OnApplyContinousNoise();
-	afx_msg void OnApplyMinimum();
-	afx_msg void OnApplyMaximum();
-	afx_msg void OnApplyFlatten();
-	afx_msg void OnApplyPosterize();
-	afx_msg void OnOptimizeLayers();
-	afx_msg void OnTbrushContinousNoise();
-	afx_msg void OnTbrushFilter();
-	afx_msg void OnTbrushFlatten();
-	afx_msg void OnTbrushMaximum();
-	afx_msg void OnTbrushMinimum();
-	afx_msg void OnTbrushPosterize();
-	afx_msg void OnTerrainProperties();
-	
+  //{{AFX_MSG(CWorldEditorView)
+  afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
+  afx_msg void OnSize(UINT nType, int cx, int cy);
+  afx_msg void OnKillFocus(CWnd* pNewWnd);
+  afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+  afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
+  afx_msg void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);
+  afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+  afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
+  afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
+  afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
+  afx_msg void OnDropFiles(HDROP hDropInfo);
+  afx_msg void OnIsometricFront();
+  afx_msg void OnIsometricBack();
+  afx_msg void OnIsometricBottom();
+  afx_msg void OnIsometricLeft();
+  afx_msg void OnIsometricRight();
+  afx_msg void OnIsometricTop();
+  afx_msg void OnPerspective();
+  afx_msg void OnZoomLess();
+  afx_msg void OnZoomMore();
+  afx_msg void OnMoveDown();
+  afx_msg void OnMoveUp();
+  afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
+  afx_msg void OnMeasurementTape();
+  afx_msg void OnUpdateMeasurementTape(CCmdUI* pCmdUI);
+  afx_msg void OnCircleModes();
+  afx_msg void OnUpdateCircleModes(CCmdUI* pCmdUI);
+  afx_msg void OnDeselectAll();
+  afx_msg void OnDeleteEntities();
+  afx_msg void OnUpdateDeleteEntities(CCmdUI* pCmdUI);
+  afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
+  afx_msg void OnTakeSs();
+  afx_msg void OnUpdateEntityMode(CCmdUI* pCmdUI);
+  afx_msg void OnSectorMode();
+  afx_msg void OnUpdateSectorMode(CCmdUI* pCmdUI);
+  afx_msg void OnPolygonMode();
+  afx_msg void OnUpdatePolygonMode(CCmdUI* pCmdUI);
+  afx_msg void OnEditPaste();
+  afx_msg void OnEditCopy();
+  afx_msg void OnCloneCSG();
+  afx_msg void OnUpdateCloneCsg(CCmdUI* pCmdUI);
+  afx_msg void OnMeasureOn();
+  afx_msg void OnUpdateMeasureOn(CCmdUI* pCmdUI);
+  afx_msg void OnResetViewer();
+  afx_msg void OnCopyTexture();
+  afx_msg void OnPasteTexture();
+  afx_msg void OnCenterEntity();
+  afx_msg void OnCenterEntity(CEntityPtr entity);
+  afx_msg void OnFunction();
+  afx_msg void OnUpdateCenterEntity(CCmdUI* pCmdUI);
+  afx_msg void OnDropMarker();
+  afx_msg void OnUpdateDropMarker(CCmdUI* pCmdUI);
+  afx_msg void OnTestConnections();
+  afx_msg void OnUpdateTestConnections(CCmdUI* pCmdUI);
+  afx_msg void OnAlignVolume();
+  afx_msg void OnUpdateAlignVolume(CCmdUI* pCmdUI);
+  afx_msg void OnCurrentViewProperties();
+  afx_msg void OnDeleteMip();
+  afx_msg void OnUpdateDeleteMip(CCmdUI* pCmdUI);
+  afx_msg void OnPreviousMipBrush();
+  afx_msg void OnUpdatePreviousMipBrush(CCmdUI* pCmdUI);
+  afx_msg void OnNextMipBrush();
+  afx_msg void OnUpdateNextMipBrush(CCmdUI* pCmdUI);
+  afx_msg void OnCrossroadForC();
+  afx_msg void OnChooseColor();
+  afx_msg void OnUpdateChooseColor(CCmdUI* pCmdUI);
+  afx_msg void OnMenuCopyMapping();
+  afx_msg void OnMenuPasteMapping();
+  afx_msg void OnSetAsCsgTarget();
+  afx_msg void OnKeyPaste();
+  afx_msg void OnRButtonDblClk(UINT nFlags, CPoint point);
+  afx_msg void OnSelectByTextureAdjacent();
+  afx_msg void OnSelectByTextureInSector();
+  afx_msg void OnSelectByColorInSector();
+  afx_msg void OnConusPrimitive();
+  afx_msg void OnTorusPrimitive();
+  afx_msg void OnTerrainPrimitive();
+  afx_msg void OnSpherePrimitive();
+  afx_msg void OnStaircasePrimitive();
+  afx_msg void OnUpdateConusPrimitive(CCmdUI* pCmdUI);
+  afx_msg void OnUpdateSpherePrimitive(CCmdUI* pCmdUI);
+  afx_msg void OnUpdateTerrainPrimitive(CCmdUI* pCmdUI);
+  afx_msg void OnUpdateTorusPrimitive(CCmdUI* pCmdUI);
+  afx_msg void OnUpdateStaircasePrimitive(CCmdUI* pCmdUI);
+  afx_msg void OnPopupConus();
+  afx_msg void OnPopupSphere();
+  afx_msg void OnPopupStairs();
+  afx_msg void OnPopupTerrain();
+  afx_msg void OnPopupTorus();
+  afx_msg void OnUpdateMoveDown(CCmdUI* pCmdUI);
+  afx_msg void OnUpdateMoveUp(CCmdUI* pCmdUI);
+  afx_msg void OnSelectLights();
+  afx_msg void OnDiscardShadows();
+  afx_msg void OnCopySectorAmbient();
+  afx_msg void OnPasteSectorAmbient();
+  afx_msg void OnSelectAllPolygons();
+  afx_msg void OnCopySectors();
+  afx_msg void OnDeleteSectors();
+  afx_msg void OnPasteSectors();
+  afx_msg void OnCenterBcgViewer();
+  afx_msg void OnMenuPasteAsProjectedMapping();
+  afx_msg void OnKeyPasteAsProjected();
+  afx_msg void OnSelectAllEntitiesInSectors();
+  afx_msg void OnSelectAllSectors();
+  afx_msg void OnLastPrimitive();
+  afx_msg void OnUpdateLastPrimitive(CCmdUI* pCmdUI);
+  afx_msg void OnCloneToMorePreciseMip();
+  afx_msg void OnCloneToRougherMipLevel();
+  afx_msg void OnCreateEmptyMorePreciseMip();
+  afx_msg void OnCreateEmptyRougherMip();
+  afx_msg void OnUpdateCloneToMorePreciseMip(CCmdUI* pCmdUI);
+  afx_msg void OnUpdateCloneToRougherMipLevel(CCmdUI* pCmdUI);
+  afx_msg void OnUpdateCreateEmptyMorePreciseMip(CCmdUI* pCmdUI);
+  afx_msg void OnUpdateCreateEmptyRougherMip(CCmdUI* pCmdUI);
+  afx_msg void OnEditPasteAlternative();
+  afx_msg void OnSelectAllEntitiesInWorld();
+  afx_msg void OnUpdateEditPasteAlternative(CCmdUI* pCmdUI);
+  afx_msg void OnEntityMode();
+  afx_msg void OnFindTexture();
+  afx_msg void OnSelectSectorsWithSameName();
+  afx_msg void OnSelectSectorsArroundEntity();
+  afx_msg void OnSelectSectorsArroundEntityOnContext();
+  afx_msg void OnInsertVertex();
+  afx_msg void OnDeleteVertex();
+  afx_msg void OnSavePicturesForEnvironment();
+  afx_msg void OnUpdateSavePicturesForEnvironment(CCmdUI* pCmdUI);
+  afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+  afx_msg void OnCsgSelectSector();
+  afx_msg void OnMenuAlignMappingU();
+  afx_msg void OnMenuAlignMappingV();
+  afx_msg void OnDestroy();
+  afx_msg void OnFallDown();
+  afx_msg void OnPrevious();
+  afx_msg void OnNext();
+  afx_msg void OnUpdatePrevious(CCmdUI* pCmdUI);
+  afx_msg void OnUpdateNext(CCmdUI* pCmdUI);
+  afx_msg void OnRemoveUnusedTextures();
+  afx_msg void OnRotate();
+  afx_msg void OnRotateBack();
+  afx_msg void OnSelectVisibleSectors();
+  afx_msg void OnEditCopyAlternative();
+  afx_msg void OnRotateLeft();
+  afx_msg void OnRotateRight();
+  afx_msg void OnRotateUp();
+  afx_msg void OnRotateDown();
+  afx_msg void OnSelectWhoTargets();
+  afx_msg void OnSelectInvalidTris();
+  afx_msg void OnTestConnectionsBack();
+  afx_msg void OnUpdateTestConnectionsBack(CCmdUI* pCmdUI);
+  afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
+  afx_msg void OnSelectSectorsOtherSide();
+  afx_msg void OnSelectLinksToSector();
+  afx_msg void OnRemainSelectedByOrientation();
+  afx_msg void OnDeselectByOrientation();
+  afx_msg void OnVertexMode();
+  afx_msg void OnReoptimizeBrushes();
+  afx_msg void OnMergeVertices();
+  afx_msg void OnExportDisplaceMap();
+  afx_msg void OnCutMode();
+  afx_msg void OnUpdateCutMode(CCmdUI* pCmdUI);
+  afx_msg void OnSelectAllTargets();
+  afx_msg void OnSelectAllTargetsOnContext();
+  afx_msg void OnSelectClones();
+  afx_msg void OnSelectClonesOnContext();
+  afx_msg void OnUpdateSelectClones(CCmdUI* pCmdUI);
+  afx_msg void OnSelectAllVertices();
+  afx_msg void OnSelectOfSameClass();
+  afx_msg void OnSelectOfSameClassOnContext();
+  afx_msg void OnAlternativeMovingMode();
+  afx_msg void OnReTriple();
+  afx_msg void OnSelectWhoTargetsOnContext();
+  afx_msg void OnClearAllTargets();
+  afx_msg void OnSelectCsgTarget();
+  afx_msg void OnUpdateSelectCsgTarget(CCmdUI* pCmdUI);
+  afx_msg void OnRemainSelectedbyOrientationSingle();
+  afx_msg void OnUpdateReTriple(CCmdUI* pCmdUI);
+  afx_msg void OnTriangularizePolygon();
+  afx_msg void OnEntityContextHelp();
+  afx_msg void OnPopupAutoFitMapping();
+  afx_msg void OnTriangularizeSelection();
+  afx_msg void OnUpdateTriangularizeSelection(CCmdUI* pCmdUI);
+  afx_msg void OnPopupAutoFitMappingSmall();
+  afx_msg void OnPopupAutoFitMappingBoth();
+  afx_msg void OnResetMappingOffset();
+  afx_msg void OnResetMappingRotation();
+  afx_msg void OnResetMappingStretch();
+  afx_msg void OnCrossroadForL();
+  afx_msg void OnSelectUsingTargetTree();
+  afx_msg void OnTargetTree();
+  afx_msg void OnUpdateTargetTree(CCmdUI* pCmdUI);
+  afx_msg void OnSwapLayers12();
+  afx_msg void OnSwapLayers23();
+  afx_msg void OnSelectDescendants();
+  afx_msg void OnCrossroadForCtrlF();
+  afx_msg void OnRotateToTargetCenter();
+  afx_msg void OnRotateToTargetOrigin();
+  afx_msg void OnCopyOrientation();
+  afx_msg void OnCopyPlacement();
+  afx_msg void OnCopyPosition();
+  afx_msg void OnPasteOrientation();
+  afx_msg void OnPastePlacement();
+  afx_msg void OnPastePosition();
+  afx_msg void OnAlignB();
+  afx_msg void OnAlignH();
+  afx_msg void OnAlignP();
+  afx_msg void OnAlignX();
+  afx_msg void OnAlignY();
+  afx_msg void OnAlignZ();
+  afx_msg void OnAutotexturizeMips();
+  afx_msg void OnUpdateAutotexturizeMips(CCmdUI* pCmdUI);
+  afx_msg void OnRandomOffsetU();
+  afx_msg void OnRandomOffsetV();
+  afx_msg void OnStretchRelativeOffset();
+  afx_msg void OnDeselectHidden();
+  afx_msg void OnSelectHidden();
+  afx_msg void OnSectorsToBrush();
+  afx_msg void OnPolygonsToBrush();
+  afx_msg void OnClonePolygons();
+  afx_msg void OnDeletePolygons();
+  afx_msg void OnKeyU();
+  afx_msg void OnKeyD();
+  afx_msg void OnFlipPolygon();
+  afx_msg void OnTerrainMode();
+  afx_msg void OnUpdateTerrainMode(CCmdUI* pCmdUI);
+  afx_msg void OnKeyM();
+  afx_msg void OnKeyBackslash();
+  afx_msg void OnSelectBrush();
+  afx_msg void OnSelectTerrain();
+  afx_msg void OnAltitudeEditMode();
+  afx_msg void OnLayerTextureEditMode();
+  afx_msg void OnTbrushAltitude();
+  afx_msg void OnTbrushEquilaze();
+  afx_msg void OnTbrushErase();
+  afx_msg void OnTbrushNoise();
+  afx_msg void OnTbrushSmooth();
+  afx_msg void OnOptimizeTerrain();
+  afx_msg void OnRecalculateTerrainShadows();
+  afx_msg void OnViewHeightmap();
+  afx_msg void OnImportHeightmap();
+  afx_msg void OnExportHeightmap();
+  afx_msg void OnImportHeightmap16();
+  afx_msg void OnExportHeightmap16();
+  afx_msg void OnSelectLayer();
+  afx_msg void OnPickLayer();
+  afx_msg void OnKeyO();
+  afx_msg void OnUpdateKeyO(CCmdUI* pCmdUI);
+  afx_msg void OnPosterize();
+  afx_msg void OnFlatten();
+  afx_msg void OnApplyFilter();
+  afx_msg void OnTeSmooth();
+  afx_msg void OnEditTerrainPrefs();
+  afx_msg void OnUpdateEditTerrainPrefs(CCmdUI* pCmdUI);
+  afx_msg void OnKeyCtrlShiftE();
+  afx_msg void OnKeyCtrlShiftG();
+  afx_msg void OnUpdateKeyCtrlShiftG(CCmdUI* pCmdUI);
+  afx_msg void OnTerrainLayerOptions();
+  afx_msg void OnUpdateTerrainLayerOptions(CCmdUI* pCmdUI);
+  afx_msg void OnKeyCtrlShiftK();
+  afx_msg void OnApplyContinousNoise();
+  afx_msg void OnApplyMinimum();
+  afx_msg void OnApplyMaximum();
+  afx_msg void OnApplyFlatten();
+  afx_msg void OnApplyPosterize();
+  afx_msg void OnOptimizeLayers();
+  afx_msg void OnTbrushContinousNoise();
+  afx_msg void OnTbrushFilter();
+  afx_msg void OnTbrushFlatten();
+  afx_msg void OnTbrushMaximum();
+  afx_msg void OnTbrushMinimum();
+  afx_msg void OnTbrushPosterize();
+  afx_msg void OnTerrainProperties();
+  
   afx_msg void OnAdvMapping_AlignRotation();
   afx_msg void OnAdvMapping_AlignTangent();
   afx_msg void OnAdvMapping_AlignAdjacent();
   afx_msg void OnAdvMapping_AlignAdjacentAndTangent();
-	//}}AFX_MSG
+  //}}AFX_MSG
 
   afx_msg void OnKeyBuffer(UINT nID);
   afx_msg void OnKeyEditBuffer(UINT nID); 
-	
+  
   DECLARE_MESSAGE_MAP()
 };
 

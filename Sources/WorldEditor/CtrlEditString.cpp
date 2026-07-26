@@ -43,9 +43,9 @@ void CCtrlEditString::SetDialogPtr( CPropertyComboBar *pDialog)
 }
 
 BEGIN_MESSAGE_MAP(CCtrlEditString, CEdit)
-	//{{AFX_MSG_MAP(CCtrlEditString)
-	ON_CONTROL_REFLECT(EN_CHANGE, OnChange)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CCtrlEditString)
+  ON_CONTROL_REFLECT(EN_CHANGE, OnChange)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -57,7 +57,7 @@ void CCtrlEditString::OnChange()
 
 BOOL CCtrlEditString::PreTranslateMessage(MSG* pMsg)
 {
-	// if we caught key down message
+  // if we caught key down message
   if( pMsg->message==WM_KEYDOWN)
   {
     if((int)pMsg->wParam==VK_RETURN)
@@ -68,7 +68,7 @@ BOOL CCtrlEditString::PreTranslateMessage(MSG* pMsg)
       theApp.GetDocument()->SetModifiedFlag( TRUE);
       theApp.GetDocument()->m_chSelections.MarkChanged();
       // update dialog data (to reflect data change)
-	    m_pDialog->UpdateData( TRUE);
+      m_pDialog->UpdateData( TRUE);
     } else {
       TranslateMessage(pMsg);
       SendMessage( WM_KEYDOWN, pMsg->wParam, pMsg->lParam);
@@ -76,5 +76,5 @@ BOOL CCtrlEditString::PreTranslateMessage(MSG* pMsg)
     return TRUE;
   }
 
-	return CEdit::PreTranslateMessage(pMsg);
+  return CEdit::PreTranslateMessage(pMsg);
 }

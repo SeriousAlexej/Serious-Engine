@@ -29,7 +29,7 @@ class CDlgLinkTree : public CDialog
 {
 // Construction
 public:
-	CDlgLinkTree(CEntityPtr pen, CPoint pt, BOOL bWhoTargets, BOOL bPropertyNames, CWnd* pParent = NULL);
+  CDlgLinkTree(CEntityPtr pen, CPoint pt, BOOL bWhoTargets, BOOL bPropertyNames, CWnd* pParent = NULL);
   void AddEntityPtrsRecursiv(CEntityPtr pen, HTREEITEM hParent, CTString strPropertyName);
   void ExpandTree(HTREEITEM pItem, BOOL bExpand, INDEX iMaxLevel=-1, BOOL bNoNextSibling=FALSE);
   void ExpandRecursivly(HTREEITEM pItem, BOOL bExpand, BOOL bNoNextSibling);
@@ -44,47 +44,47 @@ public:
   CPoint m_ptMouseDown;
   CRect m_rectWndOnMouseDown;
 // Dialog Data
-	//{{AFX_DATA(CDlgLinkTree)
-	enum { IDD = IDD_LINK_TREE };
-	CTreeCtrl	m_ctrTree;
-	BOOL	m_bClass;
-	BOOL	m_bName;
-	BOOL	m_bProperty;
-	BOOL	m_bWho;
-	//}}AFX_DATA
+  //{{AFX_DATA(CDlgLinkTree)
+  enum { IDD = IDD_LINK_TREE };
+  CTreeCtrl  m_ctrTree;
+  BOOL  m_bClass;
+  BOOL  m_bName;
+  BOOL  m_bProperty;
+  BOOL  m_bWho;
+  //}}AFX_DATA
 
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CDlgLinkTree)
-	public:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CDlgLinkTree)
+  public:
+  virtual BOOL PreTranslateMessage(MSG* pMsg);
+  protected:
+  virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+  //}}AFX_VIRTUAL
 
 // Implementation
 protected:
 
-	// Generated message map functions
-	//{{AFX_MSG(CDlgLinkTree)
-	virtual BOOL OnInitDialog();
-	afx_msg void OnDblclkLinkTree(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
-	afx_msg void OnLtContractAll();
-	afx_msg void OnLtContractBranch();
-	afx_msg void OnLtExpandAll();
-	afx_msg void OnLtExpandBranch();
-	afx_msg void OnLtLeaveBranch();
-	afx_msg void OnLtLastLevel();
-	afx_msg void OnLtClass();
-	afx_msg void OnLtName();
-	afx_msg void OnLtProperty();
-	afx_msg void OnLtWho();
-	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
-	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+  // Generated message map functions
+  //{{AFX_MSG(CDlgLinkTree)
+  virtual BOOL OnInitDialog();
+  afx_msg void OnDblclkLinkTree(NMHDR* pNMHDR, LRESULT* pResult);
+  afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
+  afx_msg void OnLtContractAll();
+  afx_msg void OnLtContractBranch();
+  afx_msg void OnLtExpandAll();
+  afx_msg void OnLtExpandBranch();
+  afx_msg void OnLtLeaveBranch();
+  afx_msg void OnLtLastLevel();
+  afx_msg void OnLtClass();
+  afx_msg void OnLtName();
+  afx_msg void OnLtProperty();
+  afx_msg void OnLtWho();
+  afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+  afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+  //}}AFX_MSG
+  DECLARE_MESSAGE_MAP()
 };
 
 //{{AFX_INSERT_LOCATION}}

@@ -31,26 +31,26 @@ static char THIS_FILE[] = __FILE__;
 
 
 CDlgRenderingPreferences::CDlgRenderingPreferences( INDEX iBuffer, CWnd* pParent /*=NULL*/)
-	: CDialog(CDlgRenderingPreferences::IDD, pParent)
+  : CDialog(CDlgRenderingPreferences::IDD, pParent)
 {
   m_iBuffer = iBuffer;
   //{{AFX_DATA_INIT(CDlgRenderingPreferences)
-	m_bBoundingBox = FALSE;
-	m_bHidenLines = FALSE;
-	m_bShadows = FALSE;
-	m_bWireFrame = FALSE;
-	m_fRenderingRange = 0.0f;
-	m_bAutoRenderingRange = FALSE;
-	m_bRenderEditorModels = FALSE;
-	m_bUseTextureForBcg = FALSE;
-	m_bRenderFieldBrushes = FALSE;
-	m_bRenderFog = FALSE;
-	m_bRenderHaze = FALSE;
-	m_bRenderMirrors = FALSE;
-	m_strBcgTexture = _T("");
-	m_fFarClipPlane = 0.0f;
-	m_bApplyFarClipInIsometricProjection = FALSE;
-	//}}AFX_DATA_INIT
+  m_bBoundingBox = FALSE;
+  m_bHidenLines = FALSE;
+  m_bShadows = FALSE;
+  m_bWireFrame = FALSE;
+  m_fRenderingRange = 0.0f;
+  m_bAutoRenderingRange = FALSE;
+  m_bRenderEditorModels = FALSE;
+  m_bUseTextureForBcg = FALSE;
+  m_bRenderFieldBrushes = FALSE;
+  m_bRenderFog = FALSE;
+  m_bRenderHaze = FALSE;
+  m_bRenderMirrors = FALSE;
+  m_strBcgTexture = _T("");
+  m_fFarClipPlane = 0.0f;
+  m_bApplyFarClipInIsometricProjection = FALSE;
+  //}}AFX_DATA_INIT
   m_VertexColors.SetPickerType( CColoredButton::PT_MFC);
   m_EdgesColors.SetPickerType( CColoredButton::PT_MFC);
   m_PolygonColors.SetPickerType( CColoredButton::PT_MFC);
@@ -62,7 +62,7 @@ CDlgRenderingPreferences::CDlgRenderingPreferences( INDEX iBuffer, CWnd* pParent
 
 void CDlgRenderingPreferences::DoDataExchange(CDataExchange* pDX)
 {
-	CDialog::DoDataExchange(pDX);
+  CDialog::DoDataExchange(pDX);
 
   CModelRenderPrefs &pmrpPrefs = theApp.m_vpViewPrefs[ m_iBuffer].m_mrpModelRenderPrefs;
   CWorldRenderPrefs &pwrpPrefs = theApp.m_vpViewPrefs[ m_iBuffer].m_wrpWorldRenderPrefs;
@@ -136,7 +136,7 @@ void CDlgRenderingPreferences::DoDataExchange(CDataExchange* pDX)
     m_comboFlareFX.AddString( L"Single flare");
     m_comboFlareFX.AddString( L"Reflections");
     m_comboFlareFX.AddString( L"Reflections and glare");
-  	  
+      
     INDEX iFillType;
     // set current fill type to vertices combo box
     iFillType = pwrpPrefs.GetVerticesFillType();
@@ -169,35 +169,35 @@ void CDlgRenderingPreferences::DoDataExchange(CDataExchange* pDX)
   }
 
   //{{AFX_DATA_MAP(CDlgRenderingPreferences)
-	DDX_Control(pDX, IDC_FLARE_FX, m_comboFlareFX);
-	DDX_Control(pDX, IDC_SELECTION_COLOR, m_SelectionColor);
-	DDX_Control(pDX, IDC_GRID_COLOR, m_GridColor);
-	DDX_Control(pDX, IDC_PAPER_COLOR, m_PaperColor);
-	DDX_Control(pDX, IDC_TEXTURE_FILL_TYPE, m_TextureFillType);
-	DDX_Control(pDX, IDC_EDGES_FILL_TYPE, m_EdgesFillType);
-	DDX_Control(pDX, IDC_POLYGON_FILL_TYPE, m_PolygonFillType);
-	DDX_Control(pDX, IDC_VERTEX_FILL_TYPE, m_VertexFillType);
-	DDX_Control(pDX, IDC_VERTEX_COLORS, m_VertexColors);
-	DDX_Control(pDX, IDC_POLYGON_COLORS, m_PolygonColors);
-	DDX_Control(pDX, IDC_EDGES_COLORS, m_EdgesColors);
-	DDX_Check(pDX, IDC_BBOX, m_bBoundingBox);
-	DDX_Check(pDX, IDC_HIDEN_LINES, m_bHidenLines);
-	DDX_Check(pDX, IDC_SHADOWS, m_bShadows);
-	DDX_Check(pDX, IDC_WIRE_FRAME, m_bWireFrame);
-	DDX_Text(pDX, IDC_RENDERING_RANGE, m_fRenderingRange);
-	DDV_MinMaxFloat(pDX, m_fRenderingRange, 1.f, 10000.f);
-	DDX_Check(pDX, IDC_AUTO_RENDERING_RANGE, m_bAutoRenderingRange);
-	DDX_Check(pDX, IDC_RENDER_EDITOR_MODELS, m_bRenderEditorModels);
-	DDX_Check(pDX, IDC_USE_TEXTURE_FOR_BCG, m_bUseTextureForBcg);
-	DDX_Check(pDX, IDC_RENDER_FIELDS, m_bRenderFieldBrushes);
-	DDX_Check(pDX, IDC_RENDER_FOG, m_bRenderFog);
-	DDX_Check(pDX, IDC_RENDER_HAZE, m_bRenderHaze);
-	DDX_Check(pDX, IDC_RENDER_MIRRORS, m_bRenderMirrors);
-	DDX_Text(pDX, IDC_BCG_PICTURE_T, m_strBcgTexture);
-	DDX_Text(pDX, IDC_FAR_CLIP_PLANE, m_fFarClipPlane);
-	DDV_MinMaxFloat(pDX, m_fFarClipPlane, -1.f, 1.e+007f);
-	DDX_Check(pDX, IDC_APPLY_CLIP_FOR_ISOMETRIC, m_bApplyFarClipInIsometricProjection);
-	//}}AFX_DATA_MAP
+  DDX_Control(pDX, IDC_FLARE_FX, m_comboFlareFX);
+  DDX_Control(pDX, IDC_SELECTION_COLOR, m_SelectionColor);
+  DDX_Control(pDX, IDC_GRID_COLOR, m_GridColor);
+  DDX_Control(pDX, IDC_PAPER_COLOR, m_PaperColor);
+  DDX_Control(pDX, IDC_TEXTURE_FILL_TYPE, m_TextureFillType);
+  DDX_Control(pDX, IDC_EDGES_FILL_TYPE, m_EdgesFillType);
+  DDX_Control(pDX, IDC_POLYGON_FILL_TYPE, m_PolygonFillType);
+  DDX_Control(pDX, IDC_VERTEX_FILL_TYPE, m_VertexFillType);
+  DDX_Control(pDX, IDC_VERTEX_COLORS, m_VertexColors);
+  DDX_Control(pDX, IDC_POLYGON_COLORS, m_PolygonColors);
+  DDX_Control(pDX, IDC_EDGES_COLORS, m_EdgesColors);
+  DDX_Check(pDX, IDC_BBOX, m_bBoundingBox);
+  DDX_Check(pDX, IDC_HIDEN_LINES, m_bHidenLines);
+  DDX_Check(pDX, IDC_SHADOWS, m_bShadows);
+  DDX_Check(pDX, IDC_WIRE_FRAME, m_bWireFrame);
+  DDX_Text(pDX, IDC_RENDERING_RANGE, m_fRenderingRange);
+  DDV_MinMaxFloat(pDX, m_fRenderingRange, 1.f, 10000.f);
+  DDX_Check(pDX, IDC_AUTO_RENDERING_RANGE, m_bAutoRenderingRange);
+  DDX_Check(pDX, IDC_RENDER_EDITOR_MODELS, m_bRenderEditorModels);
+  DDX_Check(pDX, IDC_USE_TEXTURE_FOR_BCG, m_bUseTextureForBcg);
+  DDX_Check(pDX, IDC_RENDER_FIELDS, m_bRenderFieldBrushes);
+  DDX_Check(pDX, IDC_RENDER_FOG, m_bRenderFog);
+  DDX_Check(pDX, IDC_RENDER_HAZE, m_bRenderHaze);
+  DDX_Check(pDX, IDC_RENDER_MIRRORS, m_bRenderMirrors);
+  DDX_Text(pDX, IDC_BCG_PICTURE_T, m_strBcgTexture);
+  DDX_Text(pDX, IDC_FAR_CLIP_PLANE, m_fFarClipPlane);
+  DDV_MinMaxFloat(pDX, m_fFarClipPlane, -1.f, 1.e+007f);
+  DDX_Check(pDX, IDC_APPLY_CLIP_FOR_ISOMETRIC, m_bApplyFarClipInIsometricProjection);
+  //}}AFX_DATA_MAP
 
   // if dialog is giving data
   if( pDX->m_bSaveAndValidate != FALSE)
@@ -294,12 +294,12 @@ void CDlgRenderingPreferences::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CDlgRenderingPreferences, CDialog)
-	//{{AFX_MSG_MAP(CDlgRenderingPreferences)
-	ON_BN_CLICKED(ID_LOAD_PREFERENCES, OnLoadPreferences)
-	ON_BN_CLICKED(ID_SAVE_PREFERENCES, OnSavePreferences)
-	ON_BN_CLICKED(IDC_AUTO_RENDERING_RANGE, OnAutoRenderingRange)
-	ON_BN_CLICKED(IDC_BROWSE_BCG_PICTURE, OnBrowseBcgPicture)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CDlgRenderingPreferences)
+  ON_BN_CLICKED(ID_LOAD_PREFERENCES, OnLoadPreferences)
+  ON_BN_CLICKED(ID_SAVE_PREFERENCES, OnSavePreferences)
+  ON_BN_CLICKED(IDC_AUTO_RENDERING_RANGE, OnAutoRenderingRange)
+  ON_BN_CLICKED(IDC_BROWSE_BCG_PICTURE, OnBrowseBcgPicture)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -326,8 +326,8 @@ BOOL CDlgRenderingPreferences::OnInitDialog()
   // set dialog data
   UpdateData( FALSE);
 
-	return TRUE;  // return TRUE unless you set the focus to a control
-	              // EXCEPTION: OCX Property Pages should return FALSE
+  return TRUE;  // return TRUE unless you set the focus to a control
+                // EXCEPTION: OCX Property Pages should return FALSE
 }
 
 void CDlgRenderingPreferences::OnLoadPreferences() 

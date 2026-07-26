@@ -47,50 +47,50 @@ public:
 
 
 // Dialog Data
-	//{{AFX_DATA(CDlgLightAnimationEditor)
-	enum { IDD = IDD_LIGHT_ANIMATION_EDITOR };
-	CComboBox	m_LightAnimationCombo;
-	CString	m_strCurrentFrame;
-	float	m_fLightAnimationSpeed;
-	int		m_iAnimationFrames;
-	CString	m_strLightAnimationName;
-	//}}AFX_DATA
+  //{{AFX_DATA(CDlgLightAnimationEditor)
+  enum { IDD = IDD_LIGHT_ANIMATION_EDITOR };
+  CComboBox  m_LightAnimationCombo;
+  CString  m_strCurrentFrame;
+  float  m_fLightAnimationSpeed;
+  int    m_iAnimationFrames;
+  CString  m_strLightAnimationName;
+  //}}AFX_DATA
 
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CDlgLightAnimationEditor)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	virtual void OnOK();
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CDlgLightAnimationEditor)
+  protected:
+  virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+  virtual void OnOK();
+  //}}AFX_VIRTUAL
 
 // Implementation
 protected:
 
-	// Generated message map functions
-	//{{AFX_MSG(CDlgLightAnimationEditor)
-	afx_msg void OnPaint();
-	virtual BOOL OnInitDialog();
-	afx_msg void OnDeleteMarker();
-	afx_msg void OnChangeLightAnimationFrames();
-	afx_msg void OnSelchangeLightAnimationNameCombo();
-	afx_msg void OnChangeLightAnimationSpeed();
-	afx_msg void OnScrollLeft();
-	afx_msg void OnScrollRight();
-	afx_msg void OnScrollPgLeft();
-	afx_msg void OnScrollPgRight();
-	afx_msg void OnDeleteAnimation();
-	afx_msg void OnAddAnimation();
-	afx_msg void OnChangeLightAnimationName();
-	afx_msg void OnLoadAnimation();
-	afx_msg void OnSaveAnimation();
-	afx_msg void OnSaveAsAnimation();
-	afx_msg void OnButtonClose();
-	afx_msg void OnClose();
-	afx_msg void OnCancel();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+  // Generated message map functions
+  //{{AFX_MSG(CDlgLightAnimationEditor)
+  afx_msg void OnPaint();
+  virtual BOOL OnInitDialog();
+  afx_msg void OnDeleteMarker();
+  afx_msg void OnChangeLightAnimationFrames();
+  afx_msg void OnSelchangeLightAnimationNameCombo();
+  afx_msg void OnChangeLightAnimationSpeed();
+  afx_msg void OnScrollLeft();
+  afx_msg void OnScrollRight();
+  afx_msg void OnScrollPgLeft();
+  afx_msg void OnScrollPgRight();
+  afx_msg void OnDeleteAnimation();
+  afx_msg void OnAddAnimation();
+  afx_msg void OnChangeLightAnimationName();
+  afx_msg void OnLoadAnimation();
+  afx_msg void OnSaveAnimation();
+  afx_msg void OnSaveAsAnimation();
+  afx_msg void OnButtonClose();
+  afx_msg void OnClose();
+  afx_msg void OnCancel();
+  //}}AFX_MSG
+  DECLARE_MESSAGE_MAP()
 };
 
 //{{AFX_INSERT_LOCATION}}

@@ -38,9 +38,9 @@ CStainsComboBox::~CStainsComboBox()
 
 
 BEGIN_MESSAGE_MAP(CStainsComboBox, CComboBox)
-	//{{AFX_MSG_MAP(CStainsComboBox)
-	ON_CONTROL_REFLECT(CBN_DROPDOWN, OnDropdown)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CStainsComboBox)
+  ON_CONTROL_REFLECT(CBN_DROPDOWN, OnDropdown)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////

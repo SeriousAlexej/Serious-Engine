@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define WORLDEDITOR_H 1
 
 #ifndef __AFXWIN_H__
-	#error include 'stdafx.h' before including this file for PCH
+  #error include 'stdafx.h' before including this file for PCH
 #endif
 
 #include "resource.h"       // main symbols
@@ -210,7 +210,7 @@ public:
 class CAppPrefs
 {
 public:
-	~CAppPrefs();
+  ~CAppPrefs();
   BOOL ap_CopyExistingWindowPrefs;
   BOOL ap_AutoMaximizeWindow;
   BOOL ap_SetDefaultColors;
@@ -431,7 +431,7 @@ public:
   // view icons texture
   CTextureDataPtr m_pViewIconsTD;
   // window background texture
-	CTFileName m_fnWinBcgTexture;
+  CTFileName m_fnWinBcgTexture;
   // application font
   CFontDataPtr m_pfntSystem;
   // application's windows font
@@ -439,7 +439,7 @@ public:
   CFont m_FixedFont;
   // for holding entity selection marker model
   CTextureDataPtr m_ptdEntityMarkerTexture;
-	CModelDataPtr m_pEntityMarkerModelData;
+  CModelDataPtr m_pEntityMarkerModelData;
   std::unique_ptr<CModelObject> m_pEntityMarkerModelObject;
   CTextureDataPtr m_gizmo_texture;
   CModelDataPtr m_axis_data;
@@ -452,27 +452,27 @@ public:
   std::unique_ptr<CModelObject> m_ring_model_selected;
   // for holding portal selection marker model
   CTextureDataPtr m_ptdPortalMarkerTexture;
-	CModelDataPtr m_pPortalMarkerModelData;
+  CModelDataPtr m_pPortalMarkerModelData;
   std::unique_ptr<CModelObject> m_pPortalMarkerModelObject;
   // for holding empty brush model
   CTextureDataPtr m_ptdEmptyBrushTexture;
-	CModelDataPtr m_pEmptyBrushModelData;
+  CModelDataPtr m_pEmptyBrushModelData;
   std::unique_ptr<CModelObject> m_pEmptyBrushModelObject;
   // for holding range sphere model
   CTextureDataPtr m_ptdRangeSphereTexture;
-	CModelDataPtr m_pRangeSphereModelData;
+  CModelDataPtr m_pRangeSphereModelData;
   std::unique_ptr<CModelObject> m_pRangeSphereModelObject;
   // for holding angle3D model
   CTextureDataPtr m_ptdAngle3DTexture;
-	CModelDataPtr m_pAngle3DModelData;
+  CModelDataPtr m_pAngle3DModelData;
   std::unique_ptr<CModelObject> m_pAngle3DModelObject;
   // for holding bounding box model
   CTextureDataPtr m_ptdBoundingBoxTexture;
-	CModelDataPtr m_pBoundingBoxModelData;
+  CModelDataPtr m_pBoundingBoxModelData;
   std::unique_ptr<CModelObject> m_pBoundingBoxModelObject;
 
   // variables for full screen display mode
-	CDisplayMode m_dmFullScreen;
+  CDisplayMode m_dmFullScreen;
   GfxAPIType   m_gatFullScreen;
 
   // index of color last used for auto primitive colorization
@@ -512,13 +512,13 @@ public:
 
 // Operations
   CWorldEditorApp();
-	~CWorldEditorApp();
+  ~CWorldEditorApp();
 
   void AddToRecentFileList(LPCTSTR lpszPathName) override;
   void InstallOneTimeSelectionStealer(std::function<void(CEntity_*)>&& selection_stealer, void* source);
   const std::function<void(CEntity_*)>& GetSelectionStealer() const;
-	void MyParseCommandLine(void);
-	BOOL SubInitInstance(void);
+  void MyParseCommandLine(void);
+  BOOL SubInitInstance(void);
   void OnFileNew();
   CEntityPtr CreateWorldBaseEntity(CWorld &woWorld, BOOL bZoning, CPlacement3D pl=CPlacement3D(FLOAT3D(0,0,0),ANGLE3D(0,0,0)));
   BOOL Add3DObject(CWorldEditorDoc *pDoc, CEntityPtr penwb, CTFileName fnFile, BOOL bAdd);
@@ -559,33 +559,33 @@ public:
   void DisplayHelp(const CTFileName &fnHlk, UINT uCommand, DWORD dwData);
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CWorldEditorApp)
-	public:
-	virtual BOOL InitInstance();
-	virtual BOOL SaveAllModified();
-	virtual int ExitInstance();
-	virtual BOOL OnIdle(LONG lCount);
-	virtual int Run();
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	virtual void WinHelp(DWORD dwData, UINT nCmd = HELP_CONTEXT);
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CWorldEditorApp)
+  public:
+  virtual BOOL InitInstance();
+  virtual BOOL SaveAllModified();
+  virtual int ExitInstance();
+  virtual BOOL OnIdle(LONG lCount);
+  virtual int Run();
+  virtual BOOL PreTranslateMessage(MSG* pMsg);
+  virtual void WinHelp(DWORD dwData, UINT nCmd = HELP_CONTEXT);
+  //}}AFX_VIRTUAL
 
 // Implementation
 
-	//{{AFX_MSG(CWorldEditorApp)
-	afx_msg void OnAppAbout();
+  //{{AFX_MSG(CWorldEditorApp)
+  afx_msg void OnAppAbout();
   afx_msg void OnQtAbout();
-	afx_msg void OnFilePreferences();
-	afx_msg void OnFileOpen();
-	afx_msg void OnImport3DObject();
-	afx_msg void OnDecadicGrid();
-	afx_msg void OnUpdateDecadicGrid(CCmdUI* pCmdUI);
-	afx_msg void OnConvertWorlds();
-	afx_msg void OnSetAsDefault();
-	afx_msg void OnHelpShowTipOfTheDay();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+  afx_msg void OnFilePreferences();
+  afx_msg void OnFileOpen();
+  afx_msg void OnImport3DObject();
+  afx_msg void OnDecadicGrid();
+  afx_msg void OnUpdateDecadicGrid(CCmdUI* pCmdUI);
+  afx_msg void OnConvertWorlds();
+  afx_msg void OnSetAsDefault();
+  afx_msg void OnHelpShowTipOfTheDay();
+  //}}AFX_MSG
+  DECLARE_MESSAGE_MAP()
 };
 
 /////////////////////////////////////////////////////////////////////////////

@@ -51,35 +51,35 @@ CBrowseWindow::~CBrowseWindow()
 }
 
 BEGIN_MESSAGE_MAP(CBrowseWindow, CWnd)
-	//{{AFX_MSG_MAP(CBrowseWindow)
-	ON_WM_VSCROLL()
-	ON_WM_PAINT()
-	ON_WM_DROPFILES()
-	ON_WM_SIZE()
-	ON_COMMAND(ID_INSERT_ITEMS, OnInsertItems)
-	ON_WM_LBUTTONDOWN()
-	ON_COMMAND(ID_DELETE_ITEMS, OnDeleteItems)
-	ON_COMMAND(ID_BIG_ICONS, OnBigIcons)
-	ON_COMMAND(ID_MEDIUM_ICONS, OnMediumIcons)
-	ON_COMMAND(ID_SMALL_ICONS, OnSmallIcons)
-	ON_COMMAND(ID_SHOW_DESCRIPTION, OnShowDescription)
-	ON_COMMAND(ID_SHOW_FILENAME, OnShowFilename)
-	ON_WM_LBUTTONDBLCLK()
-	ON_COMMAND(ID_RECREATE_TEXTURE, OnRecreateTexture)
-	ON_COMMAND(ID_CREATE_AND_ADD_TEXTURE, OnCreateAndAddTexture)
-	ON_COMMAND(ID_SELECT_BY_TEXTURE_IN_SELECTED_SECTORS, OnSelectByTextureInSelectedSectors)
-	ON_COMMAND(ID_SELECT_BY_TEXTURE_IN_WORLD, OnSelectByTextureInWorld)
-	ON_COMMAND(ID_SELECT_FOR_DROP_MARKER, OnSelectForDropMarker)
-	ON_COMMAND(ID_SET_AS_CURRENT_TEXTURE, OnSetAsCurrentTexture)
-	ON_COMMAND(ID_CONVERT_CLASS, OnConvertClass)
-	ON_WM_MOUSEMOVE()
-	ON_COMMAND(ID_MICRO_ICONS, OnMicroIcons)
-	ON_COMMAND(ID_SELECT_EXCEPT_TEXTURES, OnSelectExceptTextures)
-	ON_COMMAND(ID_ADD_TEXTURES_FROM_WORLD, OnAddTexturesFromWorld)
-	ON_COMMAND(ID_SHOW_TREE_SHORTCUTS, OnShowTreeShortcuts)
-	ON_COMMAND(ID_EXPORT_TEXTURE, OnExportTexture)
-	ON_COMMAND(ID_BROWSER_CONTEXT_HELP, OnBrowserContextHelp)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CBrowseWindow)
+  ON_WM_VSCROLL()
+  ON_WM_PAINT()
+  ON_WM_DROPFILES()
+  ON_WM_SIZE()
+  ON_COMMAND(ID_INSERT_ITEMS, OnInsertItems)
+  ON_WM_LBUTTONDOWN()
+  ON_COMMAND(ID_DELETE_ITEMS, OnDeleteItems)
+  ON_COMMAND(ID_BIG_ICONS, OnBigIcons)
+  ON_COMMAND(ID_MEDIUM_ICONS, OnMediumIcons)
+  ON_COMMAND(ID_SMALL_ICONS, OnSmallIcons)
+  ON_COMMAND(ID_SHOW_DESCRIPTION, OnShowDescription)
+  ON_COMMAND(ID_SHOW_FILENAME, OnShowFilename)
+  ON_WM_LBUTTONDBLCLK()
+  ON_COMMAND(ID_RECREATE_TEXTURE, OnRecreateTexture)
+  ON_COMMAND(ID_CREATE_AND_ADD_TEXTURE, OnCreateAndAddTexture)
+  ON_COMMAND(ID_SELECT_BY_TEXTURE_IN_SELECTED_SECTORS, OnSelectByTextureInSelectedSectors)
+  ON_COMMAND(ID_SELECT_BY_TEXTURE_IN_WORLD, OnSelectByTextureInWorld)
+  ON_COMMAND(ID_SELECT_FOR_DROP_MARKER, OnSelectForDropMarker)
+  ON_COMMAND(ID_SET_AS_CURRENT_TEXTURE, OnSetAsCurrentTexture)
+  ON_COMMAND(ID_CONVERT_CLASS, OnConvertClass)
+  ON_WM_MOUSEMOVE()
+  ON_COMMAND(ID_MICRO_ICONS, OnMicroIcons)
+  ON_COMMAND(ID_SELECT_EXCEPT_TEXTURES, OnSelectExceptTextures)
+  ON_COMMAND(ID_ADD_TEXTURES_FROM_WORLD, OnAddTexturesFromWorld)
+  ON_COMMAND(ID_SHOW_TREE_SHORTCUTS, OnShowTreeShortcuts)
+  ON_COMMAND(ID_EXPORT_TEXTURE, OnExportTexture)
+  ON_COMMAND(ID_BROWSER_CONTEXT_HELP, OnBrowserContextHelp)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 
@@ -111,7 +111,7 @@ void CBrowseWindow::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
   GetScrollRange( SB_VERT, &intMin, &intMax);
   INDEX iMin = intMin;
   INDEX iMax = intMax;
-	switch( nSBCode )
+  switch( nSBCode )
   {
     case SB_THUMBTRACK:
     case SB_THUMBPOSITION:
@@ -432,7 +432,7 @@ void CBrowseWindow::OnContextMenu( CPoint point)
     pPopup->EnableMenuItem(ID_BROWSER_CONTEXT_HELP, iClassHelp);
 
     pPopup->TrackPopupMenu(TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_LEFTALIGN,
-								 point.x, point.y, this);
+                 point.x, point.y, this);
   }
 }
 
@@ -478,27 +478,27 @@ HGLOBAL CreateHDrop( const CTFileName &fnToDrag, BOOL bAddAppPath/*=TRUE*/)
   }
 
   HGLOBAL hGlobal;
-	// allocate space for DROPFILE structure plus the number of file and one extra byte for final NULL terminator
-	hGlobal = GlobalAlloc(GHND|GMEM_SHARE,(DWORD) (sizeof(DROPFILES)+strlen(fnFullToDrag)+2));
-	if(hGlobal == NULL)
-			return hGlobal;
+  // allocate space for DROPFILE structure plus the number of file and one extra byte for final NULL terminator
+  hGlobal = GlobalAlloc(GHND|GMEM_SHARE,(DWORD) (sizeof(DROPFILES)+strlen(fnFullToDrag)+2));
+  if(hGlobal == NULL)
+      return hGlobal;
 
-	LPDROPFILES pDropFiles;
+  LPDROPFILES pDropFiles;
   char *pchDropFileName;
-	pDropFiles = (LPDROPFILES)GlobalLock(hGlobal);
+  pDropFiles = (LPDROPFILES)GlobalLock(hGlobal);
   pchDropFileName = ((char *)pDropFiles)+sizeof(DROPFILES);
   // set the offset where the starting point of the file start
   pDropFiles->pFiles = sizeof(DROPFILES);
-	// filename does not contain wide characters
+  // filename does not contain wide characters
   pDropFiles->fWide = FALSE;
   // we want drop point's coordinates in client area
   pDropFiles->fNC = FALSE;
 
-	strcpy(pchDropFileName, (const char *)fnFullToDrag);
-	// final null terminator as per CF_HDROP Format specs.
-	pchDropFileName[strlen(pchDropFileName)+1]=0;
-	GlobalUnlock(hGlobal);
- 	return hGlobal;
+  strcpy(pchDropFileName, (const char *)fnFullToDrag);
+  // final null terminator as per CF_HDROP Format specs.
+  pchDropFileName[strlen(pchDropFileName)+1]=0;
+  GlobalUnlock(hGlobal);
+   return hGlobal;
 }
 
 
@@ -585,9 +585,9 @@ void CBrowseWindow::OnLButtonDown(UINT nFlags, CPoint point)
 
 void CBrowseWindow::OnDropFiles(HDROP hDropInfo)
 {
-	CMainFrame* pMainFrame = STATIC_DOWNCAST(CMainFrame, AfxGetMainWnd());
+  CMainFrame* pMainFrame = STATIC_DOWNCAST(CMainFrame, AfxGetMainWnd());
   INDEX iNoOfFiles = DragQueryFile( hDropInfo, 0xFFFFFFFF, NULL, 0);
-	char chrFile[ 256];
+  char chrFile[ 256];
 
   // get dropped coordinates
   CPoint point;
@@ -920,7 +920,7 @@ void CBrowseWindow::Refresh(void)
 void CBrowseWindow::OpenDirectory( CVirtualTreeNode *pVTNDir)
 {
   CWorldEditorApp *pApp = (CWorldEditorApp *)AfxGetApp();
-	CMainFrame* pMainFrame = STATIC_DOWNCAST(CMainFrame, AfxGetMainWnd());
+  CMainFrame* pMainFrame = STATIC_DOWNCAST(CMainFrame, AfxGetMainWnd());
 
   if(m_bDirectoryOpen || pVTNDir==NULL)
   {
@@ -1040,12 +1040,12 @@ void CBrowseWindow::CloseDirectory( CVirtualTreeNode *pVTN)
 
 void CBrowseWindow::OnSize(UINT nType, int cx, int cy)
 {
-	CWnd::OnSize(nType, cx, cy);
+  CWnd::OnSize(nType, cx, cy);
 
   // if window canvas is valid
   if( m_pViewPort)
   {
-		// resize it
+    // resize it
     m_pViewPort->Resize();
     Refresh();
   }
@@ -1089,14 +1089,14 @@ void CBrowseWindow::OnInsertItems()
 
 void CBrowseWindow::OnDeleteItems()
 {
-	DeleteSelectedItems();
+  DeleteSelectedItems();
 }
 
 void CBrowseWindow::OnBigIcons()
 {
   CVirtualTreeNode *pVTNDir = m_pBrowser->GetSelectedDirectory();
   ASSERT( pVTNDir != NULL);
-	pVTNDir->vtn_bmBrowsingMode = BM_ICONS_LARGE;
+  pVTNDir->vtn_bmBrowsingMode = BM_ICONS_LARGE;
   Refresh();
 }
 
@@ -1104,7 +1104,7 @@ void CBrowseWindow::OnMediumIcons()
 {
   CVirtualTreeNode *pVTNDir = m_pBrowser->GetSelectedDirectory();
   ASSERT( pVTNDir != NULL);
-	pVTNDir->vtn_bmBrowsingMode = BM_ICONS_MEDIUM;
+  pVTNDir->vtn_bmBrowsingMode = BM_ICONS_MEDIUM;
   Refresh();
 }
 
@@ -1112,7 +1112,7 @@ void CBrowseWindow::OnMicroIcons()
 {
   CVirtualTreeNode *pVTNDir = m_pBrowser->GetSelectedDirectory();
   ASSERT( pVTNDir != NULL);
-	pVTNDir->vtn_bmBrowsingMode = BM_ICONS_MICRO;
+  pVTNDir->vtn_bmBrowsingMode = BM_ICONS_MICRO;
   Refresh();
 }
 
@@ -1120,7 +1120,7 @@ void CBrowseWindow::OnSmallIcons()
 {
   CVirtualTreeNode *pVTNDir = m_pBrowser->GetSelectedDirectory();
   ASSERT( pVTNDir != NULL);
-	pVTNDir->vtn_bmBrowsingMode = BM_ICONS_SMALL;
+  pVTNDir->vtn_bmBrowsingMode = BM_ICONS_SMALL;
   Refresh();
 }
 
@@ -1128,7 +1128,7 @@ void CBrowseWindow::OnShowDescription()
 {
   CVirtualTreeNode *pVTNDir = m_pBrowser->GetSelectedDirectory();
   ASSERT( pVTNDir != NULL);
-	pVTNDir->vtn_bmBrowsingMode = BM_DESCRIPTION;
+  pVTNDir->vtn_bmBrowsingMode = BM_DESCRIPTION;
   Refresh();
 }
 
@@ -1136,13 +1136,13 @@ void CBrowseWindow::OnShowFilename()
 {
   CVirtualTreeNode *pVTNDir = m_pBrowser->GetSelectedDirectory();
   ASSERT( pVTNDir != NULL);
-	pVTNDir->vtn_bmBrowsingMode = BM_FILENAME;
+  pVTNDir->vtn_bmBrowsingMode = BM_FILENAME;
   Refresh();
 }
 
 void CBrowseWindow::OnLButtonDblClk(UINT nFlags, CPoint point)
 {
-	CMainFrame* pMainFrame = STATIC_DOWNCAST(CMainFrame, AfxGetMainWnd());
+  CMainFrame* pMainFrame = STATIC_DOWNCAST(CMainFrame, AfxGetMainWnd());
   // get hitted item's index
   FLOAT fDummyX, fDummyY;
   INDEX iHittedItem = HitItem( point, fDummyX, fDummyY);
@@ -1191,7 +1191,7 @@ void CBrowseWindow::OnLButtonDblClk(UINT nFlags, CPoint point)
   // if it is world (template)
   else if( fnItem.FileExt() == ".wld")
   {
-  	// open document with item's file name
+    // open document with item's file name
     theApp.m_pDocTemplate->OpenDocumentFile( CString(_fnmApplicationPath + fnItem));
   }
 }
@@ -1346,7 +1346,7 @@ void CBrowseWindow::OnMouseMove(UINT nFlags, CPoint point)
 {
   theApp.m_cttToolTips.MouseMoveNotify( m_hWnd, 500, &::GetToolTipText, this);
 
-	CWnd::OnMouseMove(nFlags, point);
+  CWnd::OnMouseMove(nFlags, point);
 }
 
 void CBrowseWindow::OnSelectByTextureInWorld()
@@ -1461,7 +1461,7 @@ void CBrowseWindow::OnAddTexturesFromWorld()
 
 void CBrowseWindow::OnShowTreeShortcuts() 
 {
-	CMainFrame* pMainFrame = STATIC_DOWNCAST(CMainFrame, AfxGetMainWnd());
+  CMainFrame* pMainFrame = STATIC_DOWNCAST(CMainFrame, AfxGetMainWnd());
   pMainFrame->OnShowTreeShortcuts();
 }
 

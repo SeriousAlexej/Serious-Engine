@@ -115,21 +115,21 @@ void InitializeGame(void)
 // CWorldEditorApp
 
 BEGIN_MESSAGE_MAP(CWorldEditorApp, CWinApp)
-	//{{AFX_MSG_MAP(CWorldEditorApp)
-	ON_COMMAND(ID_APP_ABOUT, OnAppAbout)
+  //{{AFX_MSG_MAP(CWorldEditorApp)
+  ON_COMMAND(ID_APP_ABOUT, OnAppAbout)
   ON_COMMAND(ID_QT_ABOUTBOX, OnQtAbout)
-	ON_COMMAND(ID_FILE_PREFERENCES, OnFilePreferences)
-	ON_COMMAND(ID_FILE_OPEN, OnFileOpen)
-	ON_COMMAND(ID_IMPORT_3D_OBJECT, OnImport3DObject)
-	ON_COMMAND(ID_DECADIC_GRID, OnDecadicGrid)
-	ON_UPDATE_COMMAND_UI(ID_DECADIC_GRID, OnUpdateDecadicGrid)
-	ON_COMMAND(ID_CONVERT_WORLDS, OnConvertWorlds)
-	ON_COMMAND(ID_SET_AS_DEFAULT, OnSetAsDefault)
-	ON_COMMAND(ID_HELP_SHOWTIPOFTHEDAY, OnHelpShowTipOfTheDay)
-	//}}AFX_MSG_MAP
-	// Standard file based document commands
-	ON_COMMAND(ID_FILE_NEW, OnFileNew)
-	ON_COMMAND(ID_FILE_OPEN, CWinApp::OnFileOpen)
+  ON_COMMAND(ID_FILE_PREFERENCES, OnFilePreferences)
+  ON_COMMAND(ID_FILE_OPEN, OnFileOpen)
+  ON_COMMAND(ID_IMPORT_3D_OBJECT, OnImport3DObject)
+  ON_COMMAND(ID_DECADIC_GRID, OnDecadicGrid)
+  ON_UPDATE_COMMAND_UI(ID_DECADIC_GRID, OnUpdateDecadicGrid)
+  ON_COMMAND(ID_CONVERT_WORLDS, OnConvertWorlds)
+  ON_COMMAND(ID_SET_AS_DEFAULT, OnSetAsDefault)
+  ON_COMMAND(ID_HELP_SHOWTIPOFTHEDAY, OnHelpShowTipOfTheDay)
+  //}}AFX_MSG_MAP
+  // Standard file based document commands
+  ON_COMMAND(ID_FILE_NEW, OnFileNew)
+  ON_COMMAND(ID_FILE_OPEN, CWinApp::OnFileOpen)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -589,26 +589,26 @@ BOOL CWorldEditorApp::SubInitInstance()
   // required for visual styles
   InitCommonControls();
 
- 	// Standard initialization
-	// If you are not using these features and wish to reduce the size
-	//  of your final executable, you should remove from the following
-	//  the specific initialization routines you do not need.
+   // Standard initialization
+  // If you are not using these features and wish to reduce the size
+  //  of your final executable, you should remove from the following
+  //  the specific initialization routines you do not need.
 
-	// Initialize OLE 2.0 libraries
-	if (!AfxOleInit())
-	{
+  // Initialize OLE 2.0 libraries
+  if (!AfxOleInit())
+  {
     AfxMessageBox(L"ERROR: Failed to initialize OLE 2.0 libraries");
-		return FALSE;
-	}
-	AfxEnableControlContainer();
+    return FALSE;
+  }
+  AfxEnableControlContainer();
 
   // check for custom parameters
   MyParseCommandLine();
 
 #ifdef _AFXDLL
-	Enable3dControls();			// Call this when using MFC in a shared DLL
+  Enable3dControls();      // Call this when using MFC in a shared DLL
 #else
-	Enable3dControlsStatic();	// Call this when linking to MFC statically
+  Enable3dControlsStatic();  // Call this when linking to MFC statically
 #endif
 
   // initialize entire engine
@@ -635,68 +635,68 @@ BOOL CWorldEditorApp::SubInitInstance()
     system(static_cast<const char*>(strCommand));
   }
 
-	LoadStdProfileSettings(8);  // Load standard INI file options (including MRU)
+  LoadStdProfileSettings(8);  // Load standard INI file options (including MRU)
 
-	// Register the application's document templates.  Document templates
-	//  serve as the connection between documents, frame windows and views.
+  // Register the application's document templates.  Document templates
+  //  serve as the connection between documents, frame windows and views.
 
-	m_pDocTemplate = new CMultiDocTemplate(
-		IDR_WEDTYPE,
-		RUNTIME_CLASS(CWorldEditorDoc),
-		RUNTIME_CLASS(CChildFrame), // custom MDI child frame
-		RUNTIME_CLASS(CWorldEditorView));
-	AddDocTemplate(m_pDocTemplate);
+  m_pDocTemplate = new CMultiDocTemplate(
+    IDR_WEDTYPE,
+    RUNTIME_CLASS(CWorldEditorDoc),
+    RUNTIME_CLASS(CChildFrame), // custom MDI child frame
+    RUNTIME_CLASS(CWorldEditorView));
+  AddDocTemplate(m_pDocTemplate);
 
   //  create application windows font
-	LOGFONT logFont;
-	memset(&logFont, 0, sizeof(logFont));
-	if( !::GetSystemMetrics(SM_DBCSENABLED)){
-		logFont.lfHeight = -11;
-		logFont.lfWeight = FW_REGULAR;
-		logFont.lfPitchAndFamily = FF_ROMAN;
+  LOGFONT logFont;
+  memset(&logFont, 0, sizeof(logFont));
+  if( !::GetSystemMetrics(SM_DBCSENABLED)){
+    logFont.lfHeight = -11;
+    logFont.lfWeight = FW_REGULAR;
+    logFont.lfPitchAndFamily = FF_ROMAN;
     logFont.lfOrientation = 10;
     logFont.lfQuality = PROOF_QUALITY;
     logFont.lfItalic = TRUE;
-		lstrcpy(logFont.lfFaceName, L"Arial");
+    lstrcpy(logFont.lfFaceName, L"Arial");
     if( !m_Font.CreateFontIndirect(&logFont))
-			TRACE0("Could Not create font for combo\n");
-	}	else {
+      TRACE0("Could Not create font for combo\n");
+  }  else {
     m_Font.Attach(::GetStockObject(SYSTEM_FONT));
-	}
+  }
 
-	memset(&logFont, 0, sizeof(logFont));
-	if( !::GetSystemMetrics(SM_DBCSENABLED)){
-		logFont.lfHeight = -11;
-		logFont.lfWeight = FW_REGULAR;
-		logFont.lfPitchAndFamily = FF_MODERN;
+  memset(&logFont, 0, sizeof(logFont));
+  if( !::GetSystemMetrics(SM_DBCSENABLED)){
+    logFont.lfHeight = -11;
+    logFont.lfWeight = FW_REGULAR;
+    logFont.lfPitchAndFamily = FF_MODERN;
     logFont.lfOrientation = 10;
     logFont.lfQuality = PROOF_QUALITY;
     logFont.lfItalic = FALSE;
-		lstrcpy(logFont.lfFaceName, L"Courier New");
+    lstrcpy(logFont.lfFaceName, L"Courier New");
     if( !m_FixedFont.CreateFontIndirect(&logFont))
-			TRACE0("Could Not create fixed font\n");
-	}	else {
+      TRACE0("Could Not create fixed font\n");
+  }  else {
     m_FixedFont.Attach(::GetStockObject(SYSTEM_FONT));
-	}
+  }
 
-	// create main MDI Frame window
-	CMainFrame* pMainFrame = new CMainFrame;
-	if( !pMainFrame->LoadFrame(IDR_MAINFRAME)) return FALSE;
-	m_pMainWnd = pMainFrame;
+  // create main MDI Frame window
+  CMainFrame* pMainFrame = new CMainFrame;
+  if( !pMainFrame->LoadFrame(IDR_MAINFRAME)) return FALSE;
+  m_pMainWnd = pMainFrame;
 
   // set main window for engine
   SE_UpdateWindowHandle( m_pMainWnd->m_hWnd);
 
   // Enable drag/drop open
-	m_pMainWnd->DragAcceptFiles();
+  m_pMainWnd->DragAcceptFiles();
 
-	// Enable DDE Execute open
-	EnableShellOpen();
-	RegisterShellFileTypes(TRUE);
+  // Enable DDE Execute open
+  EnableShellOpen();
+  RegisterShellFileTypes(TRUE);
 
-	// Parse command line for standard shell commands, DDE, file open
-	CCommandLineInfo cmdInfo;
-	ParseCommandLine(cmdInfo);
+  // Parse command line for standard shell commands, DDE, file open
+  CCommandLineInfo cmdInfo;
+  ParseCommandLine(cmdInfo);
 
   // add console variables
   extern INDEX wed_bSaveTestGameFirstTime;
@@ -786,19 +786,19 @@ BOOL CWorldEditorApp::SubInitInstance()
   try
   {
     // load error texture
-  	DECLARE_CTFILENAME( fnErrorTexture, "Textures\\Editor\\Error.tex");
+    DECLARE_CTFILENAME( fnErrorTexture, "Textures\\Editor\\Error.tex");
     m_ptdError = _pTextureStock_Obtain_t( fnErrorTexture);
     // load error texture
-  	DECLARE_CTFILENAME( fnViewIcons, "Models\\Editor\\ViewIcons.tex");
+    DECLARE_CTFILENAME( fnViewIcons, "Models\\Editor\\ViewIcons.tex");
     m_pViewIconsTD = _pTextureStock_Obtain_t( fnViewIcons);
     // load icon tray texture
-  	DECLARE_CTFILENAME( fnIconTrayTexture, "Textures\\Editor\\IconsTray.tex");
+    DECLARE_CTFILENAME( fnIconTrayTexture, "Textures\\Editor\\IconsTray.tex");
     m_ptdIconsTray = _pTextureStock_Obtain_t( fnIconTrayTexture);
   }
   catch( char *err_str)
   {
     AfxMessageBox( CString(err_str));
-		return FALSE;
+    return FALSE;
   }
   m_ptoError = std::make_unique<CTextureObject>();
   m_ptoError->SetData( *m_ptdError);
@@ -840,7 +840,7 @@ BOOL CWorldEditorApp::SubInitInstance()
     m_ring_model_selected->mo_toTexture.SetData(*m_gizmo_texture);
 
     // load entity selection marker model
-  	DECLARE_CTFILENAME( fnEntityMarker, "Models\\Editor\\EntityMarker.mdl");
+    DECLARE_CTFILENAME( fnEntityMarker, "Models\\Editor\\EntityMarker.mdl");
     m_pEntityMarkerModelData = _pModelStock_Obtain_t( fnEntityMarker);
     m_pEntityMarkerModelObject = std::make_unique<CModelObject>();
     m_pEntityMarkerModelObject->SetData(m_pEntityMarkerModelData);
@@ -851,7 +851,7 @@ BOOL CWorldEditorApp::SubInitInstance()
     m_pEntityMarkerModelObject->mo_toTexture.SetData( *m_ptdEntityMarkerTexture);
 
     // load portal selection marker model
-  	DECLARE_CTFILENAME( fnPortalMarker, "Models\\Editor\\PortalMarker.mdl");
+    DECLARE_CTFILENAME( fnPortalMarker, "Models\\Editor\\PortalMarker.mdl");
     m_pPortalMarkerModelData = _pModelStock_Obtain_t( fnPortalMarker);
     m_pPortalMarkerModelObject = std::make_unique<CModelObject>();
     m_pPortalMarkerModelObject->SetData(m_pPortalMarkerModelData);
@@ -862,7 +862,7 @@ BOOL CWorldEditorApp::SubInitInstance()
     m_pPortalMarkerModelObject->mo_toTexture.SetData( *m_ptdPortalMarkerTexture);
 
     // load empty brush model
-  	DECLARE_CTFILENAME( fnEmptyBrush, "Models\\Editor\\EmptyBrush.mdl");
+    DECLARE_CTFILENAME( fnEmptyBrush, "Models\\Editor\\EmptyBrush.mdl");
     m_pEmptyBrushModelData = _pModelStock_Obtain_t( fnEmptyBrush);
     m_pEmptyBrushModelObject = std::make_unique<CModelObject>();
     m_pEmptyBrushModelObject->SetData(m_pEmptyBrushModelData);
@@ -873,7 +873,7 @@ BOOL CWorldEditorApp::SubInitInstance()
     m_pEmptyBrushModelObject->mo_toTexture.SetData( *m_ptdEmptyBrushTexture);
 
     // load range sphere
-  	DECLARE_CTFILENAME( fnRangeSphere, "Models\\Editor\\RangeSphere.mdl");
+    DECLARE_CTFILENAME( fnRangeSphere, "Models\\Editor\\RangeSphere.mdl");
     m_pRangeSphereModelData = _pModelStock_Obtain_t( fnRangeSphere);
     m_pRangeSphereModelObject = std::make_unique<CModelObject>();
     m_pRangeSphereModelObject->SetData(m_pRangeSphereModelData);
@@ -884,7 +884,7 @@ BOOL CWorldEditorApp::SubInitInstance()
     m_pRangeSphereModelObject->mo_toTexture.SetData( *m_ptdRangeSphereTexture);
 
     // load angle 3d model
-  	DECLARE_CTFILENAME( fnAngle3D, "Models\\Editor\\AngleVector.mdl");
+    DECLARE_CTFILENAME( fnAngle3D, "Models\\Editor\\AngleVector.mdl");
     m_pAngle3DModelData = _pModelStock_Obtain_t( fnAngle3D);
     m_pAngle3DModelObject = std::make_unique<CModelObject>();
     m_pAngle3DModelObject->SetData(m_pAngle3DModelData);
@@ -895,7 +895,7 @@ BOOL CWorldEditorApp::SubInitInstance()
     m_pAngle3DModelObject->mo_toTexture.SetData( *m_ptdAngle3DTexture);
 
     // load bounding box
-  	DECLARE_CTFILENAME( fnBoundingBox, "Models\\Editor\\BoundingBox.mdl");
+    DECLARE_CTFILENAME( fnBoundingBox, "Models\\Editor\\BoundingBox.mdl");
     m_pBoundingBoxModelData = _pModelStock_Obtain_t( fnBoundingBox);
     m_pBoundingBoxModelObject = std::make_unique<CModelObject>();
     m_pBoundingBoxModelObject->SetData(m_pBoundingBoxModelData);
@@ -921,12 +921,12 @@ BOOL CWorldEditorApp::SubInitInstance()
   GenerateNonExistingTerrainEditBrushes();
 
   // Dispatch commands specified on the command line
-	if (!ProcessShellCommand(cmdInfo))
-		return FALSE;
+  if (!ProcessShellCommand(cmdInfo))
+    return FALSE;
 
-	// The main window has been initialized, so show and update it.
-	pMainFrame->ShowWindow(SW_SHOWMAXIMIZED);
-	pMainFrame->UpdateWindow();
+  // The main window has been initialized, so show and update it.
+  pMainFrame->ShowWindow(SW_SHOWMAXIMIZED);
+  pMainFrame->UpdateWindow();
 
   // show tip of the day
   if (m_bShowTipOfTheDay) {
@@ -976,9 +976,9 @@ void CWorldEditorApp::OnQtAbout()
 
 BOOL CWorldEditorApp::SaveAllModified()
 {
-	CMainFrame* pMainFrame = (CMainFrame *) m_pMainWnd;
+  CMainFrame* pMainFrame = (CMainFrame *) m_pMainWnd;
 
-	if( (pMainFrame != NULL) && (pMainFrame->m_Browser.m_bVirtualTreeChanged) )
+  if( (pMainFrame != NULL) && (pMainFrame->m_Browser.m_bVirtualTreeChanged) )
   {
     switch(::MessageBoxA( pMainFrame->m_hWnd,
       "Virtual tree changed but not saved. Do You want to save it?", "Warning !",
@@ -1851,7 +1851,7 @@ void CWorldEditorApp::SaveRenderingPreferences(void)
   try
   {
     // open binary file to save rendering preferences
-  	CTFileName fnRenderingPrefs = CTString("Data\\SEDEXRenderingPrefs.bin");
+    CTFileName fnRenderingPrefs = CTString("Data\\SEDEXRenderingPrefs.bin");
     strmFile.Create_t( fnRenderingPrefs);
     // write file ID
     strmFile.WriteID_t( CChunkID( "RPRF"));  // child configurations
@@ -1982,7 +1982,7 @@ void CWorldEditorApp::SaveChildConfigurations(void)
   CTFileStream strmFile;
   try
   {
-  	CTFileName fnChildConfigurations = CTString("Data\\SEDEXChildConfigurations.bin");
+    CTFileName fnChildConfigurations = CTString("Data\\SEDEXChildConfigurations.bin");
     // create binary file to receive child configurations
     strmFile.Create_t( fnChildConfigurations);
     // write file ID
@@ -2646,31 +2646,31 @@ void CWorldEditorApp::OnImport3DObject()
   }
 
   // finish creating document
- 	if (pDoc == NULL)
-	{
-		TRACE0("CDocTemplate::CreateNewDocument returned NULL.\n");
-		AfxMessageBox(AFX_IDP_FAILED_TO_CREATE_DOC);
-		return;
-	}
-	ASSERT_VALID(pDoc);
+   if (pDoc == NULL)
+  {
+    TRACE0("CDocTemplate::CreateNewDocument returned NULL.\n");
+    AfxMessageBox(AFX_IDP_FAILED_TO_CREATE_DOC);
+    return;
+  }
+  ASSERT_VALID(pDoc);
 
   BOOL bAutoDelete = pDoc->m_bAutoDelete;
-	pDoc->m_bAutoDelete = FALSE;   // don't destroy if something goes wrong
-	CFrameWnd* pFrame = m_pDocTemplate->CreateNewFrame(pDoc, NULL);
-	pDoc->m_bAutoDelete = bAutoDelete;
-	if (pFrame == NULL)
-	{
-		AfxMessageBox(AFX_IDP_FAILED_TO_CREATE_DOC);
-		delete pDoc;       // explicit delete on error
-		return;
-	}
-	ASSERT_VALID(pFrame);
+  pDoc->m_bAutoDelete = FALSE;   // don't destroy if something goes wrong
+  CFrameWnd* pFrame = m_pDocTemplate->CreateNewFrame(pDoc, NULL);
+  pDoc->m_bAutoDelete = bAutoDelete;
+  if (pFrame == NULL)
+  {
+    AfxMessageBox(AFX_IDP_FAILED_TO_CREATE_DOC);
+    delete pDoc;       // explicit delete on error
+    return;
+  }
+  ASSERT_VALID(pFrame);
 
   pDoc->SetModifiedFlag();
   // set document name and don't add it into MRU
   //pDoc->SetPathName( _fnmApplicationPath+"Worlds\\"+"Untitled.wld", FALSE);
   //pDoc->SetTitle( fn3D.FileName() + ".wld");
-	m_pDocTemplate->InitialUpdateFrame(pFrame, pDoc, TRUE);
+  m_pDocTemplate->InitialUpdateFrame(pFrame, pDoc, TRUE);
   pDoc->SetModifiedFlag( TRUE);
 }
 
@@ -2831,7 +2831,7 @@ int CWorldEditorApp::Run()
     return 1;
   }
 
-	int iResult;
+  int iResult;
   CTStream::ExecuteWithStreamHandling([this, &iResult]
     {
       iResult = QMfcApp::run(this);
@@ -2840,7 +2840,7 @@ int CWorldEditorApp::Run()
   crUninstall();
 
   delete qApp;
-	return iResult;
+  return iResult;
 }
 
 BOOL CWorldEditorApp::PreTranslateMessage(MSG* pMsg)
@@ -3010,12 +3010,12 @@ void FindEmptyBrushes( void)
 
 void CWorldEditorApp::WinHelp(DWORD dwData, UINT nCmd) 
 {
-	// TODO: Add your specialized code here and/or call the base class
+  // TODO: Add your specialized code here and/or call the base class
 
   if (nCmd == HELP_CONTEXT) {
     DisplayHelp(CTFILENAME("Help\\SeriousEditorContext.hlk"), HH_HELP_CONTEXT, dwData);
   } else {
-  	CWinApp::WinHelp(dwData, nCmd);
+    CWinApp::WinHelp(dwData, nCmd);
   }
 }
 
