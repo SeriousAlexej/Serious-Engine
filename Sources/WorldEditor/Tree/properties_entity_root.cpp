@@ -64,7 +64,9 @@ QVariant EntityRootProperties::data(int column, int role) const
     if (m_entities.size() == 1)
     {
       CEntity entity(*it, false);
-      common_value = QString("%1 (ID %2)").arg(QString::fromLocal8Bit(static_cast<const char*>(entity.GetName()))).arg(QString::number(entity.en_ulID));
+      auto entity_name = QString::fromLocal8Bit(static_cast<const char*>(entity.GetName()));
+      entity_name.replace('\n', " ");
+      common_value = QString("%1 (ID %2)").arg(entity_name).arg(QString::number(entity.en_ulID));
     } else {
       CEntity entity(*it, false);
       common_value = QString::fromLocal8Bit(static_cast<const char*>(entity.GetName()));

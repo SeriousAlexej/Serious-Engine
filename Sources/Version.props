@@ -5,7 +5,7 @@
   <PropertyGroup />
   <ItemDefinitionGroup>
     <ClCompile>
-      <PreprocessorDefinitions>SERIOUS_ENGINE_ABOUT_TEXT="&lt;p&gt;Serious Engine $(appveyor_build_version)&lt;br/&gt;This software is licensed under the GNU GPL v2&lt;/p&gt;&lt;p&gt;More info and latest releases are available at&lt;br/&gt;&lt;a href=\"https://github.com/SeriousAlexej/Serious-Engine\"&gt;https://github.com/SeriousAlexej/Serious-Engine&lt;/a&gt;&lt;/p&gt;";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SERIOUS_ENGINE_ABOUT_TEXT="&lt;p&gt;Serious Editor EX / Serious Modeler EX $(appveyor_build_version)&lt;br/&gt;This software is licensed under the GNU GPL v2&lt;/p&gt;&lt;p&gt;More info and latest releases are available at&lt;br/&gt;&lt;a href=\"https://github.com/SeriousAlexej/Serious-Engine\"&gt;https://github.com/SeriousAlexej/Serious-Engine&lt;/a&gt;&lt;/p&gt;";%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup />

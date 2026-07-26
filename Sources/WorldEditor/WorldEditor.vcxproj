@@ -310,6 +310,7 @@ $(Qt_dir)\bin\windeployqt.exe $(SolutionDir)..\Bin\Debug\QtSolutions_MFCMigratio
     <ClCompile Include="Tree\property_item_delegate.cpp" />
     <ClCompile Include="Tree\property_weapons.cpp" />
     <ClCompile Include="Tree\spinbox_no_trailing.cpp" />
+    <ClCompile Include="Tree\string_widget.cpp" />
     <ClCompile Include="Tree\tree_icons.qrc.cpp" />
     <ClCompile Include="Tree\ui_property_factory.cpp" />
     <ClCompile Include="TriangularisationCombo.cpp" />
@@ -541,6 +542,11 @@ $(Qt_dir)\bin\windeployqt.exe $(SolutionDir)..\Bin\Debug\QtSolutions_MFCMigratio
     </CustomBuild>
     <ClInclude Include="Tree\properties_entity_root.h" />
     <ClInclude Include="Tree\spinbox_no_trailing.h" />
+    <CustomBuild Include="Tree\string_widget.h">
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Qt_dir)\bin\moc.exe %(FullPath) &gt; %(FullPath).moc</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(FullPath).moc;%(Outputs)</Outputs>
+    </CustomBuild>
+    <ClInclude Include="Tree\string_widget.ui.h" />
     <ClInclude Include="Tree\tree_icons.qrc.h" />
     <ClInclude Include="Tree\ui_property_factory.h" />
     <ClInclude Include="TriangularisationCombo.h" />
@@ -576,6 +582,12 @@ $(Qt_dir)\bin\windeployqt.exe $(SolutionDir)..\Bin\Debug\QtSolutions_MFCMigratio
       <Command Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">$(Qt_dir)\bin\rcc.exe %(FullPath) &gt; %(FullPath).h</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">%(FullPath).h;%(Outputs)</Outputs>
     </CustomBuild>
+    <CustomBuild Include="Tree\string_widget.ui">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Qt_dir)\bin\uic.exe %(FullPath) &gt; %(FullPath).h</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(FullPath).h;%(Outputs)</Outputs>
+    </CustomBuild>
+    <None Include="Tree\string_widget.h.moc" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\pick.ico" />
