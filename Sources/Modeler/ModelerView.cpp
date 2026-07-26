@@ -3929,8 +3929,8 @@ void CModelerView::OnExportForSkining()
   if( GetFileAttributesA( fnFullPath) != -1)
   {
     CTString strMsg;
-    strMsg.PrintF( "File \"%s\" already exist. Do you want to replace it?", fnFullPath);
-    if( ::MessageBoxA( this->m_hWnd, strMsg, "Warning !", MB_YESNO | MB_ICONWARNING | MB_DEFBUTTON1|
+    strMsg.PrintF( "File \"%s\" already exist. Do you want to replace it?", static_cast<const char*>(fnFullPath));
+    if( ::MessageBoxA( this->m_hWnd, static_cast<const char*>(strMsg), "Warning !", MB_YESNO | MB_ICONWARNING | MB_DEFBUTTON1|
                MB_SYSTEMMODAL | MB_TOPMOST) != IDYES)
     {
       return;

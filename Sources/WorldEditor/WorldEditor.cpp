@@ -619,7 +619,7 @@ BOOL CWorldEditorApp::SubInitInstance()
   if (_strModExt=="") {
     SetRegistryKey( CString("SeriousEngine"));
   } else {
-    SetRegistryKey( CString("SeriousEngine\\"+_strModExt));
+    SetRegistryKey( CString(static_cast<const char*>("SeriousEngine\\"+_strModExt)));
   }
 
   CPrintF("%s", static_cast<const char*>(cmd_strOutput));
@@ -630,14 +630,9 @@ BOOL CWorldEditorApp::SubInitInstance()
     // load registry from the ini file
     CTString strCommand;
     strCommand.PrintF("regedit.exe -s \"%s%s\"",
-      (const CTString&)_fnmApplicationPath,
-      (const CTString&)CTString("Data\\Defaults\\WorldEditor.reg"));
-    system(strCommand);
-/*    _spawnlp(_P_WAIT, "regedit.exe", 
-      "-s",
-      (const CTString&)(_fnmApplicationPath+CTString("Data\\Defaults\\WorldEditor.reg")),
-      NULL);
-    */
+      static_cast<const char*>((const CTString&)_fnmApplicationPath),
+      static_cast<const char*>((const CTString&)CTString("Data\\Defaults\\WorldEditor.reg")));
+    system(static_cast<const char*>(strCommand));
   }
 
 	LoadStdProfileSettings(8);  // Load standard INI file options (including MRU)
@@ -2502,7 +2497,7 @@ void CWorldEditorApp::OnConvertWorlds()
           bConvertError = TRUE;
         }
         // report error to file
-        strReport.PrintF( "File: %s\nHad error: %s\n", (CTString)fnmFile, strError);
+        strReport.PrintF( "File: %s\nHad error: %s\n", static_cast<const char*>((const CTString&)fnmFile), strError);
 
         fsErrorFile.PutString_t( strReport);
         fsErrorFile.PutLine_t( "-----------------------------------------------");

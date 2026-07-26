@@ -377,8 +377,8 @@ int CColoredButton::OnToolHitTest( CPoint point, TOOLINFO* pTI ) const
   {
     strColor.PrintF( "HSV=(%d,%d,%d),   RGB=(%d,%d,%d),    Alpha=%d", ubH, ubS, ubV, ubR, ubG, ubB, ubA);
   }
-  pTI->lpszText = (wchar_t *)malloc( sizeof(wchar_t) * (strlen(strColor)+1));
-  wcscpy( pTI->lpszText, CString(strColor));
+  pTI->lpszText = (wchar_t *)malloc( sizeof(wchar_t) * (strColor.Length()+1));
+  wcscpy( pTI->lpszText, CString(static_cast<const char*>(strColor)));
   RECT rectToolTip;
   rectToolTip.left = 50;
   rectToolTip.right = 60;

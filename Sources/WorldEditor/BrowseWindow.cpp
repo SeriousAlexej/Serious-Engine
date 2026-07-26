@@ -1485,7 +1485,7 @@ void ExportTexture( CTFileName fnTexture)
       }
       else
       {
-        fnFrame.PrintF("%s%03d.tga", (const char *)fnTexture.NoExt(), iFrame);
+        fnFrame.PrintF("%s%03d.tga", static_cast<const char*>(fnTexture.NoExt()), iFrame);
       }
       // if file exists, ask for substitution name
       if( FileExists( fnFrame) && iFrame==0 )

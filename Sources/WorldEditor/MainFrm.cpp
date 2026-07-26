@@ -398,7 +398,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
   {
     (void) strError;
     CTString strMessage;
-    strMessage.PrintF("Error reading virtual tree file:\n%s.\n\nSwitching to empty virtual tree.", m_fnLastVirtualTree);
+    strMessage.PrintF("Error reading virtual tree file:\n%s.\n\nSwitching to empty virtual tree.", static_cast<const char*>(m_fnLastVirtualTree));
     AfxMessageBox( CString(static_cast<const char*>(strMessage)));
     m_Browser.m_VirtualTree.MakeRoot();
     m_Browser.OnUpdateVirtualTreeControl();

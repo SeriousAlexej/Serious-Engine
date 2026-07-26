@@ -4584,9 +4584,9 @@ void CWorldEditorDoc::OnCheckEdit(void)
   ExpandFilePath(EFP_READ, m_woWorld.wo_fnmFileName, fnmFileName);
 
   CTString strCommand;
-  strCommand.PrintF("p4 edit %s", fnmFileName);
+  strCommand.PrintF("p4 edit %s", static_cast<const char*>(fnmFileName));
 
-  INDEX iResult = system(strCommand);
+  INDEX iResult = system(static_cast<const char*>(strCommand));
   if(iResult != 0) {
     WarningMessage( "Unable to perform open for edit!");
     return;
@@ -4595,7 +4595,7 @@ void CWorldEditorDoc::OnCheckEdit(void)
   ReloadWorld();
 
   CTString strMessage;
-  strMessage.PrintF("Opened for edit: %s", (const char *)m_woWorld.wo_fnmFileName);
+  strMessage.PrintF("Opened for edit: %s", static_cast<const char*>(m_woWorld.wo_fnmFileName));
   AfxMessageBox( CString(strMessage));
 }
 
@@ -4605,9 +4605,9 @@ void CWorldEditorDoc::OnCheckAdd()
   ExpandFilePath(EFP_READ, m_woWorld.wo_fnmFileName, fnmFileName);
 
   CTString strCommand;
-  strCommand.PrintF("p4 add %s", fnmFileName);
+  strCommand.PrintF("p4 add %s", static_cast<const char*>(fnmFileName));
 
-  INDEX iResult = system(strCommand);
+  INDEX iResult = system(static_cast<const char*>(strCommand));
   if(iResult != 0) {
     WarningMessage( "Unable to perform open for add!");
     return;
@@ -4616,7 +4616,7 @@ void CWorldEditorDoc::OnCheckAdd()
   ReloadWorld();
 
   CTString strMessage;
-  strMessage.PrintF( "Marked for add: %s", (const char *)m_woWorld.wo_fnmFileName);
+  strMessage.PrintF( "Marked for add: %s", static_cast<const char*>(m_woWorld.wo_fnmFileName));
   AfxMessageBox( CString(strMessage));
 }
 
@@ -4626,9 +4626,9 @@ void CWorldEditorDoc::OnCheckDelete()
   ExpandFilePath(EFP_READ, m_woWorld.wo_fnmFileName, fnmFileName);
 
   CTString strCommand;
-  strCommand.PrintF("p4 delete %s", fnmFileName);
+  strCommand.PrintF("p4 delete %s", static_cast<const char*>(fnmFileName));
 
-  INDEX iResult = system(strCommand);
+  INDEX iResult = system(static_cast<const char*>(strCommand));
   if(iResult != 0) {
     WarningMessage( "Unable to perform open for delete!");
     return;
@@ -4637,7 +4637,7 @@ void CWorldEditorDoc::OnCheckDelete()
   ReloadWorld();
 
   CTString strMessage;
-  strMessage.PrintF( "Marked for delete: %s", (const char *)m_woWorld.wo_fnmFileName);
+  strMessage.PrintF( "Marked for delete: %s", static_cast<const char*>(m_woWorld.wo_fnmFileName));
   AfxMessageBox( CString(strMessage));
 }
 
@@ -4797,7 +4797,7 @@ void CWorldEditorDoc::OnExportPlacements()
         strName="Dummy name";
       }
       strLine.PrintF("Class: \"%s\", Name: \"%s\", Position: (%f, %f, %f), Rotation: (%f, %f, %f)",
-        pdecDLLClass->dec_strName, strName, vPos(1), vPos(2), vPos(3), vRot(1), vRot(2), vRot(3));
+        pdecDLLClass->dec_strName, static_cast<const char*>(strName), vPos(1), vPos(2), vPos(3), vRot(1), vRot(2), vRot(3));
       strmFile.PutLine_t(strLine);
 
       // if this is model holder 3 class, we should also dump model path
@@ -4850,7 +4850,7 @@ void CWorldEditorDoc::OnExportPlacements()
           }
         }
         CTString strLine;
-        strLine.PrintF("Smc: \"%s\" Stretch: (%f, %f, %f)", CTString(fnmFile), vStretch(1), vStretch(2), vStretch(3));
+        strLine.PrintF("Smc: \"%s\" Stretch: (%f, %f, %f)", static_cast<const char*>((const CTString&)fnmFile), vStretch(1), vStretch(2), vStretch(3));
         strmFile.PutLine_t(strLine);
       }
     }
@@ -5654,7 +5654,7 @@ void CWorldEditorDoc::OnExportEntities()
       }
       strLine.PrintF("    \"PARENT\" = long(%d);", idParent);
       strmFile.PutLine_t(strLine);
-      strLine.PrintF("    \"NAME\" = string(\"%s\");", strName);
+      strLine.PrintF("    \"NAME\" = string(\"%s\");", static_cast<const char*>(strName));
       strmFile.PutLine_t(strLine);
       // position
       strLine.PrintF("    \"POS\" = float3(%f, %f, %f);", vPos(1), vPos(2), vPos(3));
@@ -5698,7 +5698,7 @@ void CWorldEditorDoc::OnExportEntities()
           // string
           if( pepProperty->ep_eptType == CEntityProperty::EPT_STRING) {
             CTString strString = FixQuotes(CTString(ENTITY_PROPERTY( pen, pepProperty->ep_slOffset, CTString_), false));
-            strLine.PrintF("    \"%s\" = string(\"%s\");", pepProperty->ep_strName, strString);
+            strLine.PrintF("    \"%s\" = string(\"%s\");", pepProperty->ep_strName, static_cast<const char*>(strString));
             strmFile.PutLine_t(strLine);
           }
           // range
@@ -5719,7 +5719,7 @@ void CWorldEditorDoc::OnExportEntities()
           if( pepProperty->ep_eptType == CEntityProperty::EPT_FILENAME || 
               pepProperty->ep_eptType == CEntityProperty::EPT_FILENAMENODEP) {
             CTFileName fnmFile = CorrectSlashes(CTFileName(ENTITY_PROPERTY( pen, pepProperty->ep_slOffset, CTFileName_), false));
-            strLine.PrintF("    \"%s\" = string(\"%s\");", pepProperty->ep_strName, fnmFile);
+            strLine.PrintF("    \"%s\" = string(\"%s\");", pepProperty->ep_strName, static_cast<const char*>(fnmFile));
             strmFile.PutLine_t(strLine);
           }
           // index value
@@ -5761,7 +5761,7 @@ void CWorldEditorDoc::OnExportEntities()
           // string trans
           if( pepProperty->ep_eptType == CEntityProperty::EPT_STRINGTRANS) {
             CTString strString = FixQuotes(CTString(ENTITY_PROPERTY( pen, pepProperty->ep_slOffset, CTString_), false));
-            strLine.PrintF("    \"%s\" = string(\"%s\");", pepProperty->ep_strName, strString);
+            strLine.PrintF("    \"%s\" = string(\"%s\");", pepProperty->ep_strName, static_cast<const char*>(strString));
             strmFile.PutLine_t(strLine);
           }          
           // flags
@@ -5795,7 +5795,7 @@ void CWorldEditorDoc::OnExportEntities()
         CTString strEntityID;
         strEntityID.PrintF("%d", en.en_ulID);
         CTFileName fnAmf;
-        fnAmf.PrintF("%s_%s.amf", exportBaseDir+fnWorld.FileName(), strEntityID);
+        fnAmf.PrintF("%s_%s.amf", static_cast<const char*>(exportBaseDir+fnWorld.FileName()), static_cast<const char*>(strEntityID));
         BOOL bFieldBrush = en.en_RenderType==CEntity::RT_FIELDBRUSH;
         ExportEntityToAMF_t(this, pen, fnAmf, bFieldBrush, bInvisibleBrush, bEmptyBrush, &texturesToExport);
       }

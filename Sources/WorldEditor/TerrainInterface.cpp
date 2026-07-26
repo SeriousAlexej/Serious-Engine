@@ -1381,7 +1381,7 @@ CTString GetNormalizedPercentageInfo(CTIButton *ptib, CPoint pt, CDrawPortPtr pd
     {
       FLOAT *pfNormalized=(FLOAT *)((UBYTE*)ptlLayer.get_handle() + (ULONG)ptib->tib_pfData1);
       FLOAT fValue=*pfNormalized;
-      strInfo.PrintF("%s: %d%%", ptib->tib_strToolTip, INDEX(floor(fValue*100.0f+0.5f)));
+      strInfo.PrintF("%s: %d%%", static_cast<const char*>(ptib->tib_strToolTip), INDEX(floor(fValue*100.0f+0.5f)));
       return strInfo;
     }
   }
