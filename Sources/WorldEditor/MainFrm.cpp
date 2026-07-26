@@ -93,10 +93,6 @@ BEGIN_MESSAGE_MAP(CMainFrame, CMDIFrameWnd)
   ON_UPDATE_COMMAND_UI(ID_VIEW_VIEW_TOOLS_BAR, OnUpdateViewViewToolsBar)
   ON_COMMAND(ID_VIEW_VIEW_TOOLS_BAR2, OnViewViewToolsBar2)
   ON_UPDATE_COMMAND_UI(ID_VIEW_VIEW_TOOLS_BAR2, OnUpdateViewViewToolsBar2)
-  ON_COMMAND(ID_GAME_AUDIO, OnGameAudio)
-  ON_COMMAND(ID_GAME_VIDEO, OnGameVideo)
-  ON_COMMAND(ID_GAME_PLAYER, OnGamePlayer)
-  ON_COMMAND(ID_GAME_SELECT_PLAYER, OnGameSelectPlayer)
   ON_COMMAND(ID_SHOW_TREE_SHORTCUTS, OnShowTreeShortcuts)
   ON_COMMAND(ID_MENU_SHORTCUT01, OnMenuShortcut01)
   ON_COMMAND(ID_MENU_SHORTCUT02, OnMenuShortcut02)
@@ -1443,27 +1439,6 @@ void CMainFrame::OnUpdateViewViewToolsBar2(CCmdUI* pCmdUI)
   BOOL bVisible = ((m_wndViewTools2.GetStyle() & WS_VISIBLE) != 0);
   pCmdUI->SetCheck(bVisible);
 }
-
-void CMainFrame::OnGameAudio()
-{
-  _pGameGUI->OnAudioQuality();
-}
-
-void CMainFrame::OnGameVideo()
-{
-  _pGameGUI->OnVideoQuality();
-}
-
-void CMainFrame::OnGamePlayer()
-{
-  _pGameGUI->OnPlayerSettings();
-}
-
-void CMainFrame::OnGameSelectPlayer()
-{
-  _pGameGUI->OnSelectPlayerAndControls();
-}
-
 
 void CMainFrame::OnShowTreeShortcuts()
 {

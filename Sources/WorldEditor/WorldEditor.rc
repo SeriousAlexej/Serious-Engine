@@ -384,11 +384,6 @@ BEGIN
     END
     POPUP "&Game"
     BEGIN
-        MENUITEM "&Player and controls for test game", ID_GAME_SELECT_PLAYER
-        MENUITEM "&Edit players and controls",  ID_GAME_PLAYER
-        MENUITEM "&Audio settings",             ID_GAME_AUDIO
-        MENUITEM "&Video settings",             ID_GAME_VIDEO
-        MENUITEM SEPARATOR
         MENUITEM "Console\tCtrl+L",             ID_CONSOLE
     END
     POPUP "&View"
@@ -451,11 +446,6 @@ BEGIN
     END
     POPUP "&Game"
     BEGIN
-        MENUITEM "&Current player and controls", ID_GAME_SELECT_PLAYER
-        MENUITEM "&Player settings",            ID_GAME_PLAYER
-        MENUITEM "&Audio settings",             ID_GAME_AUDIO
-        MENUITEM "&Video settings",             ID_GAME_VIDEO
-        MENUITEM SEPARATOR
         MENUITEM "Test Game\tT",                ID_TEST_GAME
         MENUITEM "Test Game (full screen)\tCtrl+T", ID_TEST_GAME_FULLSCREEN
         MENUITEM SEPARATOR
@@ -3240,7 +3230,6 @@ BEGIN
     ID_VIEW_SETTINGS_AND_UTILITY_BAR 
                             "Show or hide the settings and utility tool bar\nToggle settings and utility bar"
     ID_VIEW_VIEW_TOOLS_BAR  "Show or hide the view tools tool bar\nToggle view tools bar"
-    ID_GAME_PLAYER          "Edit players and controls\nEdit players and controls"
 END
 
 STRINGTABLE
@@ -3259,9 +3248,6 @@ END
 
 STRINGTABLE
 BEGIN
-    ID_GAME_AUDIO           "Adjust audio settings\nAudio settings"
-    ID_GAME_VIDEO           "Adjust video settings\nVideo settings"
-    ID_GAME_SELECT_PLAYER   "Select player and controls to play with\nSelect player and controls to play with"
     ID_SHADOWS_NONE         "Show no shadows\nNo shadows (toggle-H)"
     ID_SHADOWS_NO_FX        "Show shadows with no effects\nShadows but no effects (toggle-H)"
     ID_SHADOWS_WITH_EFFECTS "Show shadow and shadow effects\nShadows and effects (toggle-H)"

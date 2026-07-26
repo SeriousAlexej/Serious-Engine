@@ -901,10 +901,6 @@
 #define ID_CALL_TEXMAKER                32939
 #define ID_VIEW_SETTINGS_AND_UTILITY_BAR 32940
 #define ID_VIEW_VIEW_TOOLS_BAR          32941
-#define ID_GAME_PLAYER                  32943
-#define ID_GAME_AUDIO                   32944
-#define ID_GAME_VIDEO                   32945
-#define ID_GAME_SELECT_PLAYER           32946
 #define ID_SHADOWS_NONE                 32947
 #define ID_SHADOWS_NO_FX                32948
 #define ID_SHADOWS_WITH_EFFECTS         32949

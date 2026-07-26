@@ -166,10 +166,6 @@ public:
   afx_msg void OnUpdateViewViewToolsBar(CCmdUI* pCmdUI);
   afx_msg void OnViewViewToolsBar2();
   afx_msg void OnUpdateViewViewToolsBar2(CCmdUI* pCmdUI);
-  afx_msg void OnGameAudio();
-  afx_msg void OnGameVideo();
-  afx_msg void OnGamePlayer();
-  afx_msg void OnGameSelectPlayer();
   afx_msg void OnShowTreeShortcuts();
   afx_msg void OnMenuShortcut01();
   afx_msg void OnMenuShortcut02();
