@@ -224,13 +224,11 @@ BOOL CDlgPreferences::OnInitDialog()
     INDEX iAddedAs=m_ctrGfxApi.AddString(L"OpenGL");
     m_ctrGfxApi.SetItemData(iAddedAs, GAT_OGL);
   }
-#ifdef SE1_D3D
   if( _pGfx_HasAPI( GAT_D3D))
   {
     INDEX iAddedAs=m_ctrGfxApi.AddString(L"Direct3D");
     m_ctrGfxApi.SetItemData(iAddedAs, GAT_D3D);
   }
-#endif // SE1_D3D
 
   m_ctrlTerrainSelectionVisible.ResetContent();
   m_ctrlTerrainSelectionVisible.AddString(L"Texture");
