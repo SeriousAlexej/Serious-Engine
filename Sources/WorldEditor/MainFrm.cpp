@@ -20,6 +20,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "stdafx.h"
 #include "MainFrm.h"
 #include "EventHub.h"
+#include "EditConsole.h"
+#include "ConsoleSymbolsCombo.h"
+#include "DlgConsole.h"
 #include <SeriousEngineCppAPI/Templates/Stock_CTextureData.h>
 #include <process.h>
 #include <afxpriv.h>
@@ -1481,8 +1484,8 @@ ON_STORE_MENU_SHORTCUT( OnStoreMenuShortcut10, 9);
 
 void CMainFrame::OnConsole()
 {
-  // TODO - move console dialog to WED
-  //_pGameGUI_OnInvokeConsole();
+  CDlgConsole dlgConsole;
+  dlgConsole.DoModal();
 }
 
 

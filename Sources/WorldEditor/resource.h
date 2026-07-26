@@ -19,6 +19,7 @@
 #define ID_DELETE_ANIMATION             9
 #define CG_IDD_BROWSEDIALOGBAR          102
 #define IDD_PROPERTY_TREE               103
+#define IDD_CONSOLE                     104
 #define CG_IDD_PROPERTYCOMBO            105
 #define IDC_CUT_LINE                    105
 #define IDC_MIRROR                      107
@@ -759,6 +760,9 @@
 #define IDC_HAS_DIRECTIONAL_AMBIENT     11059
 #define IDC_DARK_CORNERS                11060
 #define IDC_APPLY_GRADIENT              11061
+#define IDC_CONSOLE_INPUT               11062
+#define IDC_CONSOLE_OUTPUT              11063
+#define IDC_CONSOLE_SYMBOLS             11064
 #define ID_SAVE_VIRTUAL_TREE            32771
 #define ID_LOAD_VIRTUAL_TREE            32772
 #define ID_DELETE_DIRECTORY             32773

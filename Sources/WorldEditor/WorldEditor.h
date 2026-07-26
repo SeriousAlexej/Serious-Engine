@@ -340,6 +340,7 @@ public:
   FLOAT m_fTerrainBrushPressureEnum;
   CTFileName m_fnDistributionNoiseTexture;
   CTFileName m_fnContinousNoiseTexture;
+  CTString gam_strConsoleInputBuffer;
 
   INDEX m_iFBMOctaves;
   FLOAT m_fFBMHighFrequencyStep;

@@ -215,6 +215,7 @@ $(Qt_dir)\bin\windeployqt.exe $(SolutionDir)..\Bin\Debug\QtSolutions_MFCMigratio
     <ClCompile Include="ChildFrm.cpp" />
     <ClCompile Include="ColoredButton.cpp" />
     <ClCompile Include="ColorPaletteWnd.cpp" />
+    <ClCompile Include="ConsoleSymbolsCombo.cpp" />
     <ClCompile Include="CSGDesitnationCombo.cpp" />
     <ClCompile Include="CtlTipOfTheDayText.cpp" />
     <ClCompile Include="CtrlAxisRadio.cpp" />
@@ -230,6 +231,7 @@ $(Qt_dir)\bin\windeployqt.exe $(SolutionDir)..\Bin\Debug\QtSolutions_MFCMigratio
     <ClCompile Include="DlgAutTexturize.cpp" />
     <ClCompile Include="DlgBrowseByClass.cpp" />
     <ClCompile Include="DlgComment.cpp" />
+    <ClCompile Include="DlgConsole.cpp" />
     <ClCompile Include="DlgCreateVirtualDirectory.cpp" />
     <ClCompile Include="DlgDisplaceMapSize.cpp" />
     <ClCompile Include="DlgEditFloat.cpp" />
@@ -262,6 +264,7 @@ $(Qt_dir)\bin\windeployqt.exe $(SolutionDir)..\Bin\Debug\QtSolutions_MFCMigratio
     <ClCompile Include="DlgTipOfTheDay.cpp" />
     <ClCompile Include="DlgTreeShortcuts.cpp" />
     <ClCompile Include="DlgWorldSettings.cpp" />
+    <ClCompile Include="EditConsole.cpp" />
     <ClCompile Include="EditMipSwitchDistance.cpp" />
     <ClCompile Include="EntitySelectionListBox.cpp" />
     <ClCompile Include="entity_selection.cpp" />
@@ -405,6 +408,7 @@ $(Qt_dir)\bin\windeployqt.exe $(SolutionDir)..\Bin\Debug\QtSolutions_MFCMigratio
     <ClInclude Include="ChildFrm.h" />
     <ClInclude Include="coloredbutton.h" />
     <ClInclude Include="ColorPaletteWnd.h" />
+    <ClInclude Include="ConsoleSymbolsCombo.h" />
     <ClInclude Include="CSGDesitnationCombo.h" />
     <ClInclude Include="CtlTipOfTheDayText.h" />
     <ClInclude Include="ctrlaxisradio.h" />
@@ -420,6 +424,7 @@ $(Qt_dir)\bin\windeployqt.exe $(SolutionDir)..\Bin\Debug\QtSolutions_MFCMigratio
     <ClInclude Include="DlgAutTexturize.h" />
     <ClInclude Include="DlgBrowseByClass.h" />
     <ClInclude Include="DlgComment.h" />
+    <ClInclude Include="DlgConsole.h" />
     <ClInclude Include="DlgCreateVirtualDirectory.h" />
     <ClInclude Include="DlgDisplaceMapSize.h" />
     <ClInclude Include="DlgEditFloat.h" />
@@ -452,6 +457,7 @@ $(Qt_dir)\bin\windeployqt.exe $(SolutionDir)..\Bin\Debug\QtSolutions_MFCMigratio
     <ClInclude Include="DlgTipOfTheDay.h" />
     <ClInclude Include="DlgTreeShortcuts.h" />
     <ClInclude Include="dlgworldsettings.h" />
+    <ClInclude Include="EditConsole.h" />
     <ClInclude Include="EditMipSwitchDistance.h" />
     <ClInclude Include="EntitySelectionListBox.h" />
     <CustomBuild Include="EventHub.h">

@@ -349,10 +349,10 @@ public:
   afx_msg void OnShowAll();
   afx_msg void OnCheckEdit();
   afx_msg void OnCheckAdd();
-        afx_msg void OnCheckDelete();
+  afx_msg void OnCheckDelete();
   afx_msg void OnUpdateCheckEdit(CCmdUI* pCmdUI);
   afx_msg void OnUpdateCheckAdd(CCmdUI* pCmdUI);
-        afx_msg void OnUpdateCheckDelete(CCmdUI* pCmdUI);
+  afx_msg void OnUpdateCheckDelete(CCmdUI* pCmdUI);
   afx_msg void OnUpdateBrushes();
   afx_msg void OnSelectByClassImportant();
   afx_msg void OnInsert3dObject();
