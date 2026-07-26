@@ -592,6 +592,9 @@ $(Qt_dir)\bin\windeployqt.exe $(SolutionDir)..\Bin\Debug\QtSolutions_MFCMigratio
   <ItemGroup>
     <Image Include="res\pick.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="SeriousEngine.natvis" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

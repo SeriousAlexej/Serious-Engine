@@ -888,4 +888,7 @@
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="SeriousEngine.natvis" />
+  </ItemGroup>
 </Project>
