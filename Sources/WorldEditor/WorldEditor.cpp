@@ -58,9 +58,9 @@ CTFileName fnmPersistentSymbols = CTString("Scripts\\PersistentSymbols.ini");
 
 // Macros used for ini i/o operations
 #define INI_PRIMITIVE_READ( strname, default_val)                               \
-  strcpy( strIni, CStringA(theApp.GetProfileString( L"World editor prefs", CString(strPrimitiveType+" "+ strname ), CString( default_val ))))
+  strcpy( strIni, CStringA(theApp.GetProfileString( L"World editor prefs", CString(static_cast<const char*>(strPrimitiveType+" "+ strname)), CString( default_val ))))
 #define INI_PRIMITIVE_WRITE( strname)                                   \
-  theApp.WriteProfileString( L"World editor prefs", CString(strPrimitiveType+" "+strname), CString(strIni))
+  theApp.WriteProfileString( L"World editor prefs", CString(static_cast<const char*>(strPrimitiveType+" "+strname)), CString(strIni))
 
 #define INI_READ( strname, default_val)                               \
   strcpy( strIni, CStringA(theApp.GetProfileString( L"World editor prefs", CString( strname ), CString(default_val))))
@@ -68,17 +68,17 @@ CTFileName fnmPersistentSymbols = CTString("Scripts\\PersistentSymbols.ini");
   if( strcmp( strIni, "YES") == 0)   var = TRUE;              \
   else                          var = FALSE;
 #define GET_COLOR( var)                                       \
-  sscanf( strIni, "0X%08x", &var);
+  (void)sscanf( strIni, "0X%08x", &var);
 #define GET_INDEX( var)                                       \
   {\
   INDEX tmp;\
-  sscanf(strIni, "%d", &tmp); \
+  (void)sscanf(strIni, "%d", &tmp); \
   var = tmp;\
   }
 #define GET_INDEX_RAW( var)                                       \
-  sscanf(strIni, "%d", &var);
+  (void)sscanf(strIni, "%d", &var);
 #define GET_FLOAT( var)                                       \
-  sscanf( strIni, "%f", &var);
+  (void)sscanf( strIni, "%f", &var);
 #define GET_STRING( var)                                      \
   var = CTString( strIni);
 
