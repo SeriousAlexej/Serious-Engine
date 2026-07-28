@@ -1266,11 +1266,11 @@ bool CDlgBrowseByClass::_EntityMatchesStringFilter(CEntityPtr entity) const
   if (m_filter_string_qstring.isEmpty())
     return true;
 
-  const QString entity_name = QString::fromLocal8Bit(entity->GetName());
+  const QString entity_name = QString::fromLocal8Bit(static_cast<const char*>(entity->GetName()));
   if (entity_name.contains(m_filter_string_qstring, Qt::CaseInsensitive))
     return true;
 
-  const QString entity_description = QString::fromLocal8Bit(entity->GetDescription());
+  const QString entity_description = QString::fromLocal8Bit(static_cast<const char*>(entity->GetDescription()));
   if (entity_description.contains(m_filter_string_qstring, Qt::CaseInsensitive))
     return true;
 

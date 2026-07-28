@@ -232,7 +232,7 @@ void ModelConfigurationEditor::_AddAnim()
   QMenu menu;
   const auto* p_vertex = menu.addAction("Vertex");
   const auto* p_skeletal = menu.addAction("Skeletal");
-  auto* p_action = menu.exec(mp_ui->buttonAnimAdd->mapToGlobal({ 0, 0 }));
+  auto* p_action = menu.exec(mp_ui->buttonAnimAdd->mapToGlobal(QPoint{ 0, 0 }));
 
   const size_t prevAnimCount = m_script.m_animations.size();
   if (p_action == p_vertex)

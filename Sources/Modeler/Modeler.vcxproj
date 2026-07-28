@@ -100,8 +100,9 @@
       <ObjectFileName>.\Release\</ObjectFileName>
       <ProgramDataBaseFileName>.\Release\</ProgramDataBaseFileName>
       <DisableSpecificWarnings>4996;4333</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>$(SolutionDir)qtsolutions\qtwinmigrate\src\;$(Qt_dir)\include\;$(Qt_dir)\include\QtCore\;$(Qt_dir)\include\QtGui\;$(Qt_dir)\include\QtWidgets\;$(Qt_dir)\include\QtWinExtras\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)qtsolutions\qtwinmigrate\src\;$(Qt_dir)\include\;$(Qt_dir)\include\QtCore\;$(Qt_dir)\include\QtGui\;$(Qt_dir)\include\QtWidgets\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Midl>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -124,17 +125,16 @@
       <SubSystem>Windows</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <OutputFile>Release/SeriousModelerEX.exe</OutputFile>
-      <AdditionalDependencies>SeriousEngineCAPI.lib;htmlhelp.lib;Qt5Core.lib;Qt5Gui.lib;Qt5Widgets.lib;Qt5WinExtras.lib;QtSolutions_MFCMigrationFramework.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SeriousEngineCAPI.lib;htmlhelp.lib;Qt6Core.lib;Qt6Gui.lib;Qt6Widgets.lib;qtwinmigrate.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateMapFile>true</GenerateMapFile>
       <AdditionalLibraryDirectories>$(SolutionDir)SeriousEngineCAPI\Release\;$(SolutionDir)EngineGUI\$(Configuration)\;$(SolutionDir)qtwinmigrateBuild\$(Configuration)\;$(Qt_dir)\lib\</AdditionalLibraryDirectories>
     </Link>
     <CustomBuildStep>
       <Command>copy Release\$(TargetName).exe $(SolutionDir)..\Bin\ &gt;nul
-copy $(SolutionDir)qtwinmigrateBuild\install\QtSolutions_MFCMigrationFramework.dll $(SolutionDir)..\Bin\ &gt; nul
+copy $(SolutionDir)qtwinmigrateBuild\install\qtwinmigrate.dll $(SolutionDir)..\Bin\ &gt; nul
 copy $(SolutionDir)SeriousEngineCAPI\Release\SeriousEngineCAPI.dll $(SolutionDir)..\Bin\ &gt;nul
-copy $(SolutionDir)SeriousEngineCAPIGameShell\Release\SeriousEngineCAPIGameShell.exe $(SolutionDir)..\Bin\ &gt;nul
-$(Qt_dir)\bin\windeployqt.exe $(SolutionDir)..\Bin\$(TargetName).exe
-$(Qt_dir)\bin\windeployqt.exe $(SolutionDir)..\Bin\QtSolutions_MFCMigrationFramework.dll</Command>
+$(Qt_dir)\bin\windeployqt.exe --no-translations --no-system-d3d-compiler --no-system-dxc-compiler --no-opengl-sw --skip-plugin-types generic,tls,networkinformation,sqldrivers $(SolutionDir)..\Bin\$(TargetName).exe
+$(Qt_dir)\bin\windeployqt.exe --no-translations --no-system-d3d-compiler --no-system-dxc-compiler --no-opengl-sw --skip-plugin-types generic,tls,networkinformation,sqldrivers $(SolutionDir)..\Bin\qtwinmigrate.dll</Command>
       <Message>Copying %(Filename) binaries to $(SolutionDir)..\Bin</Message>
       <Outputs>$(SolutionDir)..\Bin\$(InputName).exe;%(Outputs)</Outputs>
     </CustomBuildStep>
@@ -156,8 +156,9 @@ $(Qt_dir)\bin\windeployqt.exe $(SolutionDir)..\Bin\QtSolutions_MFCMigrationFrame
       <ObjectFileName>.\Debug\</ObjectFileName>
       <ProgramDataBaseFileName>.\Debug\</ProgramDataBaseFileName>
       <DisableSpecificWarnings>4996;4333</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>$(SolutionDir)qtsolutions\qtwinmigrate\src\;$(Qt_dir)\include\;$(Qt_dir)\include\QtCore\;$(Qt_dir)\include\QtGui\;$(Qt_dir)\include\QtWidgets\;$(Qt_dir)\include\QtWinExtras\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)qtsolutions\qtwinmigrate\src\;$(Qt_dir)\include\;$(Qt_dir)\include\QtCore\;$(Qt_dir)\include\QtGui\;$(Qt_dir)\include\QtWidgets\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Midl>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -180,17 +181,16 @@ $(Qt_dir)\bin\windeployqt.exe $(SolutionDir)..\Bin\QtSolutions_MFCMigrationFrame
       <SubSystem>Windows</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <OutputFile>Debug/SeriousModelerEX.exe</OutputFile>
-      <AdditionalDependencies>SeriousEngineCAPI.lib;htmlhelp.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5Widgetsd.lib;Qt5WinExtrasd.lib;QtSolutions_MFCMigrationFrameworkd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SeriousEngineCAPI.lib;htmlhelp.lib;Qt6Cored.lib;Qt6Guid.lib;Qt6Widgetsd.lib;qtwinmigrated.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateMapFile>true</GenerateMapFile>
       <AdditionalLibraryDirectories>$(SolutionDir)SeriousEngineCAPI\Release\;$(SolutionDir)EngineGUI\$(Configuration)\;$(SolutionDir)qtwinmigrateBuild\$(Configuration)\;$(Qt_dir)\lib\</AdditionalLibraryDirectories>
     </Link>
     <CustomBuildStep>
       <Command>copy Debug\$(TargetName).exe $(SolutionDir)..\Bin\Debug\ &gt;nul
-copy $(SolutionDir)qtwinmigrateBuild\install\QtSolutions_MFCMigrationFrameworkd.dll $(SolutionDir)..\Bin\Debug\ &gt; nul
+copy $(SolutionDir)qtwinmigrateBuild\install\qtwinmigrated.dll $(SolutionDir)..\Bin\Debug\ &gt; nul
 copy $(SolutionDir)SeriousEngineCAPI\Release\SeriousEngineCAPI.dll $(SolutionDir)..\Bin\Debug\ &gt;nul
-copy $(SolutionDir)SeriousEngineCAPIGameShell\Release\SeriousEngineCAPIGameShell.exe $(SolutionDir)..\Bin\Debug\ &gt;nul
-$(Qt_dir)\bin\windeployqt.exe $(SolutionDir)..\Bin\Debug\$(TargetName).exe
-$(Qt_dir)\bin\windeployqt.exe $(SolutionDir)..\Bin\Debug\QtSolutions_MFCMigrationFrameworkd.dll
+$(Qt_dir)\bin\windeployqt.exe --no-translations --no-system-d3d-compiler --no-system-dxc-compiler --no-opengl-sw --skip-plugin-types generic,tls,networkinformation,sqldrivers $(SolutionDir)..\Bin\Debug\$(TargetName).exe
+$(Qt_dir)\bin\windeployqt.exe --no-translations --no-system-d3d-compiler --no-system-dxc-compiler --no-opengl-sw --skip-plugin-types generic,tls,networkinformation,sqldrivers $(SolutionDir)..\Bin\Debug\qtwinmigrated.dll
 </Command>
       <Message>Copying %(Filename) binaries to $(SolutionDir)..\Bin\Debug</Message>
       <Outputs>$(SolutionDir)..\Bin\Debug\$(InputName).exe;%(Outputs)</Outputs>

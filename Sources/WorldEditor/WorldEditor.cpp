@@ -27,9 +27,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <EngineGui/Object3D_IO.h>
 #include <CrashRpt.h>
 
-#include <QtWin>
 #include <QIcon>
 #include <QMessageBox>
+#include <QStyleFactory>
 
 #include <sys/stat.h>
 #include <sys/utime.h>
@@ -571,8 +571,11 @@ void CWorldEditorApp::MyParseCommandLine(void)
 BOOL CWorldEditorApp::SubInitInstance()
 {
   HICON app_icon = (HICON)LoadImage(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDR_MAINFRAME), IMAGE_ICON, 0, 0, LR_DEFAULTCOLOR);
-  QMfcApp::instance(this)->setWindowIcon(QIcon(QtWin::fromHICON(app_icon)));
+  QMfcApp::instance(this)->setWindowIcon(QPixmap::fromImage(QImage::fromHICON(app_icon)));
   ::DestroyIcon(app_icon);
+
+  if (auto* style = QStyleFactory::create("windowsvista"))
+    qApp->setStyle(style);
 
   QObject::connect(&EventHub::instance(), &EventHub::CurrentEntitySelectionChanged, [this]
     {

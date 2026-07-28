@@ -23,14 +23,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <QPushButton>
 #include <QKeyEvent>
-#include <QRegExp>
+#include <QRegularExpression>
 #include <QTimer>
 
 #include <algorithm>
 #include <string_view>
 #include <map>
 
-Q_DECLARE_METATYPE(GroBrowser::_FileNode*)
+Q_DECLARE_OPAQUE_POINTER(GroBrowser::_FileNode*)
 
 static constexpr size_t g_maxBackSteps = 20;
 
@@ -72,7 +72,7 @@ void CacheBuilder::run()
     if (file_type == EFP_BASEZIP || file_type == EFP_MODZIP)
     {
       GroBrowser::_FileNode* current_parent = mp_root_node.get();
-      const std::string_view str_view(full_filename, full_filename.Length());
+      const std::string_view str_view(static_cast<const char*>(full_filename), full_filename.Length());
       auto beg = std::begin(str_view);
       const auto end = std::end(str_view);
       while (true)
@@ -298,25 +298,24 @@ void GroBrowser::_RefillList()
 {
   mp_ui->listWidget->clear();
 
-  std::vector<QRegExp> filters;
+  std::vector<QRegularExpression> filters;
   if (auto filter_wildcard = mp_ui->comboFilter->currentData(); filter_wildcard.isValid())
   {
-    const auto wildcards = filter_wildcard.toString().split(';', QString::SkipEmptyParts);
+    const auto wildcards = filter_wildcard.toString().split(';', Qt::SkipEmptyParts);
     for (const auto& wildcard : wildcards)
-    {
-      QRegExp filter;
-      filter.setPattern(wildcard);
-      filter.setPatternSyntax(QRegExp::Wildcard);
-      filter.setCaseSensitivity(Qt::CaseInsensitive);
-      filters.push_back(filter);
-    }
+      filters.push_back(QRegularExpression::fromWildcard(wildcard));
   }
 
   auto insert_node = [this, &filters](const std::unique_ptr<_FileNode>& node)
   {
     if (node->IsFile() && !filters.empty())
     {
-      if (std::none_of(filters.begin(), filters.end(), [&](const QRegExp& filter) { return filter.exactMatch(node->name); }))
+      if (std::none_of(filters.begin(), filters.end(),
+        [&](const QRegularExpression& filter)
+        {
+        const auto match = filter.match(node->name);
+        return match.isValid() && match.hasMatch() && !match.hasPartialMatch();
+        }))
         return;
     }
 

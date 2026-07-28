@@ -155,7 +155,7 @@ void CEngineGUI::LoadAnyGfxFormat_t(CImageInfo& ii, const CTFileName& strFileNam
       const auto byteCount = ii.ii_Width * ii.ii_Height * bytesPerPixel;
       ii.ii_Picture = (UBYTE*)AllocMemory_(byteCount);
 
-      if (im.byteCount() == byteCount)
+      if (im.sizeInBytes() == byteCount)
       {
         memcpy(ii.ii_Picture, im.constBits(), byteCount);
       }

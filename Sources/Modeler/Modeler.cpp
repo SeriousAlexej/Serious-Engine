@@ -24,11 +24,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <SeriousEngineCppAPI/Templates/Stock_CModelData.h>
 #include <SeriousEngineCppAPI/Templates/Stock_CTextureData.h>
 
-#include <QtWin>
 #include <QIcon>
 #include <QMessageBox>
 #include <QTimer>
 #include <QWinWidget>
+#include <QStyleFactory>
 
 #ifdef _DEBUG
 #undef new
@@ -252,8 +252,11 @@ BOOL CModelerApp::InitInstance()
 BOOL CModelerApp::SubInitInstance()
 {
   HICON app_icon = (HICON)LoadImage(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDR_MAINFRAME), IMAGE_ICON, 0, 0, LR_DEFAULTCOLOR);
-  QMfcApp::instance(this)->setWindowIcon(QIcon(QtWin::fromHICON(app_icon)));
+  QMfcApp::instance(this)->setWindowIcon(QPixmap::fromImage(QImage::fromHICON(app_icon)));
   ::DestroyIcon(app_icon);
+
+  if (auto* style = QStyleFactory::create("windowsvista"))
+    qApp->setStyle(style);
 
   m_showing_modal_dialog = false;
 
