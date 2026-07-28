@@ -47,10 +47,6 @@ class CMainFrame : public CMDIFrameWnd
 public:
   CMainFrame();
 
-// Attributes
-private:
-  bool m_posted_kickidle_during_sizing = false;
-
 public:
   // old window position and styles before full screen mode
   

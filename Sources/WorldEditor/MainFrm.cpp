@@ -1634,19 +1634,6 @@ LRESULT CMainFrame::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
     }
   }
 
-  if (message == WM_SIZING)
-  {
-    if (theApp.mp_qtContext && !m_posted_kickidle_during_sizing)
-    {
-      m_posted_kickidle_during_sizing = true;
-      QTimer::singleShot(16, Qt::PreciseTimer, theApp.mp_qtContext, [this]
-        {
-          m_posted_kickidle_during_sizing = false;
-          ::PostMessage(GetSafeHwnd(), WM_KICKIDLE, 0, 0);
-        });
-    }
-  }
-
   return CMDIFrameWnd::DefWindowProc(message, wParam, lParam);
 }
 
