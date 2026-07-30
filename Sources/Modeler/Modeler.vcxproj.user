@@ -5,7 +5,8 @@
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LocalDebuggerCommand>$(ProjectDir)..\..\Bin\$(TargetFileName)</LocalDebuggerCommand>
+    <LocalDebuggerCommand>$(TargetFileName)</LocalDebuggerCommand>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerWorkingDirectory>$(ProjectDir)..\..\Bin\</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
 </Project>

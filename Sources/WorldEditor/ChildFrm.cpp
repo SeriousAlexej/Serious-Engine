@@ -35,6 +35,12 @@ IMPLEMENT_DYNCREATE(CChildFrame, CMDIChildWnd)
 
 BEGIN_MESSAGE_MAP(CChildFrame, CMDIChildWnd)
   //{{AFX_MSG_MAP(CChildFrame)
+  ON_COMMAND_RANGE(ID_QUICKTEST_DIFFICULTY_TOURIST, ID_QUICKTEST_DIFFICULTY_5, OnQuickTestDifficulty)
+  ON_UPDATE_COMMAND_UI_RANGE(ID_QUICKTEST_DIFFICULTY_TOURIST, ID_QUICKTEST_DIFFICULTY_5, OnUpdateQuickTestDifficulty)
+  ON_COMMAND_RANGE(ID_QUICKTEST_GAMEMODE_FLYOVER, ID_QUICKTEST_GAMEMODE_5, OnQuickTestGamemode)
+  ON_UPDATE_COMMAND_UI_RANGE(ID_QUICKTEST_GAMEMODE_FLYOVER, ID_QUICKTEST_GAMEMODE_5, OnUpdateQuickTestGamemode)
+  ON_COMMAND(ID_QUICKTEST_IS_MULTIPLAYER, OnQuickTestMultiplayer)
+  ON_UPDATE_COMMAND_UI(ID_QUICKTEST_IS_MULTIPLAYER, OnUpdateQuickTestMultiplayer)
   ON_COMMAND(ID_GRID_ON_OFF, OnGridOnOff)
   ON_UPDATE_COMMAND_UI(ID_GRID_ON_OFF, OnUpdateGridOnOff)
   ON_COMMAND(ID_TEST_GAME, OnTestGameWindowed)
@@ -578,6 +584,149 @@ void CChildFrame::TestGame( BOOL bFullScreen)
   pPerspectiveView->EnableToolTips( TRUE);
 }
 
+void CChildFrame::OnQuickTestDifficulty(UINT nID)
+{
+  switch (nID)
+  {
+  case ID_QUICKTEST_DIFFICULTY_TOURIST:
+    _pShell_Execute("gam_iQuickStartDifficulty=-1;");
+    break;
+  case ID_QUICKTEST_DIFFICULTY_EASY:
+    _pShell_Execute("gam_iQuickStartDifficulty=0;");
+    break;
+  case ID_QUICKTEST_DIFFICULTY_NORMAL:
+    _pShell_Execute("gam_iQuickStartDifficulty=1;");
+    break;
+  case ID_QUICKTEST_DIFFICULTY_HARD:
+    _pShell_Execute("gam_iQuickStartDifficulty=2;");
+    break;
+  case ID_QUICKTEST_DIFFICULTY_SERIOUS:
+    _pShell_Execute("gam_iQuickStartDifficulty=3;");
+    break;
+  case ID_QUICKTEST_DIFFICULTY_MENTAL:
+    _pShell_Execute("gam_iQuickStartDifficulty=4;");
+    break;
+  case ID_QUICKTEST_DIFFICULTY_1:
+    _pShell_Execute("gam_iQuickStartDifficulty=5;");
+    break;
+  case ID_QUICKTEST_DIFFICULTY_2:
+    _pShell_Execute("gam_iQuickStartDifficulty=6;");
+    break;
+  case ID_QUICKTEST_DIFFICULTY_3:
+    _pShell_Execute("gam_iQuickStartDifficulty=7;");
+    break;
+  case ID_QUICKTEST_DIFFICULTY_4:
+    _pShell_Execute("gam_iQuickStartDifficulty=8;");
+    break;
+  case ID_QUICKTEST_DIFFICULTY_5:
+    _pShell_Execute("gam_iQuickStartDifficulty=9;");
+    break;
+  }
+}
+
+void CChildFrame::OnUpdateQuickTestDifficulty(CCmdUI* pCmdUI)
+{
+  const UINT difficulty = static_cast<UINT>(_pShell_GetINDEX("gam_iQuickStartDifficulty") + 1 + ID_QUICKTEST_DIFFICULTY_TOURIST);
+  pCmdUI->SetCheck((difficulty == pCmdUI->m_nID) ? TRUE : FALSE);
+  pCmdUI->Enable(TRUE);
+}
+
+void CChildFrame::OnQuickTestGamemode(UINT nID)
+{
+  switch (nID)
+  {
+  case ID_QUICKTEST_GAMEMODE_FLYOVER:
+    _pShell_Execute("gam_iQuickStartMode=-1;gam_bQuickStartMP=0;");
+    break;
+  case ID_QUICKTEST_GAMEMODE_SINGLE:
+    _pShell_Execute("gam_iQuickStartMode=0;gam_bQuickStartMP=0;");
+    break;
+  case ID_QUICKTEST_GAMEMODE_COOP:
+    _pShell_Execute("gam_iQuickStartMode=0;gam_bQuickStartMP=1;");
+    break;
+  case ID_QUICKTEST_GAMEMODE_SCOREM:
+    _pShell_Execute("gam_iQuickStartMode=1;gam_bQuickStartMP=1;");
+    break;
+  case ID_QUICKTEST_GAMEMODE_FRAGM:
+    _pShell_Execute("gam_iQuickStartMode=2;gam_bQuickStartMP=1;");
+    break;
+  case ID_QUICKTEST_GAMEMODE_1:
+    _pShell_Execute("gam_iQuickStartMode=3;");
+    break;
+  case ID_QUICKTEST_GAMEMODE_2:
+    _pShell_Execute("gam_iQuickStartMode=4;");
+    break;
+  case ID_QUICKTEST_GAMEMODE_3:
+    _pShell_Execute("gam_iQuickStartMode=5;");
+    break;
+  case ID_QUICKTEST_GAMEMODE_4:
+    _pShell_Execute("gam_iQuickStartMode=6;");
+    break;
+  case ID_QUICKTEST_GAMEMODE_5:
+    _pShell_Execute("gam_iQuickStartMode=7;");
+    break;
+  default:
+    break;
+  }
+}
+
+void CChildFrame::OnUpdateQuickTestGamemode(CCmdUI* pCmdUI)
+{
+  const INDEX mode = _pShell_GetINDEX("gam_iQuickStartMode");
+  const bool is_mp = _pShell_GetINDEX("gam_bQuickStartMP") != 0;
+  switch (pCmdUI->m_nID)
+  {
+  case ID_QUICKTEST_GAMEMODE_FLYOVER:
+    pCmdUI->SetCheck((mode == -1) ? TRUE : FALSE);
+    break;
+  case ID_QUICKTEST_GAMEMODE_SINGLE:
+    pCmdUI->SetCheck((mode == 0 && !is_mp) ? TRUE : FALSE);
+    break;
+  case ID_QUICKTEST_GAMEMODE_COOP:
+    pCmdUI->SetCheck((mode == 0 && is_mp) ? TRUE : FALSE);
+    break;
+  case ID_QUICKTEST_GAMEMODE_SCOREM:
+    pCmdUI->SetCheck((mode == 1) ? TRUE : FALSE);
+    break;
+  case ID_QUICKTEST_GAMEMODE_FRAGM:
+    pCmdUI->SetCheck((mode == 2) ? TRUE : FALSE);
+    break;
+  case ID_QUICKTEST_GAMEMODE_1:
+    pCmdUI->SetCheck((mode == 3) ? TRUE : FALSE);
+    break;
+  case ID_QUICKTEST_GAMEMODE_2:
+    pCmdUI->SetCheck((mode == 4) ? TRUE : FALSE);
+    break;
+  case ID_QUICKTEST_GAMEMODE_3:
+    pCmdUI->SetCheck((mode == 5) ? TRUE : FALSE);
+    break;
+  case ID_QUICKTEST_GAMEMODE_4:
+    pCmdUI->SetCheck((mode == 6) ? TRUE : FALSE);
+    break;
+  case ID_QUICKTEST_GAMEMODE_5:
+    pCmdUI->SetCheck((mode == 7) ? TRUE : FALSE);
+    break;
+  default:
+    break;
+  }
+  pCmdUI->Enable(TRUE);
+}
+
+void CChildFrame::OnQuickTestMultiplayer()
+{
+  const bool is_mp = _pShell_GetINDEX("gam_bQuickStartMP") != 0;
+  if (is_mp)
+    _pShell_Execute("gam_bQuickStartMP=0;");
+  else
+    _pShell_Execute("gam_bQuickStartMP=1;");
+}
+
+void CChildFrame::OnUpdateQuickTestMultiplayer(CCmdUI* pCmdUI)
+{
+  const bool is_mp = _pShell_GetINDEX("gam_bQuickStartMP") != 0;
+  pCmdUI->SetCheck(is_mp ? TRUE : FALSE);
+  pCmdUI->Enable(TRUE);
+}
 
 void CChildFrame::OnTestGameWindowed() 
 {

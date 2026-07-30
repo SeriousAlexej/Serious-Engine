@@ -446,6 +446,34 @@ BEGIN
     END
     POPUP "&Game"
     BEGIN
+        POPUP "Test &Difficulty"
+        BEGIN
+            MENUITEM "Tourist", ID_QUICKTEST_DIFFICULTY_TOURIST
+            MENUITEM "Easy", ID_QUICKTEST_DIFFICULTY_EASY
+            MENUITEM "Normal", ID_QUICKTEST_DIFFICULTY_NORMAL
+            MENUITEM "Hard", ID_QUICKTEST_DIFFICULTY_HARD
+            MENUITEM "Serious", ID_QUICKTEST_DIFFICULTY_SERIOUS
+            MENUITEM "Mental", ID_QUICKTEST_DIFFICULTY_MENTAL
+            MENUITEM "Difficulty 1", ID_QUICKTEST_DIFFICULTY_1
+            MENUITEM "Difficulty 2", ID_QUICKTEST_DIFFICULTY_2
+            MENUITEM "Difficulty 3", ID_QUICKTEST_DIFFICULTY_3
+            MENUITEM "Difficulty 4", ID_QUICKTEST_DIFFICULTY_4
+            MENUITEM "Difficulty 5", ID_QUICKTEST_DIFFICULTY_5
+        END
+        POPUP "Test Game&mode"
+        BEGIN
+            MENUITEM "Singleplayer", ID_QUICKTEST_GAMEMODE_SINGLE
+            MENUITEM "Cooperative", ID_QUICKTEST_GAMEMODE_COOP
+            MENUITEM "Scorematch", ID_QUICKTEST_GAMEMODE_SCOREM
+            MENUITEM "Fragmatch", ID_QUICKTEST_GAMEMODE_FRAGM
+            MENUITEM "Flyover", ID_QUICKTEST_GAMEMODE_FLYOVER
+            MENUITEM "Game mode 1", ID_QUICKTEST_GAMEMODE_1
+            MENUITEM "Game mode 2", ID_QUICKTEST_GAMEMODE_2
+            MENUITEM "Game mode 3", ID_QUICKTEST_GAMEMODE_3
+            MENUITEM "Game mode 4", ID_QUICKTEST_GAMEMODE_4
+            MENUITEM "Game mode 5", ID_QUICKTEST_GAMEMODE_5
+            MENUITEM "Is multiplayer?", ID_QUICKTEST_IS_MULTIPLAYER
+        END
         MENUITEM "Test Game\tT",                ID_TEST_GAME
         MENUITEM "Test Game (full screen)\tCtrl+T", ID_TEST_GAME_FULLSCREEN
         MENUITEM SEPARATOR

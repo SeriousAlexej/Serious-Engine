@@ -98,6 +98,12 @@ public:
 // Generated message map functions
 public:
   //{{AFX_MSG(CChildFrame)
+  afx_msg void OnQuickTestDifficulty(UINT nID);
+  afx_msg void OnUpdateQuickTestDifficulty(CCmdUI* pCmdUI);
+  afx_msg void OnQuickTestGamemode(UINT nID);
+  afx_msg void OnUpdateQuickTestGamemode(CCmdUI* pCmdUI);
+  afx_msg void OnQuickTestMultiplayer();
+  afx_msg void OnUpdateQuickTestMultiplayer(CCmdUI* pCmdUI);
   afx_msg void OnGridOnOff();
   afx_msg void OnUpdateGridOnOff(CCmdUI* pCmdUI);
   afx_msg void OnTestGameWindowed();

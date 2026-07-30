@@ -34,24 +34,24 @@ public:
     m_flags.clear();
     auto* editor = new CheckListWidget(parent);
     mp_editor = editor;
-    _AddFlag(editor, "Easy", SPF_EASY);
+    _AddFlag(editor, "Tourist/Easy", SPF_EASY);
     _AddFlag(editor, "Normal", SPF_NORMAL);
-    _AddFlag(editor, "Hard", SPF_HARD);
-    _AddFlag(editor, "Extreme", SPF_EXTREME);
+    _AddFlag(editor, "Hard/Mental", SPF_HARD);
+    _AddFlag(editor, "Serious", SPF_EXTREME);
     _AddFlag(editor, "Singleplayer", SPF_SINGLEPLAYER);
     _AddFlag(editor, "Cooperative", SPF_COOPERATIVE);
-    _AddFlag(editor, "Deathmatch", SPF_DEATHMATCH);
+    _AddFlag(editor, "Fragmatch/Scorematch", SPF_DEATHMATCH);
+    _AddFlag(editor, "Flyover", SPF_FLYOVER);
     _AddFlag(editor, "Difficulty 1", SPF_EXTREME << 1);
     _AddFlag(editor, "Difficulty 2", SPF_EXTREME << 2);
     _AddFlag(editor, "Difficulty 3", SPF_EXTREME << 3);
     _AddFlag(editor, "Difficulty 4", SPF_EXTREME << 4);
     _AddFlag(editor, "Difficulty 5", SPF_EXTREME << 5);
-    _AddFlag(editor, "Game mode 1", SPF_COOPERATIVE << 1);
-    _AddFlag(editor, "Game mode 2", SPF_COOPERATIVE << 2);
-    _AddFlag(editor, "Game mode 3", SPF_COOPERATIVE << 3);
-    _AddFlag(editor, "Game mode 4", SPF_COOPERATIVE << 4);
-    _AddFlag(editor, "Game mode 5", SPF_COOPERATIVE << 5);
-    _AddFlag(editor, "Game mode 6", SPF_COOPERATIVE << 6);
+    _AddFlag(editor, "Game mode 1", SPF_FLYOVER << 1);
+    _AddFlag(editor, "Game mode 2", SPF_FLYOVER << 2);
+    _AddFlag(editor, "Game mode 3", SPF_FLYOVER << 3);
+    _AddFlag(editor, "Game mode 4", SPF_FLYOVER << 4);
+    _AddFlag(editor, "Game mode 5", SPF_FLYOVER << 5);
 
     QObject::connect(editor, &CheckListWidget::Changed, this, [this]
       {
