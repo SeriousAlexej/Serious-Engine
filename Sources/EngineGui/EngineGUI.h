@@ -112,7 +112,8 @@ public:
                             const char *pchrRegistry=KEY_NAME_REQUEST_FILE_DIR,
                             CTString strDefaultDir="", CTString strFileSelectedByDefault="",
                             CDynamicArray_CTFileName *pafnSelectedFiles=NULL,
-                            BOOL bIfOpen=TRUE);
+                            BOOL bIfOpen=TRUE,
+                            BOOL bLocate=FALSE);
 
   /* Call browse texture requester */
   ENGINEGUI_API CTFileName BrowseTexture(CTFileName fnDefaultSelected=CTString(""),

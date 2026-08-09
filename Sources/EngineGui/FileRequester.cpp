@@ -212,7 +212,8 @@ CTFileName CEngineGUI::FileRequester(
         CTString strDefaultDir/*=""*/, 
         CTString strFileSelectedByDefault/*=""*/,
         CDynamicArray_CTFileName *pafnSelectedFiles/*=NULL*/,
-        BOOL bIfOpen/*=TRUE*/)
+        BOOL bIfOpen/*=TRUE*/,
+        BOOL bLocate/*=FALSE*/)
 {
   _pDrawPort.Reset();
   _pViewPort.Reset();
@@ -234,21 +235,23 @@ CTFileName CEngineGUI::FileRequester(
   ofnRequestFiles.nMaxFile = 2048;
 
   CString strRequestInDirectory(_fnmApplicationPath+strDefaultDir);
-  if( pchrRegistry != NULL)
+  if (pchrRegistry)
   {
     strRequestInDirectory = AfxGetApp()->GetProfileString(L"Modeler prefs", CString(pchrRegistry), 
       CString(_fnmApplicationPath+strDefaultDir));
   }
 
   // if directory is not inside engine dir
+  bool forced_to_engine_dir = false;
   CTString strTest = static_cast<const char*>(CStringA(strRequestInDirectory));
   if (!strTest.RemovePrefix(_fnmApplicationPath)) {
     // force it there
     strRequestInDirectory = _fnmApplicationPath;
+    forced_to_engine_dir = true;
   }
-  
 
-  ofnRequestFiles.lpstrInitialDir = CStringA(strRequestInDirectory);
+  CStringA strRequestInDirectoryA(strRequestInDirectory);
+  ofnRequestFiles.lpstrInitialDir = strRequestInDirectoryA;
   ofnRequestFiles.lpstrTitle = pchrTitle;
   ofnRequestFiles.Flags = OFN_EXPLORER | OFN_ENABLEHOOK | OFN_ENABLETEMPLATE | OFN_HIDEREADONLY;
   // setup preview dialog
@@ -263,14 +266,20 @@ CTFileName CEngineGUI::FileRequester(
   BOOL bResult;
   gro_browser_requested = false;
   allow_gro_browser = false;
-  if( bIfOpen)
+  if (bLocate && !forced_to_engine_dir && !pchrRegistry && !PathFileExists(strRequestInDirectory))
   {
-    allow_gro_browser = true;
-    bResult = GetOpenFileNameA(&ofnRequestFiles);
-  }
-  else
-  {
-    bResult = GetSaveFileNameA( &ofnRequestFiles);
+    gro_browser_requested = true;
+    bResult = FALSE;
+  } else {
+    if( bIfOpen)
+    {
+      allow_gro_browser = true;
+      bResult = GetOpenFileNameA(&ofnRequestFiles);
+    }
+    else
+    {
+      bResult = GetSaveFileNameA(&ofnRequestFiles);
+    }
   }
   if (gro_browser_requested)
   {
