@@ -49,7 +49,9 @@ private:
     New
   };
 
-  bool eventFilter(QObject* watched, QEvent* event) override;
+  bool _MouseNavigation(QEvent* event);
+  bool event(QEvent* event) final;
+  bool eventFilter(QObject* watched, QEvent* event) final;
   bool _CD(_FileNode* node, HistoryDirection history_direction);
   bool _CD(QListWidgetItem* item);
   void _OnCDUp();

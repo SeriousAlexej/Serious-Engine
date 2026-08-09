@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <QPushButton>
 #include <QKeyEvent>
+#include <QShortcut>
 #include <QRegularExpression>
 #include <QTimer>
 
@@ -103,9 +104,12 @@ GroBrowser::GroBrowser(const char* filter, bool multiselection, const CTString& 
 
   _FillFilter(filter);
 
+  mp_ui->listWidget->viewport()->installEventFilter(this);
   mp_ui->listWidget->installEventFilter(this);
   mp_ui->listWidget->setSelectionMode(multiselection ? QAbstractItemView::ExtendedSelection : QAbstractItemView::SingleSelection);
   mp_ui->buttonBox->button(QDialogButtonBox::Open)->setEnabled(false);
+  new QShortcut(QKeySequence::Back, this, [this] { _OnCDBack(); });
+  new QShortcut(QKeySequence::Forward, this, [this] { _OnCDForward(); });
   connect(mp_ui->buttonUp, &QPushButton::clicked, this, &GroBrowser::_OnCDUp);
   connect(mp_ui->buttonBack, &QPushButton::clicked, this, &GroBrowser::_OnCDBack);
   connect(mp_ui->buttonForward, &QPushButton::clicked, this, &GroBrowser::_OnCDForward);
@@ -165,9 +169,39 @@ std::vector<QString> GroBrowser::SelectedFiles() const
   return files;
 }
 
+bool GroBrowser::_MouseNavigation(QEvent* event)
+{
+  if (event->type() == QEvent::MouseButtonPress || event->type() == QEvent::MouseButtonDblClick)
+  {
+    auto* mouse_event = static_cast<QMouseEvent*>(event);
+    if (mouse_event->button() == Qt::BackButton)
+    {
+      event->accept();
+      _OnCDBack();
+      return true;
+    }
+    else if (mouse_event->button() == Qt::ForwardButton)
+    {
+      event->accept();
+      _OnCDForward();
+      return true;
+    }
+  }
+  return false;
+}
+
+bool GroBrowser::event(QEvent* event)
+{
+  return _MouseNavigation(event) || QDialog::event(event);
+}
+
 bool GroBrowser::eventFilter(QObject* watched, QEvent* event)
 {
+  if (_MouseNavigation(event))
+    return true;
+
   if (watched == mp_ui->listWidget)
+  {
     if (event->type() == QEvent::KeyPress)
     {
       auto* key_event = static_cast<QKeyEvent*>(event);
@@ -175,9 +209,13 @@ bool GroBrowser::eventFilter(QObject* watched, QEvent* event)
       {
         const auto selection = mp_ui->listWidget->selectedItems();
         if (selection.size() == 1)
+        {
+          event->accept();
           return _CD(selection[0]);
+        }
       }
     }
+  }
   return QDialog::eventFilter(watched, event);
 }
 
