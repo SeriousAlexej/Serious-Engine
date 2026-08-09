@@ -32,7 +32,7 @@ class GroBrowser;
 
 class QListWidgetItem;
 
-class GroBrowser : public QDialog {
+class GroBrowser final : public QDialog {
 public:
   GroBrowser(const char* filter, bool multiselection, const CTString& default_selection, QWidget* parent = nullptr);
   ~GroBrowser();
@@ -40,6 +40,9 @@ public:
   std::vector<QString> SelectedFiles() const;
 
   struct _FileNode;
+
+  void accept() final;
+  void reject() final;
 
 private:
   enum class HistoryDirection
@@ -49,6 +52,8 @@ private:
     New
   };
 
+  void _LoadState();
+  void _SaveState();
   bool _MouseNavigation(QEvent* event);
   bool event(QEvent* event) final;
   bool eventFilter(QObject* watched, QEvent* event) final;

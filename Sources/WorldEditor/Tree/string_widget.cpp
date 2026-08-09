@@ -106,9 +106,41 @@ EditStringDialog::EditStringDialog(const QString& string, QWidget* parent)
   mp_ui->plainTextEdit->setPlainText(string);
   connect(mp_ui->buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
   connect(mp_ui->buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
+  _LoadState();
 }
 
 QString EditStringDialog::Text() const
 {
   return mp_ui->plainTextEdit->toPlainText();
+}
+
+void EditStringDialog::accept()
+{
+  _SaveState();
+  QDialog::accept();
+}
+
+void EditStringDialog::reject()
+{
+  _SaveState();
+  QDialog::reject();
+}
+
+void EditStringDialog::_LoadState()
+{
+  char* buffer = nullptr;
+  UINT buffer_size = 0;
+  BOOL result = AfxGetApp()->GetProfileBinary(_T("General"), _T("Edit String Geometry"), (LPBYTE*)&buffer, &buffer_size);
+  if (result != 0 && buffer_size > 0 && buffer)
+  {
+    QByteArray buffer_qt(buffer, buffer_size);
+    delete[] buffer;
+    restoreGeometry(buffer_qt);
+  }
+}
+
+void EditStringDialog::_SaveState()
+{
+  QByteArray buffer = saveGeometry();
+  AfxGetApp()->WriteProfileBinary(_T("General"), _T("Edit String Geometry"), (LPBYTE)buffer.data(), buffer.size());
 }

@@ -141,6 +141,7 @@ GroBrowser::GroBrowser(const char* filter, bool multiselection, const CTString& 
   {
     QTimer::singleShot(0, this, &GroBrowser::_OnCacheReady);
   }
+  _LoadState();
 }
 
 GroBrowser::~GroBrowser()
@@ -167,6 +168,37 @@ std::vector<QString> GroBrowser::SelectedFiles() const
     }
 
   return files;
+}
+
+void GroBrowser::accept()
+{
+  _SaveState();
+  QDialog::accept();
+}
+
+void GroBrowser::reject()
+{
+  _SaveState();
+  QDialog::reject();
+}
+
+void GroBrowser::_LoadState()
+{
+  char* buffer = nullptr;
+  UINT buffer_size = 0;
+  BOOL result = AfxGetApp()->GetProfileBinary(_T("General"), _T("Gro Browser Geometry"), (LPBYTE*)&buffer, &buffer_size);
+  if (result != 0 && buffer_size > 0 && buffer)
+  {
+    QByteArray buffer_qt(buffer, buffer_size);
+    delete[] buffer;
+    restoreGeometry(buffer_qt);
+  }
+}
+
+void GroBrowser::_SaveState()
+{
+  QByteArray buffer = saveGeometry();
+  AfxGetApp()->WriteProfileBinary(_T("General"), _T("Gro Browser Geometry"), (LPBYTE)buffer.data(), buffer.size());
 }
 
 bool GroBrowser::_MouseNavigation(QEvent* event)

@@ -39,13 +39,20 @@ private:
 namespace Ui {
   class EditStringDialog;
 }
-class EditStringDialog : public QDialog
+class EditStringDialog final : public QDialog
 {
   Q_OBJECT
 public:
   EditStringDialog(const QString& string, QWidget* parent);
 
   QString Text() const;
+
+  void accept() final;
+  void reject() final;
+
+private:
+  void _LoadState();
+  void _SaveState();
 
 private:
   std::unique_ptr<Ui::EditStringDialog> mp_ui;
