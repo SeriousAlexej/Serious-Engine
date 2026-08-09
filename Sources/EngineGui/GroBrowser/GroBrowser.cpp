@@ -61,35 +61,29 @@ CacheBuilder::CacheBuilder(std::unique_ptr<GroBrowser::_FileNode>& root_node, QO
 void CacheBuilder::run()
 {
   mp_root_node = std::make_unique<GroBrowser::_FileNode>();
-  CDynamicStackArray_CTFileName game_files;
-  MakeDirList(game_files, CTString(""), "", DLI_RECURSIVE);
-  Max(game_files.Count());
-  for (INDEX i = 0; i < game_files.Count() && !isInterruptionRequested(); ++i)
+  const auto gro_files = GetGroFileCount();
+  Max(gro_files);
+  for (INDEX i = 0; i < gro_files && !isInterruptionRequested(); ++i)
   {
-    CTFileName full_filename;
-    CTFileNamePtr game_file = game_files[i];
-    const auto file_type = ExpandFilePath(EFP_READ, *game_file, full_filename);
-    if (file_type == EFP_BASEZIP || file_type == EFP_MODZIP)
+    CTFileName full_filename = GetGroFileAtIndex(i);
+    GroBrowser::_FileNode* current_parent = mp_root_node.get();
+    const std::string_view str_view(static_cast<const char*>(full_filename), full_filename.Length());
+    auto beg = std::begin(str_view);
+    const auto end = std::end(str_view);
+    while (true)
     {
-      GroBrowser::_FileNode* current_parent = mp_root_node.get();
-      const std::string_view str_view(static_cast<const char*>(full_filename), full_filename.Length());
-      auto beg = std::begin(str_view);
-      const auto end = std::end(str_view);
-      while (true)
-      {
-        auto next_beg = std::find(beg, end, '\\');
-        const auto name = QString::fromLocal8Bit(beg.operator->(), std::distance(beg, next_beg));
-        auto new_node = std::make_unique<GroBrowser::_FileNode>();
-        new_node->name = name;
-        new_node->parent = current_parent;
-        auto [inserted_node, dummy] = current_parent->children.try_emplace(name.toLower(), std::move(new_node));
-        current_parent = inserted_node->second.get();
-        if (next_beg == end)
-          break;
-        beg = std::next(next_beg);
-      }
-      Progress(current_parent->name);
+      auto next_beg = std::find(beg, end, '\\');
+      const auto name = QString::fromLocal8Bit(beg.operator->(), std::distance(beg, next_beg));
+      auto new_node = std::make_unique<GroBrowser::_FileNode>();
+      new_node->name = name;
+      new_node->parent = current_parent;
+      auto [inserted_node, dummy] = current_parent->children.try_emplace(name.toLower(), std::move(new_node));
+      current_parent = inserted_node->second.get();
+      if (next_beg == end)
+        break;
+      beg = std::next(next_beg);
     }
+    Progress(current_parent->name);
     FileDone(i + 1);
   }
   Calculated();
