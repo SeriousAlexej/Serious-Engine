@@ -242,8 +242,10 @@ bool GroBrowser::eventFilter(QObject* watched, QEvent* event)
         const auto selection = mp_ui->listWidget->selectedItems();
         if (selection.size() == 1)
         {
-          event->accept();
-          return _CD(selection[0]);
+          const auto res = _CD(selection[0]);
+          if (res)
+            event->accept();
+          return res;
         }
       }
     }
