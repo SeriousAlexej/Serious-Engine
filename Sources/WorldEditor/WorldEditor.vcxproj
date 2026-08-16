@@ -132,6 +132,7 @@
     </Link>
     <CustomBuildStep>
       <Command>copy Release\$(TargetName).exe $(SolutionDir)..\Bin\ &gt;nul
+copy $(SolutionDir)SeriousEngineCAPI\Release\SeriousEngineCAPI.dll $(SolutionDir)..\Bin\ &gt;nul
 copy $(SolutionDir)qtwinmigrateBuild\install\qtwinmigrate.dll $(SolutionDir)..\Bin\ &gt; nul
 copy $(SolutionDir)CrashRptBuild\bin\CrashRpt1403.dll $(SolutionDir)..\Bin\ &gt; nul
 copy $(SolutionDir)CrashRptBuild\bin\CrashSender1403.exe $(SolutionDir)..\Bin\ &gt; nul

@@ -568,6 +568,24 @@ void CWorldEditorApp::MyParseCommandLine(void)
   
 }
 
+static bool g_no_idle = false;
+CTFileName_* CAPI_FileRequester(
+  char* pchrTitle,
+  char* pchrFilters,
+  char* pchrRegistry,
+  char* pchrFileSelectedByDefault)
+{
+  struct _ScopedNoIdle
+  {
+    _ScopedNoIdle() { g_no_idle = true; }
+    ~_ScopedNoIdle() { g_no_idle = false; }
+  };
+  _ScopedNoIdle no_idle;
+  CTFileName res = _EngineGUI.FileRequester(pchrTitle, pchrFilters, pchrRegistry, "", pchrFileSelectedByDefault);
+  CTFileName_* res_tmp = CTFileName_clone(res);
+  return res_tmp;
+}
+
 BOOL CWorldEditorApp::SubInitInstance()
 {
   HICON app_icon = (HICON)LoadImage(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDR_MAINFRAME), IMAGE_ICON, 0, 0, LR_DEFAULTCOLOR);
@@ -617,6 +635,7 @@ BOOL CWorldEditorApp::SubInitInstance()
   // initialize entire engine
   SE_InitEngine("SeriousEditor");
   SE_LoadDefaultFonts();
+  SetFileRequesterCallback(&CAPI_FileRequester);
 
   // settings will be saved into registry instead of ini file
   if (_strModExt=="") {
@@ -2199,6 +2218,8 @@ void CWorldEditorApp::OnFilePreferences()
 
 BOOL CWorldEditorApp::OnIdle(LONG lCount)
 {
+  if (g_no_idle)
+    return FALSE;
   if (m_showing_modal_dialog)
     return CWinApp::OnIdle(lCount);
 

@@ -388,16 +388,6 @@ CTFileName CEngineGUI::FileRequester(
   return CTString( "");
 }
 
-ENGINEGUI_API CTFileName FileRequester(
-  char *pchrTitle, 
-  char *pchrFilters,
-  char *pchrRegistry,
-  char *pchrFileSelectedByDefault)
-{
-  return _EngineGUI.FileRequester(pchrTitle, pchrFilters, pchrRegistry, "", pchrFileSelectedByDefault);
-}
-
-
 CTFileName CEngineGUI::BrowseTexture(CTFileName fnDefaultSelected/*=""*/,
                                       const char *pchrIniKeyName/*=KEY_NAME_REQUEST_FILE_DIR*/,
                                       const char *pchrWindowTitle/*="Choose texture"*/,
