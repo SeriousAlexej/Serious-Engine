@@ -350,6 +350,8 @@ public:
   BOOL m_bFBMAddNegativeValues;
   BOOL m_bFBMRandomOffset;
 
+  BOOL m_displayCameraViewfinder = TRUE;
+
   UWORD m_uwEditAltitude;
   FLOAT m_fPaintPower;
   FLOAT m_fSmoothPower;

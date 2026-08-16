@@ -130,6 +130,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CMDIFrameWnd)
   //ON_COMMAND(ID_HELP_FINDER, CMDIFrameWnd::OnHelpFinder)
   //ON_COMMAND(ID_HELP, OnHelpFinder)
   ON_COMMAND(ID_CONTEXT_HELP, CMDIFrameWnd::OnContextHelp)
+  ON_COMMAND(ID_DISPLAY_CAMERA_VIEWFINDER, OnDisplayCameraViewfinder)
+  ON_UPDATE_COMMAND_UI(ID_DISPLAY_CAMERA_VIEWFINDER, OnUpdateDisplayCameraViewfinder)
 END_MESSAGE_MAP()
 
 static UINT indicators[] =
@@ -1657,6 +1659,19 @@ void CMainFrame::OnHelpFinder()
     }
   }
   theApp.DisplayHelp(CTFILENAME("Help\\SeriousEditorDefault.hlk"), HH_DISPLAY_TOPIC, NULL);
+}
+
+void CMainFrame::OnDisplayCameraViewfinder()
+{
+  theApp.m_displayCameraViewfinder = theApp.m_displayCameraViewfinder ? FALSE : TRUE;
+  auto* pDoc = theApp.GetDocument();
+  if (pDoc)
+    pDoc->UpdateAllViews(nullptr);
+}
+
+void CMainFrame::OnUpdateDisplayCameraViewfinder(CCmdUI* pCmdUI)
+{
+  pCmdUI->SetCheck(theApp.m_displayCameraViewfinder);
 }
 
 void CMainFrame::SetStatusBarMessage( CTString strMessage, INDEX iPane, FLOAT fTime)

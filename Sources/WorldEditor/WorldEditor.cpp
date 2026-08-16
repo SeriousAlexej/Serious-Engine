@@ -1085,7 +1085,10 @@ void CWorldEditorApp::ReadFromIniFileOnInit(void)
   GET_FLAG( m_bFBMAddNegativeValues);  
 
   INI_READ( "FBM Random offset", "NO");
-  GET_FLAG( m_bFBMRandomOffset);  
+  GET_FLAG( m_bFBMRandomOffset);
+
+  INI_READ("Display Camera Viewfinder", "YES");
+  GET_FLAG(m_displayCameraViewfinder);
 
   m_bShowTipOfTheDay = GetProfileInt(L"World editor", L"Show Tip of the Day", TRUE);
   m_iCurrentTipOfTheDay = GetProfileInt(L"World editor", L"Current Tip of the Day", 0);
@@ -1734,6 +1737,9 @@ void CWorldEditorApp::WriteToIniFileOnEnd(void)
 
   SET_FLAG( m_bFBMRandomOffset);  
   INI_WRITE( "FBM Random offset");
+
+  SET_FLAG(m_displayCameraViewfinder);
+  INI_WRITE("Display Camera Viewfinder");
 
   WriteProfileInt(L"World editor", L"Show Tip of the Day", m_bShowTipOfTheDay);
   WriteProfileInt(L"World editor", L"Current Tip of the Day", m_iCurrentTipOfTheDay);

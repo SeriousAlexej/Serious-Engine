@@ -227,6 +227,7 @@ public:
   void CreatePrimitiveCalledFromPopup();
   void RenderBackdropTexture(CDrawPortPtr pDP,FLOAT3D v0, FLOAT3D v1, FLOAT3D v2, FLOAT3D v3,
                              CTextureObject &to);
+  void RenderCameraViewfinder(CEntityPtr camera_entity, CDrawPortPtr pdp) const;
   void OnAlignPrimitive(void);
   void CenterSelected(void);
   void AllignBox( FLOATaabbox3D bbox);

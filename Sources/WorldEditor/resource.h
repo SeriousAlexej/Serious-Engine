@@ -1322,6 +1322,7 @@
 #define ID_QUICKTEST_GAMEMODE_4         33425
 #define ID_QUICKTEST_GAMEMODE_5         33426
 #define ID_QUICKTEST_IS_MULTIPLAYER     33427
+#define ID_DISPLAY_CAMERA_VIEWFINDER    33428
 #define IDW_TOOLBAR_MAIN                0xE800
 #define IDW_STATUSBAR                   0xE801
 #define IDW_TOOLBAR_CSG                 0xE802

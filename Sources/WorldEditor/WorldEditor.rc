@@ -404,6 +404,8 @@ BEGIN
         MENUITEM "&Property combo",             ID_VIEW_PROPERTYCOMBO
         MENUITEM "&Property tree",              ID_VIEW_PROPERTY_TREE
         MENUITEM "&Info window\tQ, Ctrl+I",     ID_VIEW_INFOWINDOW
+        MENUITEM SEPARATOR
+        MENUITEM "&Display camera viewfinder",  ID_DISPLAY_CAMERA_VIEWFINDER
     END
     POPUP "&Help"
     BEGIN
@@ -507,6 +509,8 @@ BEGIN
         MENUITEM "&Property combo",             ID_VIEW_PROPERTYCOMBO
         MENUITEM "&Property tree",              ID_VIEW_PROPERTY_TREE
         MENUITEM "&Info window\tQ, Ctrl+I",     ID_VIEW_INFOWINDOW
+        MENUITEM SEPARATOR
+        MENUITEM "&Display camera viewfinder",  ID_DISPLAY_CAMERA_VIEWFINDER
     END
     POPUP "&Window"
     BEGIN

@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <SeriousEngineCppAPI/Terrain/TerrainMisc.h>
 #include <SeriousEngineCppAPI/Classes/BaseEvents.h>
 #include <SeriousEngineCppAPI/Base/Relations.h>
+#include <SeriousEngineCppAPI/Graphics/Shader.h>
 #include <EngineGui/TextureMapping_Utils.h>
 
 #include <vector>
@@ -753,6 +754,121 @@ void CWorldEditorView::RenderBackdropTexture(CDrawPortPtr pDP,
   }
 }
 
+void CWorldEditorView::RenderCameraViewfinder(CEntityPtr camera_entity, CDrawPortPtr pdp) const
+{
+  static SLONG widescreen_offset = MAX_SLONG;
+  static SLONG fov_offset = MAX_SLONG;
+  static SLONG target_offset = MAX_SLONG;
+  static SLONG marker_fov_offset = MAX_SLONG;
+  static bool performed_lookup = false;
+  static bool performed_target_lookup = false;
+  if (!performed_lookup)
+  {
+    performed_lookup = true;
+    if (const auto widescreen_property = camera_entity->PropertyForName("WideScreen"))
+      widescreen_offset = widescreen_property->ep_slOffset;
+    if (const auto fov_property = camera_entity->PropertyForName("FOV"))
+      fov_offset = fov_property->ep_slOffset;
+    if (const auto target_property = camera_entity->PropertyForName("Target"))
+      target_offset = target_property->ep_slOffset;
+  }
+  CEntityPointer_* ptarget_marker = target_offset != MAX_SLONG ? ENTITY_PROPERTY(camera_entity, target_offset, CEntityPointer_) : nullptr;
+  CEntityPtr target_marker(ptarget_marker ? *CEntityPointer_ep_pen(ptarget_marker) : nullptr);
+  if (target_marker && !performed_target_lookup)
+  {
+    performed_target_lookup = true;
+    if (const auto fov_property = target_marker->PropertyForName("FOV"))
+      marker_fov_offset = fov_property->ep_slOffset;
+  }
+
+  FLOAT inv_aspect = 3.0f / 4.0f;
+  if (widescreen_offset != MAX_SLONG && *ENTITY_PROPERTY(camera_entity, widescreen_offset, BOOL))
+    inv_aspect = 9.0f / 16.0f;
+
+  const PIX camera_width = static_cast<PIX>(pdp->GetWidth() / 3.0);
+  const PIX camera_height = static_cast<PIX>(camera_width * inv_aspect);
+  const double spacing = camera_width / 10.0;
+  if (camera_height + spacing > pdp->GetHeight() || camera_height < 50)
+    return;
+
+  const double inv_parent_width = 1.0 / pdp->GetWidth();
+  const double inv_parent_height = 1.0 / pdp->GetHeight();
+  CDrawPort camera_dp(pdp.get_handle(),
+    1.0 - (camera_width + spacing) * inv_parent_width,
+    1.0 - (camera_height + spacing) * inv_parent_height,
+    camera_width * inv_parent_width,
+    camera_height * inv_parent_height);
+
+  CPerspectiveProjection3D proj;
+  proj.FOVL() = fov_offset != MAX_SLONG ? *ENTITY_PROPERTY(camera_entity, fov_offset, FLOAT) : 90.0f;
+  if (target_marker &&
+    (target_marker->GetPlacement().pl_PositionVector - camera_entity->GetPlacement().pl_PositionVector).Length() < 0.01f &&
+    marker_fov_offset != MAX_SLONG)
+    proj.FOVL() = *ENTITY_PROPERTY(target_marker, marker_fov_offset, FLOAT);
+  proj.ScreenBBoxL() = FLOATaabbox2D(
+    FLOAT2D(0.0f, 0.0f),
+    FLOAT2D(camera_dp.GetWidth(), camera_dp.GetHeight()));
+  proj.FrontClipDistanceL() = 0.05f;
+  proj.AspectRatioL() = 1.0f;
+
+  CAnyProjection3D apr;
+  apr = proj;
+  apr->ViewerPlacementL() = camera_entity->GetPlacement();
+  apr->ObjectPlacementL() = CPlacement3D(FLOAT3D(0, 0, 0), ANGLE3D(0, 0, 0));
+  apr->Prepare();
+
+  pdp->Unlock();
+  camera_dp.Lock();
+  const auto prev_world_render_prefs = _wrpWorldRenderPrefs;
+  const auto prev_model_render_prefs = _mrpModelRenderPrefs;
+
+  _wrpWorldRenderPrefs.SetHiddenLinesOn(FALSE);
+  _wrpWorldRenderPrefs.SetEditorModelsOn(FALSE);
+  _wrpWorldRenderPrefs.SetFieldBrushesOn(FALSE);
+  _wrpWorldRenderPrefs.SetBackgroundTextureOn(TRUE);
+  _wrpWorldRenderPrefs.SetVerticesFillType(CWorldRenderPrefs::FT_NONE);
+  _wrpWorldRenderPrefs.SetEdgesFillType(CWorldRenderPrefs::FT_NONE);
+  _wrpWorldRenderPrefs.SetPolygonsFillType(CWorldRenderPrefs::FT_TEXTURE);
+  _wrpWorldRenderPrefs.SetLensFlaresType(CWorldRenderPrefs::LFT_REFLECTIONS_AND_GLARE);
+  _wrpWorldRenderPrefs.SetShowTargetsOn(FALSE);
+  _wrpWorldRenderPrefs.SetShowEntityNamesOn(FALSE);
+  _wrpWorldRenderPrefs.SetSelectionType(CWorldRenderPrefs::ST_NONE);
+  _mrpModelRenderPrefs.SetRenderType(RT_TEXTURE);
+  _mrpModelRenderPrefs.SetShadingType(RT_SHADING_PHONG);
+  _mrpModelRenderPrefs.SetShadowQuality(0);
+  _mrpModelRenderPrefs.SetWire(FALSE);
+  _mrpModelRenderPrefs.SetHiddenLines(FALSE);
+  _mrpModelRenderPrefs.BBoxFrameShow(FALSE);
+  _mrpModelRenderPrefs.BBoxAllShow(FALSE);
+
+  CWorld camera_world(camera_entity->en_pwoWorld, false);
+  ::RenderView(camera_world, camera_entity, apr, camera_dp);
+
+  camera_dp.InitTexture(nullptr);
+  const auto prev_blend_equation = shaGetBlendEquation();
+  shaEnableBlend();
+  shaBlendFunc(GFX_ONE, GFX_ONE);
+  shaBlendEquation(GFX_BLENDEQ_SUBTRACT);
+
+  camera_dp.AddTexture(
+    camera_dp.GetWidth() / 2, 0,
+    camera_dp.GetWidth() / 2 + 1, camera_dp.GetHeight(),
+    C_WHITE | CT_OPAQUE);
+
+  camera_dp.AddTexture(
+    0, camera_dp.GetHeight() / 2,
+    camera_dp.GetWidth(), camera_dp.GetHeight() / 2 + 1,
+    C_WHITE | CT_OPAQUE);
+
+  camera_dp.FlushRenderingQueue();
+  shaBlendEquation(prev_blend_equation);
+
+  _wrpWorldRenderPrefs = prev_world_render_prefs;
+  _mrpModelRenderPrefs = prev_model_render_prefs;
+  camera_dp.Unlock();
+  pdp->Lock();
+}
+
 BOOL _bCursorMoved=FALSE;
 void CWorldEditorView::RenderView( CDrawPortPtr pDP)
 {
@@ -1286,7 +1402,14 @@ void CWorldEditorView::RenderView( CDrawPortPtr pDP)
     // create renderer and render world
     ::RenderView(pDoc->m_woWorld, NULL, prProjection, *pDP);
   }
-  
+
+  if (theApp.m_displayCameraViewfinder && bPerspectiveOn && pDoc->m_selEntitySelection.Count() == 1)
+  {
+    CEntityPtr selected_entity = pDoc->m_selEntitySelection.GetFirstInSelection();
+    if (selected_entity && IsOfClass_(selected_entity.get_handle(), "Camera"))
+      RenderCameraViewfinder(selected_entity, pDP);
+  }
+
   // don't allow further laso select tests
   if( m_bRequestVtxLassoSelect || m_bRequestEntityLassoSelect)
   {

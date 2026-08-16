@@ -191,6 +191,8 @@ public:
   afx_msg void OnLightAnimation();
   afx_msg void OnTimer(UINT nIDEvent);
   afx_msg void OnHelpFinder();
+  afx_msg void OnDisplayCameraViewfinder();
+  afx_msg void OnUpdateDisplayCameraViewfinder(CCmdUI* pCmdUI);
   //}}AFX_MSG
   DECLARE_MESSAGE_MAP()
 };
