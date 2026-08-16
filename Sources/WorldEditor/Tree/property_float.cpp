@@ -29,7 +29,7 @@ public:
   QWidget* CreateEditor(QWidget* parent) override
   {
     auto* editor = new SpinBoxNoTrailing(parent);
-    editor->setRange(FLT_MIN, FLT_MAX);
+    editor->setRange(-FLT_MAX, FLT_MAX);
     editor->setDecimals(4);
     editor->setSingleStep(0.25);
     editor->setValue(_WrappedValue(_CurrentPropValueT<FLOAT>()));
