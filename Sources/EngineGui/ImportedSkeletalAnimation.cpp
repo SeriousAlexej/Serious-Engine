@@ -148,20 +148,20 @@ ImportedSkeletalAnimation::ImportedSkeletalAnimation(
   const aiScene* aiSceneMain = importer.ReadFile(strFile, 0);
 
   if (!aiSceneMain)
-    ThrowF_t("Unable to load file %s: %s", (const char*)fileName, importer.GetErrorString());
+    ThrowF_t("Unable to load file %s: %s", static_cast<const char*>(fileName), importer.GetErrorString());
 
   if (aiSceneMain->mNumAnimations == 0)
-    ThrowF_t("'%s' contains no animations!", (const char*)fileName);
+    ThrowF_t("'%s' contains no animations!", static_cast<const char*>(fileName));
 
   if (aiSceneMain->mNumAnimations > 1 && animName.empty())
-    ThrowF_t("'%s' contains multiple animations but it is not known which one to use!\n'ANIM_NAME_IN_FILE <animation name>' expected!", (const char*)fileName);
+    ThrowF_t("'%s' contains multiple animations but it is not known which one to use!\n'ANIM_NAME_IN_FILE <animation name>' expected!", static_cast<const char*>(fileName));
 
   aiAnimation* animation = FindAnimation(*aiSceneMain, animName);
   if (!animation)
-    ThrowF_t("Animation '%s' not found in file '%s'!", animName.c_str(), (const char*)fileName);
+    ThrowF_t("Animation '%s' not found in file '%s'!", animName.c_str(), static_cast<const char*>(fileName));
 
   if (animation->mNumChannels <= 0)
-    ThrowF_t("Animation '%s' in file '%s' has no bone transformations!\nOnly skeletal animation is supported!", animName.c_str(), (const char*)fileName);
+    ThrowF_t("Animation '%s' in file '%s' has no bone transformations!\nOnly skeletal animation is supported!", animName.c_str(), static_cast<const char*>(fileName));
 
   size_t numFrames = optNumFrames;
   if (numFrames == 0)

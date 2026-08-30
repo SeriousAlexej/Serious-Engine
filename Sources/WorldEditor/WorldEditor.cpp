@@ -2513,7 +2513,7 @@ void CWorldEditorApp::OnConvertWorlds()
       }
       else
       {
-        ThrowF_t( "Unsupported file format: %s", (CTString&)fnmExt);
+        ThrowF_t( "Unsupported file format: %s", static_cast<const char*>((CTString&)fnmExt));
       }
     }
 

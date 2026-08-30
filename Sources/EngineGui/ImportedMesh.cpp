@@ -310,7 +310,7 @@ void ImportedMesh::FillFromFile(const CTFileName& fnmFileName, const FLOATmatrix
   }
   else
   {
-    ThrowF_t("Unable to load file %s: %s", (const char*)fnmFileName, importerWithoutNormals.GetErrorString());
+    ThrowF_t("Unable to load file %s: %s", static_cast<const char*>(fnmFileName), importerWithoutNormals.GetErrorString());
   }
 }
 

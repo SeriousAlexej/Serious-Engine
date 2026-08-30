@@ -317,7 +317,7 @@ BOOL CDlgCreateAnimatedTexture::OnInitDialog()
       {
         // throw error
         ThrowF_t("File '%s' has unsupported file format", 
-          (CTString&)(_fnmApplicationPath+m_fnSourceFileName));
+          static_cast<const char*>((CTString&)(_fnmApplicationPath+m_fnSourceFileName)));
       }
       // get dimensions
       m_pixSourceWidth = iiImageInfo.ii_Width;

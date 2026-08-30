@@ -72,7 +72,7 @@ void ImportedSkeleton::FillFromFile(const CTFileName& fileName)
   if (aiSceneMain)
     FillFromScene(*aiSceneMain);
   else
-    ThrowF_t("Unable to load file %s: %s", (const char*)fileName, importer.GetErrorString());
+    ThrowF_t("Unable to load file %s: %s", static_cast<const char*>(fileName), importer.GetErrorString());
 }
 
 bool ImportedSkeleton::ContainsSkeleton(const CTFileName& fileName)

@@ -172,7 +172,7 @@ void CDlgCreateEffectTexture::SetNewBaseTexture( CTFileName fnNewBase)
       if( pTD->HasEffectTexture())
       {
         _pTextureStock_Release( *pTD);
-        ThrowF_t( "Texture '%s' is an effect texture.", (CTString&)fnNewBase);
+        ThrowF_t( "Texture '%s' is an effect texture.", static_cast<const char*>((CTString&)fnNewBase));
       }
       // if there is base texture obtained, release it
       if( m_tdCreated.td_ptdBaseTexture!= NULL) 

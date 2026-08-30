@@ -344,7 +344,7 @@ void CEditModel::LoadModelAnimationData_t(
 
     if( edm_md.md_VerticesCt != mesh.m_vertices.size()) {
       ThrowF_t( "File %s, one of animation frame files has wrong number of points.", 
-        frameGenerator.m_filename);
+        static_cast<const char*>(frameGenerator.m_filename));
     }
 
     // normalize (clear) our Bounding Box
@@ -1463,7 +1463,7 @@ void CEditModel::UpdateMipModels_t(CTFileName &fnScriptName) // throw char *
       ThrowF_t(
         "It is unlikely that mip-model \"%s\" is valid.\n"
         "It contains more vertices than main mip-model so it can't be mip-model.",
-        mip);
+        static_cast<const char*>(mip));
     AddMipModel(mesh);
   }
 
@@ -2172,8 +2172,7 @@ void CEditModel::LoadMapping_t( CTFileName fnFileName, INDEX iMip /*=-1*/)
           (void) strError;
           edm_aamAttachedModels.clear();
           edm_md.md_aampAttachedPosition.Clear();
-          ThrowF_t( "Error ocured while reading attahment model, maybe model does"
-                    " not exist.");
+          ThrowF_t( "Error ocured while reading attahment model, maybe model does not exist.");
         }
       }
       FOREACHINDYNAMICARRAY(edm_md.md_aampAttachedPosition, CAttachedModelPosition, itamp)
