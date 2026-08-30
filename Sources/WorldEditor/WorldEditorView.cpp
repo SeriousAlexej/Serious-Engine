@@ -819,27 +819,30 @@ void CWorldEditorView::RenderCameraViewfinder(CEntityPtr camera_entity, CDrawPor
 
   pdp->Unlock();
   camera_dp.Lock();
-  const auto prev_world_render_prefs = _wrpWorldRenderPrefs;
-  const auto prev_model_render_prefs = _mrpModelRenderPrefs;
 
-  _wrpWorldRenderPrefs.SetHiddenLinesOn(FALSE);
-  _wrpWorldRenderPrefs.SetEditorModelsOn(FALSE);
-  _wrpWorldRenderPrefs.SetFieldBrushesOn(FALSE);
-  _wrpWorldRenderPrefs.SetBackgroundTextureOn(TRUE);
-  _wrpWorldRenderPrefs.SetVerticesFillType(CWorldRenderPrefs::FT_NONE);
-  _wrpWorldRenderPrefs.SetEdgesFillType(CWorldRenderPrefs::FT_NONE);
-  _wrpWorldRenderPrefs.SetPolygonsFillType(CWorldRenderPrefs::FT_TEXTURE);
-  _wrpWorldRenderPrefs.SetLensFlaresType(CWorldRenderPrefs::LFT_REFLECTIONS_AND_GLARE);
-  _wrpWorldRenderPrefs.SetShowTargetsOn(FALSE);
-  _wrpWorldRenderPrefs.SetShowEntityNamesOn(FALSE);
-  _wrpWorldRenderPrefs.SetSelectionType(CWorldRenderPrefs::ST_NONE);
-  _mrpModelRenderPrefs.SetRenderType(RT_TEXTURE);
-  _mrpModelRenderPrefs.SetShadingType(RT_SHADING_PHONG);
-  _mrpModelRenderPrefs.SetShadowQuality(0);
-  _mrpModelRenderPrefs.SetWire(FALSE);
-  _mrpModelRenderPrefs.SetHiddenLines(FALSE);
-  _mrpModelRenderPrefs.BBoxFrameShow(FALSE);
-  _mrpModelRenderPrefs.BBoxAllShow(FALSE);
+  CWorldRenderPrefs world_reder_prefs(_wrpWorldRenderPrefs_(), false);
+  CModelRenderPrefs model_render_prefs(_mrpModelRenderPrefs_(), false);
+  const auto prev_world_render_prefs = world_reder_prefs;
+  const auto prev_model_render_prefs = model_render_prefs;
+
+  world_reder_prefs.SetHiddenLinesOn(FALSE);
+  world_reder_prefs.SetEditorModelsOn(FALSE);
+  world_reder_prefs.SetFieldBrushesOn(FALSE);
+  world_reder_prefs.SetBackgroundTextureOn(TRUE);
+  world_reder_prefs.SetVerticesFillType(CWorldRenderPrefs::FT_NONE);
+  world_reder_prefs.SetEdgesFillType(CWorldRenderPrefs::FT_NONE);
+  world_reder_prefs.SetPolygonsFillType(CWorldRenderPrefs::FT_TEXTURE);
+  world_reder_prefs.SetLensFlaresType(CWorldRenderPrefs::LFT_REFLECTIONS_AND_GLARE);
+  world_reder_prefs.SetShowTargetsOn(FALSE);
+  world_reder_prefs.SetShowEntityNamesOn(FALSE);
+  world_reder_prefs.SetSelectionType(CWorldRenderPrefs::ST_NONE);
+  model_render_prefs.SetRenderType(RT_TEXTURE);
+  model_render_prefs.SetShadingType(RT_SHADING_PHONG);
+  model_render_prefs.SetShadowQuality(0);
+  model_render_prefs.SetWire(FALSE);
+  model_render_prefs.SetHiddenLines(FALSE);
+  model_render_prefs.BBoxFrameShow(FALSE);
+  model_render_prefs.BBoxAllShow(FALSE);
 
   CWorld camera_world(camera_entity->en_pwoWorld, false);
   ::RenderView(camera_world, camera_entity, apr, camera_dp);
@@ -863,8 +866,8 @@ void CWorldEditorView::RenderCameraViewfinder(CEntityPtr camera_entity, CDrawPor
   camera_dp.FlushRenderingQueue();
   shaBlendEquation(prev_blend_equation);
 
-  _wrpWorldRenderPrefs = prev_world_render_prefs;
-  _mrpModelRenderPrefs = prev_model_render_prefs;
+  world_reder_prefs = prev_world_render_prefs;
+  model_render_prefs = prev_model_render_prefs;
   camera_dp.Unlock();
   pdp->Lock();
 }
@@ -1403,13 +1406,6 @@ void CWorldEditorView::RenderView( CDrawPortPtr pDP)
     ::RenderView(pDoc->m_woWorld, NULL, prProjection, *pDP);
   }
 
-  if (theApp.m_displayCameraViewfinder && bPerspectiveOn && pDoc->m_selEntitySelection.Count() == 1)
-  {
-    CEntityPtr selected_entity = pDoc->m_selEntitySelection.GetFirstInSelection();
-    if (selected_entity && IsOfClass_(selected_entity.get_handle(), "Camera"))
-      RenderCameraViewfinder(selected_entity, pDP);
-  }
-
   // don't allow further laso select tests
   if( m_bRequestVtxLassoSelect || m_bRequestEntityLassoSelect)
   {
@@ -1438,6 +1434,12 @@ void CWorldEditorView::RenderView( CDrawPortPtr pDP)
     }
   }
 
+  if (theApp.m_displayCameraViewfinder && bPerspectiveOn && pDoc->m_selEntitySelection.Count() == 1)
+  {
+    CEntityPtr selected_entity = pDoc->m_selEntitySelection.GetFirstInSelection();
+    if (selected_entity && IsOfClass_(selected_entity.get_handle(), "Camera"))
+      RenderCameraViewfinder(selected_entity, pDP);
+  }
 
   prProjection->DepthBufferNearL() = 0.0f;
   prProjection->DepthBufferFarL()  = 0.9f;
