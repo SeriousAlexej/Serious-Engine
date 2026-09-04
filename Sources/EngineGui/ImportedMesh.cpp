@@ -43,6 +43,99 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <map>
 #include <vector>
 
+struct FastPlacement3D
+{
+  FastPlacement3D()
+  {
+    m_position = FLOAT3D(0, 0, 0);
+    MakeRotationMatrixFast(m_fromRot, ANGLE3D(0, 0, 0));
+  }
+
+  FastPlacement3D(const FLOATmatrix4D& t)
+  {
+    m_position = FLOAT3D(t(1, 4), t(2, 4), t(3, 4));
+    m_fromRot(1, 1) = t(1, 1);
+    m_fromRot(2, 1) = t(2, 1);
+    m_fromRot(3, 1) = t(3, 1);
+    m_fromRot(1, 2) = t(1, 2);
+    m_fromRot(2, 2) = t(2, 2);
+    m_fromRot(3, 2) = t(3, 2);
+    m_fromRot(1, 3) = t(1, 3);
+    m_fromRot(2, 3) = t(2, 3);
+    m_fromRot(3, 3) = t(3, 3);
+  }
+
+  FastPlacement3D(const FLOAT3D& pos, const FLOAT3D axis[3])
+  {
+    m_position = pos;
+    m_fromRot(1, 1) = axis[0](1);
+    m_fromRot(2, 1) = axis[0](2);
+    m_fromRot(3, 1) = axis[0](3);
+    m_fromRot(1, 2) = axis[1](1);
+    m_fromRot(2, 2) = axis[1](2);
+    m_fromRot(3, 2) = axis[1](3);
+    m_fromRot(1, 3) = axis[2](1);
+    m_fromRot(2, 3) = axis[2](2);
+    m_fromRot(3, 3) = axis[2](3);
+  }
+
+  FastPlacement3D(const FLOAT3D& pos, const ANGLE3D& rot)
+  {
+    m_position = pos;
+    MakeRotationMatrixFast(m_fromRot, rot);
+  }
+
+  FLOAT3D AxisX() const
+  {
+    return FLOAT3D(m_fromRot(1, 1), m_fromRot(2, 1), m_fromRot(3, 1));
+  }
+
+  FLOAT3D AxisY() const
+  {
+    return FLOAT3D(m_fromRot(1, 2), m_fromRot(2, 2), m_fromRot(3, 2));
+  }
+
+  FLOAT3D AxisZ() const
+  {
+    return FLOAT3D(m_fromRot(1, 3), m_fromRot(2, 3), m_fromRot(3, 3));
+  }
+
+  void RelativeToAbsolute(const FastPlacement3D& fp)
+  {
+    m_fromRot = fp.m_fromRot * m_fromRot;
+    m_position = (m_position * fp.m_fromRot) + fp.m_position;
+  }
+
+  void AbsoluteToRelative(const FastPlacement3D& fp)
+  {
+    m_fromRot = !fp.m_fromRot * m_fromRot;
+    m_position = (m_position - fp.m_position) * !fp.m_fromRot;
+  }
+
+  FLOAT3D RelativeToAbsolutePosition(const FLOAT3D& f) const
+  {
+    return (f * m_fromRot) + m_position;
+  }
+
+  FLOAT3D AbsoluteToRelativePosition(const FLOAT3D& f) const
+  {
+    return (f - m_position) * !m_fromRot;
+  }
+
+  FLOAT3D RelativeToAbsoluteDirection(const FLOAT3D& f) const
+  {
+    return f * m_fromRot;
+  }
+
+  FLOAT3D AbsoluteToRelativeDirection(const FLOAT3D& f) const
+  {
+    return f * !m_fromRot;
+  }
+
+  FLOATmatrix3D m_fromRot;
+  FLOAT3D m_position;
+};
+
 template<>
 struct std::hash<aiVector3D>
 {
@@ -239,7 +332,7 @@ ImportedMesh::ImportedMesh(const CTFileName& fnmFileName, const FLOATmatrix3D& m
   FillFromFile(fnmFileName, mTransform);
 }
 
-void ImportedMesh::ApplySkinning(const ImportedSkeleton& animSkeleton, const FLOATmatrix3D& mTransform)
+void ImportedMesh::ApplySkinning(const ImportedSkeleton& animSkeleton, const FLOATmatrix3D& mTransform, const std::optional<std::string>& originBone)
 {
   struct _TransformsCache
   {
@@ -278,6 +371,20 @@ void ImportedMesh::ApplySkinning(const ImportedSkeleton& animSkeleton, const FLO
         animBoneTransform.Diagonal(1.0f);
       const FLOATmatrix4D transform = animBoneTransform * weightBone.m_offset;
       result += (vertex * transform) * weight.second;
+    }
+
+    if (originBone.has_value())
+    {
+      auto originBoneIt = animSkeleton.m_bones.find(*originBone);
+      if (originBoneIt != animSkeleton.m_bones.end())
+      {
+        const FastPlacement3D originBonePl(transformCache.GetAbsoluteTransform(originBoneIt->second));
+        FastPlacement3D vtxPl(FLOAT3D(result(1), result(2), result(3)), ANGLE3D(0, 0, 0));
+        vtxPl.AbsoluteToRelative(originBonePl);
+        result(1) = vtxPl.m_position(1);
+        result(2) = vtxPl.m_position(2);
+        result(3) = vtxPl.m_position(3);
+      }
     }
 
     vtx3D = FLOAT3D(result(1), result(2), result(3)) * mTransform;

@@ -26,9 +26,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <QMessageBox>
 #include <QMenu>
 
-static constexpr int g_label = 8800;
-static constexpr int g_none = 42;
-static constexpr int g_browse = 1337;
+static constexpr int g_label = -1;
+static constexpr int g_none = -2;
+static constexpr int g_browse = -3;
 
 ModelConfigurationEditor::ModelConfigurationEditor(ModelScript& script, QWidget* parent)
   : QDialog(parent)
@@ -214,6 +214,25 @@ void ModelConfigurationEditor::_FillSkelAnimFile()
   mp_ui->comboSourceFile->setToolTip(static_cast<const char*>(src));
   mp_ui->comboSourceFile->addItem("(browse)", g_browse);
   mp_ui->comboSourceFile->setCurrentIndex(mp_ui->comboSourceFile->findData(g_label));
+}
+
+void ModelConfigurationEditor::_FillSkelBones()
+{
+  const auto& currAnim = m_script.m_animations[mp_ui->listAnims->currentRow()];
+  QSignalBlocker block(mp_ui->comboRelativeOriginBone);
+  mp_ui->comboRelativeOriginBone->clear();
+  if (currAnim.m_type != ModelScript::Animation::Type::Skeletal)
+    return;
+  const auto& src = currAnim.m_frames.front();
+  ImportedSkeleton skeleton;
+  skeleton.FillFromFile(src);
+  mp_ui->comboRelativeOriginBone->addItem("(none)", g_none);
+  for (const auto& [bone_name, bone] : skeleton.m_bones)
+    mp_ui->comboRelativeOriginBone->addItem(QString::fromStdString(bone_name));
+  if (currAnim.m_optOriginBone.has_value())
+    mp_ui->comboRelativeOriginBone->setCurrentIndex(mp_ui->comboRelativeOriginBone->findText(QString::fromStdString(*currAnim.m_optOriginBone)));
+  else
+    mp_ui->comboRelativeOriginBone->setCurrentIndex(0);
 }
 
 void ModelConfigurationEditor::_FillAnimSourceNames(const std::vector<std::string>& animNames)
@@ -467,6 +486,7 @@ void ModelConfigurationEditor::_FillAnimWidgets(ModelScript::Animation& anim)
 
   _FillFrames();
   _FillSkelAnimFile();
+  _FillSkelBones();
   _FillAnimSourceNames(ImportedSkeletalAnimation::GetAnimationsInFile(anim.m_frames.front()));
   _FillRefSkeleton();
 
@@ -485,6 +505,7 @@ void ModelConfigurationEditor::_FillAnimWidgets(ModelScript::Animation& anim)
 
   m_animConnections.emplace_back(connect(mp_ui->comboAnimSourceName, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this, p_anim](int index)
     { p_anim->m_customSourceName = mp_ui->comboAnimSourceName->itemData(index).toString().toStdString(); }));
+  m_animConnections.emplace_back(connect(mp_ui->comboRelativeOriginBone, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &ModelConfigurationEditor::_OnPickOriginBone));
   m_animConnections.emplace_back(connect(mp_ui->comboReferenceSkeleton, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &ModelConfigurationEditor::_OnPickRefSkeleton));
   m_animConnections.emplace_back(connect(mp_ui->comboSourceFile, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &ModelConfigurationEditor::_OnPickSkelAnimFile));
   m_animConnections.emplace_back(connect(p_nameEdit, &QLineEdit::textEdited, this, [this, p_anim](const QString& n)
@@ -572,12 +593,22 @@ void ModelConfigurationEditor::_OnPickSkelAnimFile(int index)
 
   src = newSrc;
   _FillSkelAnimFile();
+  _FillSkelBones();
   _FillAnimSourceNames(anims);
 
   if (anims.size() <= 1)
     currAnim.m_customSourceName = std::nullopt;
   else
     currAnim.m_customSourceName = anims.front();
+}
+
+void ModelConfigurationEditor::_OnPickOriginBone(int index)
+{
+  auto& currAnim = m_script.m_animations[mp_ui->listAnims->currentRow()];
+  if (index == 0)
+    currAnim.m_optOriginBone.reset();
+  else
+    currAnim.m_optOriginBone = mp_ui->comboRelativeOriginBone->itemText(index).toStdString();
 }
 
 void ModelConfigurationEditor::_OnPickRefSkeleton(int index)

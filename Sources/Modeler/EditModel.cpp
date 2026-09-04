@@ -242,11 +242,11 @@ std::vector<CEditModel::FrameGenerator> CEditModel::LoadFrameGenerators(
         frames.emplace_back();
         auto& frame = frames.back();
         frame.m_filename = anim.m_frames.front();
-        frame.m_generator = [&baseMesh, mStretch, importedAnimation, frameIndex](ImportedMesh& mesh)
+        frame.m_generator = [&anim, &baseMesh, mStretch, importedAnimation, frameIndex](ImportedMesh& mesh)
         {
           mesh = baseMesh;
           const auto& animSkeleton = importedAnimation->m_frames[frameIndex];
-          mesh.ApplySkinning(animSkeleton, mStretch);
+          mesh.ApplySkinning(animSkeleton, mStretch, anim.m_optOriginBone);
         };
       }
     }

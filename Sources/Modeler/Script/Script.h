@@ -40,6 +40,7 @@ struct ModelScript {
     std::optional<size_t> m_optNumFrames;
     std::optional<double> m_optDuration;
     std::optional<CTFileName> m_optRefSkeleton;
+    std::optional<std::string> m_optOriginBone;
     std::vector<CTFileName> m_frames;
   };
 

@@ -203,6 +203,11 @@ ModelScript ReadFromFile(const CTFileName& filename)
         const auto base_skel = base_dir + Trim({ line.begin() + strlen("ORIG_SKELETON "), line.end() });
         anim.m_optRefSkeleton = CTString(base_skel.c_str());
       }
+      else if (StartsWith(line, "ORIGIN_BONE "))
+      {
+        auto& anim = script.m_animations.back();
+        anim.m_optOriginBone = { line.begin() + strlen("ORIGIN_BONE "), line.end() };
+      }
       else if (StartsWith(line, "DURATION "))
       {
         auto& anim = script.m_animations.back();
@@ -510,6 +515,9 @@ void SaveToFile(const ModelScript& script, const CTFileName& filename)
 
       if (anim.m_optRefSkeleton.has_value())
         write_file(*anim.m_optRefSkeleton, "ORIG_SKELETON");
+
+      if (anim.m_optOriginBone.has_value())
+        file << "ORIGIN_BONE " << *anim.m_optOriginBone << '\n';
 
       if (anim.m_optDuration.has_value())
         file << "DURATION " << *anim.m_optDuration << '\n';

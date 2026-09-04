@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <utility>
 #include <vector>
+#include <optional>
 #include <map>
 
 struct aiScene;
@@ -39,7 +40,7 @@ public:
   ImportedMesh(const ImportedMesh&) = default;
 
   void Clear();
-  void ApplySkinning(const ImportedSkeleton& animSkeleton, const FLOATmatrix3D& mTransform);
+  void ApplySkinning(const ImportedSkeleton& animSkeleton, const FLOATmatrix3D& mTransform, const std::optional<std::string>& originBone);
   void FillFromFile(const CTFileName& fileName, const FLOATmatrix3D& mTransform);
 
   static size_t GetUVChannelCount(const CTFileName& fileName);

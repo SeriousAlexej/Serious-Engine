@@ -48,6 +48,7 @@ private:
   void _FillSkeleton();
   void _FillRefSkeleton();
   void _FillSkelAnimFile();
+  void _FillSkelBones();
   void _FillAnimSourceNames(const std::vector<std::string>& animNames);
   void _AddAnim();
   void _OnFrameUp();
@@ -68,6 +69,7 @@ private:
   void _FillAnimWidgets(ModelScript::Animation& anim);
   void _OnPickSkeleton(int index);
   void _OnPickSkelAnimFile(int index);
+  void _OnPickOriginBone(int index);
   void _OnPickRefSkeleton(int index);
   void _OnPickTransform();
   void _AnalyzeTransform();
