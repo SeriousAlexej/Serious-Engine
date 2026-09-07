@@ -5299,8 +5299,12 @@ void CWorldEditorView::OnMouseMove(UINT nFlags, CPoint point)
       // anchored entities is allowed
       {for (CEntityPtr iten : pDoc->m_selEntitySelection)
       {
-        if( ((iten->GetFlags() & ENF_ANCHORED) != 0) &&
-            (!GetChildFrame()->m_bAncoredMovingAllowed) ) return;
+        if (((iten->GetFlags() & ENF_ANCHORED) != 0) &&
+          (!GetChildFrame()->m_bAncoredMovingAllowed))
+        {
+          pDoc->UpdateSelectionCommonPos();
+          return;
+        }
       }}
 
       INDEX ienCurrent = 0;
