@@ -925,33 +925,37 @@
              <property name="verticalSpacing">
               <number>6</number>
              </property>
-             <item row="1" column="1">
-              <widget class="QComboBox" name="comboSourceFile"/>
+             <item row="0" column="1">
+              <widget class="QLineEdit" name="lineeditAnimNameS">
+               <property name="frame">
+                <bool>true</bool>
+               </property>
+              </widget>
              </item>
              <item row="2" column="1">
               <widget class="QComboBox" name="comboAnimSourceName"/>
              </item>
-             <item row="6" column="0">
-              <widget class="QCheckBox" name="cbDuration">
+             <item row="3" column="0">
+              <widget class="QLabel" name="label_2">
                <property name="font">
                 <font>
                  <bold>true</bold>
                 </font>
                </property>
                <property name="text">
-                <string>Duration</string>
+                <string>Reference skeleton</string>
                </property>
               </widget>
              </item>
-             <item row="5" column="0">
-              <widget class="QCheckBox" name="cbCustomFrameCount">
+             <item row="4" column="0">
+              <widget class="QLabel" name="label_17">
                <property name="font">
                 <font>
                  <bold>true</bold>
                 </font>
                </property>
                <property name="text">
-                <string>Custom frame count</string>
+                <string>Relative origin bone</string>
                </property>
               </widget>
              </item>
@@ -967,33 +971,8 @@
                </property>
               </widget>
              </item>
-             <item row="5" column="1">
-              <widget class="QSpinBox" name="spinboxCustomFrameCount">
-               <property name="minimum">
-                <number>1</number>
-               </property>
-               <property name="maximum">
-                <number>99999999</number>
-               </property>
-               <property name="value">
-                <number>1</number>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="0">
-              <widget class="QLabel" name="label_2">
-               <property name="font">
-                <font>
-                 <bold>true</bold>
-                </font>
-               </property>
-               <property name="text">
-                <string>Reference skeleton</string>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="1">
-              <widget class="QComboBox" name="comboReferenceSkeleton"/>
+             <item row="4" column="1">
+              <widget class="QComboBox" name="comboRelativeOriginBone"/>
              </item>
              <item row="0" column="0">
               <widget class="QLabel" name="label_12">
@@ -1007,7 +986,7 @@
                </property>
               </widget>
              </item>
-             <item row="6" column="1">
+             <item row="7" column="1">
               <widget class="QDoubleSpinBox" name="spinboxDurationS">
                <property name="enabled">
                 <bool>true</bool>
@@ -1044,12 +1023,32 @@
                </property>
               </widget>
              </item>
-             <item row="0" column="1">
-              <widget class="QLineEdit" name="lineeditAnimNameS">
-               <property name="frame">
-                <bool>true</bool>
+             <item row="6" column="0">
+              <widget class="QCheckBox" name="cbCustomFrameCount">
+               <property name="font">
+                <font>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="text">
+                <string>Custom frame count</string>
                </property>
               </widget>
+             </item>
+             <item row="7" column="0">
+              <widget class="QCheckBox" name="cbDuration">
+               <property name="font">
+                <font>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="text">
+                <string>Duration</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QComboBox" name="comboSourceFile"/>
              </item>
              <item row="2" column="0">
               <widget class="QLabel" name="labelAnimSourceName">
@@ -1063,20 +1062,36 @@
                </property>
               </widget>
              </item>
-             <item row="4" column="0">
-              <widget class="QLabel" name="label_17">
+             <item row="6" column="1">
+              <widget class="QSpinBox" name="spinboxCustomFrameCount">
+               <property name="minimum">
+                <number>1</number>
+               </property>
+               <property name="maximum">
+                <number>99999999</number>
+               </property>
+               <property name="value">
+                <number>1</number>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="QComboBox" name="comboReferenceSkeleton"/>
+             </item>
+             <item row="5" column="0">
+              <widget class="QLabel" name="label_18">
                <property name="font">
                 <font>
                  <bold>true</bold>
                 </font>
                </property>
                <property name="text">
-                <string>Relative origin bone</string>
+                <string>Interpolation</string>
                </property>
               </widget>
              </item>
-             <item row="4" column="1">
-              <widget class="QComboBox" name="comboRelativeOriginBone"/>
+             <item row="5" column="1">
+              <widget class="QComboBox" name="comboInterpolation"/>
              </item>
             </layout>
            </item>
@@ -1412,9 +1427,10 @@
   <tabstop>comboHighQuality</tabstop>
   <tabstop>comboFlat</tabstop>
   <tabstop>comboStretchDetail</tabstop>
+  <tabstop>comboUVMap</tabstop>
   <tabstop>spinboxSize</tabstop>
-  <tabstop>spinboxTextureSize2</tabstop>
   <tabstop>spinboxTextureSize1</tabstop>
+  <tabstop>spinboxTextureSize2</tabstop>
   <tabstop>spinboxMaxShadow</tabstop>
   <tabstop>listAnims</tabstop>
   <tabstop>buttonAnimUp</tabstop>
@@ -1434,6 +1450,8 @@
   <tabstop>comboSourceFile</tabstop>
   <tabstop>comboAnimSourceName</tabstop>
   <tabstop>comboReferenceSkeleton</tabstop>
+  <tabstop>comboRelativeOriginBone</tabstop>
+  <tabstop>comboInterpolation</tabstop>
   <tabstop>cbCustomFrameCount</tabstop>
   <tabstop>spinboxCustomFrameCount</tabstop>
   <tabstop>cbDuration</tabstop>

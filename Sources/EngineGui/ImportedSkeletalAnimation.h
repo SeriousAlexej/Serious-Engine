@@ -17,6 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define IMPORTED_SKELETAL_ANIMATION_H
 
 #include "ImportedSkeleton.h"
+#include "BlenderFCurve.h"
 
 #include <SeriousEngineCppAPI/Base/Types.h>
 #include <SeriousEngineCppAPI/Math/Vector.h>
@@ -33,7 +34,8 @@ public:
     const std::string& animName,
     const ImportedSkeleton& skeleton,
     size_t optNumFrames,
-    double optDuration);
+    double optDuration,
+    const BlenderFCurve::InterpolationMode interpolation);
 
   void ReapplyByReference(const ImportedSkeleton& refSkeleton);
 
@@ -45,7 +47,7 @@ public:
   ImportedSkeleton m_defaultPose;
 
 private:
-  void BakeFrames(const aiAnimation& anim);
+  void BakeFrames(const aiAnimation& anim, const BlenderFCurve::InterpolationMode interpolation);
 };
 
 #endif

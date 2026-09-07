@@ -75,6 +75,9 @@
     <ClCompile Include="TextureMapping_Utils.cpp">
       <Filter>Source Files\Mesh</Filter>
     </ClCompile>
+    <ClCompile Include="BlenderFCurve.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DlgChooseTextureType.h">
@@ -123,6 +126,9 @@
       <Filter>Header Files\Mesh</Filter>
     </ClInclude>
     <ClInclude Include="TextureMapping_Utils.h">
+      <Filter>Header Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="BlenderFCurve.h">
       <Filter>Header Files\Mesh</Filter>
     </ClInclude>
   </ItemGroup>

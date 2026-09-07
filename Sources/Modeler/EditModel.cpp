@@ -223,7 +223,8 @@ std::vector<CEditModel::FrameGenerator> CEditModel::LoadFrameGenerators(
         anim.m_customSourceName.value_or(""),
         skeleton,
         anim.m_optNumFrames.value_or(0),
-        anim.m_optDuration.value_or(0.0));
+        anim.m_optDuration.value_or(0.0),
+        anim.m_interpolation);
 
       if (anim.m_optRefSkeleton.has_value())
       {

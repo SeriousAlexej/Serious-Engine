@@ -70,6 +70,7 @@ private:
   void _OnPickSkeleton(int index);
   void _OnPickSkelAnimFile(int index);
   void _OnPickOriginBone(int index);
+  void _OnPickInterpolation(int index);
   void _OnPickRefSkeleton(int index);
   void _OnPickTransform();
   void _AnalyzeTransform();

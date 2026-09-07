@@ -17,6 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define SCRIPT_H
 
 #include <SeriousEngineCppAPI/Base/FileName.h>
+#include <EngineGui/BlenderFCurve.h>
 
 #include <optional>
 #include <string>
@@ -41,6 +42,7 @@ struct ModelScript {
     std::optional<double> m_optDuration;
     std::optional<CTFileName> m_optRefSkeleton;
     std::optional<std::string> m_optOriginBone;
+    BlenderFCurve::InterpolationMode m_interpolation = BlenderFCurve::InterpolationMode::Linear;
     std::vector<CTFileName> m_frames;
   };
 

@@ -208,6 +208,17 @@ ModelScript ReadFromFile(const CTFileName& filename)
         auto& anim = script.m_animations.back();
         anim.m_optOriginBone = { line.begin() + strlen("ORIGIN_BONE "), line.end() };
       }
+      else if (StartsWith(line, "INTERPOLATION "))
+      {
+        auto& anim = script.m_animations.back();
+        const std::string interp_line(line.begin() + strlen("INTERPOLATION "), line.end());
+        if (interp_line == "Linear")
+          anim.m_interpolation = BlenderFCurve::InterpolationMode::Linear;
+        else if (interp_line == "Bezier")
+          anim.m_interpolation = BlenderFCurve::InterpolationMode::Bezier;
+        else
+          ThrowF_t("Animation %s has unknown interpolation mode \"%s\". Expected \"Linear\" or \"Bezier\".", anim.m_name.c_str(), interp_line.c_str());
+      }
       else if (StartsWith(line, "DURATION "))
       {
         auto& anim = script.m_animations.back();
@@ -518,6 +529,17 @@ void SaveToFile(const ModelScript& script, const CTFileName& filename)
 
       if (anim.m_optOriginBone.has_value())
         file << "ORIGIN_BONE " << *anim.m_optOriginBone << '\n';
+
+      switch (anim.m_interpolation)
+      {
+      case BlenderFCurve::InterpolationMode::Linear:
+        file << "INTERPOLATION Linear\n";
+        break;
+
+      case BlenderFCurve::InterpolationMode::Bezier:
+        file << "INTERPOLATION Bezier\n";
+        break;
+      }
 
       if (anim.m_optDuration.has_value())
         file << "DURATION " << *anim.m_optDuration << '\n';

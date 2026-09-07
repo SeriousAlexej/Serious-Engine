@@ -68,17 +68,36 @@ namespace
   struct AnimKeys
   {
   public:
-    std::map<double, aiVector3D> m_posKeys;
-    std::map<double, aiQuaternion> m_rotKeys;
-    std::map<double, aiVector3D> m_scaleKeys;
+    BlenderFCurve::TAnimCurve m_curvePosX;
+    BlenderFCurve::TAnimCurve m_curvePosY;
+    BlenderFCurve::TAnimCurve m_curvePosZ;
+    BlenderFCurve::TAnimCurve m_curveQuatW;
+    BlenderFCurve::TAnimCurve m_curveQuatX;
+    BlenderFCurve::TAnimCurve m_curveQuatY;
+    BlenderFCurve::TAnimCurve m_curveQuatZ;
+    BlenderFCurve::TAnimCurve m_curveScaleX;
+    BlenderFCurve::TAnimCurve m_curveScaleY;
+    BlenderFCurve::TAnimCurve m_curveScaleZ;
 
-    FLOATmatrix4D GetTransformAtTime(double time) const
+    FLOATmatrix4D GetTransformAtTime(double time, const BlenderFCurve::InterpolationMode interpolation) const
     {
-      const auto position = GetValueAtTime(m_posKeys, time);
-      const auto rotation = GetValueAtTime(m_rotKeys, time);
-      const auto scaling = GetValueAtTime(m_scaleKeys, time);
+      const aiVector3D position(
+        BlenderFCurve::EvaluateCurveAtTime(m_curvePosX, time, interpolation),
+        BlenderFCurve::EvaluateCurveAtTime(m_curvePosY, time, interpolation),
+        BlenderFCurve::EvaluateCurveAtTime(m_curvePosZ, time, interpolation));
+      float rotation[4];
+      BlenderFCurve::EvaluateQuaternionAtTime(
+        m_curveQuatW,
+        m_curveQuatX,
+        m_curveQuatY,
+        m_curveQuatZ,
+        time, interpolation, rotation);
+      const aiVector3D scaling(
+        BlenderFCurve::EvaluateCurveAtTime(m_curveScaleX, time, interpolation),
+        BlenderFCurve::EvaluateCurveAtTime(m_curveScaleY, time, interpolation),
+        BlenderFCurve::EvaluateCurveAtTime(m_curveScaleZ, time, interpolation));
 
-      const aiMatrix4x4 transform(scaling, rotation, position);
+      const aiMatrix4x4 transform(scaling, { rotation[0], rotation[1], rotation[2], rotation[3] }, position);
 
       FLOATmatrix4D result;
       for (int row = 0; row < 4; ++row)
@@ -86,26 +105,9 @@ namespace
           result(row + 1, col + 1) = transform[row][col];
       return result;
     }
-
-    template<typename TValueType>
-    TValueType GetValueAtTime(const std::map<double, TValueType>& keys, double time) const
-    {
-      auto itLarger = keys.lower_bound(time);
-      if (itLarger == keys.begin())
-        return keys.begin()->second;
-      if (itLarger == keys.end())
-        return keys.rbegin()->second;
-      auto itSmaller = itLarger;
-      --itSmaller;
-
-      TValueType res;
-      const double d = (time - itSmaller->first) / (itLarger->first - itSmaller->first);
-      Assimp::Interpolator<TValueType>()(res, itSmaller->second, itLarger->second, d);
-      return res;
-    }
   };
 
-  std::map<std::string, AnimKeys> GetBoneAnimKeys(const aiAnimation& anim)
+  std::map<std::string, AnimKeys> GetBoneAnimKeys(const aiAnimation& anim, const BlenderFCurve::InterpolationMode interpolation)
   {
     std::map<std::string, AnimKeys> result;
 
@@ -114,21 +116,78 @@ namespace
       const auto& animNode = *anim.mChannels[nodeIndex];
       std::string boneName = animNode.mNodeName.C_Str();
       auto& animKeys = result[boneName];
+
+      auto finalizeCurve = [interpolation](auto& curve)
+        {
+          std::ranges::sort(curve, std::less<>{}, [](const auto& keyframe) { return keyframe.vec[1][0]; });
+          if (interpolation == BlenderFCurve::InterpolationMode::Bezier)
+            BlenderFCurve::CalculateCurveHandles(curve);
+        };
+
+      animKeys.m_curvePosX.resize(animNode.mNumPositionKeys);
+      animKeys.m_curvePosY.resize(animNode.mNumPositionKeys);
+      animKeys.m_curvePosZ.resize(animNode.mNumPositionKeys);
       for (size_t i = 0; i < animNode.mNumPositionKeys; ++i)
       {
         const auto& key = animNode.mPositionKeys[i];
-        animKeys.m_posKeys[key.mTime] = key.mValue;
+        auto& keyX = animKeys.m_curvePosX[i];
+        auto& keyY = animKeys.m_curvePosY[i];
+        auto& keyZ = animKeys.m_curvePosZ[i];
+        keyX.vec[1][0] = key.mTime;
+        keyX.vec[1][1] = key.mValue.x;
+        keyY.vec[1][0] = key.mTime;
+        keyY.vec[1][1] = key.mValue.y;
+        keyZ.vec[1][0] = key.mTime;
+        keyZ.vec[1][1] = key.mValue.z;
       }
+      finalizeCurve(animKeys.m_curvePosX);
+      finalizeCurve(animKeys.m_curvePosY);
+      finalizeCurve(animKeys.m_curvePosZ);
+
+      animKeys.m_curveQuatW.resize(animNode.mNumRotationKeys);
+      animKeys.m_curveQuatX.resize(animNode.mNumRotationKeys);
+      animKeys.m_curveQuatY.resize(animNode.mNumRotationKeys);
+      animKeys.m_curveQuatZ.resize(animNode.mNumRotationKeys);
       for (size_t i = 0; i < animNode.mNumRotationKeys; ++i)
       {
         const auto& key = animNode.mRotationKeys[i];
-        animKeys.m_rotKeys[key.mTime] = key.mValue;
+        auto& keyW = animKeys.m_curveQuatW[i];
+        auto& keyX = animKeys.m_curveQuatX[i];
+        auto& keyY = animKeys.m_curveQuatY[i];
+        auto& keyZ = animKeys.m_curveQuatZ[i];
+        keyW.vec[1][0] = key.mTime;
+        keyW.vec[1][1] = key.mValue.w;
+        keyX.vec[1][0] = key.mTime;
+        keyX.vec[1][1] = key.mValue.x;
+        keyY.vec[1][0] = key.mTime;
+        keyY.vec[1][1] = key.mValue.y;
+        keyZ.vec[1][0] = key.mTime;
+        keyZ.vec[1][1] = key.mValue.z;
       }
+      finalizeCurve(animKeys.m_curveQuatW);
+      finalizeCurve(animKeys.m_curveQuatX);
+      finalizeCurve(animKeys.m_curveQuatY);
+      finalizeCurve(animKeys.m_curveQuatZ);
+
+      animKeys.m_curveScaleX.resize(animNode.mNumScalingKeys);
+      animKeys.m_curveScaleY.resize(animNode.mNumScalingKeys);
+      animKeys.m_curveScaleZ.resize(animNode.mNumScalingKeys);
       for (size_t i = 0; i < animNode.mNumScalingKeys; ++i)
       {
         const auto& key = animNode.mScalingKeys[i];
-        animKeys.m_scaleKeys[key.mTime] = key.mValue;
+        auto& keyX = animKeys.m_curveScaleX[i];
+        auto& keyY = animKeys.m_curveScaleY[i];
+        auto& keyZ = animKeys.m_curveScaleZ[i];
+        keyX.vec[1][0] = key.mTime;
+        keyX.vec[1][1] = key.mValue.x;
+        keyY.vec[1][0] = key.mTime;
+        keyY.vec[1][1] = key.mValue.y;
+        keyZ.vec[1][0] = key.mTime;
+        keyZ.vec[1][1] = key.mValue.z;
       }
+      finalizeCurve(animKeys.m_curveScaleX);
+      finalizeCurve(animKeys.m_curveScaleY);
+      finalizeCurve(animKeys.m_curveScaleZ);
     }
 
     return result;
@@ -140,7 +199,8 @@ ImportedSkeletalAnimation::ImportedSkeletalAnimation(
   const std::string& animName,
   const ImportedSkeleton& skeleton,
   size_t optNumFrames,
-  double optDuration)
+  double optDuration,
+  const BlenderFCurve::InterpolationMode interpolation)
 {
   const CTString strFile = _fnmApplicationPath + fileName;
 
@@ -175,7 +235,7 @@ ImportedSkeletalAnimation::ImportedSkeletalAnimation(
   else
     m_duration = optDuration;
 
-  BakeFrames(*animation);
+  BakeFrames(*animation, interpolation);
 }
 
 void ImportedSkeletalAnimation::ReapplyByReference(const ImportedSkeleton& refSkeleton)
@@ -216,11 +276,11 @@ std::vector<std::string> ImportedSkeletalAnimation::GetAnimationsInFile(const CT
   return anims;
 }
 
-void ImportedSkeletalAnimation::BakeFrames(const aiAnimation& anim)
+void ImportedSkeletalAnimation::BakeFrames(const aiAnimation& anim, const BlenderFCurve::InterpolationMode interpolation)
 {
   const double ticksPerFrame = anim.mDuration / m_frames.size();
 
-  const auto& animKeys = GetBoneAnimKeys(anim);
+  const auto& animKeys = GetBoneAnimKeys(anim, interpolation);
 
   for (auto it = animKeys.begin(); it != animKeys.end(); ++it)
   {
@@ -235,7 +295,7 @@ void ImportedSkeletalAnimation::BakeFrames(const aiAnimation& anim)
       if (foundPos == frameBones.end())
         break;
       auto& bone = foundPos->second;
-      bone.m_transformToParent = boneKeys.GetTransformAtTime(frameTime);
+      bone.m_transformToParent = boneKeys.GetTransformAtTime(frameTime, interpolation);
     }
   }
 }

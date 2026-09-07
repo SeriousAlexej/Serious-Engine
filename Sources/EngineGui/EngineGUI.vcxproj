@@ -191,6 +191,7 @@ copy $(SolutionDir)SeriousEngineCAPI\Release\SeriousEngineCAPI.dll $(SolutionDir
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BlenderFCurve.cpp" />
     <ClCompile Include="DlgChooseTextureType.cpp" />
     <ClCompile Include="DlgCreateAnimatedTexture.cpp" />
     <ClCompile Include="DlgCreateEffectTexture.cpp" />
@@ -213,6 +214,7 @@ copy $(SolutionDir)SeriousEngineCAPI\Release\SeriousEngineCAPI.dll $(SolutionDir
     <ClCompile Include="WndDisplayTexture.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BlenderFCurve.h" />
     <ClInclude Include="DlgChooseTextureType.h" />
     <ClInclude Include="DlgCreateAnimatedTexture.h" />
     <ClInclude Include="DlgCreateEffectTexture.h" />

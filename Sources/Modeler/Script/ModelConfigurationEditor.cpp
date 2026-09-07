@@ -1,4 +1,4 @@
-/* Copyright (c) 2022 SeriousAlexej (Oleksii Sierov).
+﻿/* Copyright (c) 2022 SeriousAlexej (Oleksii Sierov).
 This program is free software; you can redistribute it and/or modify
 it under the terms of version 2 of the GNU General Public License as published by
 the Free Software Foundation
@@ -44,6 +44,9 @@ ModelConfigurationEditor::ModelConfigurationEditor(ModelScript& script, QWidget*
     std::array<QDoubleSpinBox*,3>{ mp_ui->t21, mp_ui->t22, mp_ui->t23 },
     std::array<QDoubleSpinBox*,3>{ mp_ui->t31, mp_ui->t32, mp_ui->t33 }
   };
+
+  mp_ui->comboInterpolation->addItem("Linear", static_cast<int>(BlenderFCurve::InterpolationMode::Linear));
+  mp_ui->comboInterpolation->addItem(QString::fromUtf8(u8"B\u00E9zier"), static_cast<int>(BlenderFCurve::InterpolationMode::Bezier));
 
   _FillAnims();
   _FillSkeleton();
@@ -490,6 +493,8 @@ void ModelConfigurationEditor::_FillAnimWidgets(ModelScript::Animation& anim)
   _FillAnimSourceNames(ImportedSkeletalAnimation::GetAnimationsInFile(anim.m_frames.front()));
   _FillRefSkeleton();
 
+  mp_ui->comboInterpolation->setCurrentIndex(mp_ui->comboInterpolation->findData(static_cast<int>(anim.m_interpolation)));
+
   if (anim.m_customSourceName.has_value())
     mp_ui->comboAnimSourceName->setCurrentIndex(mp_ui->comboAnimSourceName->findData(QString::fromStdString(*anim.m_customSourceName).toUpper()));
   mp_ui->cbDuration->setChecked(anim.m_optDuration.has_value());
@@ -506,6 +511,7 @@ void ModelConfigurationEditor::_FillAnimWidgets(ModelScript::Animation& anim)
   m_animConnections.emplace_back(connect(mp_ui->comboAnimSourceName, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this, p_anim](int index)
     { p_anim->m_customSourceName = mp_ui->comboAnimSourceName->itemData(index).toString().toStdString(); }));
   m_animConnections.emplace_back(connect(mp_ui->comboRelativeOriginBone, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &ModelConfigurationEditor::_OnPickOriginBone));
+  m_animConnections.emplace_back(connect(mp_ui->comboInterpolation, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &ModelConfigurationEditor::_OnPickInterpolation));
   m_animConnections.emplace_back(connect(mp_ui->comboReferenceSkeleton, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &ModelConfigurationEditor::_OnPickRefSkeleton));
   m_animConnections.emplace_back(connect(mp_ui->comboSourceFile, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &ModelConfigurationEditor::_OnPickSkelAnimFile));
   m_animConnections.emplace_back(connect(p_nameEdit, &QLineEdit::textEdited, this, [this, p_anim](const QString& n)
@@ -609,6 +615,12 @@ void ModelConfigurationEditor::_OnPickOriginBone(int index)
     currAnim.m_optOriginBone.reset();
   else
     currAnim.m_optOriginBone = mp_ui->comboRelativeOriginBone->itemText(index).toStdString();
+}
+
+void ModelConfigurationEditor::_OnPickInterpolation(int index)
+{
+  auto& currAnim = m_script.m_animations[mp_ui->listAnims->currentRow()];
+  currAnim.m_interpolation = static_cast<BlenderFCurve::InterpolationMode>(mp_ui->comboInterpolation->itemData(index).toInt());
 }
 
 void ModelConfigurationEditor::_OnPickRefSkeleton(int index)
