@@ -1323,6 +1323,8 @@
 #define ID_QUICKTEST_GAMEMODE_5         33426
 #define ID_QUICKTEST_IS_MULTIPLAYER     33427
 #define ID_DISPLAY_CAMERA_VIEWFINDER    33428
+#define ID_ENABLE_CRASH_DUMPS           33429
+#define ID_ENABLE_FULL_CRASH_DUMPS      33430
 #define IDW_TOOLBAR_MAIN                0xE800
 #define IDW_STATUSBAR                   0xE801
 #define IDW_TOOLBAR_CSG                 0xE802

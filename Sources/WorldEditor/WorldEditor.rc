@@ -378,6 +378,9 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "&Preferences\tCtrl+P",        ID_FILE_PREFERENCES
         MENUITEM SEPARATOR
+        MENUITEM "Enable crash dumps"           ID_ENABLE_CRASH_DUMPS
+        MENUITEM "Full crash dumps"             ID_ENABLE_FULL_CRASH_DUMPS
+        MENUITEM SEPARATOR
         MENUITEM "Recent File",                 ID_FILE_MRU_FILE1, GRAYED
         MENUITEM SEPARATOR
         MENUITEM "E&xit",                       ID_APP_EXIT
@@ -441,6 +444,9 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "Create &texture\tCtrl+T",     ID_CREATE_TEXTURE
         MENUITEM "Preferences\tCtrl+P",         ID_FILE_PREFERENCES
+        MENUITEM SEPARATOR
+        MENUITEM "Enable crash dumps"           ID_ENABLE_CRASH_DUMPS
+        MENUITEM "Full crash dumps"             ID_ENABLE_FULL_CRASH_DUMPS
         MENUITEM SEPARATOR
         MENUITEM "Recent File",                 ID_FILE_MRU_FILE1, GRAYED
         MENUITEM SEPARATOR

@@ -132,6 +132,10 @@ BEGIN_MESSAGE_MAP(CMainFrame, CMDIFrameWnd)
   ON_COMMAND(ID_CONTEXT_HELP, CMDIFrameWnd::OnContextHelp)
   ON_COMMAND(ID_DISPLAY_CAMERA_VIEWFINDER, OnDisplayCameraViewfinder)
   ON_UPDATE_COMMAND_UI(ID_DISPLAY_CAMERA_VIEWFINDER, OnUpdateDisplayCameraViewfinder)
+  ON_COMMAND(ID_ENABLE_CRASH_DUMPS, OnEnableCrashDumps)
+  ON_UPDATE_COMMAND_UI(ID_ENABLE_CRASH_DUMPS, OnUpdateEnableCrashDumps)
+  ON_COMMAND(ID_ENABLE_FULL_CRASH_DUMPS, OnEnableFullCrashDumps)
+  ON_UPDATE_COMMAND_UI(ID_ENABLE_FULL_CRASH_DUMPS, OnUpdateEnableFullCrashDumps)
 END_MESSAGE_MAP()
 
 static UINT indicators[] =
@@ -1672,6 +1676,32 @@ void CMainFrame::OnDisplayCameraViewfinder()
 void CMainFrame::OnUpdateDisplayCameraViewfinder(CCmdUI* pCmdUI)
 {
   pCmdUI->SetCheck(theApp.m_displayCameraViewfinder);
+}
+
+void CMainFrame::OnEnableCrashDumps()
+{
+  theApp.m_enableCrashDumps = theApp.m_enableCrashDumps ? FALSE : TRUE;
+  if (!theApp.m_enableCrashDumps)
+    theApp.m_enableFullCrashDumps = FALSE;
+  AfxMessageBox(_T("Please restart the application for the changes to take effect."));
+}
+
+void CMainFrame::OnUpdateEnableCrashDumps(CCmdUI* pCmdUI)
+{
+  pCmdUI->SetCheck(theApp.m_enableCrashDumps);
+}
+
+void CMainFrame::OnEnableFullCrashDumps()
+{
+  theApp.m_enableFullCrashDumps = theApp.m_enableFullCrashDumps ? FALSE : TRUE;
+  if (theApp.m_enableFullCrashDumps)
+    theApp.m_enableCrashDumps = TRUE;
+  AfxMessageBox(_T("Please restart the application for the changes to take effect."));
+}
+
+void CMainFrame::OnUpdateEnableFullCrashDumps(CCmdUI* pCmdUI)
+{
+  pCmdUI->SetCheck(theApp.m_enableFullCrashDumps);
 }
 
 void CMainFrame::SetStatusBarMessage( CTString strMessage, INDEX iPane, FLOAT fTime)

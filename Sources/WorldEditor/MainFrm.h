@@ -193,6 +193,10 @@ public:
   afx_msg void OnHelpFinder();
   afx_msg void OnDisplayCameraViewfinder();
   afx_msg void OnUpdateDisplayCameraViewfinder(CCmdUI* pCmdUI);
+  afx_msg void OnEnableCrashDumps();
+  afx_msg void OnUpdateEnableCrashDumps(CCmdUI* pCmdUI);
+  afx_msg void OnEnableFullCrashDumps();
+  afx_msg void OnUpdateEnableFullCrashDumps(CCmdUI* pCmdUI);
   //}}AFX_MSG
   DECLARE_MESSAGE_MAP()
 };

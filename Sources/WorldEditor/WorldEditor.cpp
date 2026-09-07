@@ -1741,6 +1741,9 @@ void CWorldEditorApp::WriteToIniFileOnEnd(void)
   SET_FLAG(m_displayCameraViewfinder);
   INI_WRITE("Display Camera Viewfinder");
 
+  WriteProfileInt(L"SeriousEditorEX", L"Enable Crash Dumps", m_enableCrashDumps);
+  WriteProfileInt(L"SeriousEditorEX", L"Enable Full Crash Dumps", m_enableFullCrashDumps);
+
   WriteProfileInt(L"World editor", L"Show Tip of the Day", m_bShowTipOfTheDay);
   WriteProfileInt(L"World editor", L"Current Tip of the Day", m_iCurrentTipOfTheDay);
   WriteProfileInt(L"Display modes", L"SED Gfx API", m_iApi);
@@ -2839,26 +2842,46 @@ void CWorldEditorApp::OnFileNew()
 
 int CWorldEditorApp::Run()
 {
-  char exe_path[MAX_PATH];
-  ::GetModuleFileNameA(NULL, exe_path, MAX_PATH);
-  const CTFileName ct_exe_path = CTString(exe_path);
-  const CTFileName ct_crash_rpt_dir = ct_exe_path.FileDir() + "\\CrashRpt";
-  const CString crash_rpt_dir(static_cast<const char*>(ct_crash_rpt_dir));
+  m_enableCrashDumps = GetProfileInt(L"SeriousEditorEX", L"Enable Crash Dumps", TRUE);
+  m_enableFullCrashDumps = GetProfileInt(L"SeriousEditorEX", L"Enable Full Crash Dumps", FALSE);
 
-  CR_INSTALL_INFO info;
-  memset(&info, 0, sizeof(CR_INSTALL_INFO));
-  info.cb = sizeof(CR_INSTALL_INFO);
-  info.pszAppName = _T("SeriousEditorEX");
-  info.dwFlags |= CR_INST_ALL_POSSIBLE_HANDLERS | CR_INST_DONT_SEND_REPORT | CR_INST_STORE_ZIP_ARCHIVES;
-  info.pszErrorReportSaveDir = crash_rpt_dir;
-
-  int nResult = crInstall(&info);
-  if (nResult != 0)
+  int crInstallResult = -1;
+  if (m_enableCrashDumps)
   {
-    TCHAR buff[256];
-    crGetLastErrorMsg(buff, 256);
-    MessageBox(NULL, buff, _T("crInstall error"), MB_OK);
-    return 1;
+    char exe_path[MAX_PATH];
+    ::GetModuleFileNameA(NULL, exe_path, MAX_PATH);
+    const CTFileName ct_exe_path = CTString(exe_path);
+    const CTFileName ct_crash_rpt_dir = ct_exe_path.FileDir() + "\\CrashRpt";
+    const CString crash_rpt_dir(static_cast<const char*>(ct_crash_rpt_dir));
+
+    CR_INSTALL_INFO info;
+    memset(&info, 0, sizeof(CR_INSTALL_INFO));
+    info.cb = sizeof(CR_INSTALL_INFO);
+    info.pszAppName = _T("SeriousEditorEX");
+    info.dwFlags |= CR_INST_ALL_POSSIBLE_HANDLERS | CR_INST_DONT_SEND_REPORT | CR_INST_STORE_ZIP_ARCHIVES;
+    info.pszErrorReportSaveDir = crash_rpt_dir;
+    if (m_enableFullCrashDumps)
+      info.uMiniDumpType = static_cast<MINIDUMP_TYPE>(
+        MiniDumpWithDataSegs |
+        MiniDumpWithFullMemory |
+        MiniDumpWithHandleData |
+        MiniDumpWithIndirectlyReferencedMemory |
+        MiniDumpWithFullAuxiliaryState |
+        MiniDumpWithFullMemoryInfo |
+        MiniDumpWithProcessThreadData |
+        MiniDumpWithThreadInfo |
+        MiniDumpWithPrivateReadWriteMemory |
+        MiniDumpWithTokenInformation |
+        MiniDumpWithPrivateWriteCopyMemory |
+        MiniDumpWithCodeSegs);
+
+    crInstallResult = crInstall(&info);
+    if (crInstallResult != 0)
+    {
+      TCHAR buff[256];
+      crGetLastErrorMsg(buff, 256);
+      MessageBox(NULL, buff, _T("crInstall error"), MB_OK);
+    }
   }
 
   int iResult;
@@ -2867,7 +2890,8 @@ int CWorldEditorApp::Run()
       iResult = QMfcApp::run(this);
     });
 
-  crUninstall();
+  if (crInstallResult == 0)
+    crUninstall();
 
   delete qApp;
   return iResult;

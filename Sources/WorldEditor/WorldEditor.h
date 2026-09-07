@@ -351,6 +351,8 @@ public:
   BOOL m_bFBMRandomOffset;
 
   BOOL m_displayCameraViewfinder = TRUE;
+  BOOL m_enableCrashDumps = TRUE;
+  BOOL m_enableFullCrashDumps = FALSE;
 
   UWORD m_uwEditAltitude;
   FLOAT m_fPaintPower;
