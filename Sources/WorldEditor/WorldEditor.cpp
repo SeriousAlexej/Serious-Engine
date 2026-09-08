@@ -588,6 +588,7 @@ CTFileName_* CAPI_FileRequester(
 
 BOOL CWorldEditorApp::SubInitInstance()
 {
+  qputenv("QT_ENABLE_HIGHDPI_SCALING", "0");
   HICON app_icon = (HICON)LoadImage(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDR_MAINFRAME), IMAGE_ICON, 0, 0, LR_DEFAULTCOLOR);
   QMfcApp::instance(this)->setWindowIcon(QPixmap::fromImage(QImage::fromHICON(app_icon)));
   ::DestroyIcon(app_icon);
