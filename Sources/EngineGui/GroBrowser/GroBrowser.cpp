@@ -37,6 +37,7 @@ static constexpr size_t g_maxBackSteps = 20;
 
 struct GroBrowser::_FileNode {
   QString name;
+  QString gro;
   _FileNode* parent = nullptr;
   std::map<QString, std::unique_ptr<_FileNode>> children;
 
@@ -71,12 +72,16 @@ void CacheBuilder::run()
     const std::string_view str_view(static_cast<const char*>(full_filename), full_filename.Length());
     auto beg = std::begin(str_view);
     const auto end = std::end(str_view);
+    const CTFileName gro_filename = GetGroFileArchiveAtIndex(i);
+    const CTString gro_name_ct = gro_filename.FileName() + gro_filename.FileExt();
+    const auto gro_name = QString::fromLocal8Bit(static_cast<const char*>(gro_name_ct), gro_name_ct.Length());
     while (true)
     {
       auto next_beg = std::find(beg, end, '\\');
       const auto name = QString::fromLocal8Bit(beg.operator->(), std::distance(beg, next_beg));
       auto new_node = std::make_unique<GroBrowser::_FileNode>();
       new_node->name = name;
+      new_node->gro = gro_name;
       new_node->parent = current_parent;
       auto [inserted_node, dummy] = current_parent->children.try_emplace(name.toLower(), std::move(new_node));
       current_parent = inserted_node->second.get();
@@ -423,12 +428,16 @@ void GroBrowser::_UpdateLinePath()
 
 void GroBrowser::_UpdatePreview()
 {
+  mp_ui->groName->clear();
+
   const auto selection = mp_ui->listWidget->selectedItems();
   if (selection.size() == 1)
   {
     const auto* node = selection.front()->data(Qt::UserRole).value<_FileNode*>();
     if (node && node->IsFile())
     {
+      mp_ui->groName->setText(node->gro);
+
       CTextureDataPtr textureData;
 
       try
