@@ -74,10 +74,10 @@ BEGIN_MESSAGE_MAP(CMainFrame, CMDIFrameWnd)
   ON_COMMAND(ID_WINDOW_TOGGLEMAX, OnWindowTogglemax)
   ON_COMMAND(ID_TESSELLATE_LESS, OnTessellateLess)
   ON_COMMAND(ID_TESSELLATE_MORE, OnTessellateMore)
-  //}}AFX_MSG_MAP
-
-  // Global help commands - modified to use html-help
-  //ON_COMMAND(ID_HELP_FINDER, CMDIFrameWnd::OnHelpFinder)
+  ON_COMMAND(ID_ENABLE_CRASH_DUMPS, OnEnableCrashDumps)
+  ON_UPDATE_COMMAND_UI(ID_ENABLE_CRASH_DUMPS, OnUpdateEnableCrashDumps)
+  ON_COMMAND(ID_ENABLE_FULL_CRASH_DUMPS, OnEnableFullCrashDumps)
+  ON_UPDATE_COMMAND_UI(ID_ENABLE_FULL_CRASH_DUMPS, OnUpdateEnableFullCrashDumps)
   ON_COMMAND(ID_DEFAULT_HELP, OnHelpFinder)
   ON_COMMAND(ID_HELP, OnHelpFinder)
   ON_COMMAND(ID_CONTEXT_HELP, CMDIFrameWnd::OnContextHelp)
@@ -1063,4 +1063,30 @@ void CMainFrame::OnTessellateMore()
   CTString strVar;
   strVar.PrintF( "Tessellation level = %d", iTruform);
   m_wndStatusBar.SetPaneText( STATUS_LINE_PANE, CString(strVar));
+}
+
+void CMainFrame::OnEnableCrashDumps()
+{
+  theApp.m_enableCrashDumps = theApp.m_enableCrashDumps ? FALSE : TRUE;
+  if (!theApp.m_enableCrashDumps)
+    theApp.m_enableFullCrashDumps = FALSE;
+  AfxMessageBox(_T("Please restart the application for the changes to take effect."));
+}
+
+void CMainFrame::OnUpdateEnableCrashDumps(CCmdUI* pCmdUI)
+{
+  pCmdUI->SetCheck(theApp.m_enableCrashDumps);
+}
+
+void CMainFrame::OnEnableFullCrashDumps()
+{
+  theApp.m_enableFullCrashDumps = theApp.m_enableFullCrashDumps ? FALSE : TRUE;
+  if (theApp.m_enableFullCrashDumps)
+    theApp.m_enableCrashDumps = TRUE;
+  AfxMessageBox(_T("Please restart the application for the changes to take effect."));
+}
+
+void CMainFrame::OnUpdateEnableFullCrashDumps(CCmdUI* pCmdUI)
+{
+  pCmdUI->SetCheck(theApp.m_enableFullCrashDumps);
 }

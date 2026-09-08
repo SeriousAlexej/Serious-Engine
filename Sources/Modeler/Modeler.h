@@ -98,6 +98,8 @@ public:
   BOOL m_bRefreshPatchPalette;
   BOOL m_bFirstTimeStarted;
   BOOL m_OnIdlePaused;
+  BOOL m_enableCrashDumps = TRUE;
+  BOOL m_enableFullCrashDumps = FALSE;
   void CreateNewDocument( CTFileName fnRequestedFile);
   BOOL AddModelerWorkingTexture( CTFileName fnTexName);
   BOOL AddModelerWorkingPatch( CTFileName fnPatchName);

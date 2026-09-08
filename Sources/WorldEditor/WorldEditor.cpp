@@ -2845,42 +2845,81 @@ int CWorldEditorApp::Run()
   m_enableCrashDumps = GetProfileInt(L"SeriousEditorEX", L"Enable Crash Dumps", TRUE);
   m_enableFullCrashDumps = GetProfileInt(L"SeriousEditorEX", L"Enable Full Crash Dumps", FALSE);
 
+  using TcrInstallW = int (WINAPI*) (PCR_INSTALL_INFOW);
+  using TcrInstallA = int (WINAPI*) (PCR_INSTALL_INFOA);
+  using TcrGetLastErrorMsgW = int (WINAPI*) (LPWSTR, UINT);
+  using TcrGetLastErrorMsgA = int (WINAPI*) (LPSTR, UINT);
+  using TcrUninstall = int (WINAPI*) ();
+  HINSTANCE hCrashRpt = NULL;
+  TcrUninstall crUninstallFunc = nullptr;
+
   int crInstallResult = -1;
   if (m_enableCrashDumps)
   {
-    char exe_path[MAX_PATH];
-    ::GetModuleFileNameA(NULL, exe_path, MAX_PATH);
-    const CTFileName ct_exe_path = CTString(exe_path);
-    const CTFileName ct_crash_rpt_dir = ct_exe_path.FileDir() + "\\CrashRpt";
-    const CString crash_rpt_dir(static_cast<const char*>(ct_crash_rpt_dir));
+    hCrashRpt = ::LoadLibrary(_T("CrashRpt1403.dll"));
+    TcrInstallW crInstallWFunc = nullptr;
+    TcrInstallA crInstallAFunc = nullptr;
+    TcrGetLastErrorMsgW crGetLastErrorMsgWFunc = nullptr;
+    TcrGetLastErrorMsgA crGetLastErrorMsgAFunc = nullptr;
 
-    CR_INSTALL_INFO info;
-    memset(&info, 0, sizeof(CR_INSTALL_INFO));
-    info.cb = sizeof(CR_INSTALL_INFO);
-    info.pszAppName = _T("SeriousEditorEX");
-    info.dwFlags |= CR_INST_ALL_POSSIBLE_HANDLERS | CR_INST_DONT_SEND_REPORT | CR_INST_STORE_ZIP_ARCHIVES;
-    info.pszErrorReportSaveDir = crash_rpt_dir;
-    if (m_enableFullCrashDumps)
-      info.uMiniDumpType = static_cast<MINIDUMP_TYPE>(
-        MiniDumpWithDataSegs |
-        MiniDumpWithFullMemory |
-        MiniDumpWithHandleData |
-        MiniDumpWithIndirectlyReferencedMemory |
-        MiniDumpWithFullAuxiliaryState |
-        MiniDumpWithFullMemoryInfo |
-        MiniDumpWithProcessThreadData |
-        MiniDumpWithThreadInfo |
-        MiniDumpWithPrivateReadWriteMemory |
-        MiniDumpWithTokenInformation |
-        MiniDumpWithPrivateWriteCopyMemory |
-        MiniDumpWithCodeSegs);
-
-    crInstallResult = crInstall(&info);
-    if (crInstallResult != 0)
+    if (hCrashRpt)
     {
-      TCHAR buff[256];
-      crGetLastErrorMsg(buff, 256);
-      MessageBox(NULL, buff, _T("crInstall error"), MB_OK);
+      crInstallWFunc = (TcrInstallW)::GetProcAddress(hCrashRpt, "crInstallW");
+      crInstallAFunc = (TcrInstallA)::GetProcAddress(hCrashRpt, "crInstallA");
+      crGetLastErrorMsgWFunc = (TcrGetLastErrorMsgW)::GetProcAddress(hCrashRpt, "crGetLastErrorMsgW");
+      crGetLastErrorMsgAFunc = (TcrGetLastErrorMsgA)::GetProcAddress(hCrashRpt, "crGetLastErrorMsgA");
+      crUninstallFunc = (TcrUninstall)::GetProcAddress(hCrashRpt, "crUninstall");
+    }
+
+    if (crInstallWFunc && crInstallAFunc && crGetLastErrorMsgWFunc && crGetLastErrorMsgAFunc && crUninstallFunc)
+    {
+      char exe_path[MAX_PATH];
+      ::GetModuleFileNameA(NULL, exe_path, MAX_PATH);
+      const CTFileName ct_exe_path = CTString(exe_path);
+      const CTFileName ct_crash_rpt_dir = ct_exe_path.FileDir() + "\\CrashRpt";
+      const CString crash_rpt_dir(static_cast<const char*>(ct_crash_rpt_dir));
+
+      CR_INSTALL_INFO info;
+      memset(&info, 0, sizeof(CR_INSTALL_INFO));
+      info.cb = sizeof(CR_INSTALL_INFO);
+      info.pszAppName = _T("SeriousEditorEX");
+      info.dwFlags |= CR_INST_ALL_POSSIBLE_HANDLERS | CR_INST_DONT_SEND_REPORT | CR_INST_STORE_ZIP_ARCHIVES;
+      info.pszErrorReportSaveDir = crash_rpt_dir;
+      if (m_enableFullCrashDumps)
+        info.uMiniDumpType = static_cast<MINIDUMP_TYPE>(
+          MiniDumpWithDataSegs |
+          MiniDumpWithFullMemory |
+          MiniDumpWithHandleData |
+          MiniDumpWithIndirectlyReferencedMemory |
+          MiniDumpWithFullAuxiliaryState |
+          MiniDumpWithFullMemoryInfo |
+          MiniDumpWithProcessThreadData |
+          MiniDumpWithThreadInfo |
+          MiniDumpWithPrivateReadWriteMemory |
+          MiniDumpWithTokenInformation |
+          MiniDumpWithPrivateWriteCopyMemory |
+          MiniDumpWithCodeSegs);
+
+#ifdef UNICODE
+      crInstallResult = crInstallWFunc(&info);
+#else
+      crInstallResult = crInstallAFunc(&info);
+#endif //UNICODE
+      if (crInstallResult != 0)
+      {
+        TCHAR buff[256];
+#ifdef UNICODE
+        crGetLastErrorMsgWFunc(buff, 256);
+#else
+        crGetLastErrorMsgAFunc(buff, 256);
+#endif //UNICODE
+        CPrintF("Failed to install crash reporter: %s\n", buff);
+        MessageBox(NULL, buff, _T("Failed to install crash reporter"), MB_OK);
+      } else {
+        CPutString("Crash reporter successfully installed.\n");
+      }
+    } else {
+      CPutString("Failed to load CrashRpt1403.dll, crash dumps will be disabled.\n");
     }
   }
 
@@ -2890,8 +2929,11 @@ int CWorldEditorApp::Run()
       iResult = QMfcApp::run(this);
     });
 
-  if (crInstallResult == 0)
-    crUninstall();
+  if (crUninstallFunc && crInstallResult == 0)
+    crUninstallFunc();
+
+  if (hCrashRpt)
+    ::FreeLibrary(hCrashRpt);
 
   delete qApp;
   return iResult;

@@ -146,6 +146,10 @@ protected:
   afx_msg void OnUpdateViewFxcontrol(CCmdUI* pCmdUI);
   afx_msg void OnTessellateLess();
   afx_msg void OnTessellateMore();
+  afx_msg void OnEnableCrashDumps();
+  afx_msg void OnUpdateEnableCrashDumps(CCmdUI* pCmdUI);
+  afx_msg void OnEnableFullCrashDumps();
+  afx_msg void OnUpdateEnableFullCrashDumps(CCmdUI* pCmdUI);
   //}}AFX_MSG
   
 public:

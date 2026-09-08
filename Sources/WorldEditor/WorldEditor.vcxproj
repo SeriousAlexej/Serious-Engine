@@ -126,9 +126,9 @@
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
       <OutputFile>Release/SeriousEditorEX.exe</OutputFile>
-      <AdditionalDependencies>SeriousEngineCAPI.lib;htmlhelp.lib;Qt6Core.lib;Qt6Gui.lib;Qt6Widgets.lib;qtwinmigrate.lib;CrashRpt1403.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SeriousEngineCAPI.lib;htmlhelp.lib;Qt6Core.lib;Qt6Gui.lib;Qt6Widgets.lib;qtwinmigrate.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateMapFile>true</GenerateMapFile>
-      <AdditionalLibraryDirectories>$(SolutionDir)SeriousEngineCAPI\Release\;$(SolutionDir)EngineGUI\$(Configuration)\;$(SolutionDir)qtwinmigrateBuild\$(Configuration)\;$(Qt_dir)\lib\;$(SolutionDir)CrashRptBuild\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)SeriousEngineCAPI\Release\;$(SolutionDir)EngineGUI\$(Configuration)\;$(SolutionDir)qtwinmigrateBuild\$(Configuration)\;$(Qt_dir)\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <CustomBuildStep>
       <Command>copy Release\$(TargetName).exe $(SolutionDir)..\Bin\ &gt;nul
@@ -187,7 +187,7 @@ $(Qt_dir)\bin\windeployqt.exe --no-translations --no-system-d3d-compiler --no-sy
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
       <OutputFile>Debug/SeriousEditorEX.exe</OutputFile>
-      <AdditionalDependencies>SeriousEngineCAPI.lib;htmlhelp.lib;Qt6Cored.lib;Qt6Guid.lib;Qt6Widgetsd.lib;qtwinmigrated.lib;CrashRpt1403.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SeriousEngineCAPI.lib;htmlhelp.lib;Qt6Cored.lib;Qt6Guid.lib;Qt6Widgetsd.lib;qtwinmigrated.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateMapFile>true</GenerateMapFile>
       <AdditionalLibraryDirectories>$(SolutionDir)SeriousEngineCAPI\Release\;$(SolutionDir)EngineGUI\$(Configuration)\;$(SolutionDir)qtwinmigrateBuild\$(Configuration)\;$(Qt_dir)\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>

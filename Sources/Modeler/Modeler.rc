@@ -277,6 +277,9 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "&Preferences\tCtrl+P",        ID_FILE_PREFERENCES
         MENUITEM SEPARATOR
+        MENUITEM "Enable crash dumps"           ID_ENABLE_CRASH_DUMPS
+        MENUITEM "Full crash dumps"             ID_ENABLE_FULL_CRASH_DUMPS
+        MENUITEM SEPARATOR
         MENUITEM "Create &Texture...\tCtrl+Shift+T", ID_FILE_CREATE_TEXTURE
         MENUITEM SEPARATOR
         MENUITEM "Recent File",                 ID_FILE_MRU_FILE1, GRAYED
@@ -328,6 +331,9 @@ BEGIN
         MENUITEM "Ta&ke screen shoot\tAlt+S",   ID_TAKE_SCREEN_SHOOT
         MENUITEM SEPARATOR
         MENUITEM "&Preferences\tCtrl+P",        ID_FILE_PREFERENCES
+        MENUITEM SEPARATOR
+        MENUITEM "Enable crash dumps"           ID_ENABLE_CRASH_DUMPS
+        MENUITEM "Full crash dumps"             ID_ENABLE_FULL_CRASH_DUMPS
         MENUITEM SEPARATOR
         MENUITEM "Save &thumbnail\tAlt+T",      ID_SAVE_THUMBNAIL
         MENUITEM "Create T&exture...\tCtrl+Shift+T", ID_FILE_CREATE_TEXTURE
@@ -428,6 +434,9 @@ BEGIN
         MENUITEM "E&xit",                       ID_APP_EXIT
         MENUITEM SEPARATOR
         MENUITEM "&Preferences\tCtrl+P",        ID_FILE_PREFERENCES
+        MENUITEM SEPARATOR
+        MENUITEM "Enable crash dumps"           ID_ENABLE_CRASH_DUMPS
+        MENUITEM "Full crash dumps"             ID_ENABLE_FULL_CRASH_DUMPS
         MENUITEM SEPARATOR
         MENUITEM "Create T&exture...\tCtrl+Shift+T", ID_FILE_CREATE_TEXTURE
     END
