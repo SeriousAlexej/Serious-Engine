@@ -1,6 +1,6 @@
 version: 1.10.{build}
 
-image: Visual Studio 2019
+image: Visual Studio 2022
 
 clone_folder: c:\projects\SeriousEngine
 
@@ -17,10 +17,13 @@ before_build:
   - cd c:\projects\SeriousEngine\
   - git submodule -q update --init
   - cd Sources
-  - ps: (Get-Content .\WorldEditor\Qt.props) -replace '<Qt_dir>.*</Qt_dir>', '<Qt_dir>C:\Qt\5.15.2\msvc2019</Qt_dir>' | Out-File -encoding ASCII .\WorldEditor\Qt.props
   - GenerateAssimpSLN.bat
   - cd c:\projects\SeriousEngine\Sources
   - GenerateQtWinMigrateSLN.bat
+  - cd c:\projects\SeriousEngine\Sources
+  - GenerateSeriousEngineCppAPI.bat
+  - cd c:\projects\SeriousEngine\Sources
+  - GenerateCrashRptSLN.bat
 
 build:
   parallel: true
@@ -30,34 +33,28 @@ build:
 after_build:
   - cd c:\projects\SeriousEngine\
   - mkdir deploy
-  - xcopy /E /I Bin_1.10 deploy\Bin_1.10
-  - xcopy /E /I Controls deploy\Controls
-  - xcopy /E /I Data deploy\Data
+  - xcopy /E /I Bin deploy\Bin
   - xcopy /E /I Licenses deploy\Licenses
-  - xcopy /E /I Scripts deploy\Scripts
-  - xcopy /E /I VirtualTrees deploy\VirtualTrees
-  - xcopy /I ModEXT.txt deploy\
-  - xcopy /I SE1_10.gro deploy\
   - xcopy /I SE1_10_AdditionalData.gro deploy\
-  - mkdir deploy_portable
-  - xcopy /E /I Bin_1.10 deploy_portable\Bin_1.10
-  - xcopy /E /I Licenses deploy_portable\Bin_1.10\Licenses
-  - xcopy /I SE1_10_AdditionalData.gro deploy_portable\
+  - mkdir deploy_pdb
+  - xcopy /I Sources\EngineGui\Release\EngineEX.pdb deploy_pdb\
+  - xcopy /I Sources\Modeler\Release\SeriousModelerEX.pdb deploy_pdb\
+  - xcopy /I Sources\WorldEditor\Release\SeriousEditorEX.pdb deploy_pdb\
 
 artifacts:
   - path: .\deploy
-    name: SeriousEngine-standalone-$(appveyor_build_version)
+    name: SeriousEditorEX-$(appveyor_build_version)
     type: zip
     
-  - path: .\deploy_portable
-    name: SeriousEngine-portable(For vanilla 1.07)-$(appveyor_build_version)
+  - path: .\deploy_pdb
+    name: SeriousEditorEX_debug_symbols-$(appveyor_build_version)
     type: zip
 
 deploy:
-  description: SeriousEngine-$(appveyor_build_version)
+  description: SeriousEditorEX-$(appveyor_build_version)
   provider: GitHub
   auth_token:
-    secure: 9mBaQMNtOPPb5UlUXN+du9/DCqwaeFjKd6yIRQB/Oo4BetFXdf8DpQj+OFuISjxs
+    secure: El4m3Fh87K1KfMgnmCfo4hih09KHfZDUojWI9Sb9Sd0kfYvrrfxDQ77I/5Sg03Zd5Rh72j6hcO5kFSFc5AP4jHug7+1rugWcTSb/U+gIqbp97eXEOErjOfLStj+9DKNs
   force_update: true
   on:
     branch: master
