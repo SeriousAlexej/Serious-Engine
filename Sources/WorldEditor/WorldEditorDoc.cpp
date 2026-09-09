@@ -4242,7 +4242,7 @@ void CWorldEditorDoc::OnUpdateClones()
   {FOREACHINDYNAMICCONTAINER( m_woWorld.wo_cenEntities, CEntity, iten)
   {
     // if this is clone (by name), it is not original and it is not child of some other entity
-    if( (strName == iten->GetName()) && ( iten != penOnlySelected) && (!iten->GetParent()) )
+    if( (strName == iten->GetName()) && ( iten.Current() != penOnlySelected) && (!iten->GetParent()) )
     {
       apenClones.Add( iten.Current().get_handle());
     }
@@ -4691,7 +4691,7 @@ void CWorldEditorDoc::OnUpdateBrushes()
   CTString strClone=pen->GetName();
   FOREACHINDYNAMICCONTAINER(m_woWorld.wo_cenEntities, CEntity, iten)
   {
-    if(iten!=pen &&
+    if(iten.Current()!=pen &&
        iten->GetName()==strClone &&
        iten->en_RenderType==CEntity::RT_BRUSH)
     {
