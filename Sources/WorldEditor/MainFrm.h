@@ -43,24 +43,24 @@ extern INDEX TestKeyBuffers(void);
 
 class CMainFrame : public CMDIFrameWnd
 {
-	DECLARE_DYNAMIC(CMainFrame)
+  DECLARE_DYNAMIC(CMainFrame)
 public:
-	CMainFrame();
+  CMainFrame();
 
-// Attributes
 public:
-	// old window position and styles before full screen mode
-	
+  // old window position and styles before full screen mode
+  
+  double m_monitor_width = 2560.0;
   WINDOWPLACEMENT m_OldPlacement;
-	LONG m_OldStyleEx;
-	LONG m_OldStyle;
+  LONG m_OldStyleEx;
+  LONG m_OldStyle;
 
   // main menu
   HMENU m_hMenu;
   // Tool bars
   CStatusBar m_wndStatusBar;
-	CToolBar m_wndToolBar;
-	CToolBar m_wndWorkTools;
+  CToolBar m_wndToolBar;
+  CToolBar m_wndWorkTools;
   CToolBar m_wndCSGTools;
   CToolBar m_wndMipTools;
   CToolBar m_wndProjections;
@@ -111,92 +111,94 @@ public:
   void ManualToolTipUpdate( void);
   void SetStatusBarMessage( CTString strMessage, INDEX iPane, FLOAT fTime);
 
-	CPropertyID* GetSelectedProperty();
+  CPropertyID* GetSelectedProperty();
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CMainFrame)
-	public:
-	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
-	virtual BOOL DestroyWindow();
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	protected:
-	virtual LRESULT DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam);
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CMainFrame)
+  public:
+  virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
+  virtual BOOL DestroyWindow();
+  virtual BOOL PreTranslateMessage(MSG* pMsg);
+  protected:
+  virtual LRESULT DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+  //}}AFX_VIRTUAL
 
 // Implementation
 public:
-	virtual ~CMainFrame();
+  virtual ~CMainFrame();
 #ifdef _DEBUG
-	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
+  virtual void AssertValid() const;
+  virtual void Dump(CDumpContext& dc) const;
 #endif
 
 // Generated message map functions
 public:
-	//{{AFX_MSG(CMainFrame)
-	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
-	afx_msg void OnVirtualTree();
-	afx_msg void OnClose();
-	afx_msg void OnCancelMode();
-	afx_msg void OnInitMenu(CMenu* pMenu);
-	afx_msg void OnViewInfowindow();
-	afx_msg void OnUpdateViewInfowindow(CCmdUI* pCmdUI);
-	afx_msg void OnViewCsgtools();
-	afx_msg void OnUpdateViewCsgtools(CCmdUI* pCmdUI);
-	afx_msg void OnViewProjectionsBar();
-	afx_msg void OnUpdateViewProjectionsBar(CCmdUI* pCmdUI);
-	afx_msg void OnViewWorkBar();
-	afx_msg void OnUpdateViewWorkBar(CCmdUI* pCmdUI);
-	afx_msg void OnActivateApp(BOOL bActive, DWORD hTask);
-	afx_msg void OnCreateTexture();
-	afx_msg void OnCallModeler();
-	afx_msg void OnCallTexmaker();
-	afx_msg void OnViewSettingsAndUtilityBar();
-	afx_msg void OnUpdateViewSettingsAndUtilityBar(CCmdUI* pCmdUI);
-	afx_msg void OnViewShadowsAndTextureBar();
-	afx_msg void OnUpdateViewShadowsAndTextureBar(CCmdUI* pCmdUI);
-	afx_msg void OnViewSelectEntityBar();
-	afx_msg void OnUpdateViewSelectEntityBar(CCmdUI* pCmdUI);
-	afx_msg void OnViewViewToolsBar();
-	afx_msg void OnUpdateViewViewToolsBar(CCmdUI* pCmdUI);
-	afx_msg void OnViewViewToolsBar2();
-	afx_msg void OnUpdateViewViewToolsBar2(CCmdUI* pCmdUI);
-	afx_msg void OnGameAudio();
-	afx_msg void OnGameVideo();
-	afx_msg void OnGamePlayer();
-	afx_msg void OnGameSelectPlayer();
-	afx_msg void OnShowTreeShortcuts();
-	afx_msg void OnMenuShortcut01();
-	afx_msg void OnMenuShortcut02();
-	afx_msg void OnMenuShortcut03();
-	afx_msg void OnMenuShortcut04();
-	afx_msg void OnMenuShortcut05();
-	afx_msg void OnMenuShortcut06();
-	afx_msg void OnMenuShortcut07();
-	afx_msg void OnMenuShortcut08();
-	afx_msg void OnMenuShortcut09();
-	afx_msg void OnMenuShortcut10();
-	afx_msg void OnStoreMenuShortcut01();
-	afx_msg void OnStoreMenuShortcut02();
-	afx_msg void OnStoreMenuShortcut03();
-	afx_msg void OnStoreMenuShortcut04();
-	afx_msg void OnStoreMenuShortcut05();
-	afx_msg void OnStoreMenuShortcut06();
-	afx_msg void OnStoreMenuShortcut07();
-	afx_msg void OnStoreMenuShortcut08();
-	afx_msg void OnStoreMenuShortcut09();
-	afx_msg void OnStoreMenuShortcut10();
-	afx_msg void OnConsole();
-	afx_msg void OnViewMipToolsBar();
-	afx_msg void OnUpdateViewMipToolsBar(CCmdUI* pCmdUI);
-	afx_msg void OnToolRecreateTexture();
-	afx_msg void OnRecreateCurrentTexture();
-	afx_msg void OnLightAnimation();
-	afx_msg void OnTimer(UINT nIDEvent);
-	afx_msg void OnHelpFinder();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+  //{{AFX_MSG(CMainFrame)
+  afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
+  afx_msg void OnVirtualTree();
+  afx_msg void OnClose();
+  afx_msg void OnCancelMode();
+  afx_msg void OnInitMenu(CMenu* pMenu);
+  afx_msg void OnViewInfowindow();
+  afx_msg void OnUpdateViewInfowindow(CCmdUI* pCmdUI);
+  afx_msg void OnViewCsgtools();
+  afx_msg void OnUpdateViewCsgtools(CCmdUI* pCmdUI);
+  afx_msg void OnViewProjectionsBar();
+  afx_msg void OnUpdateViewProjectionsBar(CCmdUI* pCmdUI);
+  afx_msg void OnViewWorkBar();
+  afx_msg void OnUpdateViewWorkBar(CCmdUI* pCmdUI);
+  afx_msg void OnActivateApp(BOOL bActive, DWORD hTask);
+  afx_msg void OnCreateTexture();
+  afx_msg void OnCallModeler();
+  afx_msg void OnCallTexmaker();
+  afx_msg void OnViewSettingsAndUtilityBar();
+  afx_msg void OnUpdateViewSettingsAndUtilityBar(CCmdUI* pCmdUI);
+  afx_msg void OnViewShadowsAndTextureBar();
+  afx_msg void OnUpdateViewShadowsAndTextureBar(CCmdUI* pCmdUI);
+  afx_msg void OnViewSelectEntityBar();
+  afx_msg void OnUpdateViewSelectEntityBar(CCmdUI* pCmdUI);
+  afx_msg void OnViewViewToolsBar();
+  afx_msg void OnUpdateViewViewToolsBar(CCmdUI* pCmdUI);
+  afx_msg void OnViewViewToolsBar2();
+  afx_msg void OnUpdateViewViewToolsBar2(CCmdUI* pCmdUI);
+  afx_msg void OnShowTreeShortcuts();
+  afx_msg void OnMenuShortcut01();
+  afx_msg void OnMenuShortcut02();
+  afx_msg void OnMenuShortcut03();
+  afx_msg void OnMenuShortcut04();
+  afx_msg void OnMenuShortcut05();
+  afx_msg void OnMenuShortcut06();
+  afx_msg void OnMenuShortcut07();
+  afx_msg void OnMenuShortcut08();
+  afx_msg void OnMenuShortcut09();
+  afx_msg void OnMenuShortcut10();
+  afx_msg void OnStoreMenuShortcut01();
+  afx_msg void OnStoreMenuShortcut02();
+  afx_msg void OnStoreMenuShortcut03();
+  afx_msg void OnStoreMenuShortcut04();
+  afx_msg void OnStoreMenuShortcut05();
+  afx_msg void OnStoreMenuShortcut06();
+  afx_msg void OnStoreMenuShortcut07();
+  afx_msg void OnStoreMenuShortcut08();
+  afx_msg void OnStoreMenuShortcut09();
+  afx_msg void OnStoreMenuShortcut10();
+  afx_msg void OnConsole();
+  afx_msg void OnViewMipToolsBar();
+  afx_msg void OnUpdateViewMipToolsBar(CCmdUI* pCmdUI);
+  afx_msg void OnToolRecreateTexture();
+  afx_msg void OnRecreateCurrentTexture();
+  afx_msg void OnLightAnimation();
+  afx_msg void OnTimer(UINT nIDEvent);
+  afx_msg void OnHelpFinder();
+  afx_msg void OnDisplayCameraViewfinder();
+  afx_msg void OnUpdateDisplayCameraViewfinder(CCmdUI* pCmdUI);
+  afx_msg void OnEnableCrashDumps();
+  afx_msg void OnUpdateEnableCrashDumps(CCmdUI* pCmdUI);
+  afx_msg void OnEnableFullCrashDumps();
+  afx_msg void OnUpdateEnableFullCrashDumps(CCmdUI* pCmdUI);
+  //}}AFX_MSG
+  DECLARE_MESSAGE_MAP()
 };
 
 /////////////////////////////////////////////////////////////////////////////

@@ -27,25 +27,25 @@ class CDlgInfoSheet : public CPropertySheet
 {
 // Construction
 public:
-	CUpdateable m_Updateable;
+  CUpdateable m_Updateable;
   CModelerView *m_LastViewUpdated;
   INDEX m_InfoMode;
-	BOOL OnIdle(LONG lCount);
-	DECLARE_DYNAMIC(CDlgInfoSheet)
-	CDlgInfoSheet(CWnd* pWndParent);
+  BOOL OnIdle(LONG lCount);
+  DECLARE_DYNAMIC(CDlgInfoSheet)
+  CDlgInfoSheet(CWnd* pWndParent);
   void CustomSetActivePage( CPropertyPage *pppToActivate);
 
-	CDlgInfoPgNone m_PgInfoNone;
+  CDlgInfoPgNone m_PgInfoNone;
   CDlgInfoPgRendering m_PgInfoRendering;
-	CDlgInfoPgGlobal m_PgInfoGlobal;
-	CDlgInfoPgMip m_PgInfoMip;
-	CDlgInfoPgPos m_PgInfoPos;
-	CDlgInfoPgAnim m_PgInfoAnim;
-	CDlgPgCollision m_PgInfoCollision;
-	CDlgPgInfoAttachingPlacement m_PgAttachingPlacement;
-	CDlgPgInfoAttachingSound m_PgAttachingSound;
-	CDlgInfoSheet(UINT nIDCaption, CWnd* pParentWnd = NULL, UINT iSelectPage = 0);
-	CDlgInfoSheet(LPCTSTR pszCaption, CWnd* pParentWnd = NULL, UINT iSelectPage = 0);
+  CDlgInfoPgGlobal m_PgInfoGlobal;
+  CDlgInfoPgMip m_PgInfoMip;
+  CDlgInfoPgPos m_PgInfoPos;
+  CDlgInfoPgAnim m_PgInfoAnim;
+  CDlgPgCollision m_PgInfoCollision;
+  CDlgPgInfoAttachingPlacement m_PgAttachingPlacement;
+  CDlgPgInfoAttachingSound m_PgAttachingSound;
+  CDlgInfoSheet(UINT nIDCaption, CWnd* pParentWnd = NULL, UINT iSelectPage = 0);
+  CDlgInfoSheet(LPCTSTR pszCaption, CWnd* pParentWnd = NULL, UINT iSelectPage = 0);
 
 // Attributes
 public:
@@ -54,24 +54,24 @@ public:
 public:
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CDlgInfoSheet)
-	public:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);
-	virtual void PostNcDestroy();
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CDlgInfoSheet)
+  public:
+  virtual BOOL PreTranslateMessage(MSG* pMsg);
+  protected:
+  virtual void DoDataExchange(CDataExchange* pDX);
+  virtual void PostNcDestroy();
+  //}}AFX_VIRTUAL
 
 // Implementation
 public:
-	virtual ~CDlgInfoSheet();
+  virtual ~CDlgInfoSheet();
 
-	// Generated message map functions
+  // Generated message map functions
 protected:
-	//{{AFX_MSG(CDlgInfoSheet)
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+  //{{AFX_MSG(CDlgInfoSheet)
+  //}}AFX_MSG
+  DECLARE_MESSAGE_MAP()
 };
 
 /////////////////////////////////////////////////////////////////////////////

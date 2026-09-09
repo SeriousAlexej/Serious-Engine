@@ -57,7 +57,7 @@ private:
   SpinBoxNoTrailing* _CreateSubSpinbox(QWidget* parent)
   {
     auto* spinbox = new SpinBoxNoTrailing(parent);
-    spinbox->setRange(-99999999, 99999999);
+    spinbox->setRange(-FLT_MAX, FLT_MAX);
     spinbox->setDecimals(4);
     spinbox->setSingleStep(0.25);
     spinbox->setSuffix(QStringLiteral("°"));

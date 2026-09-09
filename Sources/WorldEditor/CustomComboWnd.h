@@ -39,13 +39,13 @@ class CCustomComboWnd : public CWnd
 {
 // Construction
 public:
-	CCustomComboWnd();
+  CCustomComboWnd();
 
 // Attributes
 public:
-  CDynamicContainer<CComboLine> m_dcComboLines;
-  CDrawPort *m_pDrawPort;
-  CViewPort *m_pViewPort;
+  std::vector<std::unique_ptr<CComboLine>> m_dcComboLines;
+  CDrawPortPtr m_pDrawPort;
+  CViewPortPtr m_pViewPort;
   int m_iTimerID;
   void (*m_pOnSelect)(INDEX iSelected);
 
@@ -55,7 +55,7 @@ public:
 public:
   // calculate given line box in pixels
   PIXaabbox2D GetLineBBox( INDEX iLine);
-  void RenderOneLine( INDEX iLine, PIXaabbox2D rectLine, CDrawPort *pdp, COLOR colFill);
+  void RenderOneLine( INDEX iLine, PIXaabbox2D rectLine, CDrawPortPtr pdp, COLOR colFill);
   void GetComboLineSize(PIX &pixMaxWidth, PIX &pixMaxHeight);
   BOOL Initialize(FLOAT *pfResult, void (*pOnSelect)(INDEX iSelected),
     PIX pixX, PIX pixY, BOOL bDown=FALSE);
@@ -65,28 +65,28 @@ public:
   void SetItemColor(INDEX iItem, COLOR col);
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CCustomComboWnd)
-	public:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CCustomComboWnd)
+  public:
+  virtual BOOL PreTranslateMessage(MSG* pMsg);
+  //}}AFX_VIRTUAL
 
 // Implementation
 public:
-	virtual ~CCustomComboWnd();
+  virtual ~CCustomComboWnd();
 
-	// Generated message map functions
+  // Generated message map functions
 protected:
-	//{{AFX_MSG(CCustomComboWnd)
-	afx_msg void OnPaint();
-	afx_msg void OnKillFocus(CWnd* pNewWnd);
-	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
-	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-	afx_msg void OnDestroy();
-	afx_msg void OnTimer(UINT nIDEvent);
-	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+  //{{AFX_MSG(CCustomComboWnd)
+  afx_msg void OnPaint();
+  afx_msg void OnKillFocus(CWnd* pNewWnd);
+  afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+  afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+  afx_msg void OnDestroy();
+  afx_msg void OnTimer(UINT nIDEvent);
+  afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
+  //}}AFX_MSG
+  DECLARE_MESSAGE_MAP()
 };
 
 /////////////////////////////////////////////////////////////////////////////

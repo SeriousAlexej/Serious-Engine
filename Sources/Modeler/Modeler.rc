@@ -277,6 +277,9 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "&Preferences\tCtrl+P",        ID_FILE_PREFERENCES
         MENUITEM SEPARATOR
+        MENUITEM "Enable crash dumps"           ID_ENABLE_CRASH_DUMPS
+        MENUITEM "Full crash dumps"             ID_ENABLE_FULL_CRASH_DUMPS
+        MENUITEM SEPARATOR
         MENUITEM "Create &Texture...\tCtrl+Shift+T", ID_FILE_CREATE_TEXTURE
         MENUITEM SEPARATOR
         MENUITEM "Recent File",                 ID_FILE_MRU_FILE1, GRAYED
@@ -310,7 +313,7 @@ BEGIN
         MENUITEM "&Help Topics",                ID_HELP_FINDER
         MENUITEM SEPARATOR
         MENUITEM "About Qt...",                 ID_APP_ABOUT_QT
-        MENUITEM "&About Serious Modeler...",   ID_APP_ABOUT
+        MENUITEM "&About Serious Modeler EX...",   ID_APP_ABOUT
         MENUITEM "Mouse help\tCtrl+M",          ID_VIEW_HELP_MOUSE
     END
 END
@@ -328,6 +331,9 @@ BEGIN
         MENUITEM "Ta&ke screen shoot\tAlt+S",   ID_TAKE_SCREEN_SHOOT
         MENUITEM SEPARATOR
         MENUITEM "&Preferences\tCtrl+P",        ID_FILE_PREFERENCES
+        MENUITEM SEPARATOR
+        MENUITEM "Enable crash dumps"           ID_ENABLE_CRASH_DUMPS
+        MENUITEM "Full crash dumps"             ID_ENABLE_FULL_CRASH_DUMPS
         MENUITEM SEPARATOR
         MENUITEM "Save &thumbnail\tAlt+T",      ID_SAVE_THUMBNAIL
         MENUITEM "Create T&exture...\tCtrl+Shift+T", ID_FILE_CREATE_TEXTURE
@@ -429,6 +435,9 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "&Preferences\tCtrl+P",        ID_FILE_PREFERENCES
         MENUITEM SEPARATOR
+        MENUITEM "Enable crash dumps"           ID_ENABLE_CRASH_DUMPS
+        MENUITEM "Full crash dumps"             ID_ENABLE_FULL_CRASH_DUMPS
+        MENUITEM SEPARATOR
         MENUITEM "Create T&exture...\tCtrl+Shift+T", ID_FILE_CREATE_TEXTURE
     END
     POPUP "&Edit"
@@ -478,7 +487,7 @@ BEGIN
         MENUITEM "&Help Topics",                ID_HELP_FINDER
         MENUITEM SEPARATOR
         MENUITEM "About Qt...",                 ID_APP_ABOUT_QT
-        MENUITEM "&About Serious Modeler...",   ID_APP_ABOUT
+        MENUITEM "&About Serious Modeler EX...",   ID_APP_ABOUT
         MENUITEM "Mouse help\tCtrl+M",          ID_VIEW_HELP_MOUSE
     END
 END
@@ -653,22 +662,6 @@ END
 //
 // Dialog
 //
-
-IDD_ABOUTBOX DIALOG 0, 0, 216, 87
-STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "About Modeler"
-FONT 8, "MS Sans Serif"
-BEGIN
-    ICON            IDR_MAINFRAME,IDC_STATIC,108,7,21,20
-    DEFPUSHBUTTON   "OK",IDOK,177,7,32,14,WS_GROUP
-    CTEXT           "Serious Engine",IDC_STATIC,7,9,58,8,SS_NOPREFIX
-    LTEXT           "Copyright © 2000 CroTeam LLC. All rights reserved.",IDC_STATIC,7,72,197,8
-    CTEXT           "Serious Modeler",IDC_STATIC,7,18,60,8,SS_NOPREFIX
-    LTEXT           "For licensing Serious Engine email:",IDC_STATIC,7,42,115,8
-    LTEXT           "licensing@croteam.com",IDC_STATIC,129,42,80,8
-    LTEXT           "Please visit Croteam's WWW site at:",IDC_STATIC,7,51,121,8
-    LTEXT           "www.croteam.com",IDC_STATIC,129,51,80,8
-END
 
 IDD_CHOOSEANIMATION DIALOG 0, 0, 298, 245
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
@@ -1067,15 +1060,24 @@ STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Attachment"
 FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
-    CONTROL         "&Visible",IDC_IS_VISIBLE,"Button",BS_AUTOCHECKBOX | BS_LEFTTEXT | BS_RIGHT | WS_TABSTOP,180,53,34,8
     CTEXT           "1.",IDC_ATTACHING_PLACEMENT_INDEX_T,7,6,21,9
-    PUSHBUTTON      "&<",IDC_PREVIOUS_ATTACHING_PLACEMENT,30,3,13,12,NOT WS_TABSTOP
+    PUSHBUTTON      "&<",IDC_PREVIOUS_ATTACHING_PLACEMENT,30,3,13,12, WS_TABSTOP
     EDITTEXT        IDC_ATTACHING_PLACEMENT_NAME,43,3,91,12,ES_AUTOHSCROLL
-    PUSHBUTTON      "&>",IDC_NEXT_ATTACHING_PLACEMENT,134,3,13,12,NOT WS_TABSTOP
+    PUSHBUTTON      "&>",IDC_NEXT_ATTACHING_PLACEMENT,134,3,13,12, WS_TABSTOP
+    PUSHBUTTON      "&Add",IDC_ADD_ATTACHING_PLACEMENT,151,3,26,12, WS_TABSTOP
+    PUSHBUTTON      "&Remove",IDC_REMOVE_ATTACHING_PLACEMENT,182,3,34,12, WS_TABSTOP
     LTEXT           "Model:",IDC_MODEL_T,7,21,36,8
     LTEXT           "Weapons\\Weapon11.mdl",IDC_ATTACHING_MODEL_T,43,21,151,8
-    PUSHBUTTON      "&...",IDC_BROWSE_MODEL,199,17,17,12,NOT WS_TABSTOP
+    PUSHBUTTON      "&...",IDC_BROWSE_MODEL,199,17,17,12, WS_TABSTOP
+    LTEXT           "Animation:",IDC_MODEL_ANIMATION_T,7,34,36,8
+    COMBOBOX        IDC_ATTACHMENT_MODEL_ANIMATION_COMBO,43,30,173,91,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     LTEXT           "Vertices:",IDC_VERTICES_T,7,53,36,8
+    LTEXT           "54, 32,123",IDC_ATTACHING_VERTICES,43,53,110,8
+    PUSHBUTTON      "",IDC_PICK_ATTACHMENT_BONE,160,47,15,14,BS_ICON | WS_TABSTOP
+    CONTROL         "&Visible",IDC_IS_VISIBLE,"Button",BS_AUTOCHECKBOX | BS_LEFTTEXT | BS_RIGHT | WS_TABSTOP,180,53,34,8
+    LTEXT           "DX:",IDC_ATTACHING_PLACEMENT_X_OFFSET_T,7,67,14,8
+    EDITTEXT        IDC_ATTACHING_PLACEMENT_X_OFFSET,23,63,40,12,ES_AUTOHSCROLL
+    LTEXT           "DY:",IDC_ATTACHING_PLACEMENT_Y_OFFSET_T,83,67,14,8
     EDITTEXT        IDC_ATTACHING_PLACEMENT_Y_OFFSET,102,63,40,12,ES_AUTOHSCROLL
     LTEXT           "DZ:",IDC_ATTACHING_PLACEMENT_Z_OFFSET_T,159,67,14,8
     EDITTEXT        IDC_ATTACHING_PLACEMENT_Z_OFFSET,176,63,40,12,ES_AUTOHSCROLL
@@ -1085,15 +1087,6 @@ BEGIN
     EDITTEXT        IDC_ATTACHING_PLACEMENT_PITCH,102,81,40,12,ES_AUTOHSCROLL
     LTEXT           "B:",IDC_ATTACHING_PLACEMENT_BANKING_T,159,85,8,8
     EDITTEXT        IDC_ATTACHING_PLACEMENT_BANKING,176,81,40,12,ES_AUTOHSCROLL
-    PUSHBUTTON      "&Add",IDC_ADD_ATTACHING_PLACEMENT,151,3,26,12
-    PUSHBUTTON      "&Remove",IDC_REMOVE_ATTACHING_PLACEMENT,182,3,34,12
-    COMBOBOX        IDC_ATTACHMENT_MODEL_ANIMATION_COMBO,43,30,173,91,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "Animation:",IDC_MODEL_ANIMATION_T,7,34,36,8
-    LTEXT           "DY:",IDC_ATTACHING_PLACEMENT_Y_OFFSET_T,83,67,14,8
-    EDITTEXT        IDC_ATTACHING_PLACEMENT_X_OFFSET,23,63,40,12,ES_AUTOHSCROLL
-    LTEXT           "DX:",IDC_ATTACHING_PLACEMENT_X_OFFSET_T,7,67,14,8
-    LTEXT           "54, 32,123",IDC_ATTACHING_VERTICES,43,53,110,8
-    PUSHBUTTON      "",IDC_PICK_ATTACHMENT_BONE,160,47,15,14,BS_ICON
 END
 
 IDD_INFO_ATTACHING_SOUND DIALOG 0, 0, 222, 89
@@ -1248,8 +1241,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,1
- PRODUCTVERSION 1,0,0,1
+ FILEVERSION 1,10,0,0
+ PRODUCTVERSION 1,10,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -1264,13 +1257,13 @@ BEGIN
     BEGIN
         BLOCK "040904B0"
         BEGIN
-            VALUE "FileDescription", "MODELER MFC Application"
-            VALUE "FileVersion", "1, 0, 0, 1"
-            VALUE "InternalName", "MODELER"
-            VALUE "LegalCopyright", "Copyright © 1997"
-            VALUE "OriginalFilename", "MODELER.EXE"
-            VALUE "ProductName", "MODELER Application"
-            VALUE "ProductVersion", "1, 0, 0, 1"
+            VALUE "FileDescription", "SeriousModelerEX"
+            VALUE "FileVersion", "1, 10, 0, 0"
+            VALUE "InternalName", "SeriousModelerEX"
+            VALUE "LegalCopyright", "GPLv2"
+            VALUE "OriginalFilename", "SeriousModelerEX.exe"
+            VALUE "ProductName", "SeriousModelerEX"
+            VALUE "ProductVersion", "1, 10, 0, 0"
         END
     END
     BLOCK "VarFileInfo"
@@ -1288,19 +1281,6 @@ END
 #ifdef APSTUDIO_INVOKED
 GUIDELINES DESIGNINFO
 BEGIN
-    IDD_ABOUTBOX, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 209
-        VERTGUIDE, 129
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 80
-        HORZGUIDE, 17
-        HORZGUIDE, 26
-        HORZGUIDE, 50
-        HORZGUIDE, 59
-    END
-
     IDD_CHOOSEANIMATION, DIALOG
     BEGIN
         LEFTMARGIN, 7
@@ -1726,7 +1706,7 @@ END
 
 STRINGTABLE
 BEGIN
-    IDR_MAINFRAME           "Serious Modeler"
+    IDR_MAINFRAME           "Serious Modeler EX"
     IDR_MDLDOCTYPE          "\nMdlDoc\nModel file\nSerious Modeler Files (*.mdl)\n.MDL\nSeriousModeler.Document\nSerious Modeler Document"
     IDR_SCRIPTDOCTYPE       "\nScrDoc\nScript file\nScript Files (*.scr)\n.SCR\nSeriousModeler.Document\nSerious Modeler Document"
 END

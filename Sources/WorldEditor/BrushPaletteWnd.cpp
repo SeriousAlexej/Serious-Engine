@@ -32,33 +32,31 @@ static char THIS_FILE[] = __FILE__;
 
 CBrushPaletteWnd::CBrushPaletteWnd()
 {
-  m_pDrawPort = NULL;
-  m_pViewPort = NULL;
   // mark that timer is not yet started
   m_iTimerID = -1;
 }
 
 CBrushPaletteWnd::~CBrushPaletteWnd()
 {
-  if( m_pViewPort != NULL)
+  if( m_pViewPort)
   {
-    _pGfx->DestroyWindowCanvas( m_pViewPort);
-    m_pViewPort = NULL;
+    _pGfx_DestroyWindowCanvas( m_pViewPort);
+    m_pViewPort.Reset();
   }
 }
 
 
 BEGIN_MESSAGE_MAP(CBrushPaletteWnd, CWnd)
-	//{{AFX_MSG_MAP(CBrushPaletteWnd)
-	ON_WM_PAINT()
-	ON_WM_KILLFOCUS()
-	ON_WM_LBUTTONDOWN()
-	ON_WM_RBUTTONDOWN()
-	ON_WM_MOUSEMOVE()
-	ON_WM_DESTROY()
-	ON_WM_TIMER()
-	ON_WM_LBUTTONUP()
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CBrushPaletteWnd)
+  ON_WM_PAINT()
+  ON_WM_KILLFOCUS()
+  ON_WM_LBUTTONDOWN()
+  ON_WM_RBUTTONDOWN()
+  ON_WM_MOUSEMOVE()
+  ON_WM_DESTROY()
+  ON_WM_TIMER()
+  ON_WM_LBUTTONUP()
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 
@@ -99,7 +97,7 @@ void CBrushPaletteWnd::OnPaint()
   ScreenToClient( &ptMouse);
 
   // if there is a valid drawport, and the drawport can be locked
-  if( (m_pDrawPort != NULL) && (m_pDrawPort->Lock()) )
+  if( m_pDrawPort && (m_pDrawPort->Lock()) )
   {
     CWorldEditorView *pWorldEditorView = theApp.GetActiveView();
     ASSERT( pWorldEditorView != NULL);
@@ -114,7 +112,7 @@ void CBrushPaletteWnd::OnPaint()
       PIXaabbox2D boxBrush = GetBrushBBox( iBrush);
       RenderBrushShape( iBrush, boxBrush, m_pDrawPort);
 
-      TIME tm=_pTimer->GetRealTimeTick();
+      TIME tm=_pTimer_GetRealTimeTick();
       // if we are drawing selected brush
       if(iBrush==theApp.m_fCurrentTerrainBrush)
       {
@@ -147,7 +145,7 @@ void CBrushPaletteWnd::OnPaint()
     m_pDrawPort->Unlock();
 
     // if there is a valid viewport
-    if (m_pViewPort!=NULL)
+    if (m_pViewPort)
     {
       m_pViewPort->SwapBuffers();
     }
@@ -192,13 +190,13 @@ void CBrushPaletteWnd::OnRButtonDown(UINT nFlags, CPoint point)
 void CBrushPaletteWnd::OnMouseMove(UINT nFlags, CPoint point) 
 {
   Invalidate(FALSE);
-	CWnd::OnMouseMove(nFlags, point);
+  CWnd::OnMouseMove(nFlags, point);
 }
 
 void CBrushPaletteWnd::OnDestroy() 
 {
   KillTimer( m_iTimerID);
-	CWnd::OnDestroy();
+  CWnd::OnDestroy();
 }
 
 void CBrushPaletteWnd::OnTimer(UINT nIDEvent) 
@@ -215,8 +213,8 @@ void CBrushPaletteWnd::OnTimer(UINT nIDEvent)
     return;
   }
 
-  Invalidate(FALSE);	
-	CWnd::OnTimer(nIDEvent);
+  Invalidate(FALSE);  
+  CWnd::OnTimer(nIDEvent);
 }
 
 BOOL CBrushPaletteWnd::PreTranslateMessage(MSG* pMsg) 
@@ -228,7 +226,7 @@ BOOL CBrushPaletteWnd::PreTranslateMessage(MSG* pMsg)
     return TRUE;
   }
 
-	return CWnd::PreTranslateMessage(pMsg);
+  return CWnd::PreTranslateMessage(pMsg);
 }
 
 void CBrushPaletteWnd::OnLButtonUp(UINT nFlags, CPoint point) 

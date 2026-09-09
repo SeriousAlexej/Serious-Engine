@@ -44,10 +44,10 @@ void CCtrlEnumCombo::SetDialogPtr( CPropertyComboBar *pDialog)
 
 
 BEGIN_MESSAGE_MAP(CCtrlEnumCombo, CComboBox)
-	//{{AFX_MSG_MAP(CCtrlEnumCombo)
-	ON_CONTROL_REFLECT(CBN_SELCHANGE, OnSelchange)
-	ON_CONTROL_REFLECT(CBN_DROPDOWN, OnDropdown)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CCtrlEnumCombo)
+  ON_CONTROL_REFLECT(CBN_SELCHANGE, OnSelchange)
+  ON_CONTROL_REFLECT(CBN_DROPDOWN, OnDropdown)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -57,10 +57,10 @@ void CCtrlEnumCombo::OnSelchange()
 {
   theApp.GetDocument()->SetModifiedFlag( TRUE);
   // update dialog data (to reflect data change)
-	m_pDialog->UpdateData( TRUE);
-	m_pDialog->SetIntersectingEntityClassName();
+  m_pDialog->UpdateData( TRUE);
+  m_pDialog->SetIntersectingEntityClassName();
   m_pDialog->ArrangeControls();
-	m_pDialog->UpdateData( FALSE);
+  m_pDialog->UpdateData( FALSE);
 }
 
 void CCtrlEnumCombo::OnDropdown() 

@@ -26,7 +26,7 @@ class CCtrlEnumCombo : public CComboBox
 {
 // Construction
 public:
-	CCtrlEnumCombo();
+  CCtrlEnumCombo();
 
 // Attributes
 public:
@@ -39,22 +39,22 @@ public:
   void SetDialogPtr( CPropertyComboBar *pDialog);
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CCtrlEnumCombo)
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CCtrlEnumCombo)
+  //}}AFX_VIRTUAL
 
 // Implementation
 public:
-	virtual ~CCtrlEnumCombo();
+  virtual ~CCtrlEnumCombo();
 
-	// Generated message map functions
+  // Generated message map functions
 protected:
-	//{{AFX_MSG(CCtrlEnumCombo)
-	afx_msg void OnSelchange();
-	afx_msg void OnDropdown();
-	//}}AFX_MSG
+  //{{AFX_MSG(CCtrlEnumCombo)
+  afx_msg void OnSelchange();
+  afx_msg void OnDropdown();
+  //}}AFX_MSG
 
-	DECLARE_MESSAGE_MAP()
+  DECLARE_MESSAGE_MAP()
 };
 
 /////////////////////////////////////////////////////////////////////////////

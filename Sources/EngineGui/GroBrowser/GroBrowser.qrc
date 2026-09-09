@@ -1,0 +1,7 @@
+<RCC>
+  <qresource prefix="icons">
+    <file>go-next.png</file>
+    <file>go-previous.png</file>
+    <file>go-up.png</file>
+  </qresource>
+</RCC>

@@ -60,7 +60,7 @@ BOOL CBrowser::Create( CWnd* pParentWnd, UINT nIDTemplate,
   
   m_IconsImageList.Create( IDB_DIRECTORY_ICONS, 16, 1, CLR_NONE);
   m_TreeCtrl.SetImageList( &m_IconsImageList, TVSIL_NORMAL);
-	
+  
   return TRUE;
 }
  
@@ -136,19 +136,19 @@ CSize CBrowser::CalcDynamicLayout(int nLength, DWORD nMode)
  
 BEGIN_MESSAGE_MAP(CBrowser, CDialogBar)
   //{{AFX_MSG_MAP(CBrowser)
-	ON_COMMAND(ID_CREATE_DIRECTORY, OnCreateDirectory)
-	ON_COMMAND(ID_DELETE_DIRECTORY, OnDeleteDirectory)
-	ON_COMMAND(ID_SAVE_VIRTUAL_TREE, OnSaveVirtualTree)
-	ON_COMMAND(ID_LOAD_VIRTUAL_TREE, OnLoadVirtualTree)
-	ON_COMMAND(ID_RENAME_DIRECTORY, OnRenameDirectory)
-	ON_WM_CONTEXTMENU()
-	ON_COMMAND(ID_SAVE_AS_VIRTUAL_TREE, OnSaveAsVirtualTree)
-	ON_COMMAND(ID_IMPORT_VIRTUAL_TREE, OnImportVirtualTree)
-	ON_COMMAND(ID_EXPORT_VIRTUAL_TREE, OnExportVirtualTree)
-	ON_UPDATE_COMMAND_UI(ID_IMPORT_VIRTUAL_TREE, OnUpdateImportVirtualTree)
-	ON_UPDATE_COMMAND_UI(ID_EXPORT_VIRTUAL_TREE, OnUpdateExportVirtualTree)
-	ON_COMMAND(ID_DUMP_VT, OnDumpVt)
-	//}}AFX_MSG_MAP
+  ON_COMMAND(ID_CREATE_DIRECTORY, OnCreateDirectory)
+  ON_COMMAND(ID_DELETE_DIRECTORY, OnDeleteDirectory)
+  ON_COMMAND(ID_SAVE_VIRTUAL_TREE, OnSaveVirtualTree)
+  ON_COMMAND(ID_LOAD_VIRTUAL_TREE, OnLoadVirtualTree)
+  ON_COMMAND(ID_RENAME_DIRECTORY, OnRenameDirectory)
+  ON_WM_CONTEXTMENU()
+  ON_COMMAND(ID_SAVE_AS_VIRTUAL_TREE, OnSaveAsVirtualTree)
+  ON_COMMAND(ID_IMPORT_VIRTUAL_TREE, OnImportVirtualTree)
+  ON_COMMAND(ID_EXPORT_VIRTUAL_TREE, OnExportVirtualTree)
+  ON_UPDATE_COMMAND_UI(ID_IMPORT_VIRTUAL_TREE, OnUpdateImportVirtualTree)
+  ON_UPDATE_COMMAND_UI(ID_EXPORT_VIRTUAL_TREE, OnUpdateExportVirtualTree)
+  ON_COMMAND(ID_DUMP_VT, OnDumpVt)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
  
 /////////////////////////////////////////////////////////////////////
@@ -169,7 +169,7 @@ void CBrowser::AddDirectoryRecursiv(CVirtualTreeNode *pOneDirectory, HTREEITEM h
                            pOneDirectory->vtn_itIconType + NO_OF_ICONS);
 
   // Now add this directory's subdirectories recursively
-  FOREACHINLIST( CVirtualTreeNode, vtn_lnInDirectory, pOneDirectory->vtn_lhChildren, it)
+  for (auto& it : pOneDirectory->vtn_lhChildren)
   {
     CVirtualTreeNode &vtn=*it;
     if( vtn.vtn_bIsDirectory)
@@ -193,7 +193,7 @@ void CBrowser::OnCreateDirectory()
       // Set data in instanciated CVirtualTreeNode because it is Root
       m_VirtualTree.vtn_bIsDirectory = TRUE;
       m_VirtualTree.vtn_itIconType = dlg.m_iSelectedIconType;
-      m_VirtualTree.vtn_strName = CTString( CStringA(dlg.m_strDirectoryName));
+      m_VirtualTree.vtn_strName = static_cast<const char*>(CStringA(dlg.m_strDirectoryName));
       // Root's parent is NULL
       m_VirtualTree.vnt_pvtnParent = NULL;
       pvtnCurrent = &m_VirtualTree;
@@ -201,17 +201,17 @@ void CBrowser::OnCreateDirectory()
     else
     {
       // Allocate new CVirtualTreeNode to carry new directory data
-      CVirtualTreeNode *pvtnNewDir = new CVirtualTreeNode();
-      pvtnCurrent = pvtnNewDir;
+      auto pvtnNewDir = std::make_unique<CVirtualTreeNode>();
+      pvtnCurrent = pvtnNewDir.get();
       pvtnNewDir->vtn_bIsDirectory = TRUE;
       pvtnNewDir->vtn_itIconType = dlg.m_iSelectedIconType;
-      pvtnNewDir->vtn_strName = CTString( CStringA(dlg.m_strDirectoryName));
+      pvtnNewDir->vtn_strName = static_cast<const char*>(CStringA(dlg.m_strDirectoryName));
       // Get ptr to parent CVirtualTreeNode
       HTREEITEM pSelectedItem = m_TreeCtrl.GetSelectedItem();
       if( pSelectedItem == NULL) return;
       pvtnNewDir->vnt_pvtnParent = (CVirtualTreeNode *)m_TreeCtrl.GetItemData( pSelectedItem);
       // And add this new directory into its list
-      pvtnNewDir->vnt_pvtnParent->vtn_lhChildren.AddTail( pvtnNewDir->vtn_lnInDirectory);
+      pvtnNewDir->vnt_pvtnParent->vtn_lhChildren.push_back(std::move(pvtnNewDir));
     }
     
     m_bVirtualTreeChanged = TRUE;
@@ -266,19 +266,18 @@ void CBrowser::DeleteDirectory(void)
   CVirtualTreeNode *pVTN = (CVirtualTreeNode *)m_TreeCtrl.GetItemData( pSelectedItem);
 
   // Delete all subdirectories
-  FORDELETELIST( CVirtualTreeNode, vtn_lnInDirectory, pVTN->vtn_lhChildren, litDel)
-  {
-    delete &litDel.Current();
-  }
+  pVTN->vtn_lhChildren.clear();
 
   // If this is not root directory, remove it from list and delete it
   if( pVTN->vnt_pvtnParent != NULL)
   {
     pvtnParent = pVTN->vnt_pvtnParent;
-    pVTN->vtn_lnInDirectory.Remove();
-    delete pVTN;
+    pvtnParent->vtn_lhChildren.erase(
+      std::remove_if(pvtnParent->vtn_lhChildren.begin(), pvtnParent->vtn_lhChildren.end(),
+        [=](const auto& p) { return p.get() == pVTN; }),
+      pvtnParent->vtn_lhChildren.end());
   }
-  
+
   m_TreeCtrl.DeleteAllItems();
   // If it wasn't root directory, fill TreeCtrl with data
   if( pvtnParent != NULL)
@@ -301,11 +300,11 @@ CVirtualTreeNode *CBrowser::FindItemDirectory(CVirtualTreeNode *pvtnCurrentDirec
                                                  CTFileName fnItemFileName)
 {
   // Now search this directory recursivly
-  FOREACHINLIST( CVirtualTreeNode, vtn_lnInDirectory, pvtnCurrentDirectory->vtn_lhChildren, it)
+  for (auto& it : pvtnCurrentDirectory->vtn_lhChildren)
   {
     if( it->vtn_bIsDirectory)
     {
-      CVirtualTreeNode *pvtnResult = FindItemDirectory( &it.Current(), fnItemFileName);
+      CVirtualTreeNode *pvtnResult = FindItemDirectory( it.get(), fnItemFileName);
       if( pvtnResult != NULL) return pvtnResult;
     }
     else
@@ -313,7 +312,7 @@ CVirtualTreeNode *CBrowser::FindItemDirectory(CVirtualTreeNode *pvtnCurrentDirec
       if( it->vtn_fnItem == fnItemFileName)
       {
         // deselect all items in directory
-        FOREACHINLIST( CVirtualTreeNode, vtn_lnInDirectory, pvtnCurrentDirectory->vtn_lhChildren, it2)
+        for (auto& it2 : pvtnCurrentDirectory->vtn_lhChildren)
         {
           it2->vtn_bSelected = FALSE;
         }
@@ -348,7 +347,7 @@ INDEX CBrowser::GetSelectedDirectory( CTString strArray[])
   if( pItem == NULL) return -1;
   FOREVER
   {
-    CTString strItemName = CTString( CStringA(m_TreeCtrl.GetItemText(pItem)));
+    CTString strItemName = static_cast<const char*>( CStringA(m_TreeCtrl.GetItemText(pItem)));
     strArray[ iSubDirsCt] = strItemName;
     iSubDirsCt ++;
 
@@ -378,7 +377,7 @@ HTREEITEM CBrowser::GetVirtualDirectoryItem( CTString strArray[], INDEX iSubDirs
         break;
       }
       // get current directory's (starting from root) first subdirectory 
-      CTString strItemName = CTString( CStringA(m_TreeCtrl.GetItemText(pItem)));
+      CTString strItemName = static_cast<const char*>( CStringA(m_TreeCtrl.GetItemText(pItem)));
       // is this subdirectory's name same as one in list of selected along given path
       if( strArray[ j] == strItemName)
       {
@@ -508,7 +507,7 @@ void CBrowser::SaveVirtualTree(CTFileName fnSave, CVirtualTreeNode *pvtn)
   CTFileStream File;
   try
   {
-    File.Create_t( fnSave, CTStream::CM_BINARY);
+    File.Create_t( fnSave);
     File.WriteID_t( CChunkID("VRTT"));
     File.WriteID_t( CChunkID(VIRTUAL_TREE_VERSION));
     pvtn->Write_t( &File);         // This will recursivly save tree beneath given tree node
@@ -653,10 +652,7 @@ void CBrowser::OnLoadVirtualTreeInternal(CTFileName fnVirtulTree, CVirtualTreeNo
   catch( char *strError)
   {
     AfxMessageBox( CString(strError));
-    FORDELETELIST( CVirtualTreeNode, vtn_lnInDirectory, m_VirtualTree.vtn_lhChildren, litDel)
-    {
-      delete &litDel.Current();
-    }
+    m_VirtualTree.vtn_lhChildren.clear();
     return;
   }
   m_TreeCtrl.SetFocus();
@@ -671,10 +667,7 @@ void CBrowser::LoadVirtualTree_t( CTFileName fnVirtulTree, CVirtualTreeNode *pvt
     // If current tree is not empty, delete it
     if( m_TreeCtrl.GetCount() != 0)
     {
-      FORDELETELIST( CVirtualTreeNode, vtn_lnInDirectory, m_VirtualTree.vtn_lhChildren, litDel)
-      {
-        delete &litDel.Current();
-      }
+      m_VirtualTree.vtn_lhChildren.clear();
       m_TreeCtrl.SelectItem( m_TreeCtrl.GetRootItem());
       DeleteDirectory();
     }
@@ -693,12 +686,15 @@ void CBrowser::LoadVirtualTree_t( CTFileName fnVirtulTree, CVirtualTreeNode *pvt
 
   if( pvtnRoot==NULL)
   {
-    m_VirtualTree.Read_t( &File, NULL);
+    m_VirtualTree.Read_t( &File);
   }
   else
   {
-    CVirtualTreeNode *pVTNNew = new CVirtualTreeNode;
-    pVTNNew->Read_t( &File, pvtnRoot);
+    auto pVTNNew = std::make_unique<CVirtualTreeNode>();
+    auto* pVTNewRaw = pVTNNew.get();
+    pvtnRoot->vtn_lhChildren.push_back(std::move(pVTNNew));
+    pVTNewRaw->vnt_pvtnParent = pvtnRoot;
+    pVTNewRaw->Read_t(&File);
   }
   
   // delete all items
@@ -770,7 +766,7 @@ void CBrowser::OnRenameDirectory()
     if( dlg.DoModal() == IDOK)
     {
       pVTN->vtn_itIconType = dlg.m_iSelectedIconType;
-      pVTN->vtn_strName = CTString( CStringA(dlg.m_strDirectoryName));
+      pVTN->vtn_strName = static_cast<const char*>( CStringA(dlg.m_strDirectoryName));
       m_TreeCtrl.SetItemImage( pSelectedItem, pVTN->vtn_itIconType,
                                               pVTN->vtn_itIconType + NO_OF_ICONS);
       m_TreeCtrl.SetItemText( pSelectedItem, CString(pVTN->vtn_strName));
@@ -782,7 +778,7 @@ void CBrowser::OnRenameDirectory()
 
 void CBrowser::OnContextMenu(CWnd* pWnd, CPoint point) 
 {
-	CRect rectBrowser;
+  CRect rectBrowser;
   
   GetWindowRect( &rectBrowser);
   CPoint ptInBrowser = CPoint( point.x - rectBrowser.TopLeft().x, 
@@ -792,11 +788,11 @@ void CBrowser::OnContextMenu(CWnd* pWnd, CPoint point)
   if( (m_boxBrowseWnd & boxPoint) == boxPoint)
   {
     m_BrowseWindow.OnContextMenu( point);
-  }	
+  }  
   else if( (m_boxTreeWnd & boxPoint) == boxPoint)
   {
     m_TreeCtrl.OnContextMenu( point);
-  }	
+  }  
 }
 
 CVirtualTreeNode *CBrowser::GetSelectedDirectory(void)
@@ -839,7 +835,7 @@ void CBrowser::OnDumpVt()
   CTFileStream FileDump;
   try
   {
-    FileDump.Create_t( fnName, CTStream::CM_TEXT);
+    FileDump.Create_t( fnName);
     m_VirtualTree.Dump(&FileDump);
     FileDump.Close();
   }

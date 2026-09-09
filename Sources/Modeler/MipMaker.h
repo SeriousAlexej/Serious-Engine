@@ -19,10 +19,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
-#include <Engine/Base/CTString.h>
-#include <Engine/Models/ImportedMesh.h>
-#include <Engine/Math/AABBox.h>
-#include <Engine/Templates/DynamicArray.h>
+#include <SeriousEngineCppAPI/Base/CTString.h>
+#include <EngineGUI/ImportedMesh.h>
+#include <SeriousEngineCppAPI/Math/AABBox.h>
 
 class CMipPolygonVertex {
 public:
@@ -30,18 +29,17 @@ public:
   class CMipPolygon *mpv_pmpPolygon;
   class CMipVertex *mpv_pmvVertex;
   FLOAT2D m_uv;
-  inline void Clear(void) {};
 };
 
-class CMipVertex : public FLOAT3D {
+class CMipVertex {
 public:
+  FLOAT3D m_vector;
   FLOAT3D mv_vRestFrameCoordinate;
   INDEX mv_iSurface;
   BOOL mv_bUsed;
   CMipVertex *mv_pmvxRemap;
   CMipVertex();
   ~CMipVertex();
-  void Clear(void);
 };
 
 class CMipPolygon {
@@ -57,14 +55,13 @@ class CMipSurface {
 public:
   CTString ms_strName;
   COLOR ms_colColor;
-  inline void Clear(void) {};
 };
 
 class CMipModel {
 public:
-  CDynamicArray< CMipSurface> mm_amsSurfaces;
-  CDynamicArray< CMipPolygon> mm_ampPolygons;
-  CDynamicArray< CMipVertex> mm_amvVertices;
+  std::vector<std::unique_ptr<CMipSurface>> mm_amsSurfaces;
+  std::vector<std::unique_ptr<CMipPolygon>> mm_ampPolygons;
+  std::vector<std::unique_ptr<CMipVertex>> mm_amvVertices;
   FLOATaabbox3D mm_boxBoundingBox;
   ImportedMesh GetMesh();
 

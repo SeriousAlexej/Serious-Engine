@@ -29,7 +29,7 @@ class CWndDisplayTexture : public CWnd
 {
 // Construction
 public:
-	CWndDisplayTexture();
+  CWndDisplayTexture();
 
   // function that is called when lmb is clicked
   inline void SetLeftMouseButtonClicked( void(*pLeftMouseButtonClicked)( PIX pixX, PIX pixY))
@@ -49,8 +49,8 @@ public:
   void (*m_pRightMouseButtonClicked)( PIX pixX, PIX pixY);
   void (*m_pRightMouseButtonMoved)( PIX pixX, PIX pixY);
   CTextureObject m_toTexture;
-  CDrawPort *m_pDrawPort;
-  CViewPort *m_pViewPort;
+  CDrawPortPtr m_pDrawPort;
+  CViewPortPtr m_pViewPort;
   int m_iTimerID;
   BOOL m_bChequeredAlpha;
   BOOL m_bForce32;
@@ -70,26 +70,26 @@ public:
 public:
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CWndDisplayTexture)
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CWndDisplayTexture)
+  //}}AFX_VIRTUAL
 
 // Implementation
 public:
-	virtual ~CWndDisplayTexture();
+  virtual ~CWndDisplayTexture();
 
-	// Generated message map functions
+  // Generated message map functions
 protected:
-	//{{AFX_MSG(CWndDisplayTexture)
-	afx_msg void OnDestroy();
-	afx_msg void OnPaint();
-	afx_msg void OnTimer(UINT nIDEvent);
-	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
-	afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
-	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
-	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+  //{{AFX_MSG(CWndDisplayTexture)
+  afx_msg void OnDestroy();
+  afx_msg void OnPaint();
+  afx_msg void OnTimer(UINT nIDEvent);
+  afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+  afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
+  afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
+  afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+  //}}AFX_MSG
+  DECLARE_MESSAGE_MAP()
 };
 
 /////////////////////////////////////////////////////////////////////////////

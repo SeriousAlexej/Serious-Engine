@@ -56,7 +56,7 @@ QPushButton:pressed, QPushButton:checked {
 )";
 }
 
-PointerWidget::PointerWidget(CEntity* entity, QWidget* parent)
+PointerWidget::PointerWidget(CEntityPtr entity, QWidget* parent)
   : QWidget(parent)
 {
   auto* layout = new QHBoxLayout(this);
@@ -65,7 +65,11 @@ PointerWidget::PointerWidget(CEntity* entity, QWidget* parent)
 
   auto* label = new QLabel("(none)", this);
   if (entity)
-    label->setText(QString("%1 (ID %2)").arg(QString::fromLocal8Bit(entity->GetName().str_String)).arg(QString::number(entity->en_ulID)));
+  {
+    auto entity_name = QString::fromLocal8Bit(static_cast<const char*>(entity->GetName()));
+    entity_name.replace('\n', " ");
+    label->setText(QString("%1 (ID %2)").arg(entity_name).arg(QString::number(entity->en_ulID)));
+  }
   layout->addWidget(label);
 
   if (entity)

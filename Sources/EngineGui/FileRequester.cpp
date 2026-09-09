@@ -14,23 +14,50 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 #include "stdh.h"
-#include <Engine/Templates/Stock_CTextureData.h>
+#include <GroBrowser/GroBrowser.h>
+#include <SeriousEngineCppAPI/Templates/Stock_CTextureData.h>
+
+#include <QApplication>
+#include <QWinWidget>
 
 // thumbnail window
 static CWnd _wndThumbnail;
-CDrawPort *_pDrawPort = NULL;
-CViewPort *_pViewPort = NULL;
+bool gro_browser_requested = false;
+bool allow_gro_browser = false;
+CDrawPortPtr _pDrawPort;
+CViewPortPtr _pViewPort;
 static INDEX gui_bEnableRequesterThumbnails=TRUE;
 
-UINT APIENTRY FileOpenRequesterHook( HWND hdlg, UINT uiMsg, WPARAM wParam,	LPARAM lParam)
+UINT APIENTRY FileOpenRequesterHook( HWND hdlg, UINT uiMsg, WPARAM wParam,  LPARAM lParam)
 {
-  _pShell->DeclareSymbol("persistent user INDEX gui_bEnableRequesterThumbnails;", &gui_bEnableRequesterThumbnails);
+  if (uiMsg == WM_NOTIFY)
+  {
+    OFNOTIFY* pONNotify = (OFNOTIFY*)lParam;
+    NMHDR* pNMHeader = &pONNotify->hdr;
+    if (pNMHeader->code == CDN_INITDONE)
+    {
+      if (!allow_gro_browser || !QApplication::instance())
+        ShowWindow(GetDlgItem(hdlg, IDC_PICK_IN_GRO), SW_HIDE);
+    }
+  }
+
+  if (uiMsg == WM_COMMAND)
+  {
+    if (LOWORD(wParam) == IDC_PICK_IN_GRO && HIWORD(wParam) == BN_CLICKED)
+    {
+      gro_browser_requested = true;
+      HWND hDialog = GetParent(hdlg);
+      PostMessage(hDialog, WM_COMMAND, MAKEWPARAM(IDCANCEL, BN_CLICKED), (LPARAM)GetDlgItem(hDialog, IDCANCEL));
+    }
+  }
+
+  _pShell_DeclareSymbol("persistent user INDEX gui_bEnableRequesterThumbnails;", &gui_bEnableRequesterThumbnails);
   if( !gui_bEnableRequesterThumbnails)
   {
     return 0;
   }
 
-  CTextureData *pTextureData = NULL;
+  CTextureDataPtr pTextureData;
   if( uiMsg == WM_NOTIFY)
   {
     // obtain file open notification structure
@@ -70,7 +97,7 @@ UINT APIENTRY FileOpenRequesterHook( HWND hdlg, UINT uiMsg, WPARAM wParam,	LPARA
                             CWnd::FromHandle(hdlg), IDW_FILE_THUMBNAIL);
                             */
       // initialize canvas for thumbnail window
-      _pGfx->CreateWindowCanvas( _wndThumbnail.m_hWnd, &_pViewPort, &_pDrawPort);
+      _pGfx_CreateWindowCanvas( _wndThumbnail.m_hWnd, _pViewPort, _pDrawPort);
     }
     char strSelectedFullPath[ PATH_MAX];
     CTFileName fnSelectedFileFullPath;
@@ -84,22 +111,25 @@ UINT APIENTRY FileOpenRequesterHook( HWND hdlg, UINT uiMsg, WPARAM wParam,	LPARA
     {
       // remove application path
       fnSelectedFileFullPath.RemoveApplicationPath_t();
+      const auto selectedFileExtension = fnSelectedFileFullPath.FileExt();
+      const auto& supported_image_formats = _EngineGUI.GetSupportedImportFormats();
       CTFileName fnThumbnail = CTString("");
-      if( (fnSelectedFileFullPath.FileExt() == ".wld") ||
-          (fnSelectedFileFullPath.FileExt() == ".mdl") )
+      if (selectedFileExtension == ".wld" || selectedFileExtension == ".mdl")
       {
         fnThumbnail = fnSelectedFileFullPath.FileDir()+fnSelectedFileFullPath.FileName()+".tbn";
       }
-      else if( (fnSelectedFileFullPath.FileExt() == ".tex") ||
-               (fnSelectedFileFullPath.FileExt() == ".tbn") )
+      else if (selectedFileExtension == ".tex" || selectedFileExtension == ".tbn")
       {
         fnThumbnail = fnSelectedFileFullPath;
       }
-      else if( (fnSelectedFileFullPath.FileExt() == ".pcx") ||
-               (fnSelectedFileFullPath.FileExt() == ".tga") )
+      else if (std::any_of(supported_image_formats.begin(), supported_image_formats.end(),
+        [&](const std::string& extension)
+        {
+          return selectedFileExtension == extension.c_str();
+        }))
       {
         CImageInfo iiImageInfo;
-        iiImageInfo.LoadAnyGfxFormat_t( fnSelectedFileFullPath);
+        _EngineGUI.LoadAnyGfxFormat_t(iiImageInfo, fnSelectedFileFullPath);
         // both dimension must be potentions of 2
         if( (iiImageInfo.ii_Width  == 1<<((int)Log2( iiImageInfo.ii_Width))) &&
             (iiImageInfo.ii_Height == 1<<((int)Log2( iiImageInfo.ii_Height))) )
@@ -107,27 +137,27 @@ UINT APIENTRY FileOpenRequesterHook( HWND hdlg, UINT uiMsg, WPARAM wParam,	LPARA
           fnThumbnail = CTString( "Temp\\Temp.tex");
           // creates new texture with one frame
           CTextureData tdForPictureConverting;
-          tdForPictureConverting.Create_t( &iiImageInfo, iiImageInfo.ii_Width, 1, FALSE);
+          tdForPictureConverting.Create_t( iiImageInfo, iiImageInfo.ii_Width, 1, FALSE);
           tdForPictureConverting.Save_t( fnThumbnail);
         }
       }
       if( fnThumbnail != "")
       {
         // obtain thumbnail
-        pTextureData = _pTextureStock->Obtain_t( fnThumbnail);
+        pTextureData = _pTextureStock_Obtain_t( fnThumbnail);
         pTextureData->Reload();
       }
     }
     catch( char* err_str)
     {
       (void)err_str;
-      pTextureData = NULL;
+      pTextureData.Reset();
     }
 
     if( IsWindow( _wndThumbnail) )
     {
       // if there is a valid drawport, and the drawport can be locked
-      if( (_pDrawPort != NULL) && (_pDrawPort->Lock()) )
+      if( (_pDrawPort) && (_pDrawPort->Lock()) )
       {
         PIXaabbox2D rectPict;
         rectPict = PIXaabbox2D( PIX2D(0, 0),
@@ -137,15 +167,15 @@ UINT APIENTRY FileOpenRequesterHook( HWND hdlg, UINT uiMsg, WPARAM wParam,	LPARA
         // erase z-buffer
         _pDrawPort->FillZBuffer(ZBUF_BACK);
         // if there is valid active texture
-        if( pTextureData != NULL)
+        if( pTextureData)
         {
           CTextureObject toPreview;
-          toPreview.SetData( pTextureData);
-          _pDrawPort->PutTexture( &toPreview, rectPict);
+          toPreview.SetData( *pTextureData);
+          _pDrawPort->PutTexture( toPreview, rectPict);
           CWnd::FromHandle( GetDlgItem( hdlg, IDC_THUMBNAIL_DESCRIPTION))->SetWindowText( 
             CString(pTextureData->GetDescription()));
           // release the texture
-          _pTextureStock->Release( pTextureData);
+          _pTextureStock_Release( *pTextureData);
         }
         else
         {
@@ -165,7 +195,7 @@ UINT APIENTRY FileOpenRequesterHook( HWND hdlg, UINT uiMsg, WPARAM wParam,	LPARA
       }
 
       // if there is a valid viewport
-      if (_pViewPort!=NULL)
+      if (_pViewPort)
       {
         // swap it
         _pViewPort->SwapBuffers();
@@ -176,16 +206,17 @@ UINT APIENTRY FileOpenRequesterHook( HWND hdlg, UINT uiMsg, WPARAM wParam,	LPARA
 }
 
 CTFileName CEngineGUI::FileRequester( 
-        char *pchrTitle/*="Choose file"*/, 
+        const char *pchrTitle/*="Choose file"*/, 
         const char *pchrFilters/*=FILTER_ALL FILTER_END*/,
-        char *pchrRegistry/*="KEY_NAME_REQUEST_FILE_DIR"*/,
+        const char *pchrRegistry/*="KEY_NAME_REQUEST_FILE_DIR"*/,
         CTString strDefaultDir/*=""*/, 
         CTString strFileSelectedByDefault/*=""*/,
-        CDynamicArray<CTFileName> *pafnSelectedFiles/*=NULL*/,
-        BOOL bIfOpen/*=TRUE*/)
+        CDynamicArray_CTFileName *pafnSelectedFiles/*=NULL*/,
+        BOOL bIfOpen/*=TRUE*/,
+        BOOL bLocate/*=FALSE*/)
 {
-  _pDrawPort = NULL;
-  _pViewPort = NULL;
+  _pDrawPort.Reset();
+  _pViewPort.Reset();
   // stupid way to change resources, but it must be done
   HANDLE hOldResource = AfxGetResourceHandle();
   // activate CTGfx resources
@@ -200,25 +231,27 @@ CTFileName CEngineGUI::FileRequester(
   ofnRequestFiles.hwndOwner = AfxGetMainWnd()->m_hWnd;
   ofnRequestFiles.lpstrFilter = pchrFilters;
   ofnRequestFiles.lpstrFile = chrFiles;
-  sprintf( chrFiles, "%s", strFileSelectedByDefault);
+  sprintf( chrFiles, "%s", static_cast<const char*>(strFileSelectedByDefault));
   ofnRequestFiles.nMaxFile = 2048;
 
-  CString strRequestInDirectory = _fnmApplicationPath+strDefaultDir;
-  if( pchrRegistry != NULL)
+  CString strRequestInDirectory(_fnmApplicationPath+strDefaultDir);
+  if (pchrRegistry)
   {
-    strRequestInDirectory = AfxGetApp()->GetProfileString(L"Scape", CString(pchrRegistry), 
+    strRequestInDirectory = AfxGetApp()->GetProfileString(L"Modeler prefs", CString(pchrRegistry), 
       CString(_fnmApplicationPath+strDefaultDir));
   }
 
   // if directory is not inside engine dir
-  CTString strTest = CStringA(strRequestInDirectory);
+  bool forced_to_engine_dir = false;
+  CTString strTest = static_cast<const char*>(CStringA(strRequestInDirectory));
   if (!strTest.RemovePrefix(_fnmApplicationPath)) {
     // force it there
     strRequestInDirectory = _fnmApplicationPath;
+    forced_to_engine_dir = true;
   }
-  
 
-  ofnRequestFiles.lpstrInitialDir = CStringA(strRequestInDirectory);
+  CStringA strRequestInDirectoryA(strRequestInDirectory);
+  ofnRequestFiles.lpstrInitialDir = strRequestInDirectoryA;
   ofnRequestFiles.lpstrTitle = pchrTitle;
   ofnRequestFiles.Flags = OFN_EXPLORER | OFN_ENABLEHOOK | OFN_ENABLETEMPLATE | OFN_HIDEREADONLY;
   // setup preview dialog
@@ -231,13 +264,51 @@ CTFileName CEngineGUI::FileRequester(
   ofnRequestFiles.lpstrDefExt = "";
 
   BOOL bResult;
-  if( bIfOpen)
+  gro_browser_requested = false;
+  allow_gro_browser = false;
+  if (bLocate && !forced_to_engine_dir && !pchrRegistry && !PathFileExists(strRequestInDirectory))
   {
-    bResult = GetOpenFileNameA( &ofnRequestFiles);
+    gro_browser_requested = true;
+    bResult = FALSE;
+  } else {
+    if( bIfOpen)
+    {
+      allow_gro_browser = true;
+      bResult = GetOpenFileNameA(&ofnRequestFiles);
+    }
+    else
+    {
+      bResult = GetSaveFileNameA(&ofnRequestFiles);
+    }
   }
-  else
+  if (gro_browser_requested)
   {
-    bResult = GetSaveFileNameA( &ofnRequestFiles);
+    CWinAppQt::ModalGuard guard;
+    QWinWidget modal_widget(AfxGetMainWnd()->GetSafeHwnd(), nullptr, Qt::WindowFlags {});
+    GroBrowser gro_browser(pchrFilters, pafnSelectedFiles, strDefaultDir + strFileSelectedByDefault, &modal_widget);
+    gro_browser.exec();
+    const auto files = gro_browser.SelectedFiles();
+    if (!files.empty())
+    {
+      if (pafnSelectedFiles)
+      {
+        for (const auto& file : files)
+        {
+          const auto file_path = file.toLocal8Bit();
+          CTFileNamePtr pfnSelectedFile = pafnSelectedFiles->New();
+          *pfnSelectedFile = CTString(file_path.constData());
+        }
+
+        AfxSetResourceHandle((HINSTANCE)hOldResource);
+        return CTString("Multiple files selected");
+      }
+      else
+      {
+        AfxSetResourceHandle((HINSTANCE)hOldResource);
+        const auto file_path = files.front().toLocal8Bit();
+        return CTString(file_path.constData());
+      }
+    }
   }
 
   if( bResult)
@@ -248,7 +319,7 @@ CTFileName CEngineGUI::FileRequester(
       chrFiles[ ofnRequestFiles.nFileOffset-1] = 0;
       if( pchrRegistry != NULL)
       {
-        AfxGetApp()->WriteProfileString(L"Scape", CString(pchrRegistry), CString(chrFiles));
+        AfxGetApp()->WriteProfileString(L"Modeler prefs", CString(pchrRegistry), CString(chrFiles));
       }
       CTFileName fnDirectory = CTString( chrFiles) + "\\";
 
@@ -266,7 +337,7 @@ CTFileName CEngineGUI::FileRequester(
           CTFileName fnSource = fnDirectory + CTString( chrFiles + iOffset);
           // remove application path
           fnSource.RemoveApplicationPath_t();
-          CTFileName *pfnSelectedFile = pafnSelectedFiles->New();
+          CTFileNamePtr pfnSelectedFile = pafnSelectedFiles->New();
           *pfnSelectedFile = fnSource;
         }
         catch( char *strError)
@@ -286,7 +357,7 @@ CTFileName CEngineGUI::FileRequester(
       strChooseFilePath.SetAt( ofnRequestFiles.nFileOffset, 0);
       if( pchrRegistry != NULL)
       {
-        AfxGetApp()->WriteProfileString(L"Scape", CString(pchrRegistry), strChooseFilePath);
+        AfxGetApp()->WriteProfileString(L"Modeler prefs", CString(pchrRegistry), strChooseFilePath);
       }
       CTFileName fnResult = CTString( chrFiles);
       try
@@ -306,10 +377,10 @@ CTFileName CEngineGUI::FileRequester(
       return fnResult;
     }
   }
-  if( _pViewPort != NULL)
+  if( _pViewPort)
   {
-    _pGfx->DestroyWindowCanvas( _pViewPort);
-    _pViewPort = NULL;
+    _pGfx_DestroyWindowCanvas( _pViewPort);
+    _pViewPort.Reset();
   }
   // restore resources
   AfxSetResourceHandle( (HINSTANCE) hOldResource);
@@ -317,19 +388,9 @@ CTFileName CEngineGUI::FileRequester(
   return CTString( "");
 }
 
-ENGINEGUI_API CTFileName FileRequester(
-  char *pchrTitle, 
-  char *pchrFilters,
-  char *pchrRegistry,
-  char *pchrFileSelectedByDefault)
-{
-  return _EngineGUI.FileRequester(pchrTitle, pchrFilters, pchrRegistry, "", pchrFileSelectedByDefault);
-}
-
-
 CTFileName CEngineGUI::BrowseTexture(CTFileName fnDefaultSelected/*=""*/,
-                                      char *pchrIniKeyName/*=KEY_NAME_REQUEST_FILE_DIR*/,
-                                      char *pchrWindowTitle/*="Choose texture"*/,
+                                      const char *pchrIniKeyName/*=KEY_NAME_REQUEST_FILE_DIR*/,
+                                      const char *pchrWindowTitle/*="Choose texture"*/,
                                       BOOL bIfOpen/*=TRUE*/)
 {
   return FileRequester( pchrWindowTitle, FILTER_TEX FILTER_END, pchrIniKeyName,

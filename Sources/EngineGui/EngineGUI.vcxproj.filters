@@ -16,6 +16,18 @@
     <Filter Include="Wizard Files">
       <UniqueIdentifier>{43491365-8482-4361-90a0-59df05280571}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\GroBrowser">
+      <UniqueIdentifier>{d4d2b3a8-e4db-4f53-87cd-43bc6e354a49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GroBrowser">
+      <UniqueIdentifier>{f29c7e89-acd1-4d08-97f8-de5185730fe7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Mesh">
+      <UniqueIdentifier>{1e520ae1-96e4-4783-b9ec-4eb1eea15254}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Mesh">
+      <UniqueIdentifier>{21150b3a-9ecd-4718-8fe7-47137def2b27}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DlgChooseTextureType.cpp">
@@ -44,6 +56,27 @@
     </ClCompile>
     <ClCompile Include="WndDisplayTexture.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GroBrowser\GroBrowser.cpp">
+      <Filter>Source Files\GroBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="ImportedMesh.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="ImportedSkeletalAnimation.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="ImportedSkeleton.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Object3D_IO.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureMapping_Utils.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="BlenderFCurve.cpp">
+      <Filter>Source Files\Mesh</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -74,6 +107,30 @@
     <ClInclude Include="WndDisplayTexture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GroBrowser\GroBrowser.ui.h">
+      <Filter>Header Files\GroBrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="GroBrowser\GroBrowser.qrc.h">
+      <Filter>Header Files\GroBrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="ImportedMesh.h">
+      <Filter>Header Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="ImportedSkeletalAnimation.h">
+      <Filter>Header Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="ImportedSkeleton.h">
+      <Filter>Header Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Object3D_IO.h">
+      <Filter>Header Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureMapping_Utils.h">
+      <Filter>Header Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="BlenderFCurve.h">
+      <Filter>Header Files\Mesh</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Graphics.rc">
@@ -88,5 +145,19 @@
       <Filter>Wizard Files</Filter>
     </CustomBuild>
     <CustomBuild Include="ReadMe.txt" />
+    <CustomBuild Include="GroBrowser\GroBrowser.ui">
+      <Filter>Source Files\GroBrowser</Filter>
+    </CustomBuild>
+    <CustomBuild Include="GroBrowser\GroBrowser.qrc">
+      <Filter>Source Files\GroBrowser</Filter>
+    </CustomBuild>
+    <CustomBuild Include="GroBrowser\GroBrowser.h">
+      <Filter>Header Files\GroBrowser</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="GroBrowser\GroBrowser.h.moc">
+      <Filter>Header Files\GroBrowser</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -46,8 +46,8 @@ public:
   CWnd m_wndW;
   CWnd m_wndC;
   CWnd m_wndF;
-  CDrawPort *m_apdp[7];
-  CViewPort *m_apvp[7];
+  CDrawPortPtr m_apdp[7];
+  CViewPortPtr m_apvp[7];
 
   CTextureObject m_toN;
   CTextureObject m_toS;
@@ -56,47 +56,47 @@ public:
   CTextureObject m_toC;
   CTextureObject m_toF;
 
-	CDlgCreateReflectionTexture(CWnd* pParent = NULL);   // standard constructor
+  CDlgCreateReflectionTexture(CWnd* pParent = NULL);   // standard constructor
   void CreateReflectionTexture_t( CTFileName fnTexture);  // throw char *
   void PutPicture(CWnd &wnd, CTextureObject &to, INDEX iwin);
-  void DrawPreview( CDrawPort *pdp);
+  void DrawPreview( CDrawPortPtr pdp);
   void RenderPreview(void);
   void AutoSetTextures( CTFileName fnFile);
 
 // Dialog Data
-	//{{AFX_DATA(CDlgCreateReflectionTexture)
-	enum { IDD = IDD_CREATE_REFLECTION_TEXTURE };
-	CComboBox	m_comboSizeInPixels;
-	CColoredButton	m_colorLight;
-	CColoredButton	m_colorAmbient;
-	CColoredButton	m_colorReflection;
-	BOOL	m_bAutoRotate;
-	//}}AFX_DATA
+  //{{AFX_DATA(CDlgCreateReflectionTexture)
+  enum { IDD = IDD_CREATE_REFLECTION_TEXTURE };
+  CComboBox  m_comboSizeInPixels;
+  CColoredButton  m_colorLight;
+  CColoredButton  m_colorAmbient;
+  CColoredButton  m_colorReflection;
+  BOOL  m_bAutoRotate;
+  //}}AFX_DATA
 
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CDlgCreateReflectionTexture)
-	public:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CDlgCreateReflectionTexture)
+  public:
+  virtual BOOL PreTranslateMessage(MSG* pMsg);
+  protected:
+  virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+  //}}AFX_VIRTUAL
 
 // Implementation
 protected:
 
-	// Generated message map functions
-	//{{AFX_MSG(CDlgCreateReflectionTexture)
-	afx_msg void OnPaint();
-	virtual BOOL OnInitDialog();
-	afx_msg void OnTimer(UINT nIDEvent);
-	afx_msg void OnDestroy();
-	afx_msg void OnAutoRotate();
-	afx_msg void OnSelchangeSizeInPixels();
-	virtual void OnOK();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+  // Generated message map functions
+  //{{AFX_MSG(CDlgCreateReflectionTexture)
+  afx_msg void OnPaint();
+  virtual BOOL OnInitDialog();
+  afx_msg void OnTimer(UINT nIDEvent);
+  afx_msg void OnDestroy();
+  afx_msg void OnAutoRotate();
+  afx_msg void OnSelchangeSizeInPixels();
+  virtual void OnOK();
+  //}}AFX_MSG
+  DECLARE_MESSAGE_MAP()
 };
 
 //{{AFX_INSERT_LOCATION}}

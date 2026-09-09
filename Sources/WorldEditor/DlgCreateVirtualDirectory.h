@@ -25,7 +25,7 @@ class CDlgCreateVirtualDirectory : public CDialog
 {
 // Construction
 public:
-	CDlgCreateVirtualDirectory(CTString strOldName = CTString(""),
+  CDlgCreateVirtualDirectory(CTString strOldName = CTString(""),
     CTString strTitle = CTString("Create virtual directory"), CWnd* pParent = NULL);
 
   CTString m_strTitle;
@@ -34,28 +34,28 @@ public:
   INDEX m_iSelectedIconType;
 
 // Dialog Data
-	//{{AFX_DATA(CDlgCreateVirtualDirectory)
-	enum { IDD = IDD_CREATE_VIRTUAL_DIRECTORY };
-	CListCtrl	m_DirectoryIconsList;
-	CString	m_strDirectoryName;
-	//}}AFX_DATA
+  //{{AFX_DATA(CDlgCreateVirtualDirectory)
+  enum { IDD = IDD_CREATE_VIRTUAL_DIRECTORY };
+  CListCtrl  m_DirectoryIconsList;
+  CString  m_strDirectoryName;
+  //}}AFX_DATA
 
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CDlgCreateVirtualDirectory)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CDlgCreateVirtualDirectory)
+  protected:
+  virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+  //}}AFX_VIRTUAL
 
 // Implementation
 protected:
 
-	// Generated message map functions
-	//{{AFX_MSG(CDlgCreateVirtualDirectory)
-	virtual BOOL OnInitDialog();
-	afx_msg void OnDblclkDirectoryIconList(NMHDR* pNMHDR, LRESULT* pResult);
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+  // Generated message map functions
+  //{{AFX_MSG(CDlgCreateVirtualDirectory)
+  virtual BOOL OnInitDialog();
+  afx_msg void OnDblclkDirectoryIconList(NMHDR* pNMHDR, LRESULT* pResult);
+  //}}AFX_MSG
+  DECLARE_MESSAGE_MAP()
 };
 #endif // DLGCREATEVIRTUALDIRECTORY_H

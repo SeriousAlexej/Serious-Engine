@@ -30,7 +30,7 @@ class CCtrlEditFlags : public CButton
 // Construction
 public:
   CTString m_astrBitDescription[32];
-	CCtrlEditFlags();
+  CCtrlEditFlags();
   CWnd *m_pDialog;
   ULONG m_ulValue;
   ULONG m_ulDefined;
@@ -64,26 +64,26 @@ public:
 public:
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CCtrlEditFlags)
-	public:
-	virtual void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CCtrlEditFlags)
+  public:
+  virtual void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
+  //}}AFX_VIRTUAL
 
 // Implementation
 public:
-	virtual ~CCtrlEditFlags();
+  virtual ~CCtrlEditFlags();
 
-	// Generated message map functions
+  // Generated message map functions
 protected:
-	//{{AFX_MSG(CCtrlEditFlags)
-	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
-	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
-	afx_msg void OnKillFocus(CWnd* pNewWnd);
-	//}}AFX_MSG
+  //{{AFX_MSG(CCtrlEditFlags)
+  afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+  afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+  afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
+  afx_msg void OnKillFocus(CWnd* pNewWnd);
+  //}}AFX_MSG
 
-	DECLARE_MESSAGE_MAP()
+  DECLARE_MESSAGE_MAP()
 };
 
 /////////////////////////////////////////////////////////////////////////////

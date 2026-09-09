@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define WORLDEDITOR_H 1
 
 #ifndef __AFXWIN_H__
-	#error include 'stdafx.h' before including this file for PCH
+  #error include 'stdafx.h' before including this file for PCH
 #endif
 
 #include "resource.h"       // main symbols
@@ -27,15 +27,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <functional>
 
-#define CHILD_CONFIGURATION_VER "V012"
-#define VIEW_PREFERENCES_VER "V012"
+#define CHILD_CONFIGURATION_VER "V013"
+#define VIEW_PREFERENCES_VER "V013"
 
 #define VIEW_PREFERENCES_CT 10
 #define CHILD_CONFIGURATIONS_CT 10
 
 extern FLOAT _fLastMipBrushingOptionUsed;
 extern INDEX wed_iMaxFPSActive;
-extern struct GameGUI_interface *_pGameGUI;
+extern GameGUI_interface *_pGameGUI;
 
 extern UINT _uiMessengerMsg;
 extern UINT _uiMessengerForcePopup;
@@ -45,12 +45,12 @@ class CWorldEditorDoc;
 class CWorldEditorView;
 class CVirtualTreeNode;
 
-extern CEntity *GetTerrainEntity(void);
-extern CTerrain *GetTerrain(void);
-extern CTerrainLayer *GetLayer(void);
+extern CEntityPtr GetTerrainEntity(void);
+extern CTerrainPtr GetTerrain(void);
+extern CTerrainLayerPtr GetLayer(void);
 extern void SelectLayer(INDEX iLayer);
 extern INDEX GetLayerIndex(void);
-extern CTerrainLayer *GetLayer(INDEX iLayer);
+extern CTerrainLayerPtr GetLayer(INDEX iLayer);
 
 #define ALLOW_TERRAINS 1
 
@@ -98,7 +98,7 @@ public:
   enum CSGType vfp_csgtCSGOperation;
   // global parameters
   enum PrimitiveType vfp_ptPrimitiveType;
-  CStaticArray<DOUBLE3D> vfp_avVerticesOnBaseOfPrimitive;
+  std::vector<DOUBLE3D> vfp_avVerticesOnBaseOfPrimitive;
   CObject3D vfp_o3dPrimitive;
   CPlacement3D vfp_plPrimitive;
   enum TriangularisationType vfp_ttTriangularisationType;
@@ -141,7 +141,12 @@ public:
   CTFileName vfp_fnDisplacement;
 
   CValuesForPrimitive();
-  inline CValuesForPrimitive (CValuesForPrimitive &vfpToCopy)
+  inline CValuesForPrimitive(CValuesForPrimitive& vfpToCopy)
+  {
+    *this = vfpToCopy;
+  }
+
+  inline CValuesForPrimitive& operator=(const CValuesForPrimitive& vfpToCopy)
   {
     vfp_avVerticesOnBaseOfPrimitive = vfpToCopy.vfp_avVerticesOnBaseOfPrimitive;
     vfp_ptPrimitiveType = vfpToCopy.vfp_ptPrimitiveType;
@@ -184,9 +189,11 @@ public:
     vfp_fnDisplacement = vfpToCopy.vfp_fnDisplacement;
     vfp_fMipStart = vfpToCopy.vfp_fMipStart;
     vfp_fMipStep = vfpToCopy.vfp_fMipStep;
-  };
 
-  inline BOOL operator==(const CValuesForPrimitive &vfpToCompare);
+    return *this;
+  }
+
+  BOOL operator==(const CValuesForPrimitive &vfpToCompare) const;
   inline CValuesForPrimitive operator+(const CValuesForPrimitive &vfpToAdd);
   inline CValuesForPrimitive &operator+=(const CValuesForPrimitive &vfpToAdd);
   inline CValuesForPrimitive operator-(const CValuesForPrimitive &vfpToSub);
@@ -199,18 +206,11 @@ public:
   void Write_t(CTStream &strmFile);
 };
 
-// for linking of primitive into primitive history list
-class CPrimitiveInHistoryBuffer {
-public:
-  CListNode pihb_lnNode;
-  CValuesForPrimitive pihb_vfpPrimitive;
-};
-
 // Class used for holding global modeler's preferences
 class CAppPrefs
 {
 public:
-	~CAppPrefs();
+  ~CAppPrefs();
   BOOL ap_CopyExistingWindowPrefs;
   BOOL ap_AutoMaximizeWindow;
   BOOL ap_SetDefaultColors;
@@ -253,6 +253,8 @@ public:
   // set default values
   void SetDefaultValues(void);
   void ClearInvalidConfigPointers(void);
+  void Read_t(CTStream& istrFile);   // throw char * // read and
+  void Write_t(CTStream& ostrFile);  // throw char * // write functions
   // world's rendering preferences
   CWorldRenderPrefs m_wrpWorldRenderPrefs;
   // model's rendering preferences
@@ -280,6 +282,8 @@ public:
   // set default values
   void SetDefaultValues(void);
   void ClearInvalidConfigPointers(void);
+  void Read_t(CTStream& istrFile);   // throw char * // read and
+  void Write_t(CTStream& ostrFile);  // throw char * // write functions
   // numbers of horizontal splitters
   INDEX m_iHorizontalSplitters;
   // numbers of vertical splitters
@@ -319,16 +323,16 @@ public:
   void MouseMoveNotify( HWND hwndCaller, ULONG ulTime, TTCFunction_type *pCallBack, void *pThis);
 };
 
-class CWorldEditorApp : public CWinApp
+class CWorldEditorApp : public CWinAppQt
 {
 private:
   CWorldEditorDoc *m_pLastActivatedDocument;
-  bool m_showing_modal_dialog;
-  std::function<void(CEntity*)> m_selection_stealer;
+  std::function<void(CEntity_*)> m_selection_stealer;
 public:
 // Atributes
+  QObject* mp_qtContext = nullptr;
   FLOAT3D m_vLastTerrainHit;
-  CEntity *m_penLastTerrainHit;
+  CEntityPtr m_penLastTerrainHit;
   FLOAT m_fCurrentTerrainBrush;
   FLOAT m_fTerrainBrushPressure;
   FLOAT m_iTerrainEditMode;
@@ -336,6 +340,7 @@ public:
   FLOAT m_fTerrainBrushPressureEnum;
   CTFileName m_fnDistributionNoiseTexture;
   CTFileName m_fnContinousNoiseTexture;
+  CTString gam_strConsoleInputBuffer;
 
   INDEX m_iFBMOctaves;
   FLOAT m_fFBMHighFrequencyStep;
@@ -344,6 +349,10 @@ public:
   FLOAT m_fFBMfAmplitudeDecreaser;
   BOOL m_bFBMAddNegativeValues;
   BOOL m_bFBMRandomOffset;
+
+  BOOL m_displayCameraViewfinder = TRUE;
+  BOOL m_enableCrashDumps = TRUE;
+  BOOL m_enableFullCrashDumps = FALSE;
 
   UWORD m_uwEditAltitude;
   FLOAT m_fPaintPower;
@@ -363,9 +372,9 @@ public:
 
   CPlacement3D m_plClipboard1;
   CPlacement3D m_plClipboard2;
-  
-  CBrushPolygon *m_pbpoClipboardPolygon;
-  CBrushPolygon *m_pbpoPolygonWithDeafultValues;
+
+  std::unique_ptr<CBrushPolygon> m_pbpoClipboardPolygon;
+  std::unique_ptr<CBrushPolygon> m_pbpoPolygonWithDeafultValues;
   CTFileName m_fnClassForDropMarker;
   // flag is set while changing display mode
   BOOL m_bChangeDisplayModeInProgress;
@@ -417,51 +426,58 @@ public:
   CMultiDocTemplate* m_pDocTemplate;
   // Only instance of CAppPrefs holding preferences
   class CAppPrefs m_Preferences;
-  // List head for holding available modes/resolutions
-  CListHead m_AvailableModes;
   // error texture
-  CTextureData *m_ptdError;
-  CTextureObject *m_ptoError;
+  CTextureDataPtr m_ptdError;
+  std::unique_ptr<CTextureObject> m_ptoError;
   // icons tray texture
-  CTextureData *m_ptdIconsTray;
+  CTextureDataPtr m_ptdIconsTray;
   // default texture for primitives
-  CTextureData *m_ptdActiveTexture;
+  CTextureDataPtr m_ptdActiveTexture;
   // view icons texture
-  CTextureData *m_pViewIconsTD;
+  CTextureDataPtr m_pViewIconsTD;
   // window background texture
-	CTFileName m_fnWinBcgTexture;
+  CTFileName m_fnWinBcgTexture;
   // application font
-  CFontData *m_pfntSystem;
+  CFontDataPtr m_pfntSystem;
   // application's windows font
   CFont m_Font;
   CFont m_FixedFont;
   // for holding entity selection marker model
-  CTextureData *m_ptdEntityMarkerTexture;
-	CModelData *m_pEntityMarkerModelData;
-	CModelObject *m_pEntityMarkerModelObject;
+  CTextureDataPtr m_ptdEntityMarkerTexture;
+  CModelDataPtr m_pEntityMarkerModelData;
+  std::unique_ptr<CModelObject> m_pEntityMarkerModelObject;
+  CTextureDataPtr m_gizmo_texture;
+  CModelDataPtr m_axis_data;
+  std::unique_ptr<CModelObject> m_axis_model;
+  CModelDataPtr m_axis_selected_data;
+  std::unique_ptr<CModelObject> m_axis_model_selected;
+  CModelDataPtr m_ring_data;
+  std::unique_ptr<CModelObject> m_ring_model;
+  CModelDataPtr m_ring_selected_data;
+  std::unique_ptr<CModelObject> m_ring_model_selected;
   // for holding portal selection marker model
-  CTextureData *m_ptdPortalMarkerTexture;
-	CModelData *m_pPortalMarkerModelData;
-	CModelObject *m_pPortalMarkerModelObject;
+  CTextureDataPtr m_ptdPortalMarkerTexture;
+  CModelDataPtr m_pPortalMarkerModelData;
+  std::unique_ptr<CModelObject> m_pPortalMarkerModelObject;
   // for holding empty brush model
-  CTextureData *m_ptdEmptyBrushTexture;
-	CModelData *m_pEmptyBrushModelData;
-	CModelObject *m_pEmptyBrushModelObject;
+  CTextureDataPtr m_ptdEmptyBrushTexture;
+  CModelDataPtr m_pEmptyBrushModelData;
+  std::unique_ptr<CModelObject> m_pEmptyBrushModelObject;
   // for holding range sphere model
-  CTextureData *m_ptdRangeSphereTexture;
-	CModelData *m_pRangeSphereModelData;
-	CModelObject *m_pRangeSphereModelObject;
+  CTextureDataPtr m_ptdRangeSphereTexture;
+  CModelDataPtr m_pRangeSphereModelData;
+  std::unique_ptr<CModelObject> m_pRangeSphereModelObject;
   // for holding angle3D model
-  CTextureData *m_ptdAngle3DTexture;
-	CModelData *m_pAngle3DModelData;
-	CModelObject *m_pAngle3DModelObject;
+  CTextureDataPtr m_ptdAngle3DTexture;
+  CModelDataPtr m_pAngle3DModelData;
+  std::unique_ptr<CModelObject> m_pAngle3DModelObject;
   // for holding bounding box model
-  CTextureData *m_ptdBoundingBoxTexture;
-	CModelData *m_pBoundingBoxModelData;
-	CModelObject *m_pBoundingBoxModelObject;
+  CTextureDataPtr m_ptdBoundingBoxTexture;
+  CModelDataPtr m_pBoundingBoxModelData;
+  std::unique_ptr<CModelObject> m_pBoundingBoxModelObject;
 
   // variables for full screen display mode
-	CDisplayMode m_dmFullScreen;
+  CDisplayMode m_dmFullScreen;
   GfxAPIType   m_gatFullScreen;
 
   // index of color last used for auto primitive colorization
@@ -490,7 +506,7 @@ public:
   // default values for terrain primitives
   CValuesForPrimitive m_vfpTerrain;
   // for linking primitives
-  CListHead m_lhPrimitiveHistory;  
+  std::list<std::unique_ptr<CValuesForPrimitive>> m_lhPrimitiveHistory;
   // obtain currently active view
   CWorldEditorDoc *GetActiveDocument(void);
   // obtain currently active view
@@ -499,24 +515,19 @@ public:
   CChangeableRT m_ctTerrainPage;
   CChangeableRT m_ctTerrainPageCanvas;
 
-  struct ModalGuard
-  {
-    ModalGuard();
-    ~ModalGuard();
-  };
-
 // Operations
   CWorldEditorApp();
-	~CWorldEditorApp();
-  void InstallOneTimeSelectionStealer(std::function<void(CEntity*)>&& selection_stealer, void* source);
-  const std::function<void(CEntity*)>& GetSelectionStealer() const;
-	void MyParseCommandLine(void);
-	BOOL SubInitInstance(void);
+  ~CWorldEditorApp();
+
+  void AddToRecentFileList(LPCTSTR lpszPathName) override;
+  void InstallOneTimeSelectionStealer(std::function<void(CEntity_*)>&& selection_stealer, void* source);
+  const std::function<void(CEntity_*)>& GetSelectionStealer() const;
+  void MyParseCommandLine(void);
+  BOOL SubInitInstance(void);
   void OnFileNew();
-  CEntity *CreateWorldBaseEntity(CWorld &woWorld, BOOL bZoning, CPlacement3D pl=CPlacement3D(FLOAT3D(0,0,0),ANGLE3D(0,0,0)));
-  BOOL Add3DObject(CWorldEditorDoc *pDoc, CEntity *penwb, CTFileName fnFile, BOOL bAdd);
+  CEntityPtr CreateWorldBaseEntity(CWorld &woWorld, BOOL bZoning, CPlacement3D pl=CPlacement3D(FLOAT3D(0,0,0),ANGLE3D(0,0,0)));
+  BOOL Add3DObject(CWorldEditorDoc *pDoc, CEntityPtr penwb, CTFileName fnFile, BOOL bAdd);
   INDEX Insert3DObjects(CWorldEditorDoc *pDoc);
-  CDisplayMode *GetStartModePtr( CTString strStartMode);
   CWorldEditorDoc *GetLastActivatedDocument(void);
   void ActivateDocument(CWorldEditorDoc *pDocToActivate);
   void RefreshAllDocuments( void);
@@ -551,45 +562,44 @@ public:
   // gets name for given virtual tree node
   CTString GetNameForVirtualTreeNode( CVirtualTreeNode *pvtnNode);
   void DisplayHelp(const CTFileName &fnHlk, UINT uCommand, DWORD dwData);
-  void ApplyTerrainEditing(CCastRay &crRayHit);
-  
+
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CWorldEditorApp)
-	public:
-	virtual BOOL InitInstance();
-	virtual BOOL SaveAllModified();
-	virtual int ExitInstance();
-	virtual BOOL OnIdle(LONG lCount);
-	virtual int Run();
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	virtual void WinHelp(DWORD dwData, UINT nCmd = HELP_CONTEXT);
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CWorldEditorApp)
+  public:
+  virtual BOOL InitInstance();
+  virtual BOOL SaveAllModified();
+  virtual int ExitInstance();
+  virtual BOOL OnIdle(LONG lCount);
+  virtual int Run();
+  virtual BOOL PreTranslateMessage(MSG* pMsg);
+  virtual void WinHelp(DWORD dwData, UINT nCmd = HELP_CONTEXT);
+  //}}AFX_VIRTUAL
 
 // Implementation
 
-	//{{AFX_MSG(CWorldEditorApp)
-	afx_msg void OnAppAbout();
+  //{{AFX_MSG(CWorldEditorApp)
+  afx_msg void OnAppAbout();
   afx_msg void OnQtAbout();
-	afx_msg void OnFilePreferences();
-	afx_msg void OnFileOpen();
-	afx_msg void OnImport3DObject();
-	afx_msg void OnDecadicGrid();
-	afx_msg void OnUpdateDecadicGrid(CCmdUI* pCmdUI);
-	afx_msg void OnConvertWorlds();
-	afx_msg void OnSetAsDefault();
-	afx_msg void OnHelpShowTipOfTheDay();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+  afx_msg void OnFilePreferences();
+  afx_msg void OnFileOpen();
+  afx_msg void OnImport3DObject();
+  afx_msg void OnDecadicGrid();
+  afx_msg void OnUpdateDecadicGrid(CCmdUI* pCmdUI);
+  afx_msg void OnConvertWorlds();
+  afx_msg void OnSetAsDefault();
+  afx_msg void OnHelpShowTipOfTheDay();
+  //}}AFX_MSG
+  DECLARE_MESSAGE_MAP()
 };
 
 /////////////////////////////////////////////////////////////////////////////
 // Inline functions
 
-inline BOOL CValuesForPrimitive::operator==(const CValuesForPrimitive &vfpToCompare)
+inline BOOL CValuesForPrimitive::operator==(const CValuesForPrimitive &vfpToCompare) const
 {
   return (
-    (vfp_avVerticesOnBaseOfPrimitive.Count() == vfpToCompare.vfp_avVerticesOnBaseOfPrimitive.Count() ) &&
+    (vfp_avVerticesOnBaseOfPrimitive.size() == vfpToCompare.vfp_avVerticesOnBaseOfPrimitive.size() ) &&
     (vfp_ptPrimitiveType == vfpToCompare.vfp_ptPrimitiveType) &&
     (vfp_plPrimitive == vfpToCompare.vfp_plPrimitive) &&
     (vfp_ttTriangularisationType == vfpToCompare.vfp_ttTriangularisationType) &&

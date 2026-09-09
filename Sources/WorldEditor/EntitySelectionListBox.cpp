@@ -39,9 +39,9 @@ CEntitySelectionListBox::~CEntitySelectionListBox()
 
 
 BEGIN_MESSAGE_MAP(CEntitySelectionListBox, CCheckListBox)
-	//{{AFX_MSG_MAP(CEntitySelectionListBox)
-		// NOTE - the ClassWizard will add and remove mapping macros here.
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CEntitySelectionListBox)
+    // NOTE - the ClassWizard will add and remove mapping macros here.
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////

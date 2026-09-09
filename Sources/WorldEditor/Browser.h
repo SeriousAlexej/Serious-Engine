@@ -73,7 +73,7 @@ public:
 // Overrides
 // ClassWizard generated virtual function overrides
 //{{AFX_VIRTUAL(CBrowser)
-	//}}AFX_VIRTUAL
+  //}}AFX_VIRTUAL
  
 // Implementation
 public:
@@ -83,19 +83,19 @@ public:
 // Generated message map functions
 //protected:
     //{{AFX_MSG(CBrowser)
-	afx_msg void OnCreateDirectory();
-	afx_msg void OnDeleteDirectory();
-	afx_msg void OnSaveVirtualTree();
-	afx_msg void OnLoadVirtualTree();
-	afx_msg void OnRenameDirectory();
-	afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
-	afx_msg void OnSaveAsVirtualTree();
-	afx_msg void OnImportVirtualTree();
-	afx_msg void OnExportVirtualTree();
-	afx_msg void OnUpdateImportVirtualTree(CCmdUI* pCmdUI);
-	afx_msg void OnUpdateExportVirtualTree(CCmdUI* pCmdUI);
-	afx_msg void OnDumpVt();
-	//}}AFX_MSG
+  afx_msg void OnCreateDirectory();
+  afx_msg void OnDeleteDirectory();
+  afx_msg void OnSaveVirtualTree();
+  afx_msg void OnLoadVirtualTree();
+  afx_msg void OnRenameDirectory();
+  afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
+  afx_msg void OnSaveAsVirtualTree();
+  afx_msg void OnImportVirtualTree();
+  afx_msg void OnExportVirtualTree();
+  afx_msg void OnUpdateImportVirtualTree(CCmdUI* pCmdUI);
+  afx_msg void OnUpdateExportVirtualTree(CCmdUI* pCmdUI);
+  afx_msg void OnDumpVt();
+  //}}AFX_MSG
     DECLARE_MESSAGE_MAP()
 };
  

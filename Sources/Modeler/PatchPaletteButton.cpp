@@ -38,10 +38,10 @@ CPatchPaletteButton::~CPatchPaletteButton()
 
 
 BEGIN_MESSAGE_MAP(CPatchPaletteButton, CButton)
-	//{{AFX_MSG_MAP(CPatchPaletteButton)
-	ON_WM_LBUTTONDOWN()
-	ON_WM_RBUTTONDOWN()
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CPatchPaletteButton)
+  ON_WM_LBUTTONDOWN()
+  ON_WM_RBUTTONDOWN()
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -99,7 +99,7 @@ void CPatchPaletteButton::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 
 void CPatchPaletteButton::OnLButtonDown(UINT nFlags, CPoint point) 
 {
-	INDEX iButtonNo = GetDlgCtrlID()-IDC_PATCH_BUTTON_BASE;
+  INDEX iButtonNo = GetDlgCtrlID()-IDC_PATCH_BUTTON_BASE;
   CModelerView *pModelerView = CModelerView::GetActiveMappingNormalView();
   if( pModelerView != NULL)
   {
@@ -115,12 +115,12 @@ void CPatchPaletteButton::OnLButtonDown(UINT nFlags, CPoint point)
     }
   }
 
-	CButton::OnLButtonDown(nFlags, point);
+  CButton::OnLButtonDown(nFlags, point);
 }
 
 void CPatchPaletteButton::OnRButtonDown(UINT nFlags, CPoint point) 
 {
-	INDEX iButtonNo = GetDlgCtrlID()-IDC_PATCH_BUTTON_BASE;
+  INDEX iButtonNo = GetDlgCtrlID()-IDC_PATCH_BUTTON_BASE;
   CModelerView *pModelerView = CModelerView::GetActiveMappingNormalView();
   if( pModelerView != NULL)
   {
@@ -138,5 +138,5 @@ void CPatchPaletteButton::OnRButtonDown(UINT nFlags, CPoint point)
     }
   }
 
-	CButton::OnRButtonDown(nFlags, point);
+  CButton::OnRButtonDown(nFlags, point);
 }

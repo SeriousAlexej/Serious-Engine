@@ -18,11 +18,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef PROPERTYCOMBOBAR_H
 #define PROPERTYCOMBOBAR_H 1
 
+#include <QObject>
+
 /////////////////////////////////////////////////////////////////////////////
 // CPropertyComboBar dialog
 
 class CPropertyComboBar : public CDialogBar
 {
+private:
+  QObject m_qt_context;
 // Construction
 public:
   BOOL Create( CWnd* pParentWnd, UINT nIDTemplate, UINT nStyle,
@@ -39,9 +43,9 @@ public:
   void SetIntersectingFileName();
   void SelectAxisRadio(CWnd *pwndToSelect);
   void SetColorPropertyToEntities( COLOR colNewColor);
-  void SetFirstValidEmptyTargetProperty(CEntity *penTarget);
-  void ClearAllTargets(CEntity *penClicked);
-  void SelectProperty(CEntityProperty *penpToMatch);
+  void SetFirstValidEmptyTargetProperty(CEntityPtr penTarget);
+  void ClearAllTargets(CEntityPtr penClicked);
+  void SelectProperty(CEntityPropertyPtr penpToMatch);
 // Attributes
 public:
   CSize m_Size;
@@ -107,29 +111,29 @@ public:
   CCtrlEditFlags m_ctrlEditFlags;
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CPropertyComboBar)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CPropertyComboBar)
+  protected:
+  virtual void DoDataExchange(CDataExchange* pDX);
+  //}}AFX_VIRTUAL
 
 // Implementation
 public:
   virtual CSize CalcDynamicLayout( int nLength, DWORD dwMode );
   void SetIntersectingEntityClassName(void);
-  CEntity *GetSelectedEntityPtr(void);
+  CEntityPtr GetSelectedEntityPtr(void);
 
-	// Generated message map functions
-	//{{AFX_MSG(CPropertyComboBar)
-	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+  // Generated message map functions
+  //{{AFX_MSG(CPropertyComboBar)
+  afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
   afx_msg void OnNoFile();
-	afx_msg void OnNoTarget();
-	//}}AFX_MSG
+  afx_msg void OnNoTarget();
+  //}}AFX_MSG
   afx_msg void OnUpdateBrowseFile( CCmdUI* pCmdUI );
   afx_msg void OnUpdateNoFile( CCmdUI* pCmdUI );
   afx_msg void OnUpdateNoTarget( CCmdUI* pCmdUI );
   afx_msg void OnUpdateEditColor( CCmdUI* pCmdUI );
   afx_msg void OnUpdateEditFlags( CCmdUI* pCmdUI );
-	DECLARE_MESSAGE_MAP()
+  DECLARE_MESSAGE_MAP()
 };
 #endif // PROPERTYCOMBOBAR_H

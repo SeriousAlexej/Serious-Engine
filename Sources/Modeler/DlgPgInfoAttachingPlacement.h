@@ -27,14 +27,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class CDlgPgInfoAttachingPlacement : public CPropertyPage
 {
-	DECLARE_DYNCREATE(CDlgPgInfoAttachingPlacement)
+  DECLARE_DYNCREATE(CDlgPgInfoAttachingPlacement)
 
 // Construction
 public:
-	CUpdateable m_udAllValues;
+  CUpdateable m_udAllValues;
   INDEX m_iActivePlacement;
-	CDlgPgInfoAttachingPlacement();
-	~CDlgPgInfoAttachingPlacement();
+  CDlgPgInfoAttachingPlacement();
+  ~CDlgPgInfoAttachingPlacement();
 
   BOOL BrowseAttachement( CAttachedModel *pam);
   void SetPlacementReferenceVertex(INDEX iCenter, INDEX iFront, INDEX iUp);
@@ -44,53 +44,53 @@ public:
   BOOL OnIdle(LONG lCount);
 
 // Dialog Data
-	//{{AFX_DATA(CDlgPgInfoAttachingPlacement)
-	enum { IDD = IDD_INFO_ATTACHING_PLACEMENT };
-	CComboBox	m_comboAttachmentModelAnimation;
-	float	m_fBanking;
-	float	m_fHeading; 
-	float	m_fPitch;
-	float	m_fXOffset;
-	float	m_fYOffset;
-	float	m_fZOffset;
-	CString	m_strName;
-	CString	m_strAttachingModel;
-	CString	m_strAttachingVertices;
-	CString	m_strPlacementIndex;
-	BOOL	m_bIsVisible;
-	//}}AFX_DATA
+  //{{AFX_DATA(CDlgPgInfoAttachingPlacement)
+  enum { IDD = IDD_INFO_ATTACHING_PLACEMENT };
+  CComboBox  m_comboAttachmentModelAnimation;
+  float  m_fBanking;
+  float  m_fHeading; 
+  float  m_fPitch;
+  float  m_fXOffset;
+  float  m_fYOffset;
+  float  m_fZOffset;
+  CString  m_strName;
+  CString  m_strAttachingModel;
+  CString  m_strAttachingVertices;
+  CString  m_strPlacementIndex;
+  BOOL  m_bIsVisible;
+  //}}AFX_DATA
 
 
 // Overrides
-	BOOL OnInitDialog() override;
-	// ClassWizard generate virtual function overrides
-	//{{AFX_VIRTUAL(CDlgPgInfoAttachingPlacement)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
+  BOOL OnInitDialog() override;
+  // ClassWizard generate virtual function overrides
+  //{{AFX_VIRTUAL(CDlgPgInfoAttachingPlacement)
+  protected:
+  virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+  //}}AFX_VIRTUAL
 
 // Implementation
 protected:
-	// Generated message map functions
-	//{{AFX_MSG(CDlgPgInfoAttachingPlacement)
-	afx_msg void OnAddAttachingPlacement();
-	afx_msg void OnChangeAttachingPlacementBanking();
-	afx_msg void OnChangeAttachingPlacementHeading();
-	afx_msg void OnChangeAttachingPlacementName();
-	afx_msg void OnChangeAttachingPlacementPitch();
-	afx_msg void OnChangeAttachingPlacementXOffset();
-	afx_msg void OnChangeAttachingPlacementYOffset();
-	afx_msg void OnChangeAttachingPlacementZOffset();
-	afx_msg void OnBrowseModel();
-	afx_msg void OnNextAttachingPlacement();
-	afx_msg void OnPreviousAttachingPlacement();
-	afx_msg void OnRemoveAttachingPlacement();
-	afx_msg void OnIsVisible();
-	afx_msg void OnSelchangeAttachmentModelAnimationCombo();
-	afx_msg void PickAttachmentBone();
-	afx_msg BOOL OnGetTooltip(UINT, NMHDR* pNMHDR, LRESULT* pResult);
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+  // Generated message map functions
+  //{{AFX_MSG(CDlgPgInfoAttachingPlacement)
+  afx_msg void OnAddAttachingPlacement();
+  afx_msg void OnChangeAttachingPlacementBanking();
+  afx_msg void OnChangeAttachingPlacementHeading();
+  afx_msg void OnChangeAttachingPlacementName();
+  afx_msg void OnChangeAttachingPlacementPitch();
+  afx_msg void OnChangeAttachingPlacementXOffset();
+  afx_msg void OnChangeAttachingPlacementYOffset();
+  afx_msg void OnChangeAttachingPlacementZOffset();
+  afx_msg void OnBrowseModel();
+  afx_msg void OnNextAttachingPlacement();
+  afx_msg void OnPreviousAttachingPlacement();
+  afx_msg void OnRemoveAttachingPlacement();
+  afx_msg void OnIsVisible();
+  afx_msg void OnSelchangeAttachmentModelAnimationCombo();
+  afx_msg void PickAttachmentBone();
+  afx_msg BOOL OnGetTooltip(UINT, NMHDR* pNMHDR, LRESULT* pResult);
+  //}}AFX_MSG
+  DECLARE_MESSAGE_MAP()
 
 };
 

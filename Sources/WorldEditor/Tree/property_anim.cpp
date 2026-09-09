@@ -38,7 +38,7 @@ public:
     : BaseEntityPropertyTreeItem(parent)
   {
     QObject::connect(&EventHub::instance(), &EventHub::PropertyChanged, this,
-      [this](const std::set<CEntity*>& entities, CPropertyID* prop, BasePropertyTreeItem* source)
+      [this](const std::set<CEntity_*>& entities, CPropertyID* prop, BasePropertyTreeItem* source)
       {
         if (source == this)
           return;
@@ -47,7 +47,7 @@ public:
             prop->pid_eptType == CEntityProperty::EPT_FILENAME ||
             prop->pid_eptType == CEntityProperty::EPT_FILENAMENODEP)
         {
-          std::vector<CEntity*> common_entities;
+          std::vector<CEntity_*> common_entities;
           std::set_intersection(entities.begin(), entities.end(),
             m_entities.begin(), m_entities.end(),
             std::back_inserter(common_entities));
@@ -62,8 +62,9 @@ public:
     auto* editor = new QComboBox(parent);
     editor->setStyleSheet(g_combo_style);
 
-    CEntityProperty* actual_property = (*m_entities.begin())->PropertyForName(mp_property->pid_strName);
-    CAnimData* anim_data = (*m_entities.begin())->GetAnimData(actual_property->ep_slOffset);
+    CEntity entity(*m_entities.begin(), false);
+    CEntityPropertyPtr actual_property = entity.PropertyForName(mp_property->pid_strName);
+    CAnimDataPtr anim_data = entity.GetAnimData(actual_property->ep_slOffset);
 
     if (anim_data)
     {

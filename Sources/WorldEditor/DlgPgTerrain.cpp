@@ -34,9 +34,9 @@ IMPLEMENT_DYNCREATE(CDlgPgTerrain, CPropertyPage)
 
 CDlgPgTerrain::CDlgPgTerrain() : CPropertyPage(CDlgPgTerrain::IDD)
 {
-	//{{AFX_DATA_INIT(CDlgPgTerrain)
-		// NOTE: the ClassWizard will add member initialization here
-	//}}AFX_DATA_INIT
+  //{{AFX_DATA_INIT(CDlgPgTerrain)
+    // NOTE: the ClassWizard will add member initialization here
+  //}}AFX_DATA_INIT
 }
 
 CDlgPgTerrain::~CDlgPgTerrain()
@@ -45,16 +45,16 @@ CDlgPgTerrain::~CDlgPgTerrain()
 
 void CDlgPgTerrain::DoDataExchange(CDataExchange* pDX)
 {
-	CPropertyPage::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CDlgPgTerrain)
-		// NOTE: the ClassWizard will add DDX and DDV calls here
-	//}}AFX_DATA_MAP
+  CPropertyPage::DoDataExchange(pDX);
+  //{{AFX_DATA_MAP(CDlgPgTerrain)
+    // NOTE: the ClassWizard will add DDX and DDV calls here
+  //}}AFX_DATA_MAP
 }
 
 
 BEGIN_MESSAGE_MAP(CDlgPgTerrain, CPropertyPage)
-	//{{AFX_MSG_MAP(CDlgPgTerrain)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CDlgPgTerrain)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -71,7 +71,7 @@ BOOL CDlgPgTerrain::OnIdle(LONG lCount)
 
 BOOL CDlgPgTerrain::OnInitDialog() 
 {
-	CPropertyPage::OnInitDialog();
+  CPropertyPage::OnInitDialog();
   
   CRect rect;
   GetClientRect(rect);
@@ -82,5 +82,5 @@ BOOL CDlgPgTerrain::OnInitDialog()
     this, IDW_TERRAIN_INTERFACE);
 
   DragAcceptFiles();
-	return TRUE;
+  return TRUE;
 }

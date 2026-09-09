@@ -19,6 +19,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "stdafx.h"
 #include "DlgBrowseByClass.h"
 
+#include <unordered_map>
+
 #ifdef _DEBUG
 #undef new
 #define new DEBUG_NEW
@@ -29,7 +31,7 @@ static char THIS_FILE[] = __FILE__;
 /////////////////////////////////////////////////////////////////////////////
 // CDlgBrowseByClass dialog
 
-CDynamicContainer<CEntity> dcEntities;
+CDynamicContainer_CEntity dcEntities;
 
 // property description formats
 #define PDF_STRING 0
@@ -52,23 +54,25 @@ CDynamicContainer<CEntity> dcEntities;
 #define COLUMN_B 12
 #define COLUMN_PROPERTY_START 13
 
-CEntity *_penForDistanceSort = NULL;
+static constexpr UINT_PTR g_filter_timer_id = 42;
+
+CEntity_ *_penForDistanceSort = NULL;
 BOOL _bOfSameClass=FALSE;
 INDEX _ctProperties=0;
-CDynamicContainer<class CEntity> _tempContainer;
-CDynamicContainer<class CEntity> _tempSelectionContainer;
+CDynamicContainer_CEntity _tempContainer;
+CDynamicContainer_CEntity _tempSelectionContainer;
 BOOL _bTempContainer=FALSE;
 
-BOOL AreAllEntitiesOfTheSameClass(CDynamicContainer<class CEntity> *penContainer)
+BOOL AreAllEntitiesOfTheSameClass(CDynamicContainer_CEntity* penContainer)
 {
   // obtain this entity's class ptr
-  CEntityClass *pdecClass = NULL;
+  CEntityClassPtr pdecClass;
   // add each entity in container
   {FOREACHINDYNAMICCONTAINER(*penContainer, CEntity, iten)
   {
     // obtain this entity's class ptr
-    CEntityClass *pdecCurrentClass = iten->GetClass();
-    if( pdecClass==NULL)
+    CEntityClassPtr pdecCurrentClass = iten->GetClass();
+    if( !pdecClass)
     {
       pdecClass=pdecCurrentClass;
     }
@@ -80,7 +84,7 @@ BOOL AreAllEntitiesOfTheSameClass(CDynamicContainer<class CEntity> *penContainer
   return TRUE;
 }
 
-CTString GetPropertyValue(CEntity *pen, CEntityProperty *pepProperty, INDEX &iFormat)
+CTString GetPropertyValue(CEntityPtr pen, CEntityPropertyPtr pepProperty, INDEX &iFormat)
 {
   CTString strResult="";
   iFormat=PDF_STRING;
@@ -89,21 +93,22 @@ CTString GetPropertyValue(CEntity *pen, CEntityProperty *pepProperty, INDEX &iFo
   {
   case CEntityProperty::EPT_FLAGS:
   {
-    strResult.PrintF("0x%08x", ENTITYPROPERTY( pen, pepProperty->ep_slOffset, ULONG));
+    strResult.PrintF("0x%08x", *ENTITY_PROPERTY( pen, pepProperty->ep_slOffset, ULONG));
     break;
   }
   case CEntityProperty::EPT_ENUM:
   {
     // obtain enum property description object
-    CEntityPropertyEnumType *epEnum = pepProperty->ep_pepetEnumType;
-    INDEX iEnum = ENTITYPROPERTY( pen, pepProperty->ep_slOffset, INDEX);
+    CEntityPropertyEnumTypePtr epEnum = pepProperty->ep_pepetEnumType;
+    INDEX iEnum = *ENTITY_PROPERTY( pen, pepProperty->ep_slOffset, INDEX);
     // search for selected enum
     BOOL bEnumFound=FALSE;
     for(INDEX iEnumItem=0; iEnumItem<epEnum->epet_ctValues; iEnumItem++)
     {
-      if(iEnum==epEnum->epet_aepevValues[ iEnumItem].epev_iValue)
+      const auto enum_value = epEnum->epet_aepevValues(iEnumItem);
+      if(iEnum== enum_value.epev_iValue)
       {
-        strResult=epEnum->epet_aepevValues[ iEnumItem].epev_strName;
+        strResult= enum_value.epev_strName;
         bEnumFound=TRUE;
       }
     }
@@ -116,9 +121,9 @@ CTString GetPropertyValue(CEntity *pen, CEntityProperty *pepProperty, INDEX &iFo
   case CEntityProperty::EPT_ANIMATION:
   {
     iFormat=PDF_INDEX;
-    INDEX iAnim = ENTITYPROPERTY( pen, pepProperty->ep_slOffset, INDEX);
-    CAnimData *pAD = pen->GetAnimData( pepProperty->ep_slOffset);
-    if( pAD != NULL)
+    INDEX iAnim = *ENTITY_PROPERTY( pen, pepProperty->ep_slOffset, INDEX);
+    CAnimDataPtr pAD = pen->GetAnimData( pepProperty->ep_slOffset);
+    if( pAD )
     {
       CAnimInfo aiInfo;
       pAD->GetAnimInfo(iAnim, aiInfo);
@@ -129,8 +134,9 @@ CTString GetPropertyValue(CEntity *pen, CEntityProperty *pepProperty, INDEX &iFo
   case CEntityProperty::EPT_ENTITYPTR:
   case CEntityProperty::EPT_PARENT:
   {
-    CEntity *penPtr = ENTITYPROPERTY( pen, pepProperty->ep_slOffset, CEntityPointer);
-    if( penPtr!=NULL)
+    CEntityPointer ptr(ENTITY_PROPERTY( pen, pepProperty->ep_slOffset, CEntityPointer_), false);
+    CEntityPtr penPtr = ptr.ep_pen();
+    if( penPtr)
     {
       strResult="->"+penPtr->GetName();
     }
@@ -145,24 +151,25 @@ CTString GetPropertyValue(CEntity *pen, CEntityProperty *pepProperty, INDEX &iFo
   case CEntityProperty::EPT_ANGLE:
   {
     iFormat=PDF_FLOAT;
-    strResult.PrintF("%g", ENTITYPROPERTY( pen, pepProperty->ep_slOffset, FLOAT));
+    strResult.PrintF("%g", *ENTITY_PROPERTY( pen, pepProperty->ep_slOffset, FLOAT));
     break;
   }
   case CEntityProperty::EPT_ILLUMINATIONTYPE:
   {
-    INDEX iIllumination = ENTITYPROPERTY( pen, pepProperty->ep_slOffset, INDEX);
-    strResult=pen->en_pwoWorld->wo_aitIlluminationTypes[iIllumination].it_strName;
+    INDEX iIllumination = *ENTITY_PROPERTY( pen, pepProperty->ep_slOffset, INDEX);
+    CWorldPtr en_pwoWorld(pen->en_pwoWorld);
+    strResult= en_pwoWorld->wo_aitIlluminationTypes[iIllumination]->it_strName;
     break;
   }
   case CEntityProperty::EPT_STRING:
   case CEntityProperty::EPT_STRINGTRANS:
   {
-    strResult=ENTITYPROPERTY( pen, pepProperty->ep_slOffset, CTString);
+    strResult=CTString(ENTITY_PROPERTY( pen, pepProperty->ep_slOffset, CTString_), false);
     break;
   }
   case CEntityProperty::EPT_FLOATAABBOX3D:
   {
-    FLOATaabbox3D box=ENTITYPROPERTY( pen, pepProperty->ep_slOffset, FLOATaabbox3D);
+    FLOATaabbox3D box= FLOATaabbox3D(ENTITY_PROPERTY( pen, pepProperty->ep_slOffset, FLOATaabbox3D_), false);
     strResult.PrintF("(%g,%g,%g)-(%g,%g,%g)",
       box.Min()(1),box.Min()(2),box.Min()(3),
       box.Max()(1),box.Max()(2),box.Max()(3));
@@ -170,19 +177,19 @@ CTString GetPropertyValue(CEntity *pen, CEntityProperty *pepProperty, INDEX &iFo
   }
   case CEntityProperty::EPT_ANGLE3D:
   {
-    ANGLE3D ang=ENTITYPROPERTY( pen, pepProperty->ep_slOffset, ANGLE3D);
+    ANGLE3D ang=ANGLE3D(ENTITY_PROPERTY( pen, pepProperty->ep_slOffset, ANGLE3D_), false);
     strResult.PrintF("%g,%g,%g",ang(1),ang(2),ang(3));
     break;
   }
   case CEntityProperty::EPT_INDEX:
   {
     iFormat=PDF_INDEX;
-    strResult.PrintF("%d", ENTITYPROPERTY( pen, pepProperty->ep_slOffset, INDEX));
+    strResult.PrintF("%d", *ENTITY_PROPERTY( pen, pepProperty->ep_slOffset, INDEX));
     break;
   }
   case CEntityProperty::EPT_BOOL:
   {
-    if(ENTITYPROPERTY( pen, pepProperty->ep_slOffset, BOOL))
+    if(*ENTITY_PROPERTY( pen, pepProperty->ep_slOffset, BOOL))
     {
       strResult="Yes";
     }
@@ -195,7 +202,7 @@ CTString GetPropertyValue(CEntity *pen, CEntityProperty *pepProperty, INDEX &iFo
   case CEntityProperty::EPT_COLOR:
   {
     iFormat=PDF_COLOR;
-    COLOR col=ENTITYPROPERTY( pen, pepProperty->ep_slOffset, COLOR);
+    COLOR col=*ENTITY_PROPERTY( pen, pepProperty->ep_slOffset, COLOR);
     UBYTE ubR, ubG, ubB;
     UBYTE ubH, ubS, ubV;
     ColorToHSV( col, ubH, ubS, ubV);
@@ -206,12 +213,12 @@ CTString GetPropertyValue(CEntity *pen, CEntityProperty *pepProperty, INDEX &iFo
   }
   case CEntityProperty::EPT_FILENAME:
   {
-    strResult = ENTITYPROPERTY( pen, pepProperty->ep_slOffset, CTFileName);
+    strResult = CTFileName(ENTITY_PROPERTY( pen, pepProperty->ep_slOffset, CTFileName_), false);
     break;
   }
   case CEntityProperty::EPT_FILENAMENODEP:
   {
-    strResult = ENTITYPROPERTY( pen, pepProperty->ep_slOffset, CTFileNameNoDep);
+    strResult = CTFileNameNoDep(ENTITY_PROPERTY( pen, pepProperty->ep_slOffset, CTString_), false);
     break;
   }
   default:
@@ -221,12 +228,13 @@ CTString GetPropertyValue(CEntity *pen, CEntityProperty *pepProperty, INDEX &iFo
   return strResult;
 }
 
-CTString GetItemValue(CEntity *pen, INDEX iColumn, INDEX &iFormat)
+CTString GetItemValue(CEntity_ *pen_, INDEX iColumn, INDEX &iFormat)
 {
-  ASSERT(pen!=NULL);
-  if(pen==NULL) return CTString("");
-  CEntityClass *pecEntityClass = pen->GetClass();
-  CDLLEntityClass *pdllecDllEntityClass = pecEntityClass->ec_pdecDLLClass;
+  ASSERT(pen_!=NULL);
+  if(pen_==NULL) return CTString("");
+  CEntityPtr pen(pen_);
+  CEntityClassPtr pecEntityClass = pen->GetClass();
+  CDLLEntityClassPtr pdllecDllEntityClass = pecEntityClass->ec_pdecDLLClass;
   FLOAT3D vOrigin = pen->GetPlacement().pl_PositionVector;
   ANGLE3D vAngles = pen->GetPlacement().pl_OrientationAngle;
   CTString strResult="";
@@ -258,8 +266,8 @@ CTString GetItemValue(CEntity *pen, INDEX iColumn, INDEX &iFormat)
   }
   case COLUMN_SECTOR_NAME:
   {
-    CBrushSector *pbsc = pen->GetFirstSectorWithName();
-    if( pbsc!=NULL)
+    CBrushSectorPtr pbsc = pen->GetFirstSectorWithName();
+    if( pbsc)
     {
       strResult=pbsc->bsc_strName;
     }
@@ -305,7 +313,7 @@ CTString GetItemValue(CEntity *pen, INDEX iColumn, INDEX &iFormat)
   {
     if( _penForDistanceSort != NULL)
     {
-      FLOAT3D vSelectedOrigin = _penForDistanceSort->GetPlacement().pl_PositionVector;
+      FLOAT3D vSelectedOrigin = CEntity(_penForDistanceSort, false).GetPlacement().pl_PositionVector;
       FLOAT3D fDistance = vOrigin-vSelectedOrigin;
       strResult.PrintF("%g", fDistance.Length());
       iFormat=PDF_FLOAT;
@@ -320,15 +328,15 @@ CTString GetItemValue(CEntity *pen, INDEX iColumn, INDEX &iFormat)
   // entity properties
   default:
   {
-    CDLLEntityClass *pdecDLLClass = pen->GetClass()->ec_pdecDLLClass;
+    CDLLEntityClassPtr pdecDLLClass = pen->GetClass()->ec_pdecDLLClass;
     // for all classes in hierarchy of this entity
     INDEX iPropertyOrder=0;
-    for(;pdecDLLClass!=NULL; pdecDLLClass = pdecDLLClass->dec_pdecBase)
+    for(;pdecDLLClass; pdecDLLClass = pdecDLLClass->dec_pdecBase())
     {
       // for all properties
       for(INDEX iProperty=0; iProperty<pdecDLLClass->dec_ctProperties; iProperty++)
       {
-        CEntityProperty *pepProperty = &pdecDLLClass->dec_aepProperties[iProperty];
+        CEntityPropertyPtr pepProperty = pdecDLLClass->dec_aepProperties(iProperty);
         if( pepProperty->ep_strName!=CTString(""))
         {
           if( iPropertyOrder==iColumn-COLUMN_PROPERTY_START)
@@ -348,8 +356,8 @@ CTString GetItemValue(CEntity *pen, INDEX iColumn, INDEX &iFormat)
 int CALLBACK SortEntities(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
 {
   int iResult = 0;
-  CEntity *pen1 = (CEntity *) lParam1;
-  CEntity *pen2 = (CEntity *) lParam2;
+  CEntity_* pen1 = (CEntity_*) lParam1;
+  CEntity_* pen2 = (CEntity_*) lParam2;
 
   INDEX iFormat;
   CTString strEn1=GetItemValue(pen1, lParamSort, iFormat);
@@ -393,17 +401,17 @@ int CALLBACK SortEntities(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
   if( theApp.m_bInvertClassSort) return -iResult; else return iResult;
 }
 
-CDlgBrowseByClass::CDlgBrowseByClass(CWnd* pParent /*=NULL*/, bool for_picking, std::function<bool(CEntity*)>&& filter)
-	: CDialog(CDlgBrowseByClass::IDD, pParent)
+CDlgBrowseByClass::CDlgBrowseByClass(CWnd* pParent /*=NULL*/, bool for_picking, std::function<bool(CEntity_*)>&& filter)
+  : CDialog(CDlgBrowseByClass::IDD, pParent)
   , m_for_picking(for_picking)
   , m_filter(std::move(filter))
-  , m_selected_entity(nullptr)
 {
-	//{{AFX_DATA_INIT(CDlgBrowseByClass)
-	m_strEntitiesInVolume = _T("");
-	m_bShowVolume = FALSE;
-	m_bShowImportants = FALSE;
-	//}}AFX_DATA_INIT
+  //{{AFX_DATA_INIT(CDlgBrowseByClass)
+  m_strEntitiesInVolume = _T("");
+  m_filter_string = _T("");
+  m_bShowVolume = FALSE;
+  m_bShowImportants = FALSE;
+  //}}AFX_DATA_INIT
 
   m_bCenterSelected = FALSE;
 }
@@ -413,9 +421,19 @@ CDlgBrowseByClass::~CDlgBrowseByClass()
   dcEntities.Clear();
 }
 
+BOOL CDlgBrowseByClass::Create(UINT nIDTemplate, CWnd* pParentWnd)
+{
+  if (CDialog::Create(nIDTemplate, pParentWnd) == FALSE)
+    return FALSE;
+
+  m_filter_edit.SubclassDlgItem(IDC_EDIT_FILTERENTITY, this);
+
+  return TRUE;
+}
+
 void CDlgBrowseByClass::DoDataExchange(CDataExchange* pDX)
 {
-	CDialog::DoDataExchange(pDX);
+  CDialog::DoDataExchange(pDX);
 
   CWorldEditorDoc *pDoc = theApp.GetDocument();
 
@@ -432,13 +450,15 @@ void CDlgBrowseByClass::DoDataExchange(CDataExchange* pDX)
     if( iSelectedItem != -1) m_listEntities.EnsureVisible( iSelectedItem, FALSE);
   }
 
-	//{{AFX_DATA_MAP(CDlgBrowseByClass)
-	DDX_Control(pDX, IDC_PLUGGINS, m_ctrlPluggins);
-	DDX_Control(pDX, IDC_ENTITY_LIST, m_listEntities);
-	DDX_Text(pDX, IDC_ENTITIES_IN_VOLUME_T, m_strEntitiesInVolume);
-	DDX_Check(pDX, IDC_DISPLAY_VOLUME, m_bShowVolume);
-	DDX_Check(pDX, IDC_DISPLAY_IMPORTANTS, m_bShowImportants);
-	//}}AFX_DATA_MAP
+  //{{AFX_DATA_MAP(CDlgBrowseByClass)
+  DDX_Control(pDX, IDC_PLUGGINS, m_ctrlPluggins);
+  DDX_Control(pDX, IDC_ENTITY_LIST, m_listEntities);
+  DDX_Text(pDX, IDC_ENTITIES_IN_VOLUME_T, m_strEntitiesInVolume);
+  DDX_Text(pDX, IDC_EDIT_FILTERENTITY, m_filter_string);
+  DDX_Check(pDX, IDC_DISPLAY_VOLUME, m_bShowVolume);
+  DDX_Check(pDX, IDC_DISPLAY_IMPORTANTS, m_bShowImportants);
+  //}}AFX_DATA_MAP
+  m_filter_string_qstring = QString::fromWCharArray(m_filter_string);
 
   // if dialog is giving data
   if( pDX->m_bSaveAndValidate != FALSE)
@@ -447,7 +467,7 @@ void CDlgBrowseByClass::DoDataExchange(CDataExchange* pDX)
     if (!m_for_picking)
       pDoc->m_selEntitySelection.Clear();
     else
-      m_selected_entity = nullptr;
+      m_selected_entity.Reset();
     // mark all selected entities in list as selected in document's entity selection
     INDEX iSelectedItem = -1;
     FOREVER
@@ -458,7 +478,7 @@ void CDlgBrowseByClass::DoDataExchange(CDataExchange* pDX)
         break;
       }
       // get selected entity
-      CEntity *penEntity = (CEntity *) m_listEntities.GetItemData(iSelectedItem);
+      CEntityPtr penEntity((CEntity_*)m_listEntities.GetItemData(iSelectedItem));
       // add entity into normal selection
       if (!m_for_picking)
         pDoc->m_selEntitySelection.Select(*penEntity);
@@ -477,25 +497,26 @@ void CDlgBrowseByClass::DoDataExchange(CDataExchange* pDX)
   }
 }
 
-
 BEGIN_MESSAGE_MAP(CDlgBrowseByClass, CDialog)
-	//{{AFX_MSG_MAP(CDlgBrowseByClass)
+  //{{AFX_MSG_MAP(CDlgBrowseByClass)
   ON_WM_SIZE()
-	ON_NOTIFY(NM_DBLCLK, IDC_ENTITY_LIST, OnDblclkEntityList)
-	ON_NOTIFY(LVN_COLUMNCLICK, IDC_ENTITY_LIST, OnColumnclickEntityList)
-	ON_NOTIFY(NM_RCLICK, IDC_ENTITY_LIST, OnRclickEntityList)
-	ON_NOTIFY(NM_CLICK, IDC_ENTITY_LIST, OnClickEntityList)
-	ON_BN_CLICKED(ID_REMOVE, OnRemove)
-	ON_BN_CLICKED(ID_LEAVE, OnLeave)
-	ON_BN_CLICKED(ID_SELECT_ALL, OnSelectAll)
-	ON_BN_CLICKED(ID_FEED_VOLUME, OnFeedVolume)
-	ON_BN_CLICKED(ID_REVERT, OnRevert)
-	ON_BN_CLICKED(ID_SELECT_SECTORS, OnSelectSectors)
-	ON_BN_CLICKED(ID_DELETE_BROWSE_BY_CLASS, OnDeleteBrowseByClass)
-	ON_BN_CLICKED(IDC_DISPLAY_VOLUME, OnDisplayVolume)
-	ON_CBN_SELENDOK(IDC_PLUGGINS, OnSelendokPluggins)
-	ON_BN_CLICKED(IDC_DISPLAY_IMPORTANTS, OnDisplayImportants)
-	//}}AFX_MSG_MAP
+  ON_WM_TIMER()
+  ON_NOTIFY(NM_DBLCLK, IDC_ENTITY_LIST, OnDblclkEntityList)
+  ON_NOTIFY(LVN_COLUMNCLICK, IDC_ENTITY_LIST, OnColumnclickEntityList)
+  ON_NOTIFY(NM_RCLICK, IDC_ENTITY_LIST, OnRclickEntityList)
+  ON_NOTIFY(NM_CLICK, IDC_ENTITY_LIST, OnClickEntityList)
+  ON_BN_CLICKED(ID_REMOVE, OnRemove)
+  ON_BN_CLICKED(ID_LEAVE, OnLeave)
+  ON_BN_CLICKED(ID_SELECT_ALL, OnSelectAll)
+  ON_BN_CLICKED(ID_FEED_VOLUME, OnFeedVolume)
+  ON_BN_CLICKED(ID_REVERT, OnRevert)
+  ON_BN_CLICKED(ID_SELECT_SECTORS, OnSelectSectors)
+  ON_BN_CLICKED(ID_DELETE_BROWSE_BY_CLASS, OnDeleteBrowseByClass)
+  ON_BN_CLICKED(IDC_DISPLAY_VOLUME, OnDisplayVolume)
+  ON_CBN_SELENDOK(IDC_PLUGGINS, OnSelendokPluggins)
+  ON_BN_CLICKED(IDC_DISPLAY_IMPORTANTS, OnDisplayImportants)
+  ON_EN_CHANGE(IDC_EDIT_FILTERENTITY, OnEnChangeEditFilterentity)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -509,7 +530,7 @@ END_MESSAGE_MAP()
 #define FLAGS_PERCENTAGE 8
 #define DISTANCE_PERCENTAGE 6
 
-void CDlgBrowseByClass::AddEntity( CEntity *pen)
+void CDlgBrowseByClass::AddEntity( CEntity_* pen)
 {
   dcEntities.Add( pen);
   // one item to serve for all entities
@@ -531,13 +552,13 @@ void CDlgBrowseByClass::AddEntity( CEntity *pen)
     itItem.iSubItem = iColumn;
     INDEX iFormat;
     CTString strValue=::GetItemValue(pen, iColumn, iFormat);
-    swprintf( achrTemp, L"%s", CString(strValue));
+    swprintf( achrTemp, L"%s", static_cast<const wchar_t*>(CA2W(strValue, CP_ACP)));
     itItem.pszText = achrTemp;
     m_listEntities.SetItem( &itItem);
   }
 }
 
-CDynamicContainer<class CEntity> *CDlgBrowseByClass::GetCurrentContainer(void)
+CDynamicContainer_CEntity *CDlgBrowseByClass::GetCurrentContainer(void)
 {
   CWorldEditorDoc *pDoc = theApp.GetDocument();
   // if should create and use temp container
@@ -547,7 +568,7 @@ CDynamicContainer<class CEntity> *CDlgBrowseByClass::GetCurrentContainer(void)
     INDEX ctItems = m_listEntities.GetItemCount();
     for( INDEX iItem=0; iItem<ctItems; iItem++)
     {
-      CEntity *pen = (CEntity *) m_listEntities.GetItemData( iItem);
+      CEntity_ *pen = (CEntity_ *) m_listEntities.GetItemData( iItem);
       _tempContainer.Add(pen);
     }
     return &_tempContainer;
@@ -571,8 +592,8 @@ void CDlgBrowseByClass::FillListWithEntities(void)
 
   CWorldEditorDoc *pDoc = theApp.GetDocument();
   
-  CDynamicContainer<class CEntity> *penContainer=GetCurrentContainer();
-  _bOfSameClass=AreAllEntitiesOfTheSameClass(penContainer);  
+  CDynamicContainer_CEntity *penContainer=GetCurrentContainer();
+  _bOfSameClass=AreAllEntitiesOfTheSameClass(penContainer);
 
   // empty entities list
   m_listEntities.DeleteAllItems();
@@ -583,13 +604,14 @@ void CDlgBrowseByClass::FillListWithEntities(void)
   {FOREACHINDYNAMICCONTAINER(*penContainer, CEntity, iten)
   {
     // for all non-hidden entities that are not classified into hidden sectors, filter importants if requested
-    CBrushSector *pbscSector = iten->GetFirstSector();
+    CBrushSectorPtr pbscSector = iten->GetFirstSector();
     if(!(iten->en_ulFlags&ENF_HIDDEN) &&
-        ((pbscSector == NULL) || !(pbscSector->bsc_ulFlags & BSCF_HIDDEN)) &&
+        ((!pbscSector) || !(pbscSector->bsc_ulFlags & BSCF_HIDDEN)) &&
         (!m_bShowImportants || iten->IsImportant()) &&
-        (!m_filter || m_filter(iten)))
+        (!m_filter || m_filter(iten.Current())) &&
+        _EntityMatchesStringFilter(iten.Current()))
     {
-      AddEntity( &iten.Current());
+      AddEntity( iten.Current());
     }
   }}
 
@@ -599,13 +621,13 @@ void CDlgBrowseByClass::FillListWithEntities(void)
   // select one that was selected before calling dialog
   if( pDoc->m_selEntitySelection.Count() == 1)
   {
-    CEntity *penOnly = pDoc->m_selEntitySelection.GetFirstInSelection();
+    CEntityPtr penOnly = pDoc->m_selEntitySelection.GetFirstInSelection();
 
     INDEX ctItems = m_listEntities.GetItemCount();
     for( INDEX iItem=0; iItem<ctItems; iItem++)
     {
-      CEntity *pen = (CEntity *) m_listEntities.GetItemData( iItem);
-      if( pen == penOnly)
+      CEntity_ *pen = (CEntity_ *) m_listEntities.GetItemData( iItem);
+      if( pen == penOnly.get_handle())
       {
         m_listEntities.SetItemState( iItem, LVIS_FOCUSED|LVIS_SELECTED, LVIS_FOCUSED|LVIS_SELECTED);
         m_listEntities.EnsureVisible( iItem, FALSE);
@@ -626,7 +648,6 @@ void CDlgBrowseByClass::FillListWithEntities(void)
   _bTempContainer=FALSE;
   UpdateData( FALSE);
 }
-
 
 void CDlgBrowseByClass::InitializeListColumns(void)
 {
@@ -659,20 +680,20 @@ void CDlgBrowseByClass::InitializeListColumns(void)
   m_listEntities.InsertColumn( COLUMN_B, L"B", LVCFMT_LEFT, pixPlacement);
   
   // add properties if of the same class and not empty selection
-  CDynamicContainer<class CEntity> *penContainer=GetCurrentContainer();
+  CDynamicContainer_CEntity *penContainer=GetCurrentContainer();
   _bOfSameClass=AreAllEntitiesOfTheSameClass(penContainer);
   if( _bOfSameClass && penContainer->Count()!=0)
   {
     _ctProperties=0;
-    CEntity *pen = &penContainer->GetFirst();
-    CDLLEntityClass *pdecDLLClass = pen->GetClass()->ec_pdecDLLClass;
+    CEntityPtr pen = penContainer->GetFirst();
+    CDLLEntityClassPtr pdecDLLClass = pen->GetClass()->ec_pdecDLLClass;
     // for all classes in hierarchy of this entity
-    for(;pdecDLLClass!=NULL; pdecDLLClass = pdecDLLClass->dec_pdecBase)
+    for(;pdecDLLClass; pdecDLLClass = pdecDLLClass->dec_pdecBase())
     {
       // for all properties
       for(INDEX iProperty=0; iProperty<pdecDLLClass->dec_ctProperties; iProperty++)
       {
-        CEntityProperty *pepProperty = &pdecDLLClass->dec_aepProperties[iProperty];
+        CEntityPropertyPtr pepProperty = pdecDLLClass->dec_aepProperties(iProperty);
         if( pepProperty->ep_strName!=CTString(""))
         {
           CSize szText=GetDC()->GetTextExtent(pepProperty->ep_strName);
@@ -698,7 +719,7 @@ void CDlgBrowseByClass::AdjustSize()
     return;
 
   CRect client_rect;
-  GetWindowRect(&client_rect);
+  GetClientRect(&client_rect);
   const int w = client_rect.Width();
   const int h = client_rect.Height();
 
@@ -718,8 +739,15 @@ void CDlgBrowseByClass::AdjustSize()
   const PIX pixx = rect.left;
   const PIX pixw = (w - pixx - pixSX * 2) / 4;
   p_entities_in_volume->MoveWindow(pixx, rect.top, pixw, rect.Height());
-  GetDlgItem(IDC_DISPLAY_VOLUME)->MoveWindow(pixx + pixw * 1, rect.top, pixw, rect.Height() + 1);
-  GetDlgItem(IDC_DISPLAY_IMPORTANTS)->MoveWindow(pixx + pixw * 2, rect.top, pixw, rect.Height() + 1);
+  auto* filter_label = GetDlgItem(IDC_FILTER_LABEL);
+  TEXTMETRIC text_metric;
+  ZeroMemory(&text_metric, sizeof(TEXTMETRIC));
+  GetTextMetrics(filter_label->GetDC()->GetSafeHdc(), &text_metric);
+  const int filter_label_width = min(INDEX(text_metric.tmMaxCharWidth * strlen("Filter:")), pixw / 3);
+  filter_label->MoveWindow(pixx + pixw * 1, rect.top, filter_label_width, text_metric.tmHeight);
+  GetDlgItem(IDC_EDIT_FILTERENTITY)->MoveWindow(pixx + pixw * 1 + filter_label_width + 8, rect.top, pixw - filter_label_width - 16, text_metric.tmHeight);
+  GetDlgItem(IDC_DISPLAY_VOLUME)->MoveWindow(pixx + pixw * 2, rect.top, pixw/2, rect.Height() + 1);
+  GetDlgItem(IDC_DISPLAY_IMPORTANTS)->MoveWindow(pixx + pixw * 2 + pixw/2, rect.top, pixw/2, rect.Height() + 1);
   GetDlgItem(IDC_PLUGGINS_T)->MoveWindow(pixx + pixw * 3, rect.top, pixw / 4, rect.Height());
   GetDlgItem(IDC_PLUGGINS)->MoveWindow(pixx + pixw * 3 + pixw / 4, rect.top - 4, pixw * 3 / 4, rect.Height() - 4);
 
@@ -768,7 +796,7 @@ BOOL CDlgBrowseByClass::OnInitDialog()
   }
   FillListWithEntities();
   InitializePluggins();
-	return TRUE;
+  return TRUE;
 }
 
 void CDlgBrowseByClass::OnDblclkEntityList(NMHDR* pNMHDR, LRESULT* pResult) 
@@ -799,7 +827,7 @@ void CDlgBrowseByClass::OnOK()
 
 void CDlgBrowseByClass::OnColumnclickEntityList(NMHDR* pNMHDR, LRESULT* pResult) 
 {
-	NM_LISTVIEW* pNMListView = (NM_LISTVIEW*)pNMHDR;
+  NM_LISTVIEW* pNMListView = (NM_LISTVIEW*)pNMHDR;
   if( theApp.m_iLastClassSortAplied == pNMListView->iSubItem) theApp.m_bInvertClassSort = !theApp.m_bInvertClassSort;
   else                                                        theApp.m_bInvertClassSort = FALSE;
 
@@ -809,11 +837,12 @@ void CDlgBrowseByClass::OnColumnclickEntityList(NMHDR* pNMHDR, LRESULT* pResult)
     INDEX iSelectedItem = m_listEntities.GetNextItem( -1, LVNI_ALL|LVNI_SELECTED);
     if( iSelectedItem != -1)
     {
-      _penForDistanceSort = (CEntity *) m_listEntities.GetItemData( iSelectedItem);
-      FLOAT3D vSelectedOrigin = _penForDistanceSort->GetPlacement().pl_PositionVector;
+      _penForDistanceSort = (CEntity_ *) m_listEntities.GetItemData( iSelectedItem);
+      CEntityPtr penForDistanceSort(_penForDistanceSort);
+      FLOAT3D vSelectedOrigin = penForDistanceSort->GetPlacement().pl_PositionVector;
       for( INDEX iItem = 0; iItem<m_listEntities.GetItemCount(); iItem++) 
       {
-        CEntity *penEntity = (CEntity *) m_listEntities.GetItemData(iItem);
+        CEntityPtr penEntity((CEntity_ *) m_listEntities.GetItemData(iItem));
         FLOAT3D vCurrentOrigin = penEntity->GetPlacement().pl_PositionVector;
         FLOAT3D fDistance = vSelectedOrigin-vCurrentOrigin;
         
@@ -839,7 +868,7 @@ void CDlgBrowseByClass::OnRclickEntityList(NMHDR* pNMHDR, LRESULT* pResult)
 {
   BOOL bShift = (GetKeyState( VK_SHIFT)&0x8000) != 0;
 
-	*pResult = 0;
+  *pResult = 0;
   
   CRect rcItem;
   POINT ptMouse;
@@ -890,7 +919,7 @@ void CDlgBrowseByClass::OnClickEntityList(NMHDR* pNMHDR, LRESULT* pResult)
     m_listEntities.SetItemState( htInfo.iItem, LVIS_SELECTED, LVIS_SELECTED);
   }
   UpdateData( FALSE);
-	*pResult = 0;
+  *pResult = 0;
 }
 
 void CDlgBrowseByClass::OnRemove() 
@@ -970,7 +999,7 @@ void CDlgBrowseByClass::OnFeedVolume()
     if( m_listEntities.GetItemState( iItem, LVIS_SELECTED) == LVIS_SELECTED)
     {
       // get selected entity
-      CEntity *penEntity = (CEntity *) m_listEntities.GetItemData(iItem);
+      CEntityPtr penEntity((CEntity_*) m_listEntities.GetItemData(iItem));
       // add entity into volume container
       pDoc->m_cenEntitiesSelectedByVolume.Add( penEntity);
     }
@@ -990,13 +1019,13 @@ void CDlgBrowseByClass::OnSelectSectors()
     if( m_listEntities.GetItemState( iItem, LVIS_SELECTED) == LVIS_SELECTED)
     {
       // get selected entity
-      CEntity *penEntity = (CEntity *) m_listEntities.GetItemData(iItem);
-      CBrushSector *pbscSector = penEntity->GetFirstSectorWithName();
-      if( pbscSector != NULL)
+      CEntityPtr penEntity((CEntity_ *) m_listEntities.GetItemData(iItem));
+      CBrushSectorPtr pbscSector = penEntity->GetFirstSectorWithName();
+      if( pbscSector)
       {
-        if( !pbscSector->IsSelected( BSCF_SELECTED))
+        if( !pbscSector->IsSelected())
         {
-          pDoc->m_selSectorSelection.Select( *pbscSector);
+          pDoc->m_selSectorSelection.Select( pbscSector);
         }
       }
     }
@@ -1008,12 +1037,14 @@ void CDlgBrowseByClass::OnSelectSectors()
 BOOL CDlgBrowseByClass::PreTranslateMessage(MSG* pMsg) 
 {
   BOOL bCtrl = (GetKeyState( VK_CONTROL)&0x8000) != 0;
+  const auto* focus_wnd = m_listEntities.GetFocus();
   if( ((pMsg->message==WM_KEYDOWN) || (pMsg->message==WM_SYSKEYDOWN)) && 
-      ((int)pMsg->wParam=='A') && bCtrl)
+      ((int)pMsg->wParam=='A') && bCtrl &&
+      focus_wnd && focus_wnd->GetSafeHwnd() == m_listEntities.GetSafeHwnd())
   {
     OnSelectAll();
   }
-	return CDialog::PreTranslateMessage(pMsg);
+  return CDialog::PreTranslateMessage(pMsg);
 }
 
 void CDlgBrowseByClass::OnDeleteBrowseByClass() 
@@ -1023,7 +1054,7 @@ void CDlgBrowseByClass::OnDeleteBrowseByClass()
   pDoc->RememberUndo();
   pDoc->ClearSelections();
 
-  CDynamicContainer<CEntity> dcEntitiesToDelete;
+  CDynamicContainer_CEntity dcEntitiesToDelete;
 
   m_listEntities.SetRedraw(FALSE);
   INDEX iSelectedItem = -1;
@@ -1034,22 +1065,22 @@ void CDlgBrowseByClass::OnDeleteBrowseByClass()
     {
       break;
     }
-    CEntity *penEntity = (CEntity *) m_listEntities.GetItemData(iSelectedItem);
+    CEntityPtr penEntity((CEntity_ *) m_listEntities.GetItemData(iSelectedItem));
     dcEntitiesToDelete.Add( penEntity);
     m_listEntities.DeleteItem( iSelectedItem);
   }
 
   // check for deleting terrain
-  {for (CEntity* iten : pDoc->m_selEntitySelection)
+  {for (CEntity_* iten_ : pDoc->m_selEntitySelection)
   {
-    CEntity &en=*iten;
+    CEntity en(iten_, false);
     // if it is terrain
     if(en.GetRenderType()==CEntity::RT_TERRAIN)
     {
       // if it is selected terrain
       if(pDoc->m_ptrSelectedTerrain==en.GetTerrain())
       {
-        pDoc->m_ptrSelectedTerrain=NULL;
+        pDoc->m_ptrSelectedTerrain.Reset();
         theApp.m_ctTerrainPage.MarkChanged();
         break;
       }
@@ -1058,9 +1089,9 @@ void CDlgBrowseByClass::OnDeleteBrowseByClass()
 
   {FOREACHINDYNAMICCONTAINER(dcEntitiesToDelete, CEntity, itenToDelete)
   {
-    dcEntities.Remove( itenToDelete);
+    dcEntities.Remove( itenToDelete.Current());
     // select it
-    pDoc->m_selEntitySelection.Select( *itenToDelete);
+    pDoc->m_selEntitySelection.Select( *itenToDelete.Current());
   }}
   
   // delete all selected entities
@@ -1142,7 +1173,7 @@ void CDlgBrowseByClass::OnSelendokPluggins()
         // if is selected
         if( m_listEntities.GetItemState( iItem, LVIS_SELECTED) == LVIS_SELECTED)
         {
-          CEntity *pen = (CEntity *) m_listEntities.GetItemData( iItem);
+          CEntityPtr pen((CEntity_ *) m_listEntities.GetItemData( iItem));
           // if it can be rotated
           if( (pen->GetFlags() & ENF_ANCHORED) == 0)
           {
@@ -1163,7 +1194,7 @@ void CDlgBrowseByClass::OnSelendokPluggins()
         // if is selected
         if( m_listEntities.GetItemState( iItem, LVIS_SELECTED) == LVIS_SELECTED)
         {
-          CEntity *pen = (CEntity *) m_listEntities.GetItemData( iItem);
+          CEntityPtr pen((CEntity_ *) m_listEntities.GetItemData( iItem));
           // if it can be rotated
           if( (pen->GetFlags() & ENF_ANCHORED) == 0)
           {
@@ -1184,7 +1215,7 @@ void CDlgBrowseByClass::OnSelendokPluggins()
         // if is selected
         if( m_listEntities.GetItemState( iItem, LVIS_SELECTED) == LVIS_SELECTED)
         {
-          CEntity *pen = (CEntity *) m_listEntities.GetItemData( iItem);
+          CEntityPtr pen((CEntity_ *) m_listEntities.GetItemData( iItem));
           // if it can be rotated
           if( (pen->GetFlags() & ENF_ANCHORED) == 0)
           {
@@ -1206,4 +1237,49 @@ void CDlgBrowseByClass::OnDisplayImportants()
   m_bShowVolume = FALSE;
   UpdateData( FALSE);
   FillListWithEntities();
+}
+
+void CDlgBrowseByClass::OnEnChangeEditFilterentity()
+{
+  UpdateData(TRUE);
+  if (m_filter_timer != 0)
+  {
+    m_filter_timer = 0;
+    KillTimer(g_filter_timer_id);
+  }
+  m_filter_timer = SetTimer(g_filter_timer_id, 500, nullptr);
+}
+
+void CDlgBrowseByClass::OnTimer(UINT eventID)
+{
+  if (eventID == g_filter_timer_id)
+  {
+    m_filter_timer = 0;
+    KillTimer(g_filter_timer_id);
+    FillListWithEntities();
+  }
+  CDialog::OnTimer(eventID);
+}
+
+bool CDlgBrowseByClass::_EntityMatchesStringFilter(CEntityPtr entity) const
+{
+  if (m_filter_string_qstring.isEmpty())
+    return true;
+
+  const QString entity_name = QString::fromLocal8Bit(static_cast<const char*>(entity->GetName()));
+  if (entity_name.contains(m_filter_string_qstring, Qt::CaseInsensitive))
+    return true;
+
+  const QString entity_description = QString::fromLocal8Bit(static_cast<const char*>(entity->GetDescription()));
+  if (entity_description.contains(m_filter_string_qstring, Qt::CaseInsensitive))
+    return true;
+
+  static std::unordered_map<const CDLLEntityClass_*, QString> class_names_cache;
+  auto class_name_it = class_names_cache.find(entity->en_pecClass->ec_pdecDLLClass);
+  if (class_name_it == class_names_cache.end())
+    class_name_it = class_names_cache.emplace(
+      entity->en_pecClass->ec_pdecDLLClass,
+      QString::fromLocal8Bit(entity->en_pecClass->ec_pdecDLLClass->dec_strName)).first;
+  const auto& entity_class = class_name_it->second;
+  return entity_class.contains(m_filter_string_qstring, Qt::CaseInsensitive);
 }

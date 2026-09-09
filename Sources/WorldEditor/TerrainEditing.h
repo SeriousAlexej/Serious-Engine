@@ -17,7 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef TERRAINEDITING_H
 #define TERRAINEDITING_H
 
-#include <Engine/Terrain/TerrainEditing.h>
+#include <SeriousEngineCppAPI/Terrain/TerrainEditing.h>
 
 #define FLT_FINEBLUR 0
 #define FLT_SHARPEN 1
@@ -103,8 +103,8 @@ public:
   CTileInfo();
 };
 
-extern CTextureData *_ptdContinousRandomNoise;
-extern CTextureData *_ptdDistributionRandomNoise;
+extern CTextureDataPtr _ptdContinousRandomNoise;
+extern CTextureDataPtr _ptdDistributionRandomNoise;
 BOOL SetupContinousNoiseTexture( void);
 void FreeContinousNoiseTexture( void);
 BOOL SetupDistributionNoiseTexture( void);
@@ -120,7 +120,7 @@ void OptimizeLayers(void);
 void RecalculateShadows(void);
 void SetHMPixel( UWORD pix, INDEX x, INDEX y);
 UWORD GetHMPixel(INDEX x, INDEX y);
-void EditTerrain(CTextureData *ptdBrush, FLOAT3D &vHitPoint, FLOAT fStrength, ETerrainEdit teTool);
+void EditTerrain(CTextureDataPtr ptdBrush, FLOAT3D &vHitPoint, FLOAT fStrength, ETerrainEdit teTool);
 void UpdateLayerDistribution(void);
 void ApplyFilterOntoTerrain(void);
 void ApplySmoothOntoTerrain(void);
@@ -133,11 +133,11 @@ void ApplyMaximumOntoTerrain(void);
 void ApplyFlattenOntoTerrain(void);
 void ApplyPosterizeOntoTerrain(void);
 void DiscardLayerDistribution(Rect rect);
-void ApplyTerrainUndo(CTerrainUndo *ptrud);
-void ApplyTerrainRedo(CTerrainUndo *ptrud);
+void ApplyTerrainUndo(std::unique_ptr<CTerrainUndo>& ptrud);
+void ApplyTerrainRedo(std::unique_ptr<CTerrainUndo>& ptrud);
 void DeleteTerrainUndo(CWorldEditorDoc* pDoc);
 void TerrainEditBegin(void);
 void TerrainEditEnd(void);
-void ObtainLayerTileInfo(CDynamicContainer<CTileInfo> *pdcTileInfo, CTextureData *ptdTexture, INDEX &ctTilesPerRaw);
+void ObtainLayerTileInfo(std::vector<std::unique_ptr<CTileInfo>>& pdcTileInfo, CTextureDataPtr ptdTexture, INDEX &ctTilesPerRow);
 
 #endif // TERRAINEDITING_H

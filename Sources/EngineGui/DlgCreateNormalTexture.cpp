@@ -18,7 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "StdH.h"
 #include "DlgCreateNormalTexture.h"
-#include <Engine/Templates/Stock_CTextureData.h>
+#include <SeriousEngineCppAPI/Templates/Stock_CTextureData.h>
 
 #ifdef _DEBUG
 #undef new
@@ -35,17 +35,16 @@ static BOOL _bWasForced32 = FALSE;
 
 
 CDlgCreateNormalTexture::CDlgCreateNormalTexture( CTFileName fnInputFile, CWnd* pParent /*=NULL*/)
-	: CDialog(CDlgCreateNormalTexture::IDD, pParent)
+  : CDialog(CDlgCreateNormalTexture::IDD, pParent)
 {
   //{{AFX_DATA_INIT(CDlgCreateNormalTexture)
-	m_strCreatedTextureName = _T("");
-	m_strSizeInPixels = _T("");
-	m_bCreateMipmaps = FALSE;
-	//}}AFX_DATA_INIT
+  m_strCreatedTextureName = _T("");
+  m_strSizeInPixels = _T("");
+  m_bCreateMipmaps = FALSE;
+  //}}AFX_DATA_INIT
 
   m_bSourcePictureValid = FALSE;
   m_bPreviewWindowsCreated = FALSE;
-  m_ptdCreated = NULL;
   
   CTFileName fnTexFileName = fnInputFile.FileDir() + fnInputFile.FileName() + ".tex";
   // remember source and created texture name
@@ -60,11 +59,11 @@ CDlgCreateNormalTexture::CDlgCreateNormalTexture( CTFileName fnInputFile, CWnd* 
   {
     // if can't get picture file information
     CImageInfo iiImageInfo;
-    if (iiImageInfo.GetGfxFileInfo_t( m_fnSourceFileName)==UNSUPPORTED_FILE)
+    if (_EngineGUI.GetGfxFileInfo_t(iiImageInfo, m_fnSourceFileName)==UNSUPPORTED_FILE)
     {
       // throw error
       ThrowF_t("File '%s' has unsupported file format", 
-        (CTString&)(_fnmApplicationPath+m_fnSourceFileName));
+        static_cast<const char*>((CTString&)(_fnmApplicationPath+m_fnSourceFileName)));
     }
     // get dimensions
     m_pixSourceWidth  = iiImageInfo.ii_Width;
@@ -74,7 +73,7 @@ CDlgCreateNormalTexture::CDlgCreateNormalTexture( CTFileName fnInputFile, CWnd* 
         (((1<<((int)Log2(m_pixSourceHeight))) != m_pixSourceHeight))) {
       ThrowF_t( "Picture %s has wrong dimensions (%d,%d).\n"
                 "Both width and height must be at power of 2.",
-                (CTString&)m_fnSourceFileName, m_pixSourceWidth, m_pixSourceHeight);
+        static_cast<const char*>((CTString&)m_fnSourceFileName), m_pixSourceWidth, m_pixSourceHeight);
     }
   }
   catch(char *err_str)
@@ -87,7 +86,7 @@ CDlgCreateNormalTexture::CDlgCreateNormalTexture( CTFileName fnInputFile, CWnd* 
   // try to
   try
   { // obtain texture with the same name (if already exists)
-    CTextureData *pTD = _pTextureStock->Obtain_t( fnTexFileName);
+    CTextureDataPtr pTD = _pTextureStock_Obtain_t( fnTexFileName);
     pTD->Reload();
     // now pick up initial number of mip levels
     m_bCreateMipmaps = pTD->td_ctFineMipLevels>1;
@@ -96,7 +95,7 @@ CDlgCreateNormalTexture::CDlgCreateNormalTexture( CTFileName fnInputFile, CWnd* 
     // remember existing texture's flags
     _bWasForced32 = pTD->td_ulFlags & TEX_32BIT;
     // release texture
-    _pTextureStock->Release( pTD);
+    _pTextureStock_Release(*pTD);
   }
   // if texture can't be obtained
   catch( char *err_str)
@@ -132,9 +131,10 @@ void CDlgCreateNormalTexture::RefreshCreatedTexture(void)
   try
   {
     // create temporary texture
-    CreateTexture_t( m_fnSourceFileName, CTString( "Temp\\Temp.tex"),
+    _EngineGUI.CreateTexture_t( m_fnSourceFileName, CTString( "Temp\\Temp.tex"),
                      m_pixSourceWidth, MAX_MEX_LOG2+1, FALSE);
-    m_ptdCreated = _pTextureStock->Obtain_t( CTString( "Temp\\Temp.tex"));
+    const CTFileName temp_texture = CTString("Temp\\Temp.tex");
+    m_ptdCreated = _pTextureStock_Obtain_t(temp_texture);
     m_ptdCreated->Reload();
   }
   catch(char *err_str)
@@ -143,7 +143,7 @@ void CDlgCreateNormalTexture::RefreshCreatedTexture(void)
     return;
   }
   // set texture data to texture preview window so it could show preview picture
-  m_wndViewCreatedTexture.m_toTexture.SetData( m_ptdCreated);
+  m_wndViewCreatedTexture.m_toTexture.SetData( *m_ptdCreated);
 }
 
 
@@ -151,11 +151,11 @@ void CDlgCreateNormalTexture::RefreshCreatedTexture(void)
 void CDlgCreateNormalTexture::ReleaseCreatedTexture(void)
 {
   // if there is texture obtained, release it
-  if( m_ptdCreated != NULL)
+  if( m_ptdCreated)
   {
     // free obtained texture
-    _pTextureStock->Release( m_ptdCreated);
-    m_ptdCreated = NULL;
+    _pTextureStock_Release( *m_ptdCreated);
+    m_ptdCreated.Reset();
     m_wndViewCreatedTexture.m_toTexture.SetData( NULL);
   }
   // reset forced upload quality
@@ -165,21 +165,21 @@ void CDlgCreateNormalTexture::ReleaseCreatedTexture(void)
 
 void CDlgCreateNormalTexture::DoDataExchange(CDataExchange* pDX)
 {
-	CDialog::DoDataExchange(pDX);
+  CDialog::DoDataExchange(pDX);
 
   // if dialog is recieving data
   if(pDX->m_bSaveAndValidate == FALSE)
   {
   }
 
-	//{{AFX_DATA_MAP(CDlgCreateNormalTexture)
-	DDX_Control(pDX, IDC_FORCE32, m_ctrlForce32);
-	DDX_Control(pDX, IDC_CHEQUERED_ALPHA, m_ctrlCheckButton);
-	DDX_Control(pDX, IDC_MEX_SIZE, m_ctrlMexSizeCombo);
-	DDX_Text(pDX, IDC_CREATED_TEXTURE_NAME, m_strCreatedTextureName);
-	DDX_Text(pDX, IDC_SIZE_IN_PIXELS, m_strSizeInPixels);
-	DDX_Check(pDX, IDC_CREATE_MIPMAPS, m_bCreateMipmaps);
-	//}}AFX_DATA_MAP
+  //{{AFX_DATA_MAP(CDlgCreateNormalTexture)
+  DDX_Control(pDX, IDC_FORCE32, m_ctrlForce32);
+  DDX_Control(pDX, IDC_CHEQUERED_ALPHA, m_ctrlCheckButton);
+  DDX_Control(pDX, IDC_MEX_SIZE, m_ctrlMexSizeCombo);
+  DDX_Text(pDX, IDC_CREATED_TEXTURE_NAME, m_strCreatedTextureName);
+  DDX_Text(pDX, IDC_SIZE_IN_PIXELS, m_strSizeInPixels);
+  DDX_Check(pDX, IDC_CREATE_MIPMAPS, m_bCreateMipmaps);
+  //}}AFX_DATA_MAP
   
   // if dialog is giving data
   if(pDX->m_bSaveAndValidate != FALSE)
@@ -189,13 +189,13 @@ void CDlgCreateNormalTexture::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CDlgCreateNormalTexture, CDialog)
-	//{{AFX_MSG_MAP(CDlgCreateNormalTexture)
-	ON_WM_PAINT()
-	ON_BN_CLICKED(IDC_CHEQUERED_ALPHA, OnChequeredAlpha)
-	ON_BN_CLICKED(IDC_FORCE32, OnForce32)
-	ON_BN_CLICKED(ID_CREATE_TEXTURE, OnCreateTexture)
-	ON_BN_CLICKED(IDC_CREATE_MIPMAPS, OnCreateMipmaps)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CDlgCreateNormalTexture)
+  ON_WM_PAINT()
+  ON_BN_CLICKED(IDC_CHEQUERED_ALPHA, OnChequeredAlpha)
+  ON_BN_CLICKED(IDC_FORCE32, OnForce32)
+  ON_BN_CLICKED(ID_CREATE_TEXTURE, OnCreateTexture)
+  ON_BN_CLICKED(IDC_CREATE_MIPMAPS, OnCreateMipmaps)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -203,8 +203,8 @@ END_MESSAGE_MAP()
 
 void CDlgCreateNormalTexture::OnPaint() 
 {
-	CPaintDC dc(this); // device context for painting
-	
+  CPaintDC dc(this); // device context for painting
+  
   // if texture preview windows are not yet created
   if( !m_bPreviewWindowsCreated)
   {
@@ -227,7 +227,7 @@ void CDlgCreateNormalTexture::OnPaint()
 
 BOOL CDlgCreateNormalTexture::OnInitDialog() 
 {
-	CDialog::OnInitDialog();
+  CDialog::OnInitDialog();
   char strSize[ 64];
 
   // set default created texture's size
@@ -269,7 +269,7 @@ BOOL CDlgCreateNormalTexture::OnInitDialog()
     m_wndViewCreatedTexture.m_bForce32 = FALSE;
   }
   // return TRUE unless you set the focus to a control
-	return TRUE;  
+  return TRUE;  
 }
 
 
@@ -283,7 +283,7 @@ void CDlgCreateNormalTexture::OnCreateTexture()
   }
   // create texture
   try {
-    CreateTexture_t( m_fnSourceFileName, m_fnCreatedFileName, mexWidth, iMipMaps,
+    _EngineGUI.CreateTexture_t( m_fnSourceFileName, m_fnCreatedFileName, mexWidth, iMipMaps,
                      m_wndViewCreatedTexture.m_bForce32);
   }
   catch( char *err_str) {
@@ -313,6 +313,6 @@ void CDlgCreateNormalTexture::OnForce32()
 
 void CDlgCreateNormalTexture::OnCreateMipmaps() 
 {
-	m_bCreateMipmaps = !m_bCreateMipmaps;
+  m_bCreateMipmaps = !m_bCreateMipmaps;
   UpdateData(FALSE);
 }

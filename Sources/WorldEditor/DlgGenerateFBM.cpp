@@ -39,21 +39,19 @@ BOOL _bFBMAddNegativeValues;
 BOOL _bFBMRandomOffset;
 
 CDlgGenerateFBM::CDlgGenerateFBM(CWnd* pParent /*=NULL*/)
-	: CDialog(CDlgGenerateFBM::IDD, pParent)
+  : CDialog(CDlgGenerateFBM::IDD, pParent)
 {
-	//{{AFX_DATA_INIT(CDlgGenerateFBM)
-	m_fMaxAltitude = 0.0f;
-	m_fOctaveAmplitudeDecreaser = 0.0f;
-	m_fOctaveAmplitudeStep = 0.0f;
-	m_fHighFrequencyStep = 0.0f;
-	m_ctOctaves = 0;
-	m_bAddNegativeValues = FALSE;
-	m_bRandomOffset = FALSE;
-	//}}AFX_DATA_INIT
+  //{{AFX_DATA_INIT(CDlgGenerateFBM)
+  m_fMaxAltitude = 0.0f;
+  m_fOctaveAmplitudeDecreaser = 0.0f;
+  m_fOctaveAmplitudeStep = 0.0f;
+  m_fHighFrequencyStep = 0.0f;
+  m_ctOctaves = 0;
+  m_bAddNegativeValues = FALSE;
+  m_bRandomOffset = FALSE;
+  //}}AFX_DATA_INIT
 
   m_bCustomWindowCreated = FALSE;
-  m_pdp=NULL;
-  m_pvp=NULL;
 
   _iFBMOctaves=theApp.m_iFBMOctaves;
   _fFBMHighFrequencyStep=theApp.m_fFBMHighFrequencyStep;
@@ -80,22 +78,22 @@ void CDlgGenerateFBM::DoDataExchange(CDataExchange* pDX)
   }
   else if( !::IsWindow(m_ctrlCtOctavesSpin.m_hWnd)) return;
 
-	CDialog::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CDlgGenerateFBM)
-	DDX_Control(pDX, IDC_CT_OCTAVES_SPIN, m_ctrlCtOctavesSpin);
-	DDX_Text(pDX, IDC_FBM_MAX_ALTITUDE, m_fMaxAltitude);
-	DDV_MinMaxFloat(pDX, m_fMaxAltitude, 0.f, 65535.f);
-	DDX_Text(pDX, IDC_FBM_OCTAVE_AMPLITUDE_DECREASE, m_fOctaveAmplitudeDecreaser);
-	DDV_MinMaxFloat(pDX, m_fOctaveAmplitudeDecreaser, 0.f, 16.f);
-	DDX_Text(pDX, IDC_FBM_OCTAVE_STEP, m_fOctaveAmplitudeStep);
-	DDV_MinMaxFloat(pDX, m_fOctaveAmplitudeStep, 0.f, 128.f);
-	DDX_Text(pDX, IDC_FBM_HIGH_FREQUENCY_STEP, m_fHighFrequencyStep);
-	DDV_MinMaxFloat(pDX, m_fHighFrequencyStep, 0.f, 16.f);
-	DDX_Text(pDX, IDC_FBM_OCTAVES, m_ctOctaves);
-	DDV_MinMaxInt(pDX, m_ctOctaves, 0, 16);
-	DDX_Check(pDX, IDC_ADD_NEGATIVE_VALUES, m_bAddNegativeValues);
-	DDX_Check(pDX, IDC_RANDOM_OFFSET, m_bRandomOffset);
-	//}}AFX_DATA_MAP
+  CDialog::DoDataExchange(pDX);
+  //{{AFX_DATA_MAP(CDlgGenerateFBM)
+  DDX_Control(pDX, IDC_CT_OCTAVES_SPIN, m_ctrlCtOctavesSpin);
+  DDX_Text(pDX, IDC_FBM_MAX_ALTITUDE, m_fMaxAltitude);
+  DDV_MinMaxFloat(pDX, m_fMaxAltitude, 0.f, 65535.f);
+  DDX_Text(pDX, IDC_FBM_OCTAVE_AMPLITUDE_DECREASE, m_fOctaveAmplitudeDecreaser);
+  DDV_MinMaxFloat(pDX, m_fOctaveAmplitudeDecreaser, 0.f, 16.f);
+  DDX_Text(pDX, IDC_FBM_OCTAVE_STEP, m_fOctaveAmplitudeStep);
+  DDV_MinMaxFloat(pDX, m_fOctaveAmplitudeStep, 0.f, 128.f);
+  DDX_Text(pDX, IDC_FBM_HIGH_FREQUENCY_STEP, m_fHighFrequencyStep);
+  DDV_MinMaxFloat(pDX, m_fHighFrequencyStep, 0.f, 16.f);
+  DDX_Text(pDX, IDC_FBM_OCTAVES, m_ctOctaves);
+  DDV_MinMaxInt(pDX, m_ctOctaves, 0, 16);
+  DDX_Check(pDX, IDC_ADD_NEGATIVE_VALUES, m_bAddNegativeValues);
+  DDX_Check(pDX, IDC_RANDOM_OFFSET, m_bRandomOffset);
+  //}}AFX_DATA_MAP
 
   // if dialog is giving data
   if(pDX->m_bSaveAndValidate != FALSE)
@@ -110,18 +108,18 @@ void CDlgGenerateFBM::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CDlgGenerateFBM, CDialog)
-	//{{AFX_MSG_MAP(CDlgGenerateFBM)
-	ON_WM_PAINT()
-	ON_BN_CLICKED(IDC_FBM_RANDOMIZE, OnFbmRandomize)
-	ON_EN_CHANGE(IDC_FBM_HIGH_FREQUENCY_STEP, OnChangeFbmHighFrequencyStep)
-	ON_EN_CHANGE(IDC_FBM_MAX_ALTITUDE, OnChangeFbmMaxAltitude)
-	ON_EN_CHANGE(IDC_FBM_OCTAVE_AMPLITUDE_DECREASE, OnChangeFbmOctaveAmplitudeDecrease)
-	ON_EN_CHANGE(IDC_FBM_OCTAVE_STEP, OnChangeFbmOctaveStep)
-	ON_EN_CHANGE(IDC_FBM_OCTAVES, OnChangeFbmOctaves)
-	ON_BN_CLICKED(IDC_ADD_NEGATIVE_VALUES, OnAddNegativeValues)
-	ON_BN_CLICKED(IDC_FBM_EXPORT, OnFbmExport)
-	ON_BN_CLICKED(IDC_RANDOM_OFFSET, OnRandomOffset)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CDlgGenerateFBM)
+  ON_WM_PAINT()
+  ON_BN_CLICKED(IDC_FBM_RANDOMIZE, OnFbmRandomize)
+  ON_EN_CHANGE(IDC_FBM_HIGH_FREQUENCY_STEP, OnChangeFbmHighFrequencyStep)
+  ON_EN_CHANGE(IDC_FBM_MAX_ALTITUDE, OnChangeFbmMaxAltitude)
+  ON_EN_CHANGE(IDC_FBM_OCTAVE_AMPLITUDE_DECREASE, OnChangeFbmOctaveAmplitudeDecrease)
+  ON_EN_CHANGE(IDC_FBM_OCTAVE_STEP, OnChangeFbmOctaveStep)
+  ON_EN_CHANGE(IDC_FBM_OCTAVES, OnChangeFbmOctaves)
+  ON_BN_CLICKED(IDC_ADD_NEGATIVE_VALUES, OnAddNegativeValues)
+  ON_BN_CLICKED(IDC_FBM_EXPORT, OnFbmExport)
+  ON_BN_CLICKED(IDC_RANDOM_OFFSET, OnRandomOffset)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -138,7 +136,7 @@ BOOL CreateFBMTexture(PIX pixW, PIX pixH, CTFileName fnFBMFile)
   ii.ii_Width=pixW;
   ii.ii_Height=pixH;
   ii.ii_BitsPerPixel=32;
-  ii.ii_Picture=(UBYTE*) AllocMemory(ii.ii_Width*ii.ii_Height*sizeof(COLOR));
+  ii.ii_Picture=(UBYTE*) AllocMemory_(ii.ii_Width*ii.ii_Height*sizeof(COLOR));
   COLOR *pcol=(COLOR *)ii.ii_Picture;
 
   // convert buffer to equalized color map
@@ -160,24 +158,24 @@ BOOL CreateFBMTexture(PIX pixW, PIX pixH, CTFileName fnFBMFile)
   CTextureData tdFBM;
   try
   {
-    tdFBM.Create_t( &ii, pixW, 16, TRUE);
+    tdFBM.Create_t( ii, pixW, 16, TRUE);
     tdFBM.Save_t( fnFBMFile);
   }
   catch( char *strError)
   {
     (void) strError;
     WarningMessage("Unable to create FBM preview texture!");
-    FreeMemory( pafFBM);
+    FreeMemory_( pafFBM);
     return FALSE;
   }
-  FreeMemory( pafFBM);
+  FreeMemory_( pafFBM);
   return TRUE;
 }
 
 
 void CDlgGenerateFBM::OnPaint() 
 {
-	CPaintDC dc(this); // device context for painting
+  CPaintDC dc(this); // device context for painting
 
   if( !m_bCustomWindowCreated)
   {
@@ -193,11 +191,11 @@ void CDlgGenerateFBM::OnPaint()
   }
 
   // ******** Render preview texture
-  if (m_pdp==NULL)
+  if (!m_pdp)
   {
-    _pGfx->CreateWindowCanvas( m_wndTexture.m_hWnd, &m_pvp, &m_pdp);
+    _pGfx_CreateWindowCanvas( m_wndTexture.m_hWnd, m_pvp, m_pdp);
   }
-  if( (m_pdp!=NULL) && (m_pdp->Lock()) )
+  if( m_pdp && (m_pdp->Lock()) )
   {
     PIX pixW=256;
     PIX pixH=256;
@@ -209,9 +207,9 @@ void CDlgGenerateFBM::OnPaint()
       {
         CTextureObject to;
         to.SetData_t(fnFBMFile);
-        CTextureData *ptd=(CTextureData *)to.GetData();
+        CTextureDataPtr ptd=to.GetData();
         ptd->Reload();
-        m_pdp->PutTexture( &to, PIXaabbox2D(PIX2D(0,0),PIX2D(m_pdp->GetWidth(),m_pdp->GetHeight())));
+        m_pdp->PutTexture( to, PIXaabbox2D(PIX2D(0,0),PIX2D(m_pdp->GetWidth(),m_pdp->GetHeight())));
       }
       catch( char *strError)
       {
@@ -221,7 +219,7 @@ void CDlgGenerateFBM::OnPaint()
       m_pdp->Unlock();
     }
   }
-  if (m_pvp!=NULL)
+  if (m_pvp)
   {
     m_pvp->SwapBuffers();
   }
@@ -273,14 +271,14 @@ void CDlgGenerateFBM::OnOK()
   theApp.m_bFBMAddNegativeValues=_bFBMAddNegativeValues;
   theApp.m_bFBMRandomOffset=_bFBMRandomOffset;
 
-	CDialog::OnOK();
+  CDialog::OnOK();
 }
 
 BOOL CDlgGenerateFBM::OnInitDialog() 
 {
-	CDialog::OnInitDialog();
-	
-	m_ctrlCtOctavesSpin.SetRange(0,16);
+  CDialog::OnInitDialog();
+  
+  m_ctrlCtOctavesSpin.SetRange(0,16);
   m_ctrlCtOctavesSpin.SetPos(_iFBMOctaves);
 
   return TRUE;
@@ -308,9 +306,9 @@ void CDlgGenerateFBM::OnFbmExport()
     "Layer mask directory", "Textures\\");
   if( fnFBM=="") return;
 
-	CDlgEditFloat dlg;
+  CDlgEditFloat dlg;
   dlg.m_fEditFloat=256.0f;
-	dlg.m_strVarName = "Width (pixels)";
+  dlg.m_strVarName = "Width (pixels)";
   dlg.m_strTitle = "Texture size";
   if(dlg.DoModal()!=IDOK) return;
 

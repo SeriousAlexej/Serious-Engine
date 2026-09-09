@@ -37,17 +37,17 @@ IMPLEMENT_DYNCREATE(CDlgPgTexture, CPropertyPage)
 
 CDlgPgTexture::CDlgPgTexture() : CPropertyPage(CDlgPgTexture::IDD)
 {
-	//{{AFX_DATA_INIT(CDlgPgTexture)
-	m_strTextureFile = _T("");
-	m_fOffsetV = 0.0f;
-	m_fOffsetU = 0.0f;
-	m_radioTexture = -1;
-	m_fRotationU = 0.0f;
-	m_fRotationV = 0.0f;
-	m_fStretchU = 0.0f;
-	m_fStretchV = 0.0f;
-	m_strTextureDim = _T("");
-	//}}AFX_DATA_INIT
+  //{{AFX_DATA_INIT(CDlgPgTexture)
+  m_strTextureFile = _T("");
+  m_fOffsetV = 0.0f;
+  m_fOffsetU = 0.0f;
+  m_radioTexture = -1;
+  m_fRotationU = 0.0f;
+  m_fRotationV = 0.0f;
+  m_fStretchU = 0.0f;
+  m_fStretchV = 0.0f;
+  m_strTextureDim = _T("");
+  //}}AFX_DATA_INIT
 
   m_ctrlCombineColor.SetPickerType(  CColoredButton::PT_MFC);
 }
@@ -75,23 +75,36 @@ void CDlgPgTexture::DoDataExchange(CDataExchange* pDX)
   // if dialog is receiving data and control windows are valid
   if( (pDX->m_bSaveAndValidate == FALSE) && IsWindow( m_comboScroll.m_hWnd) )
   {
-    if (m_dirty || mp_last_world != &pDoc->m_woWorld)
+    if (m_dirty || mp_last_world.get_handle() != pDoc->m_woWorld.C_Handle())
     {
       m_dirty = false;
       mp_last_world = &pDoc->m_woWorld;
 
+      m_comboScroll.SetRedraw(FALSE);
+      m_comboBlend.SetRedraw(FALSE);
+
+      int prevVisible = m_comboScroll.GetMinVisible();
+      m_comboScroll.SetMinVisibleItems(1);
       m_comboScroll.ResetContent();
       for (INDEX iScroll = 0; iScroll < 256; iScroll++)
       {
-        CTString strScrollName = pDoc->m_woWorld.wo_attTextureTransformations[iScroll].tt_strName;
-        if (strScrollName != CTString("")) m_comboScroll.AddString(CString(strScrollName));
+        CTString strScrollName = pDoc->m_woWorld.wo_attTextureTransformations[iScroll]->tt_strName;
+        if (strScrollName != CTString("")) m_comboScroll.AddString(CString(static_cast<const char*>(strScrollName)));
       }
+      m_comboScroll.SetMinVisibleItems(prevVisible);
+
+      prevVisible = m_comboBlend.GetMinVisible();
+      m_comboBlend.SetMinVisibleItems(1);
       m_comboBlend.ResetContent();
       for (INDEX iBlend = 0; iBlend < 256; iBlend++)
       {
-        CTString strBlendName = pDoc->m_woWorld.wo_atbTextureBlendings[iBlend].tb_strName;
-        if (strBlendName != CTString("")) m_comboBlend.AddString(CString(strBlendName));
+        CTString strBlendName = pDoc->m_woWorld.wo_atbTextureBlendings[iBlend]->tb_strName;
+        if (strBlendName != CTString("")) m_comboBlend.AddString(CString(static_cast<const char*>(strBlendName)));
       }
+      m_comboBlend.SetMinVisibleItems(prevVisible);
+
+      m_comboScroll.SetRedraw(TRUE);
+      m_comboBlend.SetRedraw(TRUE);
     }
 
     m_radioTexture = pDoc->m_iTexture;
@@ -147,14 +160,14 @@ void CDlgPgTexture::DoDataExchange(CDataExchange* pDX)
       // for each of the selected polygons
       FOREACHINDYNAMICCONTAINER(pDoc->m_selPolygonSelection, CBrushPolygon, itbpo)
       {
-        CBrushPolygon &bpo = *itbpo;
-        ubFlagsOn &= bpo.bpo_abptTextures[pDoc->m_iTexture].s.bpt_ubFlags;
-        ubFlagsOff &= ~bpo.bpo_abptTextures[pDoc->m_iTexture].s.bpt_ubFlags;
+        CBrushPolygon bpo(*itbpo, false);
+        ubFlagsOn &= bpo.bpo_abptTextures[pDoc->m_iTexture].bpt_ubFlags;
+        ubFlagsOff &= ~bpo.bpo_abptTextures[pDoc->m_iTexture].bpt_ubFlags;
 
         CMappingDefinitionUI mdui;
         bpo.bpo_abptTextures[pDoc->m_iTexture].bpt_mdMapping.ToUI( mdui);
-        CTextureData *ptdTexture = (CTextureData *) bpo.bpo_abptTextures[pDoc->m_iTexture].bpt_toTexture.GetData();
-        if( ptdTexture == NULL)
+        CTextureDataPtr ptdTexture = bpo.bpo_abptTextures[pDoc->m_iTexture].bpt_toTexture.GetData();
+        if( !ptdTexture)
         {
           GetDlgItem( IDC_PREVIEW_FRAME)->EnableWindow( FALSE);
           m_strTextureFile = NO_TEXTURE;
@@ -165,17 +178,17 @@ void CDlgPgTexture::DoDataExchange(CDataExchange* pDX)
           CTString strTexture = ptdTexture->GetName();
           if( ctPolygons == 0)
           {
-        	  m_ctrlCombineColor.SetColor( bpo.bpo_abptTextures[pDoc->m_iTexture].s.bpt_colColor);
+            m_ctrlCombineColor.SetColor( bpo.bpo_abptTextures[pDoc->m_iTexture].bpt_colColor);
             m_strTextureFile = strTexture;
             m_strTextureDim = ptdTexture->GetDescription();
           }
           else
           {
-        	  if( m_ctrlCombineColor.GetColor() != bpo.bpo_abptTextures[pDoc->m_iTexture].s.bpt_colColor)
+            if( m_ctrlCombineColor.GetColor() != bpo.bpo_abptTextures[pDoc->m_iTexture].bpt_colColor)
             {
               m_ctrlCombineColor.SetMixedColor();
             }
-            if( m_strTextureFile != CString( strTexture))
+            if( m_strTextureFile != CString(static_cast<const char*>(strTexture)))
             {
               GetDlgItem( IDC_PREVIEW_FRAME)->EnableWindow( FALSE);
               m_strTextureFile = DIFFERENT_TEXTURE;
@@ -192,8 +205,8 @@ void CDlgPgTexture::DoDataExchange(CDataExchange* pDX)
           m_fStretchU = mdui.mdui_fUStretch;  m_bStretchU = TRUE;
           m_fStretchV = mdui.mdui_fVStretch;  m_bStretchV = TRUE;
 
-          ubFirstScroll = bpo.bpo_abptTextures[pDoc->m_iTexture].s.bpt_ubScroll;
-          ubFirstBlend = bpo.bpo_abptTextures[pDoc->m_iTexture].s.bpt_ubBlend;
+          ubFirstScroll = bpo.bpo_abptTextures[pDoc->m_iTexture].bpt_ubScroll;
+          ubFirstBlend = bpo.bpo_abptTextures[pDoc->m_iTexture].bpt_ubBlend;
         }
         else
         {
@@ -204,8 +217,8 @@ void CDlgPgTexture::DoDataExchange(CDataExchange* pDX)
           if( m_fStretchU != mdui.mdui_fUStretch)  m_bStretchU = FALSE;
           if( m_fStretchV != mdui.mdui_fVStretch)  m_bStretchV = FALSE;
 
-          if( bpo.bpo_abptTextures[pDoc->m_iTexture].s.bpt_ubScroll != ubFirstScroll) bSameScroll = FALSE;
-          if( bpo.bpo_abptTextures[pDoc->m_iTexture].s.bpt_ubBlend != ubFirstBlend) bSameBlend = FALSE;
+          if( bpo.bpo_abptTextures[pDoc->m_iTexture].bpt_ubScroll != ubFirstScroll) bSameScroll = FALSE;
+          if( bpo.bpo_abptTextures[pDoc->m_iTexture].bpt_ubBlend != ubFirstBlend) bSameBlend = FALSE;
         }
         ctPolygons++;
       }
@@ -228,18 +241,18 @@ void CDlgPgTexture::DoDataExchange(CDataExchange* pDX)
     }
   }
 
-	//{{AFX_DATA_MAP(CDlgPgTexture)
-	DDX_Control(pDX, IDC_AFTER_SHADOW, m_checkAfterShadow);
-	DDX_Control(pDX, ID_COMBINE_COLOR, m_ctrlCombineColor);
-	DDX_Control(pDX, IDC_BLEND_TYPE, m_comboBlend);
-	DDX_Control(pDX, IDC_REFLECTIVE, m_checkReflective);
-	DDX_Control(pDX, IDC_CLAMP_V, m_checkClampV);
-	DDX_Control(pDX, IDC_CLAMP_U, m_checkClampU);
-	DDX_Control(pDX, IDC_SCROLL_COMBO, m_comboScroll);
-	DDX_Text(pDX, IDC_TEXTURE_FILE_T, m_strTextureFile);
-	DDX_Radio(pDX, IDC_RADIO_TEXTURE, m_radioTexture);
-	DDX_Text(pDX, IDC_TEXTURE_DIM_T, m_strTextureDim);
-	//}}AFX_DATA_MAP
+  //{{AFX_DATA_MAP(CDlgPgTexture)
+  DDX_Control(pDX, IDC_AFTER_SHADOW, m_checkAfterShadow);
+  DDX_Control(pDX, ID_COMBINE_COLOR, m_ctrlCombineColor);
+  DDX_Control(pDX, IDC_BLEND_TYPE, m_comboBlend);
+  DDX_Control(pDX, IDC_REFLECTIVE, m_checkReflective);
+  DDX_Control(pDX, IDC_CLAMP_V, m_checkClampV);
+  DDX_Control(pDX, IDC_CLAMP_U, m_checkClampU);
+  DDX_Control(pDX, IDC_SCROLL_COMBO, m_comboScroll);
+  DDX_Text(pDX, IDC_TEXTURE_FILE_T, m_strTextureFile);
+  DDX_Radio(pDX, IDC_RADIO_TEXTURE, m_radioTexture);
+  DDX_Text(pDX, IDC_TEXTURE_DIM_T, m_strTextureDim);
+  //}}AFX_DATA_MAP
 
   DDX_SkyFloat(pDX, IDC_OFFSET_U, m_fOffsetU, m_bOffsetU);
   DDX_SkyFloat(pDX, IDC_OFFSET_V, m_fOffsetV, m_bOffsetV);
@@ -279,9 +292,9 @@ void CDlgPgTexture::DoDataExchange(CDataExchange* pDX)
     // for each of the selected polygons
     FOREACHINDYNAMICCONTAINER(pDoc->m_selPolygonSelection, CBrushPolygon, itbpo)
     {
-      CBrushPolygon &bpo = *itbpo;
-      bpo.bpo_abptTextures[pDoc->m_iTexture].s.bpt_ubFlags &= ulBitsToClear;
-      bpo.bpo_abptTextures[pDoc->m_iTexture].s.bpt_ubFlags |= ulBitsToSet;
+      CBrushPolygon bpo(*itbpo, false);
+      bpo.bpo_abptTextures[pDoc->m_iTexture].bpt_ubFlags &= ulBitsToClear;
+      bpo.bpo_abptTextures[pDoc->m_iTexture].bpt_ubFlags |= ulBitsToSet;
 
       CMappingDefinitionUI mdui;
       bpo.bpo_abptTextures[pDoc->m_iTexture].bpt_mdMapping.ToUI( mdui);
@@ -294,13 +307,13 @@ void CDlgPgTexture::DoDataExchange(CDataExchange* pDX)
       bpo.bpo_abptTextures[pDoc->m_iTexture].bpt_mdMapping.FromUI( mdui);
 
       INDEX iScroll = m_comboScroll.GetCurSel();
-      if( iScroll != -1) bpo.bpo_abptTextures[pDoc->m_iTexture].s.bpt_ubScroll = (UBYTE)iScroll;
+      if( iScroll != -1) bpo.bpo_abptTextures[pDoc->m_iTexture].bpt_ubScroll = (UBYTE)iScroll;
       INDEX iBlend = m_comboBlend.GetCurSel();
-      if( iBlend != -1)  bpo.bpo_abptTextures[pDoc->m_iTexture].s.bpt_ubBlend = (UBYTE)iBlend;
+      if( iBlend != -1)  bpo.bpo_abptTextures[pDoc->m_iTexture].bpt_ubBlend = (UBYTE)iBlend;
 
       if( m_ctrlCombineColor.IsColorValid())
       {
-        bpo.bpo_abptTextures[pDoc->m_iTexture].s.bpt_colColor = m_ctrlCombineColor.GetColor();
+        bpo.bpo_abptTextures[pDoc->m_iTexture].bpt_colColor = m_ctrlCombineColor.GetColor();
       }
     }
     pDoc->UpdateAllViews( NULL);
@@ -319,18 +332,18 @@ void CDlgPgTexture::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CDlgPgTexture, CPropertyPage)
-	//{{AFX_MSG_MAP(CDlgPgTexture)
-	ON_BN_CLICKED(IDC_BROWSE_TEXTURE, OnBrowseTexture)
-	ON_BN_CLICKED(IDC_RADIO_TEXTURE, OnRadioTexture)
-	ON_BN_CLICKED(IDC_TEXTURE_2, OnTexture2)
-	ON_BN_CLICKED(IDC_TEXTURE_3, OnTexture3)
-	ON_BN_CLICKED(IDC_REMOVE_TEXTURE, OnRemoveTexture)
-	ON_CBN_SELCHANGE(IDC_SCROLL_COMBO, OnSelchangeScrollCombo)
-	ON_WM_DROPFILES()
-	ON_CBN_SELCHANGE(IDC_BLEND_TYPE, OnSelchangeBlendType)
-	ON_CBN_DROPDOWN(IDC_SCROLL_COMBO, OnDropdownScrollCombo)
-	ON_CBN_DROPDOWN(IDC_BLEND_TYPE, OnDropdownBlendType)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CDlgPgTexture)
+  ON_BN_CLICKED(IDC_BROWSE_TEXTURE, OnBrowseTexture)
+  ON_BN_CLICKED(IDC_RADIO_TEXTURE, OnRadioTexture)
+  ON_BN_CLICKED(IDC_TEXTURE_2, OnTexture2)
+  ON_BN_CLICKED(IDC_TEXTURE_3, OnTexture3)
+  ON_BN_CLICKED(IDC_REMOVE_TEXTURE, OnRemoveTexture)
+  ON_CBN_SELCHANGE(IDC_SCROLL_COMBO, OnSelchangeScrollCombo)
+  ON_WM_DROPFILES()
+  ON_CBN_SELCHANGE(IDC_BLEND_TYPE, OnSelchangeBlendType)
+  ON_CBN_DROPDOWN(IDC_SCROLL_COMBO, OnDropdownScrollCombo)
+  ON_CBN_DROPDOWN(IDC_BLEND_TYPE, OnDropdownBlendType)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -338,7 +351,7 @@ END_MESSAGE_MAP()
 
 BOOL CDlgPgTexture::OnInitDialog()
 {
-	CPropertyPage::OnInitDialog();
+  CPropertyPage::OnInitDialog();
 
   // obtain document
   CWorldEditorDoc* pDoc = theApp.GetDocument();
@@ -362,7 +375,7 @@ BOOL CDlgPgTexture::OnInitDialog()
   {
     m_radioTexture = pDoc->m_iTexture;
   }
-	return TRUE;
+  return TRUE;
 }
 
 BOOL CDlgPgTexture::OnIdle(LONG lCount)
@@ -399,14 +412,14 @@ void CDlgPgTexture::OnBrowseTexture()
     GetDlgItem( IDC_TEXTURE_FILE_T)->SetWindowText( CString(fnTexture));
   }
   // to reflect data change
-	UpdateData( TRUE);
+  UpdateData( TRUE);
 }
 
 void CDlgPgTexture::OnRemoveTexture()
 {
   GetDlgItem( IDC_TEXTURE_FILE_T)->SetWindowText( L"No texture");
   // apply data change
-	UpdateData( TRUE);
+  UpdateData( TRUE);
 }
 
 void CDlgPgTexture::OnRadioTexture()
@@ -414,7 +427,7 @@ void CDlgPgTexture::OnRadioTexture()
   CWorldEditorDoc* pDoc = theApp.GetDocument();
   if( pDoc == NULL)  return;
   pDoc->m_iTexture = 0;
-	UpdateData( FALSE);
+  UpdateData( FALSE);
 }
 
 void CDlgPgTexture::OnTexture2()
@@ -422,7 +435,7 @@ void CDlgPgTexture::OnTexture2()
   CWorldEditorDoc* pDoc = theApp.GetDocument();
   if( pDoc == NULL)  return;
   pDoc->m_iTexture = 1;
-	UpdateData( FALSE);
+  UpdateData( FALSE);
 }
 
 void CDlgPgTexture::OnTexture3()
@@ -430,7 +443,7 @@ void CDlgPgTexture::OnTexture3()
   CWorldEditorDoc* pDoc = theApp.GetDocument();
   if( pDoc == NULL)  return;
   pDoc->m_iTexture = 2;
-	UpdateData( FALSE);
+  UpdateData( FALSE);
 }
 
 void CDlgPgTexture::OnSelchangeScrollCombo()
@@ -458,7 +471,7 @@ void CDlgPgTexture::OnDropFiles(HDROP hDropInfo)
     return;
   }
 
-	// buffer for dropped file name
+  // buffer for dropped file name
   char chrFile[ 256];
   // place dropped file name into buffer
   DragQueryFileA( hDropInfo, 0, chrFile, 256);
@@ -473,9 +486,9 @@ void CDlgPgTexture::OnDropFiles(HDROP hDropInfo)
   try
   {
     fnDropped.RemoveApplicationPath_t();
-    GetDlgItem( IDC_TEXTURE_FILE_T)->SetWindowText( CString(fnDropped));
+    GetDlgItem( IDC_TEXTURE_FILE_T)->SetWindowText( CString(static_cast<const char*>(fnDropped)));
     // apply data change
-	  UpdateData( TRUE);
+    UpdateData( TRUE);
   }
   catch( char *err_str)
   {
@@ -491,14 +504,14 @@ BOOL CDlgPgTexture::OnSetActive()
 
 BOOL CDlgPgTexture::PreTranslateMessage(MSG* pMsg)
 {
-	if(pMsg->message==WM_KEYDOWN && pMsg->wParam==VK_RETURN)
+  if(pMsg->message==WM_KEYDOWN && pMsg->wParam==VK_RETURN)
   {
     UpdateData( TRUE);
     UpdateData( FALSE);
     // the message is handled
     return TRUE;
   }
-	return CPropertyPage::PreTranslateMessage(pMsg);
+  return CPropertyPage::PreTranslateMessage(pMsg);
 }
 
 void CDlgPgTexture::OnDropdownScrollCombo()

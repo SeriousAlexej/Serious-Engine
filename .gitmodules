@@ -5,3 +5,19 @@
 	path = Sources/qtsolutions
 	url = https://github.com/SeriousAlexej/qt-solutions.git
 	branch = master
+[submodule "Sources/CrashRpt"]
+	path = Sources/CrashRpt
+	url = https://github.com/SeriousAlexej/CrashRpt.git
+	branch = master
+[submodule "Sources/Qt6"]
+	path = Sources/Qt6
+	url = https://github.com/SeriousAlexej/Qt6.8.3_qtbase_x32_msvc_2022.git
+	branch = main
+[submodule "Sources/SeriousEngineCAPI"]
+	path = Sources/SeriousEngineCAPI
+	url = https://github.com/SeriousAlexej/SeriousEngineCAPI.git
+	branch = master
+[submodule "Sources/SeriousEngineCppAPI"]
+	path = Sources/SeriousEngineCppAPI
+	url = https://github.com/SeriousAlexej/SeriousEngineCppAPI.git
+	branch = master

@@ -30,7 +30,7 @@ static char THIS_FILE[] = __FILE__;
 
 CDlgInfoFrame::CDlgInfoFrame()
 {
-	m_pInfoSheet = NULL;
+  m_pInfoSheet = NULL;
 }
 
 CDlgInfoFrame::~CDlgInfoFrame()
@@ -42,11 +42,11 @@ CDlgInfoFrame::~CDlgInfoFrame()
 }
 
 BEGIN_MESSAGE_MAP(CDlgInfoFrame, CMiniFrameWnd)
-	//{{AFX_MSG_MAP(CDlgInfoFrame)
-	ON_WM_CREATE()
-	ON_WM_CLOSE()
-	ON_WM_SIZE()
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CDlgInfoFrame)
+  ON_WM_CREATE()
+  ON_WM_CLOSE()
+  ON_WM_SIZE()
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -55,7 +55,7 @@ END_MESSAGE_MAP()
 int CDlgInfoFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
   if (CMiniFrameWnd::OnCreate(lpCreateStruct) == -1)
-		return -1;
+    return -1;
 
   CMainFrame* pMainFrame = STATIC_DOWNCAST(CMainFrame, AfxGetMainWnd());
   
@@ -63,20 +63,20 @@ int CDlgInfoFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
   m_pInfoSheet = new CDlgInfoSheet(this);
   // if creation fails, delete allocated object
   if (!m_pInfoSheet->Create(this, WS_CHILD | WS_VISIBLE, 0))
-	{
-		delete m_pInfoSheet;
-		m_pInfoSheet = NULL;
-		return -1;
-	}
-	
-	// resize the mini frame so that it fits around the child property sheet
-	CRect rectClient, rectWindow;
+  {
+    delete m_pInfoSheet;
+    m_pInfoSheet = NULL;
+    return -1;
+  }
+  
+  // resize the mini frame so that it fits around the child property sheet
+  CRect rectClient, rectWindow;
   // property sheet's window rectangle
   m_pInfoSheet->GetWindowRect(rectClient);
   // becomes mini frame's client rectangle
-	rectWindow = rectClient;
-	// add the width and height needed from the mini frame's borders
-	CalcWindowRect(rectWindow);
+  rectWindow = rectClient;
+  // add the width and height needed from the mini frame's borders
+  CalcWindowRect(rectWindow);
   // get screen size
   int iScreenWidth = ::GetSystemMetrics(SM_CXSCREEN);
   int iScreenHeight = ::GetSystemMetrics(SM_CYSCREEN);
@@ -86,20 +86,20 @@ int CDlgInfoFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
   pMainFrame->m_wndStatusBar.GetWindowRect( rectStatusBar);
   // offset mini frame window coordinates so it fits in lower left part of the screen
   rectWindow.OffsetRect( 3, iScreenHeight - rectWindow.Height() - rectStatusBar.Height() - 3);
-	// move frame window to new position
+  // move frame window to new position
   SetWindowPos( NULL, rectWindow.left, rectWindow.top, rectWindow.Width(), rectWindow.Height(),
-		            SWP_NOZORDER | SWP_NOACTIVATE);
+                SWP_NOZORDER | SWP_NOACTIVATE);
   // set property sheet position and type
   m_pInfoSheet->SetWindowPos( NULL, 0, 0, rectClient.Width(), rectClient.Height(),
-		                          SWP_NOZORDER | SWP_NOACTIVATE);
+                              SWP_NOZORDER | SWP_NOACTIVATE);
   return 0;
 }
 
 void CDlgInfoFrame::OnClose() 
 {
-	// Instead of closing the modeless property sheet, just hide it.
-	CMainFrame* pMainFrame = STATIC_DOWNCAST(CMainFrame, AfxGetMainWnd());
-	pMainFrame->HideModelessInfoSheet();
+  // Instead of closing the modeless property sheet, just hide it.
+  CMainFrame* pMainFrame = STATIC_DOWNCAST(CMainFrame, AfxGetMainWnd());
+  pMainFrame->HideModelessInfoSheet();
 }
 
 BOOL CDlgInfoFrame::PreTranslateMessage(MSG* pMsg) 
@@ -109,15 +109,15 @@ BOOL CDlgInfoFrame::PreTranslateMessage(MSG* pMsg)
     if( (pMsg->wParam == SC_MINIMIZE) || ( pMsg->wParam == SC_MAXIMIZE))
       pMsg->wParam = SC_RESTORE;
   }
-	return CMiniFrameWnd::PreTranslateMessage(pMsg);
+  return CMiniFrameWnd::PreTranslateMessage(pMsg);
 }
 
 void CDlgInfoFrame::OnSize(UINT nType, int cx, int cy) 
 {
   CMiniFrameWnd::OnSize(nType, cx, cy);
-  SetSizes();
+  //SetSizes();
 }
-
+/*
 void CDlgInfoFrame::SetSizes() 
 {
   return;
@@ -149,12 +149,12 @@ void CDlgInfoFrame::SetSizes()
   m_pInfoSheet->MoveWindow( &rectPage);
 
   // now we will resize frame so that it fits around the property sheet.
-	CRect rectFrame;
+  CRect rectFrame;
   // get sheet's size into frame's rectangle
   rectFrame = rectPage;
   // add border and title bar sizes to gain bounding's frame dimensions
-	CalcWindowRect( rectFrame);
-	// convert coodinates from client into screen
+  CalcWindowRect( rectFrame);
+  // convert coodinates from client into screen
   ClientToScreen( rectFrame);
   // set new frame position
   MoveWindow( rectFrame);
@@ -168,3 +168,4 @@ void CDlgInfoFrame::SetSizes()
                     m_PageWidth-PAGE_SUB_WIDTH, m_PageHeight-PAGE_SUB_HEIGHT);
   pPage->MoveWindow( rectPage);
 }
+*/

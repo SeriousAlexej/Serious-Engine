@@ -38,9 +38,9 @@ CStainsComboBox::~CStainsComboBox()
 
 
 BEGIN_MESSAGE_MAP(CStainsComboBox, CComboBox)
-	//{{AFX_MSG_MAP(CStainsComboBox)
-	ON_CONTROL_REFLECT(CBN_DROPDOWN, OnDropdown)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CStainsComboBox)
+  ON_CONTROL_REFLECT(CBN_DROPDOWN, OnDropdown)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -52,9 +52,9 @@ void CStainsComboBox::Refresh()
 
   ResetContent();
   
-  if( !pApp->m_WorkingPatches.IsEmpty())
+  if( !pApp->m_WorkingPatches.empty())
   {
-    FOREACHINLIST( CWorkingPatch, wp_ListNode, pApp->m_WorkingPatches, it)
+    for (auto& it : pApp->m_WorkingPatches)
     {
       AddString( CString(it->wp_FileName.FileName()));
     }

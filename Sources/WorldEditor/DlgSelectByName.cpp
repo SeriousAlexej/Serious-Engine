@@ -29,14 +29,12 @@ static char THIS_FILE[] = __FILE__;
 /////////////////////////////////////////////////////////////////////////////
 // CDlgSelectByName dialog
 
-#define ENTITYPROPERTY(thisptr, offset, type) (*((type *)(((UBYTE *)thisptr)+offset)))     
-
 CDlgSelectByName::CDlgSelectByName( CWorldEditorDoc *pDoc, CWnd* pParent /*=NULL*/)
-	: CDialog(CDlgSelectByName::IDD, pParent)
+  : CDialog(CDlgSelectByName::IDD, pParent)
 {
-	//{{AFX_DATA_INIT(CDlgSelectByName)
-		// NOTE: the ClassWizard will add member initialization here
-	//}}AFX_DATA_INIT
+  //{{AFX_DATA_INIT(CDlgSelectByName)
+    // NOTE: the ClassWizard will add member initialization here
+  //}}AFX_DATA_INIT
 
   ASSERT( pDoc != NULL);
   m_pDoc = pDoc;
@@ -45,10 +43,10 @@ CDlgSelectByName::CDlgSelectByName( CWorldEditorDoc *pDoc, CWnd* pParent /*=NULL
 
 void CDlgSelectByName::DoDataExchange(CDataExchange* pDX)
 {
-	CDialog::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CDlgSelectByName)
-	DDX_Control(pDX, IDC_ENTITY_LIST, m_ListBox);
-	//}}AFX_DATA_MAP
+  CDialog::DoDataExchange(pDX);
+  //{{AFX_DATA_MAP(CDlgSelectByName)
+  DDX_Control(pDX, IDC_ENTITY_LIST, m_ListBox);
+  //}}AFX_DATA_MAP
   
   // if dialog gives data
   if( pDX->m_bSaveAndValidate)
@@ -57,7 +55,7 @@ void CDlgSelectByName::DoDataExchange(CDataExchange* pDX)
     for( INDEX i=0; i<m_ListBox.GetCount(); i++)
     {
       // obtain entity ptr
-      CEntity &penEntity = *((CEntity *) m_ListBox.GetItemData( i));
+      CEntity penEntity((CEntity_*) m_ListBox.GetItemData( i), false);
       // if entity was selected
       if( m_pDoc->m_selEntitySelection.IsSelected( penEntity))
       {
@@ -84,10 +82,10 @@ void CDlgSelectByName::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CDlgSelectByName, CDialog)
-	//{{AFX_MSG_MAP(CDlgSelectByName)
-	ON_BN_CLICKED(ID_DESELECT_ALL, OnDeselectAll)
-	ON_BN_CLICKED(ID_SELECT_ALL, OnSelectAll)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CDlgSelectByName)
+  ON_BN_CLICKED(ID_DESELECT_ALL, OnDeselectAll)
+  ON_BN_CLICKED(ID_SELECT_ALL, OnSelectAll)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -95,8 +93,8 @@ END_MESSAGE_MAP()
 
 BOOL CDlgSelectByName::OnInitDialog() 
 {
-	CDialog::OnInitDialog();
-	
+  CDialog::OnInitDialog();
+  
   ASSERT( m_pDoc != NULL);
   // for all entities in world
   FOREACHINDYNAMICCONTAINER(m_pDoc->m_woWorld.wo_cenEntities, CEntity, iten)
@@ -108,9 +106,9 @@ BOOL CDlgSelectByName::OnInitDialog()
       // add it to list box
       INDEX iListEntry = m_ListBox.AddString( CString(strEntityName));
       // set item's data as ptr to current entity
-      m_ListBox.SetItemData( iListEntry, (ULONG)(&*iten));
+      m_ListBox.SetItemData( iListEntry, (ULONG)(iten->C_Handle()));
       // if current entity is selected
-      if( iten->IsSelected( ENF_SELECTED))
+      if( iten->IsSelected())
       {
         // set check to on
         m_ListBox.SetCheck( iListEntry, 1);
@@ -124,8 +122,8 @@ BOOL CDlgSelectByName::OnInitDialog()
     }
   }
 
-	return TRUE;  // return TRUE unless you set the focus to a control
-	              // EXCEPTION: OCX Property Pages should return FALSE
+  return TRUE;  // return TRUE unless you set the focus to a control
+                // EXCEPTION: OCX Property Pages should return FALSE
 }
 
 void CDlgSelectByName::OnDeselectAll() 

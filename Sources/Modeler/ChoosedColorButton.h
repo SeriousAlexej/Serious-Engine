@@ -26,7 +26,7 @@ class CChoosedColorButton : public CButton
 {
 // Construction
 public:
-	CChoosedColorButton();
+  CChoosedColorButton();
 
 // Attributes
 public:
@@ -35,23 +35,23 @@ public:
 public:
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CChoosedColorButton)
-	public:
-	virtual void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CChoosedColorButton)
+  public:
+  virtual void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
+  //}}AFX_VIRTUAL
 
 // Implementation
 public:
-	virtual ~CChoosedColorButton();
+  virtual ~CChoosedColorButton();
 
-	// Generated message map functions
+  // Generated message map functions
 protected:
-	//{{AFX_MSG(CChoosedColorButton)
-	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
-	//}}AFX_MSG
+  //{{AFX_MSG(CChoosedColorButton)
+  afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+  //}}AFX_MSG
 
-	DECLARE_MESSAGE_MAP()
+  DECLARE_MESSAGE_MAP()
 };
 
 /////////////////////////////////////////////////////////////////////////////

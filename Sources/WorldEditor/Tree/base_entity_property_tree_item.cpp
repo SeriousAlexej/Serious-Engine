@@ -23,14 +23,14 @@ BaseEntityPropertyTreeItem::BaseEntityPropertyTreeItem(BasePropertyTreeItem* par
   : BasePropertyTreeItem(parent)
 {
   QObject::connect(&EventHub::instance(), &EventHub::PropertyChanged, this,
-    [this](const std::set<CEntity*>& entities, CPropertyID* prop, BasePropertyTreeItem* source)
+    [this](const std::set<CEntity_*>& entities, CPropertyID* prop, BasePropertyTreeItem* source)
     {
       if (source == this)
         return;
 
       if (mp_property && prop && prop->pid_eptType == mp_property->pid_eptType)
       {
-        std::vector<CEntity*> common_entities;
+        std::vector<CEntity_*> common_entities;
         std::set_intersection(entities.begin(), entities.end(),
           m_entities.begin(), m_entities.end(),
           std::back_inserter(common_entities));
@@ -51,12 +51,12 @@ QVariant BaseEntityPropertyTreeItem::data(int column, int role) const
   return _GetTypeName();
 }
 
-void BaseEntityPropertyTreeItem::OnEntityPicked(CEntity* picked_entity)
+void BaseEntityPropertyTreeItem::OnEntityPicked(CEntity_* picked_entity)
 {
   (void)picked_entity;
 }
 
-bool BaseEntityPropertyTreeItem::EntityPresentInHierarchy(CEntity* entity) const
+bool BaseEntityPropertyTreeItem::EntityPresentInHierarchy(CEntity_* entity) const
 {
   if (m_entities.find(entity) != m_entities.end())
     return true;
@@ -73,7 +73,7 @@ CPropertyID* BaseEntityPropertyTreeItem::_GetProperty() const
   return mp_property.get();
 }
 
-void BaseEntityPropertyTreeItem::_SetEntitiesAndProperty(const std::set<CEntity*>& entities, std::unique_ptr<CPropertyID>&& prop)
+void BaseEntityPropertyTreeItem::_SetEntitiesAndProperty(const std::set<CEntity_*>& entities, std::unique_ptr<CPropertyID>&& prop)
 {
   if (!m_entities.empty() || mp_property)
     throw std::runtime_error("Entities were already set to this item! Examine callstack to fix this");

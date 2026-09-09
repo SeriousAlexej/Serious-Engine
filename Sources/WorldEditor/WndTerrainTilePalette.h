@@ -29,44 +29,44 @@ class CWndTerrainTilePalette : public CWnd
 {
 // Construction
 public:
-	CWndTerrainTilePalette();
+  CWndTerrainTilePalette();
 
 // Attributes
 public:
-  CTextureData *m_ptd;
-  CDrawPort *m_pDrawPort;
-  CViewPort *m_pViewPort;
+  CTextureDataPtr m_ptd;
+  CDrawPortPtr m_pDrawPort;
+  CViewPortPtr m_pViewPort;
   INDEX m_ctPaletteTilesH;
   INDEX m_ctTilesPerRaw;
-  CDynamicContainer<CTileInfo> m_dcTileInfo;
+  std::vector<std::unique_ptr<CTileInfo>> m_dcTileInfo;
   INDEX m_iTimerID;
 
 // Operations
 public:
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CWndTerrainTilePalette)
-	public:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CWndTerrainTilePalette)
+  public:
+  virtual BOOL PreTranslateMessage(MSG* pMsg);
+  //}}AFX_VIRTUAL
 
 // Implementation
 public:
-	virtual ~CWndTerrainTilePalette();
-  BOOL Initialize(PIX pixX, PIX pixY, CTextureData *ptd, BOOL bCenter=TRUE);
+  virtual ~CWndTerrainTilePalette();
+  BOOL Initialize(PIX pixX, PIX pixY, CTextureDataPtr ptd, BOOL bCenter=TRUE);
   PIXaabbox2D GetTileBBox( INDEX iTile);
 
-	// Generated message map functions
+  // Generated message map functions
 protected:
-	//{{AFX_MSG(CWndTerrainTilePalette)
-	afx_msg void OnPaint();
-	afx_msg void OnKillFocus(CWnd* pNewWnd);
-	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
-	afx_msg void OnTimer(UINT nIDEvent);
-	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+  //{{AFX_MSG(CWndTerrainTilePalette)
+  afx_msg void OnPaint();
+  afx_msg void OnKillFocus(CWnd* pNewWnd);
+  afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+  afx_msg void OnTimer(UINT nIDEvent);
+  afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
+  //}}AFX_MSG
+  DECLARE_MESSAGE_MAP()
 };
 
 /////////////////////////////////////////////////////////////////////////////

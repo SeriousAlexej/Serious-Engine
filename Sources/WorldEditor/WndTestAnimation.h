@@ -27,37 +27,37 @@ class CWndTestAnimation : public CWnd
 {
 // Construction 
 public:
-	CWndTestAnimation();
-	inline void SetParentDlg( CDlgLightAnimationEditor *pParentDlg) {m_pParentDlg=pParentDlg;};
+  CWndTestAnimation();
+  inline void SetParentDlg( CDlgLightAnimationEditor *pParentDlg) {m_pParentDlg=pParentDlg;};
 
 // Attributes
 public:
   CAnimObject m_aoAnimObject;
   CDlgLightAnimationEditor *m_pParentDlg;
   int m_iTimerID;
-  CDrawPort *m_pDrawPort;
-  CViewPort *m_pViewPort;
+  CDrawPortPtr m_pDrawPort;
+  CViewPortPtr m_pViewPort;
 
 // Operations
 public:
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CWndTestAnimation)
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CWndTestAnimation)
+  //}}AFX_VIRTUAL
 
 // Implementation
 public:
-	virtual ~CWndTestAnimation();
+  virtual ~CWndTestAnimation();
 
-	// Generated message map functions
+  // Generated message map functions
 protected:
-	//{{AFX_MSG(CWndTestAnimation)
-	afx_msg void OnPaint();
-	afx_msg void OnTimer(UINT nIDEvent);
-	afx_msg void OnDestroy();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+  //{{AFX_MSG(CWndTestAnimation)
+  afx_msg void OnPaint();
+  afx_msg void OnTimer(UINT nIDEvent);
+  afx_msg void OnDestroy();
+  //}}AFX_MSG
+  DECLARE_MESSAGE_MAP()
 };
 
 /////////////////////////////////////////////////////////////////////////////

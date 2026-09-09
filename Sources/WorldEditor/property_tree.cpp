@@ -127,12 +127,26 @@ public:
       });
 
     QObject::connect(&EventHub::instance(), &EventHub::CurrentEntitySelectionChanged, mp_tree_view, [this]
-      (const std::set<CEntity*>& new_selection)
+      (const std::set<CEntity_*>& new_selection)
       {
+        if (mp_tree_model->rowCount() > 0)
+        {
+          if (auto* prev_property = GetSelectedProperty())
+            mp_last_selected_property = std::make_unique<CPropertyID>(prev_property->pid_strName, prev_property->pid_eptType, CEntityPropertyPtr{}, CAnimDataPtr{});
+          else
+            mp_last_selected_property.reset();
+        }
+
         mp_tree_model->Fill(new_selection);
         mp_winWidget->setEnabled(!new_selection.empty());
         if (!new_selection.empty())
           mp_tree_view->setExpanded(mp_tree_model->index(0, 0), true);
+
+        if (!mp_last_selected_property)
+          return;
+        auto index_of_same_property = mp_tree_model->FindProperty(*mp_last_selected_property);
+        if (index_of_same_property.isValid())
+          mp_tree_view->selectionModel()->select(index_of_same_property, QItemSelectionModel::Rows | QItemSelectionModel::Select);
       });
 
     QObject::connect(mp_tree_view, &QTreeView::expanded, mp_tree_model, [this]
@@ -142,9 +156,9 @@ public:
       });
 
     QObject::connect(&EventHub::instance(), &EventHub::EntityPicked, mp_tree_view, [this]
-      (CEntity* picked_entity)
+      (CEntity_* picked_entity)
       {
-        mp_tree_model->OnEntityPicked(picked_entity, mp_tree_view->selectionModel()->selectedIndexes());
+        mp_tree_model->OnEntityPicked(picked_entity, mp_tree_view->selectionModel()->selectedRows());
       });
   }
 
@@ -199,9 +213,10 @@ private:
   }
 
 private:
-  std::unique_ptr<QWinWidget> mp_winWidget;
-  QTreeView*                  mp_tree_view = nullptr;
-  PropertyTreeModel*          mp_tree_model = nullptr;
+  std::unique_ptr<CPropertyID> mp_last_selected_property;
+  std::unique_ptr<QWinWidget>  mp_winWidget;
+  QTreeView*                   mp_tree_view = nullptr;
+  PropertyTreeModel*           mp_tree_model = nullptr;
 };
 
 PropertyTree_MFC_Host::PropertyTree_MFC_Host()
@@ -222,7 +237,7 @@ BOOL PropertyTree_MFC_Host::Create(CWnd* pParentWnd, UINT nIDTemplate, UINT nSty
 
 void PropertyTree_MFC_Host::OnSize(UINT, int cx, int cy)
 {
-  if (mp_impl->WinWidget())
+  if (mp_impl && mp_impl->WinWidget())
     mp_impl->WinWidget()->resize(cx - 16, cy - 16);
 }
 
@@ -244,7 +259,7 @@ CSize PropertyTree_MFC_Host::CalcDynamicLayout(int nLength, DWORD dwMode)
   {
     if (dwMode & LM_STRETCH) // if not docked stretch to fit
       return CSize((dwMode & LM_HORZ) ? 32767 : m_Size.cx,
-        (dwMode & LM_HORZ) ? m_Size.cy : 32767);
+                   (dwMode & LM_HORZ) ? m_Size.cy : 32767);
     else
       return m_Size;
   }
@@ -252,15 +267,14 @@ CSize PropertyTree_MFC_Host::CalcDynamicLayout(int nLength, DWORD dwMode)
     return m_Size;
   // In all other cases, accept the dynamic length
   if (dwMode & LM_LENGTHY)
-    return CSize(m_Size.cx,
-      m_Size.cy = nLength);
+    return CSize(m_Size.cx, m_Size.cy = nLength);
   else
-    return CSize(m_Size.cx = nLength);
+    return CSize(m_Size.cx = nLength, m_Size.cy);
 }
 
 bool PropertyTree_MFC_Host::IsUnderMouse() const
 {
-  if (!mp_impl->WinWidget() || !mp_impl->WinWidget()->isEnabled())
+  if (!mp_impl || !mp_impl->WinWidget() || !mp_impl->WinWidget()->isEnabled())
     return false;
 
   return mp_impl->WinWidget()->underMouse();
@@ -268,10 +282,18 @@ bool PropertyTree_MFC_Host::IsUnderMouse() const
 
 CPropertyID* PropertyTree_MFC_Host::GetSelectedProperty() const
 {
+  if (!mp_impl)
+    return nullptr;
   return mp_impl->GetSelectedProperty();
 }
 
 void PropertyTree_MFC_Host::SaveState() const
 {
-  mp_impl->SaveState();
+  if (mp_impl)
+    mp_impl->SaveState();
+}
+
+void PropertyTree_MFC_Host::Reset()
+{
+  mp_impl.reset();
 }

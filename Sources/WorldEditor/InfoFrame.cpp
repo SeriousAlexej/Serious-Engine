@@ -33,7 +33,7 @@ IMPLEMENT_DYNCREATE(CInfoFrame, CMiniFrameWnd)
 
 CInfoFrame::CInfoFrame()
 {
-	m_pInfoSheet = NULL;
+  m_pInfoSheet = NULL;
 }
 
 CInfoFrame::~CInfoFrame()
@@ -46,10 +46,10 @@ CInfoFrame::~CInfoFrame()
 
 
 BEGIN_MESSAGE_MAP(CInfoFrame, CMiniFrameWnd)
-	//{{AFX_MSG_MAP(CInfoFrame)
-	ON_WM_CREATE()
-	ON_WM_CLOSE()
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CInfoFrame)
+  ON_WM_CREATE()
+  ON_WM_CLOSE()
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -58,29 +58,29 @@ END_MESSAGE_MAP()
 
 int CInfoFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) 
 {
-	if (CMiniFrameWnd::OnCreate(lpCreateStruct) == -1)
-		return -1;
-	
-	CMainFrame* pMainFrame = STATIC_DOWNCAST(CMainFrame, AfxGetMainWnd());
+  if (CMiniFrameWnd::OnCreate(lpCreateStruct) == -1)
+    return -1;
+  
+  CMainFrame* pMainFrame = STATIC_DOWNCAST(CMainFrame, AfxGetMainWnd());
 
   // create sheet object to hold numerous pages
   m_pInfoSheet = new CInfoSheet(this);
   // if creation fails, delete allocated object
   if (!m_pInfoSheet->Create(this, WS_CHILD | WS_VISIBLE, 0))
-	{
-		delete m_pInfoSheet;
-		m_pInfoSheet = NULL;
-		return -1;
-	}
+  {
+    delete m_pInfoSheet;
+    m_pInfoSheet = NULL;
+    return -1;
+  }
 
-	// resize the mini frame so that it fits around the child property sheet
-	CRect rectClient, rectWindow;
+  // resize the mini frame so that it fits around the child property sheet
+  CRect rectClient, rectWindow;
   // property sheet's window rectangle
   m_pInfoSheet->GetWindowRect(rectClient);
   // becomes mini frame's client rectangle
-	rectWindow = rectClient;
-	// add the width and height needed from the mini frame's borders
-	CalcWindowRect(rectWindow);
+  rectWindow = rectClient;
+  // add the width and height needed from the mini frame's borders
+  CalcWindowRect(rectWindow);
   // get screen size
   int iScreenWidth = ::GetSystemMetrics(SM_CXSCREEN);
   int iScreenHeight = ::GetSystemMetrics(SM_CYSCREEN);
@@ -102,18 +102,18 @@ int CInfoFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
   //rectWindow.OffsetRect( 3, iScreenHeight - pixInfoHeight - pixStatusHeight - 3);
   rectWindow.OffsetRect( 0, pixMainFrameHeight - pixInfoHeight - pixStatusHeight - 9);
   
-	// move frame window to new position
+  // move frame window to new position
   SetWindowPos( NULL, rectWindow.left, rectWindow.top, rectWindow.Width(), rectWindow.Height(),
-		            SWP_NOZORDER | SWP_NOACTIVATE);
+                SWP_NOZORDER | SWP_NOACTIVATE);
   // set property sheet position and type
   m_pInfoSheet->SetWindowPos( NULL, 0, 0, rectClient.Width(), rectClient.Height(),
-		                          SWP_NOZORDER | SWP_NOACTIVATE);
+                              SWP_NOZORDER | SWP_NOACTIVATE);
   return 0;
 }
 
 void CInfoFrame::OnClose() 
 {
-	// Instead of closing the modeless property sheet, just hide it.
-	CMainFrame* pMainFrame = STATIC_DOWNCAST(CMainFrame, AfxGetMainWnd());
-	pMainFrame->m_pInfoFrame->ShowWindow(SW_HIDE);
+  // Instead of closing the modeless property sheet, just hide it.
+  CMainFrame* pMainFrame = STATIC_DOWNCAST(CMainFrame, AfxGetMainWnd());
+  pMainFrame->m_pInfoFrame->ShowWindow(SW_HIDE);
 }

@@ -38,10 +38,10 @@ CPaletteButton::~CPaletteButton()
 
 
 BEGIN_MESSAGE_MAP(CPaletteButton, CButton)
-	//{{AFX_MSG_MAP(CPaletteButton)
-	ON_WM_LBUTTONDOWN()
-	ON_WM_RBUTTONDOWN()
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CPaletteButton)
+  ON_WM_LBUTTONDOWN()
+  ON_WM_RBUTTONDOWN()
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -75,7 +75,7 @@ void CPaletteButton::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 
 void CPaletteButton::OnLButtonDown(UINT nFlags, CPoint point) 
 {
-	INDEX iClickedColor = GetDlgCtrlID()-IDC_COLOR_PALETTE_BUTTON_BASE;
+  INDEX iClickedColor = GetDlgCtrlID()-IDC_COLOR_PALETTE_BUTTON_BASE;
   CModelerView *pModelerView = CModelerView::GetActiveView();
   if( pModelerView != NULL)
   {
@@ -98,8 +98,8 @@ void CPaletteButton::OnLButtonDown(UINT nFlags, CPoint point)
 
 void CPaletteButton::OnRButtonDown(UINT nFlags, CPoint point) 
 {
-	INDEX iClickedColor = GetDlgCtrlID()-IDC_COLOR_PALETTE_BUTTON_BASE;
-	
+  INDEX iClickedColor = GetDlgCtrlID()-IDC_COLOR_PALETTE_BUTTON_BASE;
+  
   CModelerView *pModelerView = CModelerView::GetActiveView();
   if( (pModelerView != NULL) && (iClickedColor < 30))
   {
@@ -110,5 +110,5 @@ void CPaletteButton::OnRButtonDown(UINT nFlags, CPoint point)
     pModelerView->Invalidate( FALSE);
   }
   
-	CButton::OnRButtonDown(nFlags, point);
+  CButton::OnRButtonDown(nFlags, point);
 }

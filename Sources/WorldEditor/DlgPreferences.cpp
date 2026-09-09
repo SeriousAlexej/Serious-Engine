@@ -32,27 +32,27 @@ static char THIS_FILE[] = __FILE__;
 
 
 CDlgPreferences::CDlgPreferences( CWnd* pParent /*=NULL*/)
-	: CDialog(CDlgPreferences::IDD, pParent)
+  : CDialog(CDlgPreferences::IDD, pParent)
 {
-	//{{AFX_DATA_INIT(CDlgPreferences)
-	m_PrefsCopy = FALSE;
-	m_AutoMaximize = FALSE;
-	m_SetDefaultColors = FALSE;
-	m_AutomaticInfo = FALSE;
-	m_UpdateAllways = FALSE;
-	m_BinaryGrid = FALSE;
-	m_bSaveUndoForDelete = FALSE;
-	m_iWndStartupCfg = 0;
-	m_bAutoColorize = FALSE;
-	m_strSSProject = _T("");
-	m_bShowAllOnOpen = FALSE;
-	m_strCSGPrecission = _T("");
-	m_bAutoUpdateDisplaceMap = FALSE;
-	m_fFlyModeSpeed = 0.0f;
-	m_bHideShadowsOnStart = FALSE;
-	m_bAutoUpdateTerrainDistribution = FALSE;
-	m_iMemoryForTerrainUndo = 0;
-	//}}AFX_DATA_INIT
+  //{{AFX_DATA_INIT(CDlgPreferences)
+  m_PrefsCopy = FALSE;
+  m_AutoMaximize = FALSE;
+  m_SetDefaultColors = FALSE;
+  m_AutomaticInfo = FALSE;
+  m_UpdateAllways = FALSE;
+  m_BinaryGrid = FALSE;
+  m_bSaveUndoForDelete = FALSE;
+  m_iWndStartupCfg = 0;
+  m_bAutoColorize = FALSE;
+  m_strSSProject = _T("");
+  m_bShowAllOnOpen = FALSE;
+  m_strCSGPrecission = _T("");
+  m_bAutoUpdateDisplaceMap = FALSE;
+  m_fFlyModeSpeed = 0.0f;
+  m_bHideShadowsOnStart = FALSE;
+  m_bAutoUpdateTerrainDistribution = FALSE;
+  m_iMemoryForTerrainUndo = 0;
+  //}}AFX_DATA_INIT
 }
 
 
@@ -103,7 +103,7 @@ void CDlgPreferences::DoDataExchange(CDataExchange* pDX)
       for(INDEX iExp=-5; iExp<=5; iExp+=1)
       {
         FLOAT fPow=pow(2.0f ,iExp*2);
-        FLOAT fEpsilon=_pShell->GetFLOAT("mth_fCSGEpsilon");
+        FLOAT fEpsilon=_pShell_GetFLOAT("mth_fCSGEpsilon");
         if( fEpsilon==fPow)
         {
           iCSGPrecission=iExp;
@@ -112,13 +112,13 @@ void CDlgPreferences::DoDataExchange(CDataExchange* pDX)
       }
       m_ctrlCSGPrecission.SetPos( iCSGPrecission+5);
       CTString strCSGPrecission;
-      if( _pShell->GetFLOAT("mth_fCSGEpsilon")==1.0f)
+      if( _pShell_GetFLOAT("mth_fCSGEpsilon")==1.0f)
       {
         strCSGPrecission.PrintF("CSG Precission: 1 (default)");
       }
       else
       {
-        strCSGPrecission.PrintF("CSG Precission: %g", _pShell->GetFLOAT("mth_fCSGEpsilon"));
+        strCSGPrecission.PrintF("CSG Precission: %g", _pShell_GetFLOAT("mth_fCSGEpsilon"));
       }
       m_strCSGPrecission=strCSGPrecission;
     }
@@ -128,34 +128,34 @@ void CDlgPreferences::DoDataExchange(CDataExchange* pDX)
     }
     m_iWndStartupCfg = theApp.m_Preferences.ap_iStartupWindowSetup;
   }
-	//{{AFX_DATA_MAP(CDlgPreferences)
-	DDX_Control(pDX, IDC_TERRAIN_SELECTION_HIDDEN, m_ctrlTerrainSelectionHidden);
-	DDX_Control(pDX, IDC_TERRAIN_SELECTON_VISIBLE, m_ctrlTerrainSelectionVisible);
-	DDX_Control(pDX, IDC_API, m_ctrGfxApi);
-	DDX_Control(pDX, IDC_CSG_PRECISSION, m_ctrlCSGPrecission);
-	DDX_Control(pDX, IDC_UNDO_LEVELS, m_UndoLevels);
-	DDX_Control(pDX, IDOK, m_OkButton);
-	DDX_Check(pDX, IDC_PREFS_COPY, m_PrefsCopy);
-	DDX_Check(pDX, IDC_PREFS_MAXIMIZE, m_AutoMaximize);
-	DDX_Check(pDX, IDC_PREFS_SET_DEFAULT_COLORS, m_SetDefaultColors);
-	DDX_Check(pDX, IDC_PREFS_AUTOMATIC_INFO, m_AutomaticInfo);
-	DDX_Check(pDX, IDC_PREFS_UPDATE_ALLWAYS, m_UpdateAllways);
-	DDX_Check(pDX, IDC_PREFS_BINARY_GRID_BY_DEFAULT, m_BinaryGrid);
-	DDX_Check(pDX, IDC_PREFS_SAVE_UNDO_FOR_DELETE, m_bSaveUndoForDelete);
-	DDX_Text(pDX, IDC_WND_STARTUP_CFG, m_iWndStartupCfg);
-	DDV_MinMaxInt(pDX, m_iWndStartupCfg, 0, 9);
-	DDX_Check(pDX, IDC_PREFS_AUTO_COLORIZE, m_bAutoColorize);
-	DDX_Text(pDX, IDC_EDIT_SS_PROJECT, m_strSSProject);
-	DDX_Check(pDX, IDC_PREFS_SHOW_ALL_ON_OPEN, m_bShowAllOnOpen);
-	DDX_Text(pDX, IDC_CSG_PRECISSION_T, m_strCSGPrecission);
-	DDX_Check(pDX, IDC_PREFS_AUTO_UPDATE_DISPLACEMAP, m_bAutoUpdateDisplaceMap);
-	DDX_Text(pDX, IDC_FLY_MODE_SPEED, m_fFlyModeSpeed);
-	DDV_MinMaxFloat(pDX, m_fFlyModeSpeed, 0.f, 1000.f);
-	DDX_Check(pDX, IDC_PREFS_HIDE_SHADOWS_ON_START, m_bHideShadowsOnStart);
-	DDX_Check(pDX, IDC_PREFS_AUTO_GENERATE_TD, m_bAutoUpdateTerrainDistribution);
-	DDX_Text(pDX, IDC_MEMORY_FOR_UNDO, m_iMemoryForTerrainUndo);
-	DDV_MinMaxInt(pDX, m_iMemoryForTerrainUndo, -1, 512);
-	//}}AFX_DATA_MAP
+  //{{AFX_DATA_MAP(CDlgPreferences)
+  DDX_Control(pDX, IDC_TERRAIN_SELECTION_HIDDEN, m_ctrlTerrainSelectionHidden);
+  DDX_Control(pDX, IDC_TERRAIN_SELECTON_VISIBLE, m_ctrlTerrainSelectionVisible);
+  DDX_Control(pDX, IDC_API, m_ctrGfxApi);
+  DDX_Control(pDX, IDC_CSG_PRECISSION, m_ctrlCSGPrecission);
+  DDX_Control(pDX, IDC_UNDO_LEVELS, m_UndoLevels);
+  DDX_Control(pDX, IDOK, m_OkButton);
+  DDX_Check(pDX, IDC_PREFS_COPY, m_PrefsCopy);
+  DDX_Check(pDX, IDC_PREFS_MAXIMIZE, m_AutoMaximize);
+  DDX_Check(pDX, IDC_PREFS_SET_DEFAULT_COLORS, m_SetDefaultColors);
+  DDX_Check(pDX, IDC_PREFS_AUTOMATIC_INFO, m_AutomaticInfo);
+  DDX_Check(pDX, IDC_PREFS_UPDATE_ALLWAYS, m_UpdateAllways);
+  DDX_Check(pDX, IDC_PREFS_BINARY_GRID_BY_DEFAULT, m_BinaryGrid);
+  DDX_Check(pDX, IDC_PREFS_SAVE_UNDO_FOR_DELETE, m_bSaveUndoForDelete);
+  DDX_Text(pDX, IDC_WND_STARTUP_CFG, m_iWndStartupCfg);
+  DDV_MinMaxInt(pDX, m_iWndStartupCfg, 0, 9);
+  DDX_Check(pDX, IDC_PREFS_AUTO_COLORIZE, m_bAutoColorize);
+  DDX_Text(pDX, IDC_EDIT_SS_PROJECT, m_strSSProject);
+  DDX_Check(pDX, IDC_PREFS_SHOW_ALL_ON_OPEN, m_bShowAllOnOpen);
+  DDX_Text(pDX, IDC_CSG_PRECISSION_T, m_strCSGPrecission);
+  DDX_Check(pDX, IDC_PREFS_AUTO_UPDATE_DISPLACEMAP, m_bAutoUpdateDisplaceMap);
+  DDX_Text(pDX, IDC_FLY_MODE_SPEED, m_fFlyModeSpeed);
+  DDV_MinMaxFloat(pDX, m_fFlyModeSpeed, 0.f, 1000.f);
+  DDX_Check(pDX, IDC_PREFS_HIDE_SHADOWS_ON_START, m_bHideShadowsOnStart);
+  DDX_Check(pDX, IDC_PREFS_AUTO_GENERATE_TD, m_bAutoUpdateTerrainDistribution);
+  DDX_Text(pDX, IDC_MEMORY_FOR_UNDO, m_iMemoryForTerrainUndo);
+  DDV_MinMaxInt(pDX, m_iMemoryForTerrainUndo, -1, 512);
+  //}}AFX_DATA_MAP
 
   // if dialog is giving data
   if( pDX->m_bSaveAndValidate != FALSE)
@@ -177,7 +177,7 @@ void CDlgPreferences::DoDataExchange(CDataExchange* pDX)
     theApp.m_Preferences.ap_bHideShadowsOnOpen = m_bHideShadowsOnStart;
     theApp.m_Preferences.ap_bAutoUpdateDisplaceMap = m_bAutoUpdateDisplaceMap;
     theApp.m_Preferences.ap_iUndoLevels = m_UndoLevels.GetPos();
-    _pShell->SetFLOAT("mth_fCSGEpsilon", pow(2.0f, (m_ctrlCSGPrecission.GetPos()-5)*2)); 
+    _pShell_SetFLOAT("mth_fCSGEpsilon", pow(2.0f, (m_ctrlCSGPrecission.GetPos()-5)*2)); 
     theApp.m_Preferences.ap_iStartupWindowSetup = m_iWndStartupCfg;
     theApp.m_Preferences.ap_strSourceSafeProject = CStringA(m_strSSProject);
     theApp.m_Preferences.ap_fDefaultFlyModeSpeed=m_fFlyModeSpeed;
@@ -190,7 +190,7 @@ void CDlgPreferences::DoDataExchange(CDataExchange* pDX)
       theApp.m_iApi=m_ctrGfxApi.GetItemData(iCurSel);
       if( iOldGfxApi!=theApp.m_iApi)
       {
-        _pGfx->ResetDisplayMode((enum GfxAPIType) theApp.m_iApi);
+        _pGfx_ResetDisplayMode((enum GfxAPIType) theApp.m_iApi);
       }
     }
   }
@@ -198,12 +198,12 @@ void CDlgPreferences::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CDlgPreferences, CDialog)
-	//{{AFX_MSG_MAP(CDlgPreferences)
-	ON_BN_CLICKED(ID_SAVE_PREFERENCES, OnSavePreferences)
-	ON_BN_CLICKED(ID_LOAD_PREFERENCES, OnLoadPreferences)
-	ON_BN_CLICKED(IDC_CHANGE_FULL_SCREEN_DISPLAY_MODE, OnChangeFullScreenDisplayMode)
-	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_CSG_PRECISSION, OnReleasedcaptureCsgPrecission)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CDlgPreferences)
+  ON_BN_CLICKED(ID_SAVE_PREFERENCES, OnSavePreferences)
+  ON_BN_CLICKED(ID_LOAD_PREFERENCES, OnLoadPreferences)
+  ON_BN_CLICKED(IDC_CHANGE_FULL_SCREEN_DISPLAY_MODE, OnChangeFullScreenDisplayMode)
+  ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_CSG_PRECISSION, OnReleasedcaptureCsgPrecission)
+  //}}AFX_MSG_MAP
   ON_COMMAND_RANGE(IDC_RENDERING_PREFS01, IDC_RENDERING_PREFS10, OnChangePreferences)
 END_MESSAGE_MAP()
 
@@ -219,18 +219,16 @@ BOOL CDlgPreferences::OnInitDialog()
 
   m_ctrGfxApi.ResetContent();
   
-  if( _pGfx->HasAPI( GAT_OGL))
+  if( _pGfx_HasAPI( GAT_OGL))
   {
     INDEX iAddedAs=m_ctrGfxApi.AddString(L"OpenGL");
     m_ctrGfxApi.SetItemData(iAddedAs, GAT_OGL);
   }
-#ifdef SE1_D3D
-  if( _pGfx->HasAPI( GAT_D3D))
+  if( _pGfx_HasAPI( GAT_D3D))
   {
     INDEX iAddedAs=m_ctrGfxApi.AddString(L"Direct3D");
     m_ctrGfxApi.SetItemData(iAddedAs, GAT_D3D);
   }
-#endif // SE1_D3D
 
   m_ctrlTerrainSelectionVisible.ResetContent();
   m_ctrlTerrainSelectionVisible.AddString(L"Texture");
@@ -244,7 +242,7 @@ BOOL CDlgPreferences::OnInitDialog()
   m_ctrlTerrainSelectionHidden.AddString(L"Vertices");
   m_ctrlTerrainSelectionHidden.AddString(L"None");
 
-	UpdateData( FALSE);
+  UpdateData( FALSE);
   return TRUE;
 }
 
@@ -277,7 +275,7 @@ void CDlgPreferences::OnChangeFullScreenDisplayMode()
 
 void CDlgPreferences::OnReleasedcaptureCsgPrecission(NMHDR* pNMHDR, LRESULT* pResult) 
 {
-	*pResult = 0;
+  *pResult = 0;
   /*
   CTString strCSGPrecission;
   strCSGPrecission.PrintF("CSG Precission: %g", _pShell->GetFLOAT("mth_fCSGEpsilon"));

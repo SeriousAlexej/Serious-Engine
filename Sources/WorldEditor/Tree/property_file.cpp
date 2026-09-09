@@ -28,6 +28,11 @@ QComboBox {
   border: 0px;
 }
 )";
+
+#define ID_CURRENT 1
+#define ID_BROWSE 2
+#define ID_LOCATE 3
+#define ID_NONE 4
 }
 
 class Property_Filename : public BaseEntityPropertyTreeItem
@@ -47,16 +52,17 @@ public:
     CTFileName curr_value = (m_dependencies ? _CurrentPropValueT<CTFileName>() : _CurrentPropValueT<CTFileNameNoDep>());
     if (curr_value != "")
     {
-      editor->addItem(QString(curr_value.FileName().str_String) + QString(curr_value.FileExt().str_String), 1);
-      editor->setToolTip(curr_value.str_String);
+      editor->addItem(QString(static_cast<const char*>(curr_value.FileName())) + QString(static_cast<const char*>(curr_value.FileExt())), ID_CURRENT);
+      editor->setToolTip(static_cast<const char*>(curr_value));
     }
-    editor->addItem("(browse)", 2);
-    editor->addItem("(none)", 3);
+    editor->addItem("(browse)", ID_BROWSE);
+    editor->addItem("(locate)", ID_LOCATE);
+    editor->addItem("(none)", ID_NONE);
 
     if (curr_value != "")
-      editor->setCurrentIndex(editor->findData(1));
+      editor->setCurrentIndex(editor->findData(ID_CURRENT));
     else
-      editor->setCurrentIndex(editor->findData(3));
+      editor->setCurrentIndex(editor->findData(ID_NONE));
 
     editor->setFocusPolicy(Qt::FocusPolicy::StrongFocus);
     editor->installEventFilter(this);
@@ -65,51 +71,64 @@ public:
     QObject::connect(editor, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this, editor]
       (int index)
       {
-        if (index != -1 && editor->itemData(index).toInt() == 3)
+        if (index <= -1)
+          return;
+        const auto selected_id = editor->itemData(index).toInt();
+
+        if (selected_id == ID_NONE)
         {
           if (m_dependencies)
             _WritePropertyT<CTFileName>(CTFileName(CTString("")));
           else
             _WritePropertyT<CTFileNameNoDep>(CTFileNameNoDep(""));
-        } else if (index != -1 && editor->itemData(index).toInt() == 2)
+        } else if (selected_id == ID_BROWSE || selected_id == ID_LOCATE)
         {
           CTFileName curr_value = (m_dependencies ? _CurrentPropValueT<CTFileName>() : _CurrentPropValueT<CTFileNameNoDep>());
+          const char* default_dir = KEY_NAME_REQUEST_FILE_DIR;
+          const BOOL locate = (selected_id == ID_LOCATE ? TRUE : FALSE);
+          if (locate)
+            default_dir = nullptr;
 
           CTFileName chosen_file;
           if( curr_value.FileExt() == ".mdl")
           {
             chosen_file = _EngineGUI.FileRequester( "Choose file",
             FILTER_MDL FILTER_ALL FILTER_END,
-            KEY_NAME_REQUEST_FILE_DIR, curr_value.FileDir(),
-            curr_value.FileName()+curr_value.FileExt());
+            default_dir, curr_value.FileDir(),
+            curr_value.FileName()+curr_value.FileExt(),
+            nullptr, TRUE, locate);
           }
           else if( curr_value.FileExt() == ".tex")
           {
             chosen_file = _EngineGUI.FileRequester( "Choose file",
             FILTER_TEX FILTER_ALL FILTER_END,
-            KEY_NAME_REQUEST_FILE_DIR, curr_value.FileDir(),
-            curr_value.FileName()+curr_value.FileExt());
+            default_dir, curr_value.FileDir(),
+            curr_value.FileName()+curr_value.FileExt(),
+            nullptr, TRUE, locate);
           }
           else if( curr_value.FileExt() == ".wav")
           {
             chosen_file = _EngineGUI.FileRequester( "Choose file",
             FILTER_WAV FILTER_ALL FILTER_END,
-            KEY_NAME_REQUEST_FILE_DIR, curr_value.FileDir(),
-            curr_value.FileName()+curr_value.FileExt());
+            default_dir, curr_value.FileDir(),
+            curr_value.FileName()+curr_value.FileExt(),
+            nullptr, TRUE, locate);
           }
           else if( curr_value.FileExt() == ".smc")
           {
             chosen_file = _EngineGUI.FileRequester( "Choose file",
             FILTER_SMC FILTER_ALL FILTER_END,
-            KEY_NAME_REQUEST_FILE_DIR, curr_value.FileDir(),
-            curr_value.FileName()+curr_value.FileExt());
+            default_dir, curr_value.FileDir(),
+            curr_value.FileName()+curr_value.FileExt(),
+            nullptr, TRUE, locate);
           }
           else
           {
             chosen_file = _EngineGUI.FileRequester( "Choose file",
-            FILTER_ALL FILTER_MDL FILTER_TEX FILTER_WAV FILTER_END,
-            KEY_NAME_REQUEST_FILE_DIR, curr_value.FileDir(),
-            curr_value.FileName()+curr_value.FileExt());
+            FILTER_ALL FILTER_MDL FILTER_TEX FILTER_WAV FILTER_SMC FILTER_END,
+            default_dir, curr_value.FileDir(),
+            curr_value.FileName()+curr_value.FileExt(),
+            nullptr, TRUE, locate);
           }
 
           if (chosen_file != "")
@@ -121,9 +140,9 @@ public:
           } else {
             QSignalBlocker block(editor);
             if (curr_value != "")
-              editor->setCurrentIndex(editor->findData(1));
+              editor->setCurrentIndex(editor->findData(ID_CURRENT));
             else
-              editor->setCurrentIndex(editor->findData(3));
+              editor->setCurrentIndex(editor->findData(ID_NONE));
           }
         }
       });

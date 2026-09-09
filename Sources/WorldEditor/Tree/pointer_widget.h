@@ -23,7 +23,7 @@ class PointerWidget : public QWidget
 {
   Q_OBJECT
 public:
-  PointerWidget(CEntity* entity, QWidget* parent);
+  PointerWidget(CEntityPtr entity, QWidget* parent);
 
   Q_SIGNAL void clear();
   Q_SIGNAL void selectFromList();
