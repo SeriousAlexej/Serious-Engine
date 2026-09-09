@@ -7,7 +7,7 @@
 	branch = master
 [submodule "Sources/CrashRpt"]
 	path = Sources/CrashRpt
-	url = https://git.code.sf.net/p/crashrpt/code
+	url = https://github.com/SeriousAlexej/CrashRpt.git
 	branch = master
 [submodule "Sources/Qt6"]
 	path = Sources/Qt6
