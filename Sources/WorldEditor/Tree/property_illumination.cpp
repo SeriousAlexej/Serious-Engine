@@ -47,10 +47,10 @@ public:
     CWorldEditorDoc* pDoc = theApp.GetDocument();
     for (int i = 0; i < 255; ++i)
     {
-      CTString illum_name = pDoc->m_woWorld.wo_aitIlluminationTypes[i].it_strName;
+      CTString illum_name = pDoc->m_woWorld.wo_aitIlluminationTypes[i]->it_strName;
       if (illum_name == "")
         break;
-      editor->addItem(illum_name.str_String, i);
+      editor->addItem(static_cast<const char*>(illum_name), i);
     }
     editor->setCurrentIndex(editor->findData(_CurrentPropValue()));
 

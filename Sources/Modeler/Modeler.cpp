@@ -21,14 +21,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "Script/ModelConfigurationEditor.h"
 #include "Script/ScriptIO.h"
 
-#include <Engine/Templates/Stock_CModelData.h>
-#include <Engine/Templates/Stock_CTextureData.h>
+#include <SeriousEngineCppAPI/Templates/Stock_CModelData.h>
+#include <SeriousEngineCppAPI/Templates/Stock_CTextureData.h>
+#include <CrashRpt.h>
 
-#include <QtWin>
 #include <QIcon>
 #include <QMessageBox>
 #include <QTimer>
 #include <QWinWidget>
+#include <QStyleFactory>
 
 #ifdef _DEBUG
 #undef new
@@ -70,7 +71,7 @@ BOOL GetFlagFromProfile( CTString strVarName, BOOL bDefault)
   CTString strDefault;
   if( bDefault) strDefault = "YES";
   else          strDefault = "NO";
-  CTString strTemp = CStringA(theApp.GetProfileString( L"Modeler prefs", CString(strVarName), CString(strDefault)));
+  CTString strTemp = static_cast<const char*>(CStringA(theApp.GetProfileString( L"Modeler prefs", CString(strVarName), CString(strDefault))));
   if( strTemp == "YES") return TRUE;
   return FALSE;
 };
@@ -85,7 +86,7 @@ INDEX GetIndexFromProfile( CTString strVarName, INDEX iDefault)
 {
   CTString strDefault;
   strDefault.PrintF("%d", iDefault);
-  CTString strTemp = CStringA(theApp.GetProfileString( L"Modeler prefs", CString(strVarName), CString(strDefault)));
+  CTString strTemp = static_cast<const char*>(CStringA(theApp.GetProfileString( L"Modeler prefs", CString(strVarName), CString(strDefault))));
   INDEX iValue;
   sscanf( strTemp, "%d", &iValue);
   return iValue;
@@ -102,7 +103,7 @@ COLOR GetColorFromProfile( CTString strVarName, COLOR colDefault)
 {
   CTString strDefault;
   strDefault.PrintF("0x%08x", colDefault);
-  CTString strTemp = CStringA(theApp.GetProfileString( L"Modeler prefs", CString(strVarName), CString(strDefault)));
+  CTString strTemp = static_cast<const char*>(CStringA(theApp.GetProfileString( L"Modeler prefs", CString(strVarName), CString(strDefault))));
   COLOR colValue;
   sscanf( strTemp, "0x%08x", &colValue);
   return colValue;
@@ -119,22 +120,22 @@ void SetColorToProfile( CTString strVarName, COLOR colValue)
 // CModelerApp
 
 BEGIN_MESSAGE_MAP(CModelerApp, CWinApp)
-	//{{AFX_MSG_MAP(CModelerApp)
+  //{{AFX_MSG_MAP(CModelerApp)
   ON_COMMAND(ID_APP_ABOUT_QT, OnQtAbout)
-	ON_COMMAND(ID_APP_ABOUT, OnAppAbout)
-	ON_COMMAND(ID_FILE_NEW, OnFileNew)
-	ON_COMMAND(ID_FILE_OPEN, OnFileOpen)
-	ON_COMMAND(ID_FILE_PREFERENCES, OnFilePreferences)
-	//}}AFX_MSG_MAP
-	// Standard file based document commands
-	ON_COMMAND(ID_FILE_OPEN, CWinApp::OnFileOpen)
-	// Standard print setup command
-	ON_COMMAND(ID_FILE_PRINT_SETUP, CWinApp::OnFilePrintSetup)
+  ON_COMMAND(ID_APP_ABOUT, OnAppAbout)
+  ON_COMMAND(ID_FILE_NEW, OnFileNew)
+  ON_COMMAND(ID_FILE_OPEN, OnFileOpen)
+  ON_COMMAND(ID_FILE_PREFERENCES, OnFilePreferences)
+  //}}AFX_MSG_MAP
+  // Standard file based document commands
+  ON_COMMAND(ID_FILE_OPEN, CWinApp::OnFileOpen)
+  // Standard print setup command
+  ON_COMMAND(ID_FILE_PRINT_SETUP, CWinApp::OnFilePrintSetup)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
 
-UINT APIENTRY ModelerFileRequesterHook( HWND hdlg, UINT uiMsg, WPARAM wParam,	LPARAM lParam)
+UINT APIENTRY ModelerFileRequesterHook( HWND hdlg, UINT uiMsg, WPARAM wParam,  LPARAM lParam)
 {
   if( uiMsg == WM_INITDIALOG)
   {
@@ -162,18 +163,10 @@ CModelerApp::CModelerApp()
 {
   m_bRefreshPatchPalette = FALSE;
   m_OnIdlePaused = FALSE;
-  m_pLampModelData = NULL;
-  m_pFloorModelData = NULL;
-  m_pCollisionBoxModelData = NULL;
-  m_ptdCollisionBoxTexture = NULL;
-  m_ptdLamp = NULL;
-  m_ptdFloorTexture = NULL;
-  m_pfntFont = NULL;
 }
 
 CBcgTexture::CBcgTexture()
 {
-  wt_TextureData = NULL;
 }
 
 CBcgTexture::~CBcgTexture()
@@ -182,58 +175,58 @@ CBcgTexture::~CBcgTexture()
 
 CModelerApp::~CModelerApp()
 {
-  if( m_pLampModelData != NULL)
+  if( m_pLampModelData)
   {
-    _pModelStock->Release( m_pLampModelData);
+    _pModelStock_Release( *m_pLampModelData);
     delete m_LampModelObject;
   }
   
-  if( m_pCollisionBoxModelData != NULL)
+  if( m_pCollisionBoxModelData)
   {
-    _pModelStock->Release( m_pCollisionBoxModelData);
+    _pModelStock_Release( *m_pCollisionBoxModelData);
     delete m_pCollisionBoxModelObject;
     m_pCollisionBoxModelObject = NULL;
   }
 
-  if( m_pFloorModelData != NULL)
+  if( m_pFloorModelData)
   {
-    _pModelStock->Release( m_pFloorModelData);
+    _pModelStock_Release( *m_pFloorModelData);
     delete m_pFloorModelObject;
     m_pFloorModelObject = NULL;
   }
   
-  if( m_ptdCollisionBoxTexture != NULL)
+  if( m_ptdCollisionBoxTexture)
   {
-    _pTextureStock->Release( m_ptdCollisionBoxTexture);
-    m_ptdCollisionBoxTexture = NULL;
+    _pTextureStock_Release( *m_ptdCollisionBoxTexture);
+    m_ptdCollisionBoxTexture.Reset();
   }
 
-  if( m_ptdLamp != NULL)
+  if( m_ptdLamp )
   {
-    _pTextureStock->Release( m_ptdLamp);
-    m_ptdLamp = NULL;
+    _pTextureStock_Release( *m_ptdLamp);
+    m_ptdLamp.Reset();
   }
   
-  if( m_ptdFloorTexture != NULL)
+  if( m_ptdFloorTexture )
   {
-    _pTextureStock->Release( m_ptdFloorTexture);
-    m_ptdFloorTexture = NULL;
+    _pTextureStock_Release( *m_ptdFloorTexture);
+    m_ptdFloorTexture.Reset();
   }
   
 
-  FORDELETELIST( CBcgTexture, wt_ListNode, m_WorkingTextures, litTex)
+  for (auto& litTex : m_WorkingTextures)
   {
-    ASSERT( litTex->wt_TextureData != NULL);
-    _pTextureStock->Release( litTex->wt_TextureData);
-    delete &litTex.Current();
+    ASSERT( litTex->wt_TextureData);
+    _pTextureStock_Release( *litTex->wt_TextureData);
   }
+  m_WorkingTextures.clear();
 
-  FORDELETELIST( CWorkingPatch, wp_ListNode, m_WorkingPatches, litPatch)
+  for (auto& litPatch : m_WorkingPatches)
   {
-    CTextureData *pTD = litPatch->wp_TextureData;
-    _pTextureStock->Release( litPatch->wp_TextureData);
-    delete &litPatch.Current();
+    CTextureDataPtr pTD = litPatch->wp_TextureData;
+    _pTextureStock_Release( *litPatch->wp_TextureData);
   }
+  m_WorkingPatches.clear();
 
   SE_EndEngine();
 }
@@ -244,95 +237,90 @@ CModelerApp::~CModelerApp()
 
 CModelerApp theApp;
 
-CModelerApp::ModalGuard::ModalGuard()
-{
-  theApp.m_showing_modal_dialog = true;
-}
-
-CModelerApp::ModalGuard::~ModalGuard()
-{
-  theApp.m_showing_modal_dialog = false;
-}
-
 /////////////////////////////////////////////////////////////////////////////
 // CModelerApp initialization
 
 BOOL CModelerApp::InitInstance()
 {
   BOOL bResult;
-  CTSTREAM_BEGIN {
-    bResult = SubInitInstance();
-  } CTSTREAM_END;
+  CTStream::ExecuteWithStreamHandling([this, &bResult]
+    {
+      bResult = SubInitInstance();
+    });
   return bResult;
 }
 
 BOOL CModelerApp::SubInitInstance()
 {
+  qputenv("QT_ENABLE_HIGHDPI_SCALING", "0");
   HICON app_icon = (HICON)LoadImage(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDR_MAINFRAME), IMAGE_ICON, 0, 0, LR_DEFAULTCOLOR);
-  QMfcApp::instance(this)->setWindowIcon(QIcon(QtWin::fromHICON(app_icon)));
+  QMfcApp::instance(this)->setWindowIcon(QPixmap::fromImage(QImage::fromHICON(app_icon)));
   ::DestroyIcon(app_icon);
+
+  if (auto* style = QStyleFactory::create("windowsvista"))
+    qApp->setStyle(style);
 
   m_showing_modal_dialog = false;
 
   wchar_t strIni[ 128];
-	// Standard initialization
-	// If you are not using these features and wish to reduce the size
-	//  of your final executable, you should remove from the following
-	//  the specific initialization routines you do not need.
+  // Standard initialization
+  // If you are not using these features and wish to reduce the size
+  //  of your final executable, you should remove from the following
+  //  the specific initialization routines you do not need.
 
   CoInitialize(nullptr);
 #ifdef _AFXDLL
-	Enable3dControls();			// Call this when using MFC in a shared DLL
+  Enable3dControls();      // Call this when using MFC in a shared DLL
 #else
-	Enable3dControlsStatic();	// Call this when linking to MFC statically
+  Enable3dControlsStatic();  // Call this when linking to MFC statically
 #endif
 
   // settings will be saved into registry instead of ini file
   SetRegistryKey( L"SeriousEngine");
 
-	LoadStdProfileSettings(8);  // Load standard INI file options (including MRU)
+  LoadStdProfileSettings(8);  // Load standard INI file options (including MRU)
 
-	// Register the application's document templates.  Document templates
-	//  serve as the connection between documents, frame windows and views.
+  // Register the application's document templates.  Document templates
+  //  serve as the connection between documents, frame windows and views.
 
-	CMultiDocTemplate* pDocTemplate;
-	m_pdtModelDocTemplate = pDocTemplate = new CMultiDocTemplate(
-		IDR_MDLDOCTYPE,
-		RUNTIME_CLASS(CModelerDoc),
-		RUNTIME_CLASS(CChildFrame), // custom MDI child frame
-		RUNTIME_CLASS(CModelerView));
-	AddDocTemplate(pDocTemplate);
+  CMultiDocTemplate* pDocTemplate;
+  m_pdtModelDocTemplate = pDocTemplate = new CMultiDocTemplate(
+    IDR_MDLDOCTYPE,
+    RUNTIME_CLASS(CModelerDoc),
+    RUNTIME_CLASS(CChildFrame), // custom MDI child frame
+    RUNTIME_CLASS(CModelerView));
+  AddDocTemplate(pDocTemplate);
 
   // initialize engine, without network
   SE_InitEngine("");  // DO NOT SPECIFY NAME HERE!
   SE_LoadDefaultFonts();
 
-	// create main MDI Frame window
-	CMainFrame* pMainFrame = new CMainFrame;
-	if( !pMainFrame->LoadFrame(IDR_MAINFRAME)) return FALSE;
+  // create main MDI Frame window
+  CMainFrame* pMainFrame = new CMainFrame;
+  if( !pMainFrame->LoadFrame(IDR_MAINFRAME)) return FALSE;
   m_pMainWnd = pMainFrame;
   
   // set main window for engine
   SE_UpdateWindowHandle( m_pMainWnd->m_hWnd);
 
-	// Enable drag/drop open
-	m_pMainWnd->DragAcceptFiles();
+  // Enable drag/drop open
+  m_pMainWnd->DragAcceptFiles();
 
-	// Enable DDE Execute open
-	EnableShellOpen();
-	RegisterShellFileTypes(TRUE);
+  // Enable DDE Execute open
+  EnableShellOpen();
+  RegisterShellFileTypes(TRUE);
 
-	// Parse command line for standard shell commands, DDE, file open
-	CCommandLineInfo cmdInfo;
-	ParseCommandLine(cmdInfo);
+  // Parse command line for standard shell commands, DDE, file open
+  CCommandLineInfo cmdInfo;
+  ParseCommandLine(cmdInfo);
 
   // load startup script
-  _pShell->Execute( "include \"Scripts\\Modeler_startup.ini\"");
+  _pShell_Execute( "include \"Scripts\\Modeler_startup.ini\"");
   
   m_iApi=GAT_OGL;
   m_iApi=GetProfileInt(L"Display modes", L"SED Gfx API", GAT_OGL);
   // (re)set default display mode
-  _pGfx->ResetDisplayMode((enum GfxAPIType) m_iApi);
+  _pGfx_ResetDisplayMode((enum GfxAPIType) m_iApi);
 
   m_Preferences.ReadFromIniFile();
 
@@ -344,7 +332,8 @@ BOOL CModelerApp::SubInitInstance()
     for( INDEX i=0; i<iWorkingTexturesCt; i++) {
       sprintf( strWTName, "Working texture %02d", i);
       INI_READ( strWTName, "Error in INI .file!");
-      AddModelerWorkingTexture( CTString(CStringA(strIni)));
+      CTString texture = static_cast<const char*>(CStringA(strIni));
+      AddModelerWorkingTexture( texture);
     }
   }
   // load working patches
@@ -354,7 +343,8 @@ BOOL CModelerApp::SubInitInstance()
   for( INDEX i=0; i<iWorkingPatchesCt; i++) {
     sprintf( strWPName, "Working patch %02d", i);
     INI_READ( strWPName, "Error in INI .file!");
-    AddModelerWorkingPatch( CTString(CStringA(strIni)));
+    CTString patch = static_cast<const char*>(CStringA(strIni));
+    AddModelerWorkingPatch( patch);
   }
   pMainFrame->m_StainsComboBox.Refresh();
 
@@ -368,36 +358,36 @@ BOOL CModelerApp::SubInitInstance()
   try
   { // load lamp model
     DECLARE_CTFILENAME( fnLampName, "Models\\Editor\\Lamp.mdl");
-    m_pLampModelData = _pModelStock->Obtain_t( fnLampName);
+    m_pLampModelData = _pModelStock_Obtain_t( fnLampName);
     m_LampModelObject = new CModelObject;
-    m_LampModelObject->SetData(m_pLampModelData);
+    m_LampModelObject->SetData(*m_pLampModelData);
     m_LampModelObject->SetAnim( 0);
     // load lamp's texture
     DECLARE_CTFILENAME( fnLampTex, "Models\\Editor\\SpotLight.tex");
-    m_ptdLamp = _pTextureStock->Obtain_t( fnLampTex);
-    m_LampModelObject->mo_toTexture.SetData( m_ptdLamp); 
+    m_ptdLamp = _pTextureStock_Obtain_t( fnLampTex);
+    m_LampModelObject->mo_toTexture.SetData( *m_ptdLamp);
 
     // load collision box model
     DECLARE_CTFILENAME( fnCollisionBox, "Models\\Editor\\CollisionBox.mdl");
-    m_pCollisionBoxModelData = _pModelStock->Obtain_t( fnCollisionBox);
+    m_pCollisionBoxModelData = _pModelStock_Obtain_t( fnCollisionBox);
     m_pCollisionBoxModelObject = new CModelObject;
-    m_pCollisionBoxModelObject->SetData(m_pCollisionBoxModelData);
+    m_pCollisionBoxModelObject->SetData(*m_pCollisionBoxModelData);
     m_pCollisionBoxModelObject->SetAnim( 0);
     // load collision box's texture
     DECLARE_CTFILENAME( fnCollisionBoxTex, "Models\\Editor\\CollisionBox.tex");
-    m_ptdCollisionBoxTexture = _pTextureStock->Obtain_t( fnCollisionBoxTex);
-    m_pCollisionBoxModelObject->mo_toTexture.SetData( m_ptdCollisionBoxTexture); 
+    m_ptdCollisionBoxTexture = _pTextureStock_Obtain_t( fnCollisionBoxTex);
+    m_pCollisionBoxModelObject->mo_toTexture.SetData( *m_ptdCollisionBoxTexture); 
 
     // load floor model
     DECLARE_CTFILENAME( fnFloor, "Models\\Editor\\Floor.mdl");
-    m_pFloorModelData = _pModelStock->Obtain_t( fnFloor);
+    m_pFloorModelData = _pModelStock_Obtain_t( fnFloor);
     m_pFloorModelObject = new CModelObject;
-    m_pFloorModelObject->SetData(m_pFloorModelData);
+    m_pFloorModelObject->SetData(*m_pFloorModelData);
     m_pFloorModelObject->SetAnim( 0);
     // load collision box's texture
     DECLARE_CTFILENAME( fnFloorTex, "Models\\Editor\\Floor.tex");
-    m_ptdFloorTexture = _pTextureStock->Obtain_t( fnFloorTex);
-    m_pFloorModelObject->mo_toTexture.SetData( m_ptdFloorTexture); 
+    m_ptdFloorTexture = _pTextureStock_Obtain_t( fnFloorTex);
+    m_pFloorModelObject->mo_toTexture.SetData( *m_ptdFloorTexture);
 
     DECLARE_CTFILENAME( fnShadowTex, "Textures\\Effects\\Shadow\\SimpleModelShadow.tex");
     // setup simple model shadow texture
@@ -414,17 +404,17 @@ BOOL CModelerApp::SubInitInstance()
       m_pCollisionBoxModelObject = NULL;
     }
     // if we loaded collision box's texture
-    if( m_ptdCollisionBoxTexture != NULL) {
+    if( m_ptdCollisionBoxTexture) {
       // release it and
-      _pTextureStock->Release( m_ptdCollisionBoxTexture);
-      m_ptdCollisionBoxTexture = NULL;
+      _pTextureStock_Release( *m_ptdCollisionBoxTexture);
+      m_ptdCollisionBoxTexture.Reset();
     }
 
     // if we loaded lamp's texture
-    if( m_ptdLamp != NULL) {
+    if( m_ptdLamp) {
       // release it and
-      _pTextureStock->Release( m_ptdLamp);
-      m_ptdLamp = NULL;
+      _pTextureStock_Release( *m_ptdLamp);
+      m_ptdLamp.Reset();
     }
 
     // if we allocated model object for floor
@@ -434,10 +424,10 @@ BOOL CModelerApp::SubInitInstance()
       m_pFloorModelObject = NULL;
     }
     // if we loaded floor's texture
-    if( m_ptdFloorTexture != NULL) {
+    if( m_ptdFloorTexture) {
       // release it and
-      _pTextureStock->Release( m_ptdFloorTexture);
-      m_ptdFloorTexture = NULL;
+      _pTextureStock_Release( *m_ptdFloorTexture);
+      m_ptdFloorTexture.Reset();
     }
   }
 
@@ -445,12 +435,12 @@ BOOL CModelerApp::SubInitInstance()
   m_pfntFont = _pfdDisplayFont;
 
   // Dispatch commands specified on the command line
-	if( !ProcessShellCommand(cmdInfo)) return FALSE;
+  if( !ProcessShellCommand(cmdInfo)) return FALSE;
 
-	// The main window has been initialized, so show and update it.
+  // The main window has been initialized, so show and update it.
   m_nCmdShow = SW_SHOWMAXIMIZED; // maximize main frame !!!
-	pMainFrame->ShowWindow(m_nCmdShow);
-	pMainFrame->UpdateWindow();
+  pMainFrame->ShowWindow(m_nCmdShow);
+  pMainFrame->UpdateWindow();
 
   // if stating modeler for the first time
   if( m_bFirstTimeStarted) {
@@ -468,11 +458,24 @@ void CModelerApp::OnQtAbout()
   QMessageBox::aboutQt(&modal_widget, "About Qt");
 }
 
+void CModelerApp::AddToRecentFileList(LPCTSTR lpszPathName)
+{
+  ASSERT_VALID(this);
+  if (m_pRecentFileList)
+    m_pRecentFileList->Add(lpszPathName);
+}
+
 void CModelerApp::EditScriptAndReopenDocument(CTFileName fnScriptName)
 {
   try
   {
-    fnScriptName.RemoveApplicationPath_t();
+    try
+    {
+      fnScriptName.RemoveApplicationPath_t();
+    }
+    catch (const char*)
+    {
+    }
     auto script = ScriptIO::ReadFromFile(fnScriptName);
 
     CModelerApp::ModalGuard guard;
@@ -495,7 +498,8 @@ void CModelerApp::EditScriptAndReopenDocument(CTFileName fnScriptName)
   while (pos != NULL)
   {
     CModelerDoc* pmdCurrent = (CModelerDoc*)theApp.m_pdtModelDocTemplate->GetNextDoc(pos);
-    if (CTFileName(CTString(CStringA(pmdCurrent->GetPathName()))) == fnModelName)
+    CTString pmdCurrentPathName = static_cast<const char*>(CStringA(pmdCurrent->GetPathName()));
+    if (CTFileName(pmdCurrentPathName) == fnModelName)
       pmdCurrent->OnCloseDocument();
   }
   CDocument* pDocument = theApp.m_pdtModelDocTemplate->CreateNewDocument();
@@ -540,7 +544,7 @@ void CModelerApp::EditScriptAndReopenDocument(CTFileName fnScriptName)
   CTFileName fnIniFileName = fnScriptName.NoExt() + ".ini";
   try
   {
-    ((CModelerDoc*)pDocument)->m_emEditModel.CSerial::Load_t(fnIniFileName);
+    ((CModelerDoc*)pDocument)->m_emEditModel.Load_t_base(fnIniFileName);
   }
   catch (char* strError)
   {
@@ -549,57 +553,14 @@ void CModelerApp::EditScriptAndReopenDocument(CTFileName fnScriptName)
   }
 }
 
-/////////////////////////////////////////////////////////////////////////////
-// CAboutDlg dialog used for App About
-
-class CAboutDlg : public CDialog
-{
-public:
-	CAboutDlg();
-
-// Dialog Data
-	//{{AFX_DATA(CAboutDlg)
-	enum { IDD = IDD_ABOUTBOX };
-	//}}AFX_DATA
-
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CAboutDlg)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
-
-// Implementation
-protected:
-	//{{AFX_MSG(CAboutDlg)
-		// No message handlers
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
-};
-
-CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD)
-{
-	//{{AFX_DATA_INIT(CAboutDlg)
-	//}}AFX_DATA_INIT
-}
-
-void CAboutDlg::DoDataExchange(CDataExchange* pDX)
-{
-	CDialog::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CAboutDlg)
-	//}}AFX_DATA_MAP
-}
-
-BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
-	//{{AFX_MSG_MAP(CAboutDlg)
-		// No message handlers
-	//}}AFX_MSG_MAP
-END_MESSAGE_MAP()
-
 // App command to run the dialog
 void CModelerApp::OnAppAbout()
 {
-	CAboutDlg aboutDlg;
-	aboutDlg.DoModal();
+  CModelerApp::ModalGuard guard;
+  QWinWidget modal_widget(m_pMainWnd->GetSafeHwnd(), nullptr, Qt::WindowFlags {});
+  CString app_name;
+  app_name.LoadString(IDR_MAINFRAME);
+  QMessageBox::about(&modal_widget, QString::fromWCharArray(app_name.GetString()), SERIOUS_ENGINE_ABOUT_TEXT);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -611,12 +572,12 @@ BOOL CModelerApp::OnIdle(LONG lCount)
   if (m_showing_modal_dialog)
     return CWinApp::OnIdle(lCount);
 
-  if( _pTimer != NULL)
+  if( _pTimerExists())
   {
-    TIME timeCurrentTick = _pTimer->GetRealTimeTick();
+    TIME timeCurrentTick = _pTimer_GetRealTimeTick();
     if( (timeCurrentTick > timeLastTick) && !m_OnIdlePaused)
     {
-      _pTimer->SetCurrentTick( timeCurrentTick);
+      _pTimer_SetCurrentTick( timeCurrentTick);
       timeLastTick = timeCurrentTick;
       POSITION pos = m_pdtModelDocTemplate->GetFirstDocPosition();
 
@@ -690,25 +651,25 @@ void CModelerApp::CreateNewDocument( CTFileName fnRequestedFile)
 
   // Now we create document instance of type CModelerDoc
   CDocument* pDocument = m_pdtModelDocTemplate->CreateNewDocument();
- 	if (pDocument == NULL)
-	{
-		TRACE0("CDocTemplate::CreateNewDocument returned NULL.\n");
-		AfxMessageBox(AFX_IDP_FAILED_TO_CREATE_DOC);
-		return;
-	}
-	ASSERT_VALID(pDocument);
-	
+   if (pDocument == NULL)
+  {
+    TRACE0("CDocTemplate::CreateNewDocument returned NULL.\n");
+    AfxMessageBox(AFX_IDP_FAILED_TO_CREATE_DOC);
+    return;
+  }
+  ASSERT_VALID(pDocument);
+  
   BOOL bAutoDelete = pDocument->m_bAutoDelete;
-	pDocument->m_bAutoDelete = FALSE;   // don't destroy if something goes wrong
-	CFrameWnd* pFrame = m_pdtModelDocTemplate->CreateNewFrame(pDocument, NULL);
-	pDocument->m_bAutoDelete = bAutoDelete;
-	if (pFrame == NULL)
-	{
-		AfxMessageBox(AFX_IDP_FAILED_TO_CREATE_DOC);
-		delete pDocument;       // explicit delete on error
-		return;
-	}
-	ASSERT_VALID(pFrame);
+  pDocument->m_bAutoDelete = FALSE;   // don't destroy if something goes wrong
+  CFrameWnd* pFrame = m_pdtModelDocTemplate->CreateNewFrame(pDocument, NULL);
+  pDocument->m_bAutoDelete = bAutoDelete;
+  if (pFrame == NULL)
+  {
+    AfxMessageBox(AFX_IDP_FAILED_TO_CREATE_DOC);
+    delete pDocument;       // explicit delete on error
+    return;
+  }
+  ASSERT_VALID(pFrame);
 
   pDocument->SetModifiedFlag();
   pDocument->SetPathName( CString(_fnmApplicationPath + fnMdlFile), FALSE);
@@ -717,17 +678,17 @@ void CModelerApp::CreateNewDocument( CTFileName fnRequestedFile)
   char strError[ 256];
   if( !((CModelerDoc *)pDocument)->CreateModelFromScriptFile( fnScriptFile, strError))
   {
-  	pDocument->OnCloseDocument();       // explicit delete on error
+    pDocument->OnCloseDocument();       // explicit delete on error
     AfxMessageBox( CString(strError));
-		return;
+    return;
   }
-	m_pdtModelDocTemplate->InitialUpdateFrame(pFrame, pDocument, TRUE);
+  m_pdtModelDocTemplate->InitialUpdateFrame(pFrame, pDocument, TRUE);
 }
 
 void CModelerApp::OnFileNew()
 {
   // call file requester for opening documents
-  CDynamicArray<CTFileName> afnCreateModel;
+  CDynamicArray_CTFileName afnCreateModel;
   auto file_filter = _EngineGUI.GetListOf3DFormats(true);
   _EngineGUI.FileRequester( "Create new model from 3D or script file",
     file_filter.data(),
@@ -736,14 +697,14 @@ void CModelerApp::OnFileNew()
   FOREACHINDYNAMICARRAY( afnCreateModel, CTFileName, itModel)
   {
     // create new models
-    CreateNewDocument( itModel.Current());
+    CreateNewDocument( *itModel.Current());
   }
 }
 /////////////////////////////////////////////////////////////////////////////
 void CModelerApp::OnFileOpen()
 {
   // call file requester for opening documents
-  CDynamicArray<CTFileName> afnOpenModel;
+  CDynamicArray_CTFileName afnOpenModel;
   _EngineGUI.FileRequester( "Open model or script file",
     "Model files (*.mdl)\0*.mdl\0"
     "Script files (*.scr)\0*.scr\0"
@@ -755,7 +716,7 @@ void CModelerApp::OnFileOpen()
   FOREACHINDYNAMICARRAY( afnOpenModel, CTFileName, itModel)
   {
     // we will use full file name to call OnOpenDocument()
-    CTFileName fnFullRequestedFile = _fnmApplicationPath + itModel.Current();
+    CTFileName fnFullRequestedFile = _fnmApplicationPath + (*itModel.Current());
 
     BOOL bScriptDocument = FALSE;
     if (fnFullRequestedFile.FileExt() == ".scr")
@@ -768,39 +729,39 @@ void CModelerApp::OnFileOpen()
 
     // Now we create document instance 
     CDocument* pDocument = pDocTemplate->CreateNewDocument();
- 	  if (pDocument == NULL)
-	  {
-		  TRACE0("CDocTemplate::CreateNewDocument returned NULL.\n");
-		  AfxMessageBox(AFX_IDP_FAILED_TO_CREATE_DOC);
-		  return;
-	  }
-	  ASSERT_VALID(pDocument);
-	  
+     if (pDocument == NULL)
+    {
+      TRACE0("CDocTemplate::CreateNewDocument returned NULL.\n");
+      AfxMessageBox(AFX_IDP_FAILED_TO_CREATE_DOC);
+      return;
+    }
+    ASSERT_VALID(pDocument);
+    
     // Model documents must be opened before view creation
     if( !pDocument->OnOpenDocument( CString(fnFullRequestedFile)))
     {
-		  AfxMessageBox(AFX_IDP_FAILED_TO_CREATE_DOC);
-		  //delete pDocument;       // explicit delete on error
-		  return;
+      AfxMessageBox(AFX_IDP_FAILED_TO_CREATE_DOC);
+      //delete pDocument;       // explicit delete on error
+      return;
     }
   
     // View creation
     BOOL bAutoDelete = pDocument->m_bAutoDelete;
-	  pDocument->m_bAutoDelete = FALSE;   // don't destroy if something goes wrong
-	  CFrameWnd* pFrame = pDocTemplate->CreateNewFrame(pDocument, NULL);
-	  pDocument->m_bAutoDelete = bAutoDelete;
-	  if (pFrame == NULL)
-	  {
-		  AfxMessageBox(AFX_IDP_FAILED_TO_CREATE_DOC);
-		  delete pDocument;       // explicit delete on error
-		  return;
-	  }
-	  ASSERT_VALID(pFrame);
+    pDocument->m_bAutoDelete = FALSE;   // don't destroy if something goes wrong
+    CFrameWnd* pFrame = pDocTemplate->CreateNewFrame(pDocument, NULL);
+    pDocument->m_bAutoDelete = bAutoDelete;
+    if (pFrame == NULL)
+    {
+      AfxMessageBox(AFX_IDP_FAILED_TO_CREATE_DOC);
+      delete pDocument;       // explicit delete on error
+      return;
+    }
+    ASSERT_VALID(pFrame);
 
     pDocument->SetModifiedFlag( FALSE);
     pDocument->SetPathName( CString(fnFullRequestedFile), TRUE);
     pDocument->SetTitle( CString(fnFullRequestedFile.FileName() + fnFullRequestedFile.FileExt()));
-	  pDocTemplate->InitialUpdateFrame(pFrame, pDocument, TRUE);
+    pDocTemplate->InitialUpdateFrame(pFrame, pDocument, TRUE);
   }
 }
 
@@ -831,88 +792,87 @@ int CModelerApp::ExitInstance()
   CoUninitialize();
   m_Preferences.WriteToIniFile();
   WriteProfileInt(L"Display modes", L"SED Gfx API", m_iApi);
-	return CWinApp::ExitInstance();
+  WriteProfileInt(L"SeriousModelerEX", L"Enable Crash Dumps", m_enableCrashDumps);
+  WriteProfileInt(L"SeriousModelerEX", L"Enable Full Crash Dumps", m_enableFullCrashDumps);
+  return CWinApp::ExitInstance();
 }
 
 BOOL CModelerApp::AddModelerWorkingTexture( CTFileName fnTexName)
 {
-  CBcgTexture *pNewWT = new CBcgTexture;
+  auto pNewWT = std::make_unique<CBcgTexture>();
 
   pNewWT->wt_FileName = fnTexName;
   try
   {
-    pNewWT->wt_TextureData = _pTextureStock->Obtain_t( fnTexName);
+    pNewWT->wt_TextureData = _pTextureStock_Obtain_t( fnTexName);
   }
   catch( char *err_str)
   {
     MessageBoxA( m_pMainWnd->m_hWnd, err_str, "Warning!", MB_OK|MB_ICONHAND|MB_SYSTEMMODAL);
-    if( pNewWT != NULL) delete pNewWT;
     return FALSE;
   }
-  pNewWT->wt_toTexture.SetData( pNewWT->wt_TextureData);
+  pNewWT->wt_toTexture.SetData( *pNewWT->wt_TextureData);
 
-  m_WorkingTextures.AddTail( pNewWT->wt_ListNode);
+  m_WorkingTextures.push_back(std::move(pNewWT));
   return TRUE;
 }
 
 BOOL CModelerApp::AddModelerWorkingPatch( CTFileName fnPatchName)
 {
-  FOREACHINLIST( CWorkingPatch, wp_ListNode, m_WorkingPatches, itPatch)
+  for (auto& itPatch : m_WorkingPatches)
   {
     if( itPatch->wp_FileName == fnPatchName)
     {
       char achrMessage[ 256];
-      sprintf( achrMessage, "Working patch \"%s\" already exists.", (CTString&)fnPatchName);
+      sprintf( achrMessage, "Working patch \"%s\" already exists.", static_cast<const char*>((CTString&)fnPatchName));
       AfxMessageBox( CString(achrMessage));
       return FALSE;
     }
   }
 
-  CWorkingPatch *pNewWP = new CWorkingPatch;
+  auto pNewWP = std::make_unique<CWorkingPatch>();
   pNewWP->wp_FileName = fnPatchName;
   try
   {
-    pNewWP->wp_TextureData = _pTextureStock->Obtain_t( pNewWP->wp_FileName);
+    pNewWP->wp_TextureData = _pTextureStock_Obtain_t( pNewWP->wp_FileName);
   }
   catch( char *err_str)
   {
     MessageBoxA( m_pMainWnd->m_hWnd, err_str, "Warning!", MB_OK|MB_ICONHAND|MB_SYSTEMMODAL);
-    delete pNewWP;
     return FALSE;
   }
-  m_WorkingPatches.AddTail( pNewWP->wp_ListNode);
+  m_WorkingPatches.push_back(std::move(pNewWP));
   return TRUE;
 }
 
 const CTextureObject *CModelerApp::GetValidBcgTexture( CTFileName fnTexName)
 {
-	const CTextureObject *ptoResult = NULL;
-  FOREACHINLIST( CBcgTexture, wt_ListNode, m_WorkingTextures, it_wt)
+  const CTextureObject *ptoResult = NULL;
+  for (auto& it_wt : m_WorkingTextures)
   {
     if( it_wt->wt_FileName == fnTexName)
     {
       return &it_wt->wt_toTexture;
     }
   }
-  if( !m_WorkingTextures.IsEmpty())
+  if( !m_WorkingTextures.empty())
   {
-    ptoResult = &(LIST_HEAD( m_WorkingTextures, CBcgTexture, wt_ListNode)->wt_toTexture);
+    ptoResult = &(m_WorkingTextures.front()->wt_toTexture);
   }
   return ptoResult;
 }
 
 const CTFileName CModelerApp::NextPrevBcgTexture( CTFileName fnTexName, INDEX iNextPrev)
 {
-  INDEX ctTextures = m_WorkingTextures.Count();
+  INDEX ctTextures = m_WorkingTextures.size();
   ASSERT( ctTextures > 1);
 
-  CStaticArray<CTFileName> afnTemp;
-  afnTemp.New( ctTextures);
+  std::vector<CTFileName> afnTemp(ctTextures);
   
   INDEX iCurrent = -1;
   INDEX iIter = 0;
   // add textures to static array and remember current texture's index by name
-  FOREACHINLIST( CBcgTexture, wt_ListNode, m_WorkingTextures, it_wt)
+  for (auto& it_wt : m_WorkingTextures)
   {
     afnTemp[iIter] = it_wt->wt_FileName;
     if( it_wt->wt_FileName == fnTexName)
@@ -982,7 +942,8 @@ void CAppPrefs::ReadFromIniFile()
   GET_COLOR( ap_MappingWinBcgColor);
 
   INI_READ( "Default background texture", "");
-  ap_DefaultWinBcgTexture = CTString(CStringA(strIni));
+  CTString ctstrIni = static_cast<const char*>(CStringA(strIni));
+  ap_DefaultWinBcgTexture = ctstrIni;
   
   CMainFrame* pMainFrame = STATIC_DOWNCAST(CMainFrame, AfxGetMainWnd());
 }
@@ -1038,11 +999,11 @@ void CAppPrefs::WriteToIniFile()
   INI_WRITE( "Default background texture");
   
   // Now for working textures
-  INDEX iWorkingTexturesCt = theApp.m_WorkingTextures.Count();
+  INDEX iWorkingTexturesCt = theApp.m_WorkingTextures.size();
   theApp.WriteProfileInt( L"Modeler prefs", L"Modeler working textures count",
                          iWorkingTexturesCt);
   INDEX iWTCt = 0;
-  FOREACHINLIST( CBcgTexture, wt_ListNode, theApp.m_WorkingTextures, it_wt)
+  for (auto& it_wt : theApp.m_WorkingTextures)
   {
     char strWTName[ 128];
     sprintf( strWTName, "Working texture %02d", iWTCt);
@@ -1051,11 +1012,11 @@ void CAppPrefs::WriteToIniFile()
   }
   
   // And now for patches....
-  INDEX iWorkingPatchesCt = theApp.m_WorkingPatches.Count();
+  INDEX iWorkingPatchesCt = theApp.m_WorkingPatches.size();
   theApp.WriteProfileInt( L"Modeler prefs", L"Modeler working patches count",
                          iWorkingPatchesCt);
   INDEX iWPCt = 0;
-  FOREACHINLIST( CWorkingPatch, wp_ListNode, theApp.m_WorkingPatches, it_wp)
+  for (auto& it_wp : theApp.m_WorkingPatches)
   {
     char strWPName[ 128];
     sprintf( strWPName, "Working patch %02d", iWPCt);
@@ -1066,10 +1027,101 @@ void CAppPrefs::WriteToIniFile()
 
 int CModelerApp::Run() 
 {
+  m_enableCrashDumps = GetProfileInt(L"SeriousModelerEX", L"Enable Crash Dumps", TRUE);
+  m_enableFullCrashDumps = GetProfileInt(L"SeriousModelerEX", L"Enable Full Crash Dumps", FALSE);
+
+  using TcrInstallW = int (WINAPI*) (PCR_INSTALL_INFOW);
+  using TcrInstallA = int (WINAPI*) (PCR_INSTALL_INFOA);
+  using TcrGetLastErrorMsgW = int (WINAPI*) (LPWSTR, UINT);
+  using TcrGetLastErrorMsgA = int (WINAPI*) (LPSTR, UINT);
+  using TcrUninstall = int (WINAPI*) ();
+  HINSTANCE hCrashRpt = NULL;
+  TcrUninstall crUninstallFunc = nullptr;
+
+  int crInstallResult = -1;
+  if (m_enableCrashDumps)
+  {
+    hCrashRpt = ::LoadLibrary(_T("CrashRpt1403.dll"));
+    TcrInstallW crInstallWFunc = nullptr;
+    TcrInstallA crInstallAFunc = nullptr;
+    TcrGetLastErrorMsgW crGetLastErrorMsgWFunc = nullptr;
+    TcrGetLastErrorMsgA crGetLastErrorMsgAFunc = nullptr;
+
+    if (hCrashRpt)
+    {
+      crInstallWFunc = (TcrInstallW)::GetProcAddress(hCrashRpt, "crInstallW");
+      crInstallAFunc = (TcrInstallA)::GetProcAddress(hCrashRpt, "crInstallA");
+      crGetLastErrorMsgWFunc = (TcrGetLastErrorMsgW)::GetProcAddress(hCrashRpt, "crGetLastErrorMsgW");
+      crGetLastErrorMsgAFunc = (TcrGetLastErrorMsgA)::GetProcAddress(hCrashRpt, "crGetLastErrorMsgA");
+      crUninstallFunc = (TcrUninstall)::GetProcAddress(hCrashRpt, "crUninstall");
+    }
+
+    if (crInstallWFunc && crInstallAFunc && crGetLastErrorMsgWFunc && crGetLastErrorMsgAFunc && crUninstallFunc)
+    {
+      char exe_path[MAX_PATH];
+      ::GetModuleFileNameA(NULL, exe_path, MAX_PATH);
+      const CTFileName ct_exe_path = CTString(exe_path);
+      const CTFileName ct_crash_rpt_dir = ct_exe_path.FileDir() + "\\CrashRpt";
+      const CString crash_rpt_dir(static_cast<const char*>(ct_crash_rpt_dir));
+
+      CR_INSTALL_INFO info;
+      memset(&info, 0, sizeof(CR_INSTALL_INFO));
+      info.cb = sizeof(CR_INSTALL_INFO);
+      info.pszAppName = _T("SeriousEditorEX");
+      info.dwFlags |= CR_INST_ALL_POSSIBLE_HANDLERS | CR_INST_DONT_SEND_REPORT | CR_INST_STORE_ZIP_ARCHIVES;
+      info.pszErrorReportSaveDir = crash_rpt_dir;
+      if (m_enableFullCrashDumps)
+        info.uMiniDumpType = static_cast<MINIDUMP_TYPE>(
+          MiniDumpWithDataSegs |
+          MiniDumpWithFullMemory |
+          MiniDumpWithHandleData |
+          MiniDumpWithIndirectlyReferencedMemory |
+          MiniDumpWithFullAuxiliaryState |
+          MiniDumpWithFullMemoryInfo |
+          MiniDumpWithProcessThreadData |
+          MiniDumpWithThreadInfo |
+          MiniDumpWithPrivateReadWriteMemory |
+          MiniDumpWithTokenInformation |
+          MiniDumpWithPrivateWriteCopyMemory |
+          MiniDumpWithCodeSegs);
+
+#ifdef UNICODE
+      crInstallResult = crInstallWFunc(&info);
+#else
+      crInstallResult = crInstallAFunc(&info);
+#endif //UNICODE
+      if (crInstallResult != 0)
+      {
+        TCHAR buff[256];
+#ifdef UNICODE
+        crGetLastErrorMsgWFunc(buff, 256);
+#else
+        crGetLastErrorMsgAFunc(buff, 256);
+#endif //UNICODE
+        CPrintF("Failed to install crash reporter: %s\n", buff);
+        MessageBox(NULL, buff, _T("Failed to install crash reporter"), MB_OK);
+      }
+      else {
+        CPutString("Crash reporter successfully installed.\n");
+      }
+    }
+    else {
+      CPutString("Failed to load CrashRpt1403.dll, crash dumps will be disabled.\n");
+    }
+  }
+
   int iResult;
-  CTSTREAM_BEGIN {
-    iResult=QMfcApp::run(this);
-  } CTSTREAM_END;
+  CTStream::ExecuteWithStreamHandling([this, &iResult]
+    {
+      iResult=QMfcApp::run(this);
+    });
+
+  if (crUninstallFunc && crInstallResult == 0)
+    crUninstallFunc();
+
+  if (hCrashRpt)
+    ::FreeLibrary(hCrashRpt);
+
   delete qApp;
   return iResult;
 }

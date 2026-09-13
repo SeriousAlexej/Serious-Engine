@@ -38,9 +38,9 @@ CChoosedColorButton::~CChoosedColorButton()
 
 
 BEGIN_MESSAGE_MAP(CChoosedColorButton, CButton)
-	//{{AFX_MSG_MAP(CChoosedColorButton)
-	ON_WM_LBUTTONDOWN()
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CChoosedColorButton)
+  ON_WM_LBUTTONDOWN()
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -53,11 +53,11 @@ void CChoosedColorButton::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
   CModelerView *pModelerView = CModelerView::GetActiveView();
   if( pModelerView == NULL)
   {
-    CBrush *MyBrush = &CBrush();
+    CBrush MyBrush;
     ASSERT( MyBrush->CreateHatchBrush(HS_DIAGCROSS, 0x00777777) != FALSE);
 
     pDC->FillSolidRect( &lpDrawItemStruct->rcItem, 0x00bbbbbb);
-    pDC->FillRect( &lpDrawItemStruct->rcItem, MyBrush);
+    pDC->FillRect( &lpDrawItemStruct->rcItem, &MyBrush);
     pDC->DrawText( CString("none"), &lpDrawItemStruct->rcItem, 
                    DT_SINGLELINE | DT_CENTER | DT_VCENTER);
   }
@@ -79,6 +79,6 @@ void CChoosedColorButton::OnLButtonDown(UINT nFlags, CPoint point)
     CMainFrame* pMainFrame = STATIC_DOWNCAST(CMainFrame, AfxGetMainWnd());
     pMainFrame->m_dlgPaletteDialog->UpdateData(FALSE);
   }
-	
-	CButton::OnLButtonDown(nFlags, point);
+  
+  CButton::OnLButtonDown(nFlags, point);
 }

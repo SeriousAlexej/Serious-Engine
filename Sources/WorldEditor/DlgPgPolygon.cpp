@@ -33,8 +33,8 @@ IMPLEMENT_DYNCREATE(CDlgPgPolygon, CPropertyPage)
 
 CDlgPgPolygon::CDlgPgPolygon() : CPropertyPage(CDlgPgPolygon::IDD)
 {
-	//{{AFX_DATA_INIT(CDlgPgPolygon)
-	//}}AFX_DATA_INIT
+  //{{AFX_DATA_INIT(CDlgPgPolygon)
+  //}}AFX_DATA_INIT
 }
 
 CDlgPgPolygon::~CDlgPgPolygon()
@@ -75,8 +75,8 @@ void CDlgPgPolygon::DoDataExchange(CDataExchange* pDX)
     m_bIsDetail.EnableWindow( bSelectionExists);    
     m_IsTranslucent.EnableWindow( bSelectionExists);
     m_IsTransparent.EnableWindow( bSelectionExists);
-	  m_ComboMirror.EnableWindow( bSelectionExists);
-	  m_ComboFriction.EnableWindow( bSelectionExists);
+    m_ComboMirror.EnableWindow( bSelectionExists);
+    m_ComboFriction.EnableWindow( bSelectionExists);
     GetDlgItem( IDC_STATIC_MIRROR)->EnableWindow( bSelectionExists);
     GetDlgItem( IDC_STATIC_FRICTION)->EnableWindow( bSelectionExists);
     GetDlgItem( IDC_PRETENDER_DISTANCE)->EnableWindow( bSelectionExists);
@@ -147,20 +147,20 @@ void CDlgPgPolygon::DoDataExchange(CDataExchange* pDX)
   }
 
   //{{AFX_DATA_MAP(CDlgPgPolygon)
-	DDX_Control(pDX, IDC_DOUBLESIDED, m_IsDoubleSided);
-	DDX_Control(pDX, IDC_SHOOTTROUGH, m_bShootThru);
-	DDX_Control(pDX, IDC_IS_TRANSPARENT, m_IsTransparent);
-	DDX_Control(pDX, IDC_STAIRS, m_bStairs);
-	DDX_Control(pDX, IDC_IS_OCCLUDER, m_IsOccluder);
-	DDX_Control(pDX, IDC_MIRROR_COMBO, m_ComboMirror);
-	DDX_Control(pDX, IDC_IS_OLD_PORTAL, m_IsOldPortal);
-	DDX_Control(pDX, IDC_IS_DETAIL, m_bIsDetail);
-	DDX_Control(pDX, IDC_INVISIBLE, m_IsInvisible);
-	DDX_Control(pDX, IDC_IS_TRANSLUSCENT, m_IsTranslucent);
-	DDX_Control(pDX, IDC_IS_PASSABLE, m_IsPassable);
-	DDX_Control(pDX, IDC_IS_PORTAL, m_IsPortal);
-	DDX_Control(pDX, IDC_FRICTION_COMBO, m_ComboFriction);
-	//}}AFX_DATA_MAP
+  DDX_Control(pDX, IDC_DOUBLESIDED, m_IsDoubleSided);
+  DDX_Control(pDX, IDC_SHOOTTROUGH, m_bShootThru);
+  DDX_Control(pDX, IDC_IS_TRANSPARENT, m_IsTransparent);
+  DDX_Control(pDX, IDC_STAIRS, m_bStairs);
+  DDX_Control(pDX, IDC_IS_OCCLUDER, m_IsOccluder);
+  DDX_Control(pDX, IDC_MIRROR_COMBO, m_ComboMirror);
+  DDX_Control(pDX, IDC_IS_OLD_PORTAL, m_IsOldPortal);
+  DDX_Control(pDX, IDC_IS_DETAIL, m_bIsDetail);
+  DDX_Control(pDX, IDC_INVISIBLE, m_IsInvisible);
+  DDX_Control(pDX, IDC_IS_TRANSLUSCENT, m_IsTranslucent);
+  DDX_Control(pDX, IDC_IS_PASSABLE, m_IsPassable);
+  DDX_Control(pDX, IDC_IS_PORTAL, m_IsPortal);
+  DDX_Control(pDX, IDC_FRICTION_COMBO, m_ComboFriction);
+  //}}AFX_DATA_MAP
 
   DDX_SkyFloat(pDX, IDC_PRETENDER_DISTANCE, m_fPretenderDistance, m_bPretenderDistance);
 
@@ -257,13 +257,13 @@ void CDlgPgPolygon::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CDlgPgPolygon, CPropertyPage)
-	//{{AFX_MSG_MAP(CDlgPgPolygon)
-	ON_CBN_SELCHANGE(IDC_FRICTION_COMBO, OnSelchangeFrictionCombo)
-	ON_CBN_DROPDOWN(IDC_FRICTION_COMBO, OnDropdownFrictionCombo)
-	ON_CBN_SELCHANGE(IDC_MIRROR_COMBO, OnSelchangeMirrorCombo)
-	ON_CBN_DROPDOWN(IDC_MIRROR_COMBO, OnDropdownMirrorCombo)
-	ON_WM_CONTEXTMENU()
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CDlgPgPolygon)
+  ON_CBN_SELCHANGE(IDC_FRICTION_COMBO, OnSelchangeFrictionCombo)
+  ON_CBN_DROPDOWN(IDC_FRICTION_COMBO, OnDropdownFrictionCombo)
+  ON_CBN_SELCHANGE(IDC_MIRROR_COMBO, OnSelchangeMirrorCombo)
+  ON_CBN_DROPDOWN(IDC_MIRROR_COMBO, OnDropdownMirrorCombo)
+  ON_WM_CONTEXTMENU()
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -276,13 +276,13 @@ void CDlgPgPolygon::InitComboBoxes(void)
   CTString strMirrorName;
 
   m_ComboFriction.ResetContent();
-	m_ComboMirror.ResetContent();
+  m_ComboMirror.ResetContent();
   // add all available frictions
   for(INDEX iFriction=0; iFriction<MAX_UBYTE; iFriction++)
   {
-    strFrictionName = pDoc->m_woWorld.wo_astSurfaceTypes[iFriction].st_strName;
+    strFrictionName = pDoc->m_woWorld.wo_astSurfaceTypes[iFriction]->st_strName;
     if( strFrictionName == "") break;
-    INDEX iAddedAs = m_ComboFriction.AddString( CString(strFrictionName));
+    INDEX iAddedAs = m_ComboFriction.AddString( CString(static_cast<const char*>(strFrictionName)));
   }
 
   // none must exist
@@ -292,20 +292,18 @@ void CDlgPgPolygon::InitComboBoxes(void)
   if( pDoc->m_selPolygonSelection.Count() != 0)
   {
     // obtain first polygon's brush
-    CBrush3D *pbrBrush = NULL;
-    pDoc->m_selPolygonSelection.Lock();
+    CBrush3DPtr pbrBrush;
     if( !pDoc->m_selPolygonSelection.IsMember( pDoc->m_pbpoLastCentered))
     {
-      pbrBrush = pDoc->m_selPolygonSelection[0].bpo_pbscSector->bsc_pbmBrushMip->bm_pbrBrush;
+      pbrBrush = CBrushMipPtr(CBrushSectorPtr(pDoc->m_selPolygonSelection[0]->bpo_pbscSector)->bsc_pbmBrushMip)->bm_pbrBrush;
     }
-    pDoc->m_selPolygonSelection.Unlock();
 
     BOOL bEnableMirror = TRUE;
     // for each of the selected polygons
     FOREACHINDYNAMICCONTAINER(pDoc->m_selPolygonSelection, CBrushPolygon, itbpo)
     {
       // disable mirror combo box if all polygons are not from same brush
-      if( pbrBrush != itbpo->bpo_pbscSector->bsc_pbmBrushMip->bm_pbrBrush)
+      if( pbrBrush.get_handle() != CBrushMipPtr(CBrushSectorPtr(itbpo->bpo_pbscSector)->bsc_pbmBrushMip)->bm_pbrBrush)
       {
         bEnableMirror = FALSE;
         break;
@@ -318,9 +316,9 @@ void CDlgPgPolygon::InitComboBoxes(void)
       // add mirrors
       for(INDEX iMirror=1; iMirror<MAX_UBYTE; iMirror++)
       {
-        CTString strMirrorName = pbrBrush->br_penEntity->GetMirrorName( iMirror);
+        CTString strMirrorName = CEntityPtr(pbrBrush->br_penEntity)->GetMirrorName( iMirror);
         if( strMirrorName == "") break;
-        m_ComboMirror.AddString( CString(strMirrorName));
+        m_ComboMirror.AddString( CString(static_cast<const char*>(strMirrorName)));
       }
     }
   }
@@ -344,40 +342,40 @@ BOOL CDlgPgPolygon::OnIdle(LONG lCount)
 
 BOOL CDlgPgPolygon::PreTranslateMessage(MSG* pMsg) 
 {
-	if(pMsg->message==WM_KEYDOWN && pMsg->wParam==VK_RETURN)
+  if(pMsg->message==WM_KEYDOWN && pMsg->wParam==VK_RETURN)
   {
     // move data from page to polygon
     UpdateData( TRUE);
     // the message is handled
     return TRUE;
   }
-	return CPropertyPage::PreTranslateMessage(pMsg);
+  return CPropertyPage::PreTranslateMessage(pMsg);
 }
 
 BOOL CDlgPgPolygon::OnInitDialog() 
 {
-	CPropertyPage::OnInitDialog();
+  CPropertyPage::OnInitDialog();
   if( IsWindow( m_ComboFriction.m_hWnd))
   {
     InitComboBoxes();
   }
-	m_bIsDetail.SetDialogPtr( this);
-	m_IsInvisible.SetDialogPtr( this);
-	m_IsDoubleSided.SetDialogPtr( this);
-	m_IsTranslucent.SetDialogPtr( this);
-	m_IsTransparent.SetDialogPtr( this);
-	m_IsPassable.SetDialogPtr( this);
-	m_bStairs.SetDialogPtr( this);
+  m_bIsDetail.SetDialogPtr( this);
+  m_IsInvisible.SetDialogPtr( this);
+  m_IsDoubleSided.SetDialogPtr( this);
+  m_IsTranslucent.SetDialogPtr( this);
+  m_IsTransparent.SetDialogPtr( this);
+  m_IsPassable.SetDialogPtr( this);
+  m_bStairs.SetDialogPtr( this);
   m_bShootThru.SetDialogPtr( this);
-	m_IsPortal.SetDialogPtr( this);
-	m_IsOldPortal.SetDialogPtr( this);
-	m_IsOccluder.SetDialogPtr( this);
+  m_IsPortal.SetDialogPtr( this);
+  m_IsOldPortal.SetDialogPtr( this);
+  m_IsOccluder.SetDialogPtr( this);
   return TRUE;
 }
 
 void CDlgPgPolygon::OnSelchangeFrictionCombo() 
 {
-	UpdateData( TRUE);
+  UpdateData( TRUE);
 }
 
 void CDlgPgPolygon::OnDropdownFrictionCombo() 
@@ -387,7 +385,7 @@ void CDlgPgPolygon::OnDropdownFrictionCombo()
 
 void CDlgPgPolygon::OnSelchangeMirrorCombo() 
 {
-	UpdateData( TRUE);
+  UpdateData( TRUE);
 }
 
 void CDlgPgPolygon::OnDropdownMirrorCombo() 
@@ -405,14 +403,14 @@ void CDlgPgPolygon::OnContextMenu(CWnd* pWnd, CPoint point)
   {
     if( menu.LoadMenu(IDR_INFO_POLYGON_POPUP))
     {
-		  CMenu* pPopup = menu.GetSubMenu(0);
+      CMenu* pPopup = menu.GetSubMenu(0);
       if( pDoc->m_selPolygonSelection.Count() != 1)
       {
         menu.EnableMenuItem(ID_SET_AS_DEFAULT, MF_DISABLED|MF_GRAYED);
       }
 
       pPopup->TrackPopupMenu(TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_LEFTALIGN,
-								   point.x, point.y, this);
+                   point.x, point.y, this);
     }
   }
 }

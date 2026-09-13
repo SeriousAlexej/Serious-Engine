@@ -21,10 +21,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <QPainter>
 #include <QToolTip>
 
-ColorWidget::ColorWidget(QColor col, QWidget* parent)
+ColorWidget::ColorWidget(int hue, int sat, int val, int alp, QWidget* parent)
   : QWidget(parent)
-  , m_col(col)
-  , m_mode(EMode::Idle)
+  , m_hue(hue)
+  , m_sat(sat)
+  , m_val(val)
+  , m_alp(alp)
 {
   setAttribute(Qt::WA_Hover);
   setMouseTracking(true);
@@ -32,16 +34,34 @@ ColorWidget::ColorWidget(QColor col, QWidget* parent)
 
 void ColorWidget::SetColor(QColor col)
 {
-  if (m_col != col)
+  if (QColor::fromHsv(m_hue, m_sat, m_val, m_alp) != col)
   {
-    m_col = col;
+    int hue = -1;
+    col.getHsv(&hue, &m_sat, &m_val, &m_alp);
+    if (hue != -1)
+      m_hue = qBound(0, hue, 359);
     update();
   }
 }
 
-QColor ColorWidget::GetColor() const
+int ColorWidget::Hue() const
 {
-  return m_col;
+  return m_hue;
+}
+
+int ColorWidget::Saturation() const
+{
+  return m_sat;
+}
+
+int ColorWidget::Value() const
+{
+  return m_val;
+}
+
+int ColorWidget::Alpha() const
+{
+  return m_alp;
 }
 
 void ColorWidget::mousePressEvent(QMouseEvent* event)
@@ -84,34 +104,36 @@ void ColorWidget::mouseMoveEvent(QMouseEvent* event)
   const auto delta = QCursor::pos().x() - m_edit_start_pos.x();
   QCursor::setPos(m_edit_start_pos);
 
-  int hue = qBound(0, m_col.hue(), 359);
-  int saturation = m_col.saturation();
-  int value = m_col.value();
-  int alpha = m_col.alpha();
-  switch (m_mode)
+  if (delta != 0)
   {
-  case EMode::H:
-    hue += delta;
-    break;
-  case EMode::S:
-    saturation += delta;
-    break;
-  case EMode::V:
-    value += delta;
-    break;
-  case EMode::A:
-    alpha += delta;
-    break;
-  default:
-    break;
-  }
+    switch (m_mode)
+    {
+    case EMode::H:
+      m_hue += delta;
+      break;
+    case EMode::S:
+      m_sat += delta;
+      break;
+    case EMode::V:
+      m_val += delta;
+      break;
+    case EMode::A:
+      m_alp += delta;
+      break;
+    default:
+      break;
+    }
 
-  QColor prev_col = m_col;
-  m_col = QColor::fromHsv(qBound(0, hue, 359), qBound(0, saturation, 255), qBound(0, value, 255), qBound(0, alpha, 255));
-  if (m_col != prev_col)
+    while (m_hue < 0)
+      m_hue += 360;
+    m_hue = m_hue % 360;
+    m_sat = qBound(0, m_sat, 255);
+    m_val = qBound(0, m_val, 255);
+    m_alp = qBound(0, m_alp, 255);
     colorChanged();
 
-  update();
+    update();
+  }
   showTooltip();
 }
 
@@ -120,13 +142,12 @@ void ColorWidget::paintEvent(QPaintEvent*)
   QPainter painter(this);
 
   painter.setPen(Qt::black);
-  const int hue = qBound(0, m_col.hue(), 359);
   for (const auto& [rect, col] : {
-    std::make_pair(rectHue(), QColor::fromHsv(hue, 255, 255)),
-    std::make_pair(rectSaturation(), QColor::fromHsv(hue, m_col.saturation(), 255)),
-    std::make_pair(rectValue(), QColor::fromHsv(0, 0, m_col.value())),
-    std::make_pair(rectAlpha(), QColor::fromHsv(0, 0, m_col.alpha(), 255)),
-    std::make_pair(rectColor(), QColor::fromRgb(m_col.rgb())) })
+    std::make_pair(rectHue(), QColor::fromHsv(m_hue, 255, 255)),
+    std::make_pair(rectSaturation(), QColor::fromHsv(m_hue, m_sat, 255)),
+    std::make_pair(rectValue(), QColor::fromHsv(0, 0, m_val)),
+    std::make_pair(rectAlpha(), QColor::fromHsv(0, 0, m_alp)),
+    std::make_pair(rectColor(), QColor::fromHsv(m_hue, m_sat, m_val)) })
   {
     painter.fillRect(rect, col);
     painter.drawRect(rect);
@@ -145,8 +166,9 @@ bool ColorWidget::event(QEvent* event)
 
 void ColorWidget::showTooltip() const
 {
-  QString color_string = QString("RGBA: %1,%2,%3,%4   ").arg(m_col.red()).arg(m_col.green()).arg(m_col.blue()).arg(m_col.alpha());
-  color_string += QString("HSV: %1,%2,%3").arg(m_col.hue() >= 0 ? m_col.hue() : 0).arg(m_col.saturation()).arg(m_col.value());
+  const QColor col = QColor::fromHsv(m_hue, m_sat, m_val, m_alp);
+  QString color_string = QString("RGBA: %1,%2,%3,%4   ").arg(col.red()).arg(col.green()).arg(col.blue()).arg(m_alp);
+  color_string += QString("HSV: %1,%2,%3").arg(m_hue).arg(m_sat).arg(m_val);
   QToolTip::showText(QCursor::pos(), color_string);
 }
 

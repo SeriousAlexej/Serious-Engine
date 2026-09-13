@@ -40,17 +40,17 @@ CCtlTipOfTheDayText::~CCtlTipOfTheDayText()
 
 
 BEGIN_MESSAGE_MAP(CCtlTipOfTheDayText, CStatic)
-	//{{AFX_MSG_MAP(CCtlTipOfTheDayText)
-	ON_WM_PAINT()
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CCtlTipOfTheDayText)
+  ON_WM_PAINT()
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
 // CCtlTipOfTheDayText message handlers
 void CCtlTipOfTheDayText::OnPaint() 
 {
-	CPaintDC dc(this); // device context for painting
-	
+  CPaintDC dc(this); // device context for painting
+  
   // get rectangle of the text area inside dialog
   RECT rectWin;
   GetWindowRect(&rectWin);

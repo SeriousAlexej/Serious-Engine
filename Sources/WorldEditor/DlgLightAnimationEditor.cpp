@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "stdafx.h"
 #include "WorldEditor.h"
 #include "DlgLightAnimationEditor.h"
-#include <Engine/Templates/Stock_CAnimData.h>
+#include <SeriousEngineCppAPI/Templates/Stock_CAnimData.h>
 
 #ifdef _DEBUG
 #undef new
@@ -45,13 +45,13 @@ INDEX CDlgLightAnimationEditor::GetSelectedLightAnimation(void)
 }
 
 CDlgLightAnimationEditor::CDlgLightAnimationEditor(CWnd* pParent /*=NULL*/)
-	: CDialog(CDlgLightAnimationEditor::IDD, pParent)
+  : CDialog(CDlgLightAnimationEditor::IDD, pParent)
 {
-	//{{AFX_DATA_INIT(CDlgLightAnimationEditor)
-	m_fLightAnimationSpeed = 0.0f;
-	m_iAnimationFrames = 0;
-	m_strLightAnimationName = _T("");
-	//}}AFX_DATA_INIT
+  //{{AFX_DATA_INIT(CDlgLightAnimationEditor)
+  m_fLightAnimationSpeed = 0.0f;
+  m_iAnimationFrames = 0;
+  m_strLightAnimationName = _T("");
+  //}}AFX_DATA_INIT
 
 
   m_bCustomWindowsCreated = FALSE;
@@ -64,14 +64,14 @@ CDlgLightAnimationEditor::CDlgLightAnimationEditor(CWnd* pParent /*=NULL*/)
   try {
     adDefault.Save_t( fnDefaultAnimation);
   } catch( char *pError) {
-    FatalError( "Unable to save default animation: \"%s\", %s", (CTString&)fnDefaultAnimation, pError);
+    FatalError( "Unable to save default animation: \"%s\", %s", static_cast<const char*>((CTString&)fnDefaultAnimation), pError);
   }
 
   // try to load animation that was last edited
   try
   {
-    CTFileName fnLastEditted = CTString( CStringA(theApp.GetProfileString(L"World editor", L"Last edited light animation", CString(DEFAULT_ANIMATION_FILE))));
-    m_padAnimData = _pAnimStock->Obtain_t( fnLastEditted);
+    CTFileName fnLastEditted = CTString( static_cast<const char*>(CStringA(theApp.GetProfileString(L"World editor", L"Last edited light animation", CString(DEFAULT_ANIMATION_FILE)))));
+    m_padAnimData = _pAnimStock_Obtain_t( fnLastEditted);
     m_fnSaveName = fnLastEditted;
   }
   catch( char *pError)
@@ -80,11 +80,11 @@ CDlgLightAnimationEditor::CDlgLightAnimationEditor(CWnd* pParent /*=NULL*/)
     // try to load default animation
     try
     {
-      m_padAnimData = _pAnimStock->Obtain_t( fnDefaultAnimation);
+      m_padAnimData = _pAnimStock_Obtain_t( fnDefaultAnimation);
     }
     catch( char *pError2)
     {
-      FatalError( "Unable to save and obtain default animation: \"%s\", %s", (CTString&)fnDefaultAnimation, pError2);
+      FatalError( "Unable to save and obtain default animation: \"%s\", %s", static_cast<const char*>((CTString&)fnDefaultAnimation), pError2);
     }
   }
 
@@ -97,12 +97,12 @@ CDlgLightAnimationEditor::~CDlgLightAnimationEditor()
 {
   theApp.WriteProfileString(L"World editor", L"Last edited light animation", CString(m_padAnimData->GetName()));
   m_wndTestAnimation.m_aoAnimObject.SetData( NULL);
-  _pAnimStock->Release( m_padAnimData);
+  _pAnimStock_Release( m_padAnimData);
 }
 
 void CDlgLightAnimationEditor::DoDataExchange(CDataExchange* pDX)
 {
-	CDialog::DoDataExchange(pDX);
+  CDialog::DoDataExchange(pDX);
 
   // if dialog is receiving data
   if( pDX->m_bSaveAndValidate == FALSE)
@@ -110,15 +110,15 @@ void CDlgLightAnimationEditor::DoDataExchange(CDataExchange* pDX)
     InitializeData();
   }
 
-	//{{AFX_DATA_MAP(CDlgLightAnimationEditor)
-	DDX_Control(pDX, IDC_LIGHT_ANIMATION_NAME_COMBO, m_LightAnimationCombo);
-	DDX_Text(pDX, IDC_CURRENT_FRAME, m_strCurrentFrame);
-	DDX_SkyFloat(pDX, IDC_LIGHT_ANIMATION_SPEED, m_fLightAnimationSpeed);
-	DDX_Text(pDX, IDC_LIGHT_ANIMATION_FRAMES, m_iAnimationFrames);
-	DDV_MinMaxInt(pDX, m_iAnimationFrames, 1, 999);
-	DDX_Text(pDX, IDC_LIGHT_ANIMATION_NAME, m_strLightAnimationName);
-	DDV_MaxChars(pDX, m_strLightAnimationName, 30);
-	//}}AFX_DATA_MAP
+  //{{AFX_DATA_MAP(CDlgLightAnimationEditor)
+  DDX_Control(pDX, IDC_LIGHT_ANIMATION_NAME_COMBO, m_LightAnimationCombo);
+  DDX_Text(pDX, IDC_CURRENT_FRAME, m_strCurrentFrame);
+  DDX_SkyFloat(pDX, IDC_LIGHT_ANIMATION_SPEED, m_fLightAnimationSpeed);
+  DDX_Text(pDX, IDC_LIGHT_ANIMATION_FRAMES, m_iAnimationFrames);
+  DDV_MinMaxInt(pDX, m_iAnimationFrames, 1, 999);
+  DDX_Text(pDX, IDC_LIGHT_ANIMATION_NAME, m_strLightAnimationName);
+  DDV_MaxChars(pDX, m_strLightAnimationName, 30);
+  //}}AFX_DATA_MAP
 
   // if dialog is giving data
   if( pDX->m_bSaveAndValidate != FALSE )
@@ -129,26 +129,26 @@ void CDlgLightAnimationEditor::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CDlgLightAnimationEditor, CDialog)
-	//{{AFX_MSG_MAP(CDlgLightAnimationEditor)
-	ON_WM_PAINT()
-	ON_BN_CLICKED(IDC_DELETE_MARKER, OnDeleteMarker)
-	ON_EN_CHANGE(IDC_LIGHT_ANIMATION_FRAMES, OnChangeLightAnimationFrames)
-	ON_CBN_SELCHANGE(IDC_LIGHT_ANIMATION_NAME_COMBO, OnSelchangeLightAnimationNameCombo)
-	ON_EN_CHANGE(IDC_LIGHT_ANIMATION_SPEED, OnChangeLightAnimationSpeed)
-	ON_BN_CLICKED(IDC_SCROLL_LEFT, OnScrollLeft)
-	ON_BN_CLICKED(IDC_SCROLL_RIGHT, OnScrollRight)
-	ON_BN_CLICKED(IDC_SCROLL_PG_LEFT, OnScrollPgLeft)
-	ON_BN_CLICKED(IDC_SCROLL_PG_RIGHT, OnScrollPgRight)
-	ON_BN_CLICKED(ID_DELETE_ANIMATION, OnDeleteAnimation)
-	ON_BN_CLICKED(ID_ADD_ANIMATION, OnAddAnimation)
-	ON_EN_CHANGE(IDC_LIGHT_ANIMATION_NAME, OnChangeLightAnimationName)
-	ON_BN_CLICKED(ID_LOAD_ANIMATION, OnLoadAnimation)
-	ON_BN_CLICKED(ID_SAVE_ANIMATION, OnSaveAnimation)
-	ON_BN_CLICKED(ID_SAVE_AS_ANIMATION, OnSaveAsAnimation)
-	ON_BN_CLICKED(ID_CLOSE, OnButtonClose)
-	ON_BN_CLICKED(IDCANCEL, OnCancel)
-	ON_WM_CLOSE()
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CDlgLightAnimationEditor)
+  ON_WM_PAINT()
+  ON_BN_CLICKED(IDC_DELETE_MARKER, OnDeleteMarker)
+  ON_EN_CHANGE(IDC_LIGHT_ANIMATION_FRAMES, OnChangeLightAnimationFrames)
+  ON_CBN_SELCHANGE(IDC_LIGHT_ANIMATION_NAME_COMBO, OnSelchangeLightAnimationNameCombo)
+  ON_EN_CHANGE(IDC_LIGHT_ANIMATION_SPEED, OnChangeLightAnimationSpeed)
+  ON_BN_CLICKED(IDC_SCROLL_LEFT, OnScrollLeft)
+  ON_BN_CLICKED(IDC_SCROLL_RIGHT, OnScrollRight)
+  ON_BN_CLICKED(IDC_SCROLL_PG_LEFT, OnScrollPgLeft)
+  ON_BN_CLICKED(IDC_SCROLL_PG_RIGHT, OnScrollPgRight)
+  ON_BN_CLICKED(ID_DELETE_ANIMATION, OnDeleteAnimation)
+  ON_BN_CLICKED(ID_ADD_ANIMATION, OnAddAnimation)
+  ON_EN_CHANGE(IDC_LIGHT_ANIMATION_NAME, OnChangeLightAnimationName)
+  ON_BN_CLICKED(ID_LOAD_ANIMATION, OnLoadAnimation)
+  ON_BN_CLICKED(ID_SAVE_ANIMATION, OnSaveAnimation)
+  ON_BN_CLICKED(ID_SAVE_AS_ANIMATION, OnSaveAsAnimation)
+  ON_BN_CLICKED(ID_CLOSE, OnButtonClose)
+  ON_BN_CLICKED(IDCANCEL, OnCancel)
+  ON_WM_CLOSE()
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -203,10 +203,10 @@ void CDlgLightAnimationEditor::StoreData(void)
   }
 
   // and set new name to anim data
-  m_padAnimData->SetName( iLightAnimation, CTString(CStringA(m_strLightAnimationName)));
+  m_padAnimData->SetName( iLightAnimation, CTString(static_cast<const char*>(CStringA(m_strLightAnimationName))));
   //------------ Prepare new array of frames for current animation (key frames changing is
   // not applied here but in control LMB down handler)
-  CAnimData *pAD = m_padAnimData;
+  CAnimDataPtr pAD = m_padAnimData;
   // obtain information about animation
   CAnimInfo aiInfo;
   pAD->GetAnimInfo(iLightAnimation, aiInfo);
@@ -263,7 +263,7 @@ void CDlgLightAnimationEditor::SpreadFrames(void)
 
   // obtain information about animation
   CAnimInfo aiInfo;
-  CAnimData *pAD = m_padAnimData;
+  CAnimDataPtr pAD = m_padAnimData;
   pAD->GetAnimInfo(iLightAnimation, aiInfo);
   // get count of frames
   INDEX ctFrames = aiInfo.ai_NumberOfFrames;
@@ -367,7 +367,7 @@ void CDlgLightAnimationEditor::OnPaint()
 
 BOOL CDlgLightAnimationEditor::OnInitDialog()
 {
-	CDialog::OnInitDialog();
+  CDialog::OnInitDialog();
 
   // initialize light animation combo
   InitLightAnimationCombo();
@@ -375,7 +375,7 @@ BOOL CDlgLightAnimationEditor::OnInitDialog()
 
   // initialize
   UpdateData( FALSE);
-	return TRUE;
+  return TRUE;
 }
 
 void CDlgLightAnimationEditor::OnDeleteMarker()
@@ -415,22 +415,22 @@ void CDlgLightAnimationEditor::InitLightAnimationCombo(void)
 
 void CDlgLightAnimationEditor::OnScrollLeft()
 {
-	m_wndAnimationFrames.ScrollLeft();
+  m_wndAnimationFrames.ScrollLeft();
 }
 
 void CDlgLightAnimationEditor::OnScrollRight()
 {
-	m_wndAnimationFrames.ScrollRight();
+  m_wndAnimationFrames.ScrollRight();
 }
 
 void CDlgLightAnimationEditor::OnScrollPgLeft()
 {
-	m_wndAnimationFrames.ScrollPgLeft();
+  m_wndAnimationFrames.ScrollPgLeft();
 }
 
 void CDlgLightAnimationEditor::OnScrollPgRight()
 {
-	m_wndAnimationFrames.ScrollPgRight();
+  m_wndAnimationFrames.ScrollPgRight();
 }
 
 void CDlgLightAnimationEditor::OnSelchangeLightAnimationNameCombo()
@@ -491,8 +491,8 @@ void CDlgLightAnimationEditor::OnLoadAnimation()
 
   try
   {
-    _pAnimStock->Release( m_padAnimData);
-    m_padAnimData = _pAnimStock->Obtain_t( fnAnimation);
+    _pAnimStock_Release( m_padAnimData);
+    m_padAnimData = _pAnimStock_Obtain_t( fnAnimation);
     m_fnSaveName = fnAnimation;
   }
   catch( char *strError)
@@ -501,7 +501,7 @@ void CDlgLightAnimationEditor::OnLoadAnimation()
     try
     {
       CTFileName fnDefaultAnimation = CTString( DEFAULT_ANIMATION_FILE);
-      m_padAnimData = _pAnimStock->Obtain_t( fnDefaultAnimation);
+      m_padAnimData = _pAnimStock_Obtain_t( fnDefaultAnimation);
     }
     catch( char *strError2)
     {
@@ -532,9 +532,9 @@ void CDlgLightAnimationEditor::OnSaveAnimation()
       m_padAnimData->Write_t( &strmFile);
       strmFile.Close();
       // refresh animation
-      CAnimData *pad = _pAnimStock->Obtain_t(m_fnSaveName);
+      CAnimDataPtr pad = _pAnimStock_Obtain_t(m_fnSaveName);
       pad->Reload();
-      _pAnimStock->Release(pad);
+      _pAnimStock_Release(pad);
     }
     catch( char *strError)
     {
@@ -560,9 +560,9 @@ void CDlgLightAnimationEditor::OnSaveAsAnimation()
     m_fnSaveName = fnAnimation;
     strmFile.Close();
     // refresh animation
-    CAnimData *pad = _pAnimStock->Obtain_t(m_fnSaveName);
+    CAnimDataPtr pad = _pAnimStock_Obtain_t(m_fnSaveName);
     pad->Reload();
-    _pAnimStock->Release(pad);
+    _pAnimStock_Release(pad);
   }
   catch( char *strError)
   {
@@ -585,7 +585,7 @@ void CDlgLightAnimationEditor::OnCancel()
 void CDlgLightAnimationEditor::OnClose()
 {
   if( m_bChanged) OnSaveAnimation();
-	CDialog::OnClose();
+  CDialog::OnClose();
 }
 
 void CDlgLightAnimationEditor::OnOK()

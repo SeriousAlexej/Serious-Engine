@@ -28,7 +28,7 @@ static char THIS_FILE[] = __FILE__;
 
 // internal routines for displaying test screen 
 
-static void DrawGradient( CDrawPort *pDP, COLOR colStart, COLOR colEnd,
+static void DrawGradient( CDrawPortPtr& pDP, COLOR colStart, COLOR colEnd,
                           PIX pixI0, PIX pixJ0, PIX pixI1, PIX pixJ1)
 {
   colStart |= CT_OPAQUE;
@@ -37,7 +37,7 @@ static void DrawGradient( CDrawPort *pDP, COLOR colStart, COLOR colEnd,
 }
 
 
-static void ShowTestModeScreen( CDrawPort *pDP, CViewPort *pVP)
+static void ShowTestModeScreen( CDrawPortPtr& pDP, CViewPortPtr& pVP)
 {
   // try to lock draw port
   if( !pDP->Lock()) return;
@@ -130,8 +130,8 @@ static void ShowTestModeScreen( CDrawPort *pDP, CViewPort *pVP)
 
   // type resolution
   CDisplayMode dmCurrent;
-  _pGfx->GetCurrentDisplayMode( dmCurrent);
-  strTestMessage.PrintF( "%d x %d x %s", dpWidth, dpHeight, dmCurrent.DepthString());
+  _pGfx_GetCurrentDisplayMode( dmCurrent);
+  strTestMessage.PrintF( "%d x %d x %s", dpWidth, dpHeight, static_cast<const char*>(dmCurrent.DepthString()));
   pDP->PutTextC( strTestMessage, 1.0f/2*dpWidth+2, 1.0f/2*dpHeight+2, C_dGRAY|CT_OPAQUE);
   pDP->PutTextC( strTestMessage, 1.0f/2*dpWidth,   1.0f/2*dpHeight,   C_WHITE|CT_OPAQUE);
 
@@ -151,32 +151,30 @@ CDlgSelectMode::CDlgSelectMode( CDisplayMode &dm, enum GfxAPIType &gfxAPI,
                                 CWnd* pParent /*=NULL*/) : CDialog( CDlgSelectMode::IDD, pParent)
 {
   // obtain all available modes
-  m_pdmAvailableModes = _pGfx->EnumDisplayModes(m_ctAvailableDisplayModes);
+  m_pdmAvailableModes = _pGfx_EnumDisplayModes(m_ctAvailableDisplayModes);
 
   // remember initial mode reference
   m_pdm = &dm;
   m_pGfxAPI = &gfxAPI;
 
   //{{AFX_DATA_INIT(CDlgSelectMode)
-	m_strCurrentMode = _T("");
-	m_strCurrentDriver = _T("");
-	m_iColor = -1;
-	//}}AFX_DATA_INIT
+  m_strCurrentMode = _T("");
+  m_strCurrentDriver = _T("");
+  m_iColor = -1;
+  //}}AFX_DATA_INIT
 
   // set current mode and driver strings
   CTString str;
-  str.PrintF( "%d x %d x %s", dm.dm_pixSizeI, dm.dm_pixSizeJ, dm.DepthString());
+  str.PrintF( "%d x %d x %s", dm.dm_pixSizeI, dm.dm_pixSizeJ, static_cast<const char*>(dm.DepthString()));
   m_strCurrentMode = str;
 
   switch(gfxAPI) {
   case GAT_OGL:
     m_strCurrentDriver = "OpenGL";
     break;
-#ifdef SE1_D3D
   case GAT_D3D:
     m_strCurrentDriver = "Direct3D";
     break;
-#endif // SE1_D3D
   default:
     m_strCurrentDriver = "none";
     break;
@@ -207,9 +205,11 @@ void CDlgSelectMode::ApplySettings( CDisplayMode *pdm, enum GfxAPIType *m_pGfxAP
 
   // find potentional corresponding modes
   for( INDEX iMode=0; iMode<m_ctAvailableDisplayModes; iMode++)
-  { // if found mode that matches in resolution
-    if( pixSizeI==m_pdmAvailableModes[iMode].dm_pixSizeI
-     && pixSizeJ==m_pdmAvailableModes[iMode].dm_pixSizeJ) {
+  {
+    auto pDisplayMode = _pGfx_GetEnumeratedDisplayMode(m_pdmAvailableModes, iMode);
+    // if found mode that matches in resolution
+    if( pixSizeI==pDisplayMode->dm_pixSizeI
+     && pixSizeJ==pDisplayMode->dm_pixSizeJ) {
       // get it and set wanted depth
       pdm->dm_pixSizeI = pixSizeI;
       pdm->dm_pixSizeJ = pixSizeJ;
@@ -221,7 +221,7 @@ void CDlgSelectMode::ApplySettings( CDisplayMode *pdm, enum GfxAPIType *m_pGfxAP
 
 void CDlgSelectMode::DoDataExchange(CDataExchange* pDX)
 {
-	CDialog::DoDataExchange(pDX);
+  CDialog::DoDataExchange(pDX);
 
   // prepare radio buttons
   if( !pDX->m_bSaveAndValidate)
@@ -235,13 +235,13 @@ void CDlgSelectMode::DoDataExchange(CDataExchange* pDX)
     }
   }
 
-	//{{AFX_DATA_MAP(CDlgSelectMode)
-	DDX_Control(pDX, IDC_RESOLUTIONS, m_ctrlResCombo);
-	DDX_Control(pDX, IDC_API, m_ctrlDriverCombo);
-	DDX_Text(pDX, IDC_CURRENT_MODE, m_strCurrentMode);
-	DDX_Text(pDX, IDC_CURRENT_DRIVER, m_strCurrentDriver);
-	DDX_Radio(pDX, IDC_COLOR_DEFAULT, m_iColor);
-	//}}AFX_DATA_MAP
+  //{{AFX_DATA_MAP(CDlgSelectMode)
+  DDX_Control(pDX, IDC_RESOLUTIONS, m_ctrlResCombo);
+  DDX_Control(pDX, IDC_API, m_ctrlDriverCombo);
+  DDX_Text(pDX, IDC_CURRENT_MODE, m_strCurrentMode);
+  DDX_Text(pDX, IDC_CURRENT_DRIVER, m_strCurrentDriver);
+  DDX_Radio(pDX, IDC_COLOR_DEFAULT, m_iColor);
+  //}}AFX_DATA_MAP
 
   // if dialog is recieving data
   if( !pDX->m_bSaveAndValidate)
@@ -256,21 +256,21 @@ void CDlgSelectMode::DoDataExchange(CDataExchange* pDX)
     i = m_ctrlDriverCombo.AddString( L"OpenGL");
     m_ctrlDriverCombo.SetItemData( i, (INDEX)GAT_OGL);
     if( *m_pGfxAPI==GAT_OGL) iSelect = i;
-#ifdef SE1_D3D
     i = m_ctrlDriverCombo.AddString( L"Direct3D");
     m_ctrlDriverCombo.SetItemData( i, (INDEX)GAT_D3D);
     if( *m_pGfxAPI==GAT_D3D) iSelect = i;
-#endif // SE1_D3D
     // set old driver to be default
     m_ctrlDriverCombo.SetCurSel( iSelect);
   
     // init resolutions combo
     iSelect=0;
     for( INDEX iMode=0; iMode<m_ctAvailableDisplayModes; iMode++)
-    { // prepare resolution string
+    {
+      auto pDisplayMode = _pGfx_GetEnumeratedDisplayMode(m_pdmAvailableModes, iMode);
+      // prepare resolution string
       CTString strRes;
-      PIX pixSizeI = m_pdmAvailableModes[iMode].dm_pixSizeI;
-      PIX pixSizeJ = m_pdmAvailableModes[iMode].dm_pixSizeJ;
+      PIX pixSizeI = pDisplayMode->dm_pixSizeI;
+      PIX pixSizeJ = pDisplayMode->dm_pixSizeJ;
       strRes.PrintF( "%d x %d", pixSizeI, pixSizeJ);
       // if not yet added
       if( m_ctrlResCombo.FindStringExact( 0, CString(strRes)) == CB_ERR) {
@@ -299,9 +299,9 @@ void CDlgSelectMode::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CDlgSelectMode, CDialog)
-	//{{AFX_MSG_MAP(CDlgSelectMode)
-	ON_BN_CLICKED(ID_TEST_BUTTON, OnTestButton)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CDlgSelectMode)
+  ON_BN_CLICKED(ID_TEST_BUTTON, OnTestButton)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 
@@ -323,7 +323,7 @@ void CDlgSelectMode::OnTestButton()
   PIX pixSizeI    = dm.dm_pixSizeI;
   PIX pixSizeJ    = dm.dm_pixSizeJ;
 
-  BOOL bDisplayModeSet = _pGfx->SetDisplayMode( GAT_OGL, 0, pixSizeI, pixSizeJ, dm.dm_ddDepth);
+  BOOL bDisplayModeSet = _pGfx_SetDisplayMode( GAT_OGL, 0, pixSizeI, pixSizeJ, dm.dm_ddDepth);
   if( !bDisplayModeSet) {
     AfxMessageBox( L"Unable to setup full screen display. Test mode failed.");
     return;
@@ -332,22 +332,22 @@ void CDlgSelectMode::OnTestButton()
   //--------------------------- Open window for testing windowed display mode
 
   // draw ports and viewports needed for printing message
-  CDrawPort *pDrawPort;
-  CViewPort *pViewPort;
+  CDrawPortPtr pDrawPort;
+  CViewPortPtr pViewPort;
 
   // get the windows dimensions for this display
-	int iScreenX = ::GetSystemMetrics(SM_CXSCREEN);	// screen size
-	int iScreenY = ::GetSystemMetrics(SM_CYSCREEN);
+  int iScreenX = ::GetSystemMetrics(SM_CXSCREEN);  // screen size
+  int iScreenY = ::GetSystemMetrics(SM_CYSCREEN);
 
   // open window of display mode size
   const wchar_t *strWindowClass = AfxRegisterWndClass( CS_OWNDC|CS_NOCLOSE);
   wndTestWindowedMode.CreateEx( WS_EX_TOPMOST, strWindowClass, L"Test mode",
                                 WS_POPUP|WS_VISIBLE, 0,0, iScreenX,iScreenY, m_hWnd, 0);
   // create window canvas
-  _pGfx->CreateWindowCanvas( wndTestWindowedMode.m_hWnd, &pViewPort, &pDrawPort);
+  _pGfx_CreateWindowCanvas( wndTestWindowedMode.m_hWnd, pViewPort, pDrawPort);
 
   // if screen or window opening was not successful
-  if( pViewPort == NULL) {
+  if( !pViewPort) {
     AfxMessageBox( L"Unable to setup full screen display. Test mode failed.");
     return;
   }
@@ -356,25 +356,25 @@ void CDlgSelectMode::OnTestButton()
   ShowTestModeScreen( pDrawPort, pViewPort);
     
   // get starting time
-  CTimerValue tvStart = _pTimer->GetHighPrecisionTimer();
+  CTimerValue tvStart = _pTimer_GetHighPrecisionTimer();
   // loop forever
   FOREVER {
     // get current time
-    CTimerValue tvCurrent = _pTimer->GetHighPrecisionTimer();
+    CTimerValue tvCurrent = _pTimer_GetHighPrecisionTimer();
     // get time difference in seconds
     CTimerValue tvElapsed = tvCurrent - tvStart;
     // three seconds passed?
     if( tvElapsed.GetSeconds() > 5.0f) break;
   }
   
-	// destroy windowed canvas
-  _pGfx->DestroyWindowCanvas( pViewPort);
-  pViewPort = NULL;
+  // destroy windowed canvas
+  _pGfx_DestroyWindowCanvas( pViewPort);
+  pViewPort.Reset();
   // destroy window
   wndTestWindowedMode.DestroyWindow();
 
   // restore old mode
-  _pGfx->ResetDisplayMode();
+  _pGfx_ResetDisplayMode();
 
   if( AfxMessageBox( L"Did You see displayed message correctly?", MB_YESNO) == IDYES) {
     GetDlgItem( IDOK)->SetFocus(); // set focus to apply button

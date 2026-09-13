@@ -124,6 +124,8 @@ IDR_ICON_PANE_VERTEX    ICON                    "res\\ico00026.ico"
 
 IDR_ICON_PANE_TERRAIN   ICON                    "res\\ico00027.ico"
 
+IDI_ICON_PICK           ICON                    "res\\pick.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -376,17 +378,15 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "&Preferences\tCtrl+P",        ID_FILE_PREFERENCES
         MENUITEM SEPARATOR
+        MENUITEM "Enable crash dumps"           ID_ENABLE_CRASH_DUMPS
+        MENUITEM "Full crash dumps"             ID_ENABLE_FULL_CRASH_DUMPS
+        MENUITEM SEPARATOR
         MENUITEM "Recent File",                 ID_FILE_MRU_FILE1, GRAYED
         MENUITEM SEPARATOR
         MENUITEM "E&xit",                       ID_APP_EXIT
     END
     POPUP "&Game"
     BEGIN
-        MENUITEM "&Player and controls for test game", ID_GAME_SELECT_PLAYER
-        MENUITEM "&Edit players and controls",  ID_GAME_PLAYER
-        MENUITEM "&Audio settings",             ID_GAME_AUDIO
-        MENUITEM "&Video settings",             ID_GAME_VIDEO
-        MENUITEM SEPARATOR
         MENUITEM "Console\tCtrl+L",             ID_CONSOLE
     END
     POPUP "&View"
@@ -407,6 +407,8 @@ BEGIN
         MENUITEM "&Property combo",             ID_VIEW_PROPERTYCOMBO
         MENUITEM "&Property tree",              ID_VIEW_PROPERTY_TREE
         MENUITEM "&Info window\tQ, Ctrl+I",     ID_VIEW_INFOWINDOW
+        MENUITEM SEPARATOR
+        MENUITEM "&Display camera viewfinder",  ID_DISPLAY_CAMERA_VIEWFINDER
     END
     POPUP "&Help"
     BEGIN
@@ -443,17 +445,43 @@ BEGIN
         MENUITEM "Create &texture\tCtrl+T",     ID_CREATE_TEXTURE
         MENUITEM "Preferences\tCtrl+P",         ID_FILE_PREFERENCES
         MENUITEM SEPARATOR
+        MENUITEM "Enable crash dumps"           ID_ENABLE_CRASH_DUMPS
+        MENUITEM "Full crash dumps"             ID_ENABLE_FULL_CRASH_DUMPS
+        MENUITEM SEPARATOR
         MENUITEM "Recent File",                 ID_FILE_MRU_FILE1, GRAYED
         MENUITEM SEPARATOR
         MENUITEM "E&xit",                       ID_APP_EXIT
     END
     POPUP "&Game"
     BEGIN
-        MENUITEM "&Current player and controls", ID_GAME_SELECT_PLAYER
-        MENUITEM "&Player settings",            ID_GAME_PLAYER
-        MENUITEM "&Audio settings",             ID_GAME_AUDIO
-        MENUITEM "&Video settings",             ID_GAME_VIDEO
-        MENUITEM SEPARATOR
+        POPUP "Test &Difficulty"
+        BEGIN
+            MENUITEM "Tourist", ID_QUICKTEST_DIFFICULTY_TOURIST
+            MENUITEM "Easy", ID_QUICKTEST_DIFFICULTY_EASY
+            MENUITEM "Normal", ID_QUICKTEST_DIFFICULTY_NORMAL
+            MENUITEM "Hard", ID_QUICKTEST_DIFFICULTY_HARD
+            MENUITEM "Serious", ID_QUICKTEST_DIFFICULTY_SERIOUS
+            MENUITEM "Mental", ID_QUICKTEST_DIFFICULTY_MENTAL
+            MENUITEM "Difficulty 1", ID_QUICKTEST_DIFFICULTY_1
+            MENUITEM "Difficulty 2", ID_QUICKTEST_DIFFICULTY_2
+            MENUITEM "Difficulty 3", ID_QUICKTEST_DIFFICULTY_3
+            MENUITEM "Difficulty 4", ID_QUICKTEST_DIFFICULTY_4
+            MENUITEM "Difficulty 5", ID_QUICKTEST_DIFFICULTY_5
+        END
+        POPUP "Test Game&mode"
+        BEGIN
+            MENUITEM "Singleplayer", ID_QUICKTEST_GAMEMODE_SINGLE
+            MENUITEM "Cooperative", ID_QUICKTEST_GAMEMODE_COOP
+            MENUITEM "Scorematch", ID_QUICKTEST_GAMEMODE_SCOREM
+            MENUITEM "Fragmatch", ID_QUICKTEST_GAMEMODE_FRAGM
+            MENUITEM "Flyover", ID_QUICKTEST_GAMEMODE_FLYOVER
+            MENUITEM "Game mode 1", ID_QUICKTEST_GAMEMODE_1
+            MENUITEM "Game mode 2", ID_QUICKTEST_GAMEMODE_2
+            MENUITEM "Game mode 3", ID_QUICKTEST_GAMEMODE_3
+            MENUITEM "Game mode 4", ID_QUICKTEST_GAMEMODE_4
+            MENUITEM "Game mode 5", ID_QUICKTEST_GAMEMODE_5
+            MENUITEM "Is multiplayer?", ID_QUICKTEST_IS_MULTIPLAYER
+        END
         MENUITEM "Test Game\tT",                ID_TEST_GAME
         MENUITEM "Test Game (full screen)\tCtrl+T", ID_TEST_GAME_FULLSCREEN
         MENUITEM SEPARATOR
@@ -487,6 +515,8 @@ BEGIN
         MENUITEM "&Property combo",             ID_VIEW_PROPERTYCOMBO
         MENUITEM "&Property tree",              ID_VIEW_PROPERTY_TREE
         MENUITEM "&Info window\tQ, Ctrl+I",     ID_VIEW_INFOWINDOW
+        MENUITEM SEPARATOR
+        MENUITEM "&Display camera viewfinder",  ID_DISPLAY_CAMERA_VIEWFINDER
     END
     POPUP "&Window"
     BEGIN
@@ -1217,22 +1247,6 @@ END
 // Dialog
 //
 
-IDD_ABOUTBOX DIALOG 0, 0, 216, 87
-STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "About WorldEditor"
-FONT 8, "MS Sans Serif"
-BEGIN
-    ICON            IDR_MAINFRAME,IDC_STATIC,108,7,20,20
-    DEFPUSHBUTTON   "OK",IDOK,177,7,32,13,WS_GROUP
-    CTEXT           "Serious Engine",IDC_STATIC,7,9,58,8,SS_NOPREFIX
-    LTEXT           "Copyright © 2001 CroTeam Ltd. All rights reserved.",IDC_STATIC,7,72,197,8
-    CTEXT           "Serious Editor",IDC_STATIC,7,18,60,8,SS_NOPREFIX
-    LTEXT           "For licensing Serious Engine email:",IDC_STATIC,7,42,115,8
-    LTEXT           "licensing@croteam.com",IDC_STATIC,129,42,80,8
-    LTEXT           "Please visit Croteam's WWW site at:",IDC_STATIC,7,51,121,8
-    LTEXT           "www.croteam.com",IDC_STATIC,129,51,80,8
-END
-
 IDD_CREATE_VIRTUAL_DIRECTORY DIALOG 0, 0, 318, 125
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Virtual directory"
@@ -1385,6 +1399,22 @@ BEGIN
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,145,223,135,10
 END
 
+IDD_CONSOLE DIALOG DISCARDABLE  0, 0, 443, 286
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Console"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_CONSOLE_INPUT,7,193,429,86,ES_MULTILINE | 
+                    ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_WANTRETURN | 
+                    WS_VSCROLL | WS_HSCROLL
+    EDITTEXT        IDC_CONSOLE_OUTPUT,7,7,429,169,ES_MULTILINE | 
+                    ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_READONLY | 
+                    WS_VSCROLL | WS_HSCROLL
+    LTEXT           "Available symbols:",IDC_STATIC,7,181,69,8
+    COMBOBOX        IDC_CONSOLE_SYMBOLS,76,179,360,108,CBS_DROPDOWNLIST | 
+                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
+END
+
 IDD_PG_PRIMITIVE DIALOGEX 0, 0, 208, 82
 STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION | WS_SYSMENU
 CAPTION "Primitives"
@@ -1424,23 +1454,27 @@ BEGIN
     LTEXT           "Displace.pcx",IDC_DISPLACE_FILE,85,45,73,8
 END
 
-IDD_PG_POSITION DIALOG 0, 0, 186, 61
+IDD_PG_POSITION DIALOGEX 0, 0, 187, 82
 STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION | WS_SYSMENU
 CAPTION "Position"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
     EDITTEXT        IDC_EDIT_X,18,8,60,12,ES_AUTOHSCROLL
     EDITTEXT        IDC_EDIT_Y,18,22,60,12,ES_AUTOHSCROLL
     EDITTEXT        IDC_EDIT_Z,18,36,60,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_EDIT_HEADING,120,8,61,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_EDIT_PITCH,120,22,61,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_EDIT_BANKING,120,36,61,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_HEADING,120,8,62,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_PITCH,120,22,62,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_BANKING,120,36,62,12,ES_AUTOHSCROLL
     LTEXT           "Heading:",IDC_STATIC_HEADING,86,9,32,8
     LTEXT           "Pitch:",IDC_STATIC_PITCH,86,26,32,8
     LTEXT           "Banking:",IDC_STATIC_BANKING,86,40,32,8
     LTEXT           "X:",IDC_STATIC_X,4,12,14,8
     LTEXT           "Y:",IDC_STATIC_Y,4,26,14,8
     LTEXT           "Z:",IDC_STATIC_Z,4,40,14,8
+    CONTROL         "Absolute gizmo",IDC_ABSOLUTE_ROTATION,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,4,55,74,10,WS_EX_RIGHT
+    PUSHBUTTON      "",IDC_PICK_ROTATION,166,53,16,14,BS_ICON | BS_PUSHLIKE
+    LTEXT           "Pick gizmo rotation",IDC_STATIC_PICK_ROTATION,86,56,77,8,0,WS_EX_RIGHT
+    CONTROL         "Snap to grid",IDC_SNAP_TO_GRID,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,4,69,74,10,WS_EX_RIGHT
 END
 
 IDD_RENDERING_PREFERENCES DIALOG 0, 0, 346, 270
@@ -1743,12 +1777,14 @@ STYLE DS_SETFONT | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
 CAPTION "Select entities"
 FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
-    LTEXT           "Entities in volume: 4",IDC_ENTITIES_IN_VOLUME_T,7,7,185,8
-    CONTROL         "List1",IDC_ENTITY_LIST,"SysListView32",LVS_REPORT | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,7,18,474,172
-    CONTROL         "&Volume",IDC_DISPLAY_VOLUME,"Button",BS_AUTOCHECKBOX | BS_TOP | WS_TABSTOP,199,7,44,11
-    CONTROL         "&Importants",IDC_DISPLAY_IMPORTANTS,"Button",BS_AUTOCHECKBOX | BS_TOP | WS_TABSTOP,251,7,47,11
-    LTEXT           "Pluggins:",IDC_PLUGGINS_T,325,7,31,8
-    COMBOBOX        IDC_PLUGGINS,358,3,120,314,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Entities in volume: 4",IDC_ENTITIES_IN_VOLUME_T,7,7,154,8
+    RTEXT           "Filter:",IDC_FILTER_LABEL,166,7,23,8
+    EDITTEXT        IDC_EDIT_FILTERENTITY,195,7,76,12,ES_AUTOHSCROLL
+    CONTROL         "&Volume",IDC_DISPLAY_VOLUME,"Button",BS_AUTOCHECKBOX | BS_TOP | WS_TABSTOP,274,7,44,11
+    CONTROL         "&Importants",IDC_DISPLAY_IMPORTANTS,"Button",BS_AUTOCHECKBOX | BS_TOP | WS_TABSTOP,321,7,47,11
+    LTEXT           "Plugins:",IDC_PLUGGINS_T,372,7,31,8
+    COMBOBOX        IDC_PLUGGINS,406,7,120,314,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "List1",IDC_ENTITY_LIST,"SysListView32",LVS_REPORT | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,7,24,519,166
     PUSHBUTTON      "&Delete",ID_DELETE_BROWSE_BY_CLASS,14,198,46,14
     PUSHBUTTON      "&Remove",ID_REMOVE,71,198,46,14
     PUSHBUTTON      "&Leave",ID_LEAVE,128,198,46,14
@@ -1757,7 +1793,7 @@ BEGIN
     PUSHBUTTON      "R&evert",ID_REVERT,299,198,46,14
     PUSHBUTTON      "&Sel. sectors",ID_SELECT_SECTORS,356,198,46,14
     DEFPUSHBUTTON   "OK",IDOK,413,198,46,14
-    PUSHBUTTON      "Cancel",IDCANCEL,470,202,46,14
+    PUSHBUTTON      "Cancel",IDCANCEL,469,198,46,14
 END
 
 IDD_FILE_REQUESTER DIALOG 0, 0, 250, 80
@@ -2287,8 +2323,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,1
- PRODUCTVERSION 1,0,0,1
+ FILEVERSION 1,10,0,0
+ PRODUCTVERSION 1,10,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -2303,13 +2339,13 @@ BEGIN
     BEGIN
         BLOCK "040904B0"
         BEGIN
-            VALUE "FileDescription", "WORLDEDITOR MFC Application"
-            VALUE "FileVersion", "1, 0, 0, 1"
-            VALUE "InternalName", "WORLDEDITOR"
-            VALUE "LegalCopyright", "Copyright © 1997"
-            VALUE "OriginalFilename", "WORLDEDITOR.EXE"
-            VALUE "ProductName", "WORLDEDITOR Application"
-            VALUE "ProductVersion", "1, 0, 0, 1"
+            VALUE "FileDescription", "SeriousEditorEX"
+            VALUE "FileVersion", "1, 10, 0, 0"
+            VALUE "InternalName", "SeriousEditorEX"
+            VALUE "LegalCopyright", "GPLv2"
+            VALUE "OriginalFilename", "SeriousEditorEX.exe"
+            VALUE "ProductName", "SeriousEditorEX"
+            VALUE "ProductVersion", "1, 10, 0, 0"
         END
     END
     BLOCK "VarFileInfo"
@@ -2327,22 +2363,6 @@ END
 #ifdef APSTUDIO_INVOKED
 GUIDELINES DESIGNINFO
 BEGIN
-    IDD_ABOUTBOX, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 209
-        VERTGUIDE, 67
-        VERTGUIDE, 101
-        VERTGUIDE, 129
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 80
-        HORZGUIDE, 17
-        HORZGUIDE, 26
-        HORZGUIDE, 50
-        HORZGUIDE, 59
-        HORZGUIDE, 80
-    END
-
     IDD_CREATE_VIRTUAL_DIRECTORY, DIALOG
     BEGIN
         LEFTMARGIN, 7
@@ -2400,6 +2420,19 @@ BEGIN
         HORZGUIDE, 66
     END
 
+    IDD_CONSOLE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 436
+        VERTGUIDE, 76
+        VERTGUIDE, 303
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 279
+        HORZGUIDE, 176
+        HORZGUIDE, 185
+        HORZGUIDE, 193
+    END
+
     IDD_PG_PRIMITIVE, DIALOG
     BEGIN
         LEFTMARGIN, 7
@@ -2420,16 +2453,20 @@ BEGIN
     IDD_PG_POSITION, DIALOG
     BEGIN
         LEFTMARGIN, 4
-        RIGHTMARGIN, 181
+        RIGHTMARGIN, 182
         VERTGUIDE, 18
         VERTGUIDE, 78
         VERTGUIDE, 86
         VERTGUIDE, 120
+        VERTGUIDE, 163
+        VERTGUIDE, 166
         TOPMARGIN, 4
-        BOTTOMMARGIN, 60
+        BOTTOMMARGIN, 81
         HORZGUIDE, 20
         HORZGUIDE, 34
         HORZGUIDE, 48
+        HORZGUIDE, 60
+        HORZGUIDE, 74
     END
 
     IDD_RENDERING_PREFERENCES, DIALOG
@@ -2592,7 +2629,7 @@ BEGIN
         RIGHTMARGIN, 526
         VERTGUIDE, 403
         TOPMARGIN, 7
-        BOTTOMMARGIN, 216
+        BOTTOMMARGIN, 212
     END
 
     IDD_LIGHT_ANIMATION_EDITOR, DIALOG
@@ -2903,6 +2940,11 @@ BEGIN
     0
 END
 
+IDD_PG_POSITION AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -2911,7 +2953,7 @@ END
 
 STRINGTABLE
 BEGIN
-    IDR_MAINFRAME           "Serious Editor"
+    IDR_MAINFRAME           "Serious Editor EX"
     IDR_WEDTYPE             "\nSedDoc\nWorld file\nWorlds (*.wld)\n.wld\nSeriousEditor.Document\nSerious Editor Document"
     IDS_DEFAULT_FONT        "MS Sans Serif"
     IDS_WED_ARIAL_FONT      "Arial"
@@ -3255,7 +3297,6 @@ BEGIN
     ID_VIEW_SETTINGS_AND_UTILITY_BAR 
                             "Show or hide the settings and utility tool bar\nToggle settings and utility bar"
     ID_VIEW_VIEW_TOOLS_BAR  "Show or hide the view tools tool bar\nToggle view tools bar"
-    ID_GAME_PLAYER          "Edit players and controls\nEdit players and controls"
 END
 
 STRINGTABLE
@@ -3274,9 +3315,6 @@ END
 
 STRINGTABLE
 BEGIN
-    ID_GAME_AUDIO           "Adjust audio settings\nAudio settings"
-    ID_GAME_VIDEO           "Adjust video settings\nVideo settings"
-    ID_GAME_SELECT_PLAYER   "Select player and controls to play with\nSelect player and controls to play with"
     ID_SHADOWS_NONE         "Show no shadows\nNo shadows (toggle-H)"
     ID_SHADOWS_NO_FX        "Show shadows with no effects\nShadows but no effects (toggle-H)"
     ID_SHADOWS_WITH_EFFECTS "Show shadow and shadow effects\nShadows and effects (toggle-H)"

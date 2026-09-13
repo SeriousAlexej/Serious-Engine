@@ -29,35 +29,35 @@ class CDlgFilterVertexSelection : public CDialog
 {
 // Construction
 public:
-	CDlgFilterVertexSelection(CWnd* pParent = NULL);   // standard constructor
+  CDlgFilterVertexSelection(CWnd* pParent = NULL);   // standard constructor
 
 // Dialog Data
-	//{{AFX_DATA(CDlgFilterVertexSelection)
-	enum { IDD = IDD_FILTER_VERTEX_SELECTION };
-	float	m_fMaxY;
-	float	m_fMaxX;
-	float	m_fMaxZ;
-	float	m_fMinX;
-	float	m_fMinY;
-	float	m_fMinZ;
-	//}}AFX_DATA
+  //{{AFX_DATA(CDlgFilterVertexSelection)
+  enum { IDD = IDD_FILTER_VERTEX_SELECTION };
+  float  m_fMaxY;
+  float  m_fMaxX;
+  float  m_fMaxZ;
+  float  m_fMinX;
+  float  m_fMinY;
+  float  m_fMinZ;
+  //}}AFX_DATA
 
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CDlgFilterVertexSelection)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CDlgFilterVertexSelection)
+  protected:
+  virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+  //}}AFX_VIRTUAL
 
 // Implementation
 protected:
 
-	// Generated message map functions
-	//{{AFX_MSG(CDlgFilterVertexSelection)
-		// NOTE: the ClassWizard will add member functions here
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+  // Generated message map functions
+  //{{AFX_MSG(CDlgFilterVertexSelection)
+    // NOTE: the ClassWizard will add member functions here
+  //}}AFX_MSG
+  DECLARE_MESSAGE_MAP()
 };
 
 //{{AFX_INSERT_LOCATION}}

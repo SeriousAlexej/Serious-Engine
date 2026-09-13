@@ -17,17 +17,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "properties_entity_root.h"
 #include "EventHub.h"
 
-EntityRootProperties::EntityRootProperties(BasePropertyTreeItem* parent, const std::set<CEntity*>& entities)
+EntityRootProperties::EntityRootProperties(BasePropertyTreeItem* parent, const std::set<CEntity_*>& entities)
   : BasePropertyTreeItem(parent)
   , m_entities(entities)
 {
   QObject::connect(&EventHub::instance(), &EventHub::PropertyChanged, this,
-    [this](const std::set<CEntity*>& entities, CPropertyID* prop)
+    [this](const std::set<CEntity_*>& entities, CPropertyID* prop)
     {
       if (prop->pid_eptType == CEntityProperty::PropertyType::EPT_STRING ||
           prop->pid_eptType == CEntityProperty::PropertyType::EPT_STRINGTRANS)
       {
-        std::vector<CEntity*> common_entities;
+        std::vector<CEntity_*> common_entities;
         std::set_intersection(entities.begin(), entities.end(),
           m_entities.begin(), m_entities.end(),
           std::back_inserter(common_entities));
@@ -46,10 +46,12 @@ QVariant EntityRootProperties::data(int column, int role) const
   if (column == 0 || column == 2)
   {
     auto it = m_entities.begin();
-    common_value = (*it)->GetClass()->ec_pdecDLLClass->dec_strName;
+    CEntity entity(*it, false);
+    common_value = entity.GetClass()->ec_pdecDLLClass->dec_strName;
     for (++it; it != m_entities.end(); ++it)
     {
-      if (common_value != (*it)->GetClass()->ec_pdecDLLClass->dec_strName)
+      CEntity entity(*it, false);
+      if (common_value != entity.GetClass()->ec_pdecDLLClass->dec_strName)
       {
         common_value = "(mixed selection)";
         break;
@@ -61,12 +63,17 @@ QVariant EntityRootProperties::data(int column, int role) const
     auto it = m_entities.begin();
     if (m_entities.size() == 1)
     {
-      common_value = QString("%1 (ID %2)").arg(QString::fromLocal8Bit((*it)->GetName().str_String)).arg(QString::number((*it)->en_ulID));
+      CEntity entity(*it, false);
+      auto entity_name = QString::fromLocal8Bit(static_cast<const char*>(entity.GetName()));
+      entity_name.replace('\n', " ");
+      common_value = QString("%1 (ID %2)").arg(entity_name).arg(QString::number(entity.en_ulID));
     } else {
-      common_value = QString::fromLocal8Bit((*it)->GetName().str_String);
+      CEntity entity(*it, false);
+      common_value = QString::fromLocal8Bit(static_cast<const char*>(entity.GetName()));
       for (++it; it != m_entities.end(); ++it)
       {
-        if (common_value != QString::fromLocal8Bit((*it)->GetName().str_String))
+        CEntity entity(*it, false);
+        if (common_value != QString::fromLocal8Bit(static_cast<const char*>(entity.GetName())))
         {
           common_value = "(mixed names)";
           break;

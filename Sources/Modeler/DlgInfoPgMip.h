@@ -27,50 +27,50 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class CDlgInfoPgMip : public CPropertyPage
 {
-	DECLARE_DYNCREATE(CDlgInfoPgMip)
+  DECLARE_DYNCREATE(CDlgInfoPgMip)
 
 // Construction
 public:
-	CUpdateable m_udAllValues;
-	BOOL OnIdle(LONG lCount);
+  CUpdateable m_udAllValues;
+  BOOL OnIdle(LONG lCount);
 
   CDlgInfoPgMip();
-	~CDlgInfoPgMip();
+  ~CDlgInfoPgMip();
 
   void SetMipPageFromView(CModelerView* pModelerView);
   void SetViewFromMipPage(CModelerView* pModelerView);
   void ToggleMipFlag( ULONG ulFlag);
 
 // Dialog Data
-	//{{AFX_DATA(CDlgInfoPgMip)
-	enum { IDD = IDD_INFO_MIP };
-	CString	m_strCurrentMipModel;
-	CString	m_strModelDistance;
-	CString	m_strCurrentMipFactor;
-	CString	m_strModelMipSwitchFactor;
-	CString	m_strNoOfPolygons;
-	CString	m_strNoOfVertices;
-	CString	m_strNoOfTriangles;
-	BOOL	m_bHasPatches;
-	BOOL	m_bHasAttachedModels;
-	//}}AFX_DATA
+  //{{AFX_DATA(CDlgInfoPgMip)
+  enum { IDD = IDD_INFO_MIP };
+  CString  m_strCurrentMipModel;
+  CString  m_strModelDistance;
+  CString  m_strCurrentMipFactor;
+  CString  m_strModelMipSwitchFactor;
+  CString  m_strNoOfPolygons;
+  CString  m_strNoOfVertices;
+  CString  m_strNoOfTriangles;
+  BOOL  m_bHasPatches;
+  BOOL  m_bHasAttachedModels;
+  //}}AFX_DATA
 
 
 // Overrides
-	// ClassWizard generate virtual function overrides
-	//{{AFX_VIRTUAL(CDlgInfoPgMip)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
+  // ClassWizard generate virtual function overrides
+  //{{AFX_VIRTUAL(CDlgInfoPgMip)
+  protected:
+  virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+  //}}AFX_VIRTUAL
 
 // Implementation
 protected:
-	// Generated message map functions
-	//{{AFX_MSG(CDlgInfoPgMip)
-	afx_msg void OnHasPatches();
-	afx_msg void OnHasAttachedModels();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+  // Generated message map functions
+  //{{AFX_MSG(CDlgInfoPgMip)
+  afx_msg void OnHasPatches();
+  afx_msg void OnHasAttachedModels();
+  //}}AFX_MSG
+  DECLARE_MESSAGE_MAP()
 
 };
 

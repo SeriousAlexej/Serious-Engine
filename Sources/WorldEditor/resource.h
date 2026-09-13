@@ -17,9 +17,9 @@
 #define ID_CLOSE                        7
 #define ID_ADD_ANIMATION                8
 #define ID_DELETE_ANIMATION             9
-#define IDD_ABOUTBOX                    100
 #define CG_IDD_BROWSEDIALOGBAR          102
 #define IDD_PROPERTY_TREE               103
+#define IDD_CONSOLE                     104
 #define CG_IDD_PROPERTYCOMBO            105
 #define IDC_CUT_LINE                    105
 #define IDC_MIRROR                      107
@@ -151,6 +151,7 @@
 #define IDD_TERRAIN_HEIGHTMAP_SIZE      256
 #define IDD_EDIT_TERRAIN_LAYER          257
 #define IDD_TE_OPTION_SETTINGS          258
+#define IDI_ICON_PICK                   259
 #define IDD_TERRAIN_PROPERTIES          261
 #define IDD_GENERATE_FBM                262
 #define IDC_VIRTUALTREE                 1000
@@ -195,6 +196,7 @@
 #define IDC_ALLIGN_Y                    1016
 #define IDC_BROWSE_CONTINOUS_NOISE      1016
 #define IDC_FBM_EXPORT                  1016
+#define IDC_PICK_ROTATION               1016
 #define IDC_BUTTON3                     1017
 #define IDC_BASE_VERTICES               1017
 #define IDC_CANCEL                      1017
@@ -308,6 +310,7 @@
 #define IDC_BUTTON31                    1045
 #define IDC_USE_BCG_PICTURE             1045
 #define IDC_CSG_PRECISSION              1045
+#define IDC_STATIC_PICK_ROTATION        1045
 #define IDC_BUTTON32                    1046
 #define IDC_CHECK1                      1046
 #define IDC_RENDER_EDITOR_MODELS        1046
@@ -321,6 +324,7 @@
 #define IDC_EXPAND_EDGES                1046
 #define IDC_AUTO_GENERATE_LAYER_DISTRIBUTION 1046
 #define IDC_ADD_NEGATIVE_VALUES         1046
+#define IDC_ABSOLUTE_ROTATION           1046
 #define IDC_TEXTURE_INFO                1047
 #define IDC_AUTO_RENDERING_RANGE        1047
 #define IDC_IS_PASSABLE                 1047
@@ -741,6 +745,9 @@
 #define IDC_CT_OCTAVES_SPIN             1262
 #define IDC_GLOBAL_PRETENDER            1263
 #define IDC_BCG_PICTURE_SIZE            1264
+#define IDC_SNAP_TO_GRID                1264
+#define IDC_EDIT_FILTERENTITY           1265
+#define IDC_FILTER_LABEL                1266
 #define IDC_FBM_PREVIEW_FRAME           1284
 #define IDC_IS_LIGHT_BEAM_PASSABLLE     11048
 #define IDC_NO_SHADOW                   11049
@@ -753,6 +760,9 @@
 #define IDC_HAS_DIRECTIONAL_AMBIENT     11059
 #define IDC_DARK_CORNERS                11060
 #define IDC_APPLY_GRADIENT              11061
+#define IDC_CONSOLE_INPUT               11062
+#define IDC_CONSOLE_OUTPUT              11063
+#define IDC_CONSOLE_SYMBOLS             11064
 #define ID_SAVE_VIRTUAL_TREE            32771
 #define ID_LOAD_VIRTUAL_TREE            32772
 #define ID_DELETE_DIRECTORY             32773
@@ -895,10 +905,6 @@
 #define ID_CALL_TEXMAKER                32939
 #define ID_VIEW_SETTINGS_AND_UTILITY_BAR 32940
 #define ID_VIEW_VIEW_TOOLS_BAR          32941
-#define ID_GAME_PLAYER                  32943
-#define ID_GAME_AUDIO                   32944
-#define ID_GAME_VIDEO                   32945
-#define ID_GAME_SELECT_PLAYER           32946
 #define ID_SHADOWS_NONE                 32947
 #define ID_SHADOWS_NO_FX                32948
 #define ID_SHADOWS_WITH_EFFECTS         32949
@@ -1294,7 +1300,31 @@
 #define ID_ADV_MAPPING_ALIGN_TANGENT    33403
 #define ID_ADV_MAPPING_ALIGN_ADJACENT   33404
 #define ID_ADV_MAPPING_ALIGN_ADJACENT_TANGENT 33405
-#define ID_ACCELERATOR33406             33406
+#define ID_QUICKTEST_DIFFICULTY_TOURIST 33406
+#define ID_QUICKTEST_DIFFICULTY_EASY    33407
+#define ID_QUICKTEST_DIFFICULTY_NORMAL  33408
+#define ID_QUICKTEST_DIFFICULTY_HARD    33409
+#define ID_QUICKTEST_DIFFICULTY_SERIOUS 33410
+#define ID_QUICKTEST_DIFFICULTY_MENTAL  33411
+#define ID_QUICKTEST_DIFFICULTY_1       33412
+#define ID_QUICKTEST_DIFFICULTY_2       33413
+#define ID_QUICKTEST_DIFFICULTY_3       33414
+#define ID_QUICKTEST_DIFFICULTY_4       33415
+#define ID_QUICKTEST_DIFFICULTY_5       33416
+#define ID_QUICKTEST_GAMEMODE_FLYOVER   33417
+#define ID_QUICKTEST_GAMEMODE_SINGLE    33418
+#define ID_QUICKTEST_GAMEMODE_COOP      33419
+#define ID_QUICKTEST_GAMEMODE_SCOREM    33420
+#define ID_QUICKTEST_GAMEMODE_FRAGM     33421
+#define ID_QUICKTEST_GAMEMODE_1         33422
+#define ID_QUICKTEST_GAMEMODE_2         33423
+#define ID_QUICKTEST_GAMEMODE_3         33424
+#define ID_QUICKTEST_GAMEMODE_4         33425
+#define ID_QUICKTEST_GAMEMODE_5         33426
+#define ID_QUICKTEST_IS_MULTIPLAYER     33427
+#define ID_DISPLAY_CAMERA_VIEWFINDER    33428
+#define ID_ENABLE_CRASH_DUMPS           33429
+#define ID_ENABLE_FULL_CRASH_DUMPS      33430
 #define IDW_TOOLBAR_MAIN                0xE800
 #define IDW_STATUSBAR                   0xE801
 #define IDW_TOOLBAR_CSG                 0xE802
@@ -1319,9 +1349,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        256
-#define _APS_NEXT_COMMAND_VALUE         33391
-#define _APS_NEXT_CONTROL_VALUE         1264
+#define _APS_NEXT_RESOURCE_VALUE        260
+#define _APS_NEXT_COMMAND_VALUE         33431
+#define _APS_NEXT_CONTROL_VALUE         1267
 #define _APS_NEXT_SYMED_VALUE           111
 #endif
 #endif

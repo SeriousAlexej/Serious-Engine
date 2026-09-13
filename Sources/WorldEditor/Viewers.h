@@ -42,7 +42,7 @@ public:
 class CSlaveViewer {
 friend class CMasterViewer;
 public:
-  enum ProjectionType {
+  enum ProjectionType : INDEX{
     PT_ILLEGAL = 0,
     PT_PERSPECTIVE,
     PT_ISOMETRIC_FRONT,
@@ -52,7 +52,7 @@ public:
     PT_ISOMETRIC_LEFT,
     PT_ISOMETRIC_BOTTOM,
   };
-  CDrawPort *sv_pdpDrawPort;          // drawport that this viewer was created for
+  CDrawPortPtr sv_pdpDrawPort;          // drawport that this viewer was created for
   CPlacement3D sv_plViewer;           // placement of the viewer
   CPlacement3D sv_plGrid;             // grid's placement
   FLOAT sv_fTargetDistance;           // distance of virtual target from viewer
@@ -64,7 +64,7 @@ public:
 
   // default constructor
   CSlaveViewer( const CMasterViewer &mvMaster, enum ProjectionType ptProjectionType,
-                const CPlacement3D &plGrid, CDrawPort *pdpDrawPort);
+                const CPlacement3D &plGrid, CDrawPortPtr pdpDrawPort);
   // create a projection for this viewer
   void MakeProjection(CAnyProjection3D &prProjection);
   // create a perspective projection for this viewer

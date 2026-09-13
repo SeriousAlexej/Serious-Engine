@@ -15,34 +15,41 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "stdafx.h"
 
-#include <Engine/Math/Vector.h>
-#include <Engine/Base/FileName.h>
-#include <Engine/Base/ErrorReporting.h>
-
-#include <Engine/Templates/DynamicArray.cpp>
-#include <Engine/Templates/DynamicContainer.cpp>
+#include <SeriousEngineCppAPI/Math/Vector.h>
+#include <SeriousEngineCppAPI/Base/FileName.h>
+#include <SeriousEngineCppAPI/Base/ErrorReporting.h>
 
 #include "MipMaker.h"
 
 #include <unordered_map>
+#include <unordered_set>
+
+namespace
+{
+  template<typename TObject>
+  INDEX _Index(const std::vector<std::unique_ptr<TObject>>& vector, const TObject* object)
+  {
+    for (size_t i = 0; i < vector.size(); ++i)
+      if (vector.at(i).get() == object)
+        return (INDEX)i;
+    return 0;
+  }
+} // anonymous namespace
 
 // if vertex removing should occure only inside surfaces
 static BOOL _bPreserveSurfaces;
 
 CMipModel::~CMipModel()
 {
-  mm_amsSurfaces.Clear();
-  mm_ampPolygons.Clear();
-  mm_amvVertices.Clear();
+  mm_amsSurfaces.clear();
+  mm_ampPolygons.clear();
+  mm_amvVertices.clear();
 }
 
 CMipVertex::CMipVertex()
 {
 }
 CMipVertex::~CMipVertex()
-{
-}
-void CMipVertex::Clear()
 {
 }
 
@@ -75,9 +82,9 @@ ImportedMesh CMipModel::GetMesh()
   ImportedMesh mesh;
   // add vertices to sector
   mesh.m_uvs.resize(1, {});
-  mesh.m_vertices.resize(mm_amvVertices.Count(), FLOAT3D(0, 0, 0));
+  mesh.m_vertices.resize(mm_amvVertices.size(), FLOAT3D(0, 0, 0));
   INDEX iVertice = 0;
-  FOREACHINDYNAMICARRAY( mm_amvVertices, CMipVertex, itVertice)
+  for (auto& itVertice : mm_amvVertices)
   {
     FLOAT3D vRestFrame = itVertice->mv_vRestFrameCoordinate;
     mesh.m_vertices[ iVertice] = vRestFrame;
@@ -85,19 +92,19 @@ ImportedMesh CMipModel::GetMesh()
   }
 
   // add mip surfaces as materials to object 3d
-  mesh.m_materials.resize(mm_amsSurfaces.Count(), ImportedMesh::Material{});
+  mesh.m_materials.resize(mm_amsSurfaces.size(), ImportedMesh::Material{});
   INDEX iMaterial = 0;
-  FOREACHINDYNAMICARRAY( mm_amsSurfaces, CMipSurface, itSurface)
+  for (auto& itSurface : mm_amsSurfaces)
   {
     mesh.m_materials[ iMaterial].cm_strName = itSurface->ms_strName;
     mesh.m_materials[ iMaterial].cm_colColor = itSurface->ms_colColor;
     iMaterial ++;
   }
 
-  std::unordered_map<FLOAT2D, INDEX, FLOAT2D::Hasher> texCoordsRemap;
+  std::unordered_map<FLOAT2D, INDEX, FLOAT2DHasher> texCoordsRemap;
 
   // add polygons to object 3d
-  FOREACHINDYNAMICARRAY( mm_ampPolygons, CMipPolygon, itPolygon)
+  for (auto& itPolygon : mm_ampPolygons)
   {
     // prepare array of polygon vertex indices
     INDEX aivVertices[32];
@@ -123,16 +130,13 @@ ImportedMesh CMipModel::GetMesh()
         texCoordsRemap[vtxUV] = texCoordIndex;
       }
       texCoords[ctPolygonVertices] = texCoordIndex;
-      mm_amvVertices.Lock();
-      aivVertices[ ctPolygonVertices] =
-        mm_amvVertices.Index( pmpvPolygonVertex->mpv_pmvVertex);
-      mm_amvVertices.Unlock();
+      aivVertices[ ctPolygonVertices] = _Index(mm_amvVertices, pmpvPolygonVertex->mpv_pmvVertex);
       pmpvPolygonVertex = pmpvPolygonVertex->mpv_pmpvNextInPolygon;
       ctPolygonVertices ++;
     }
     while( pmpvPolygonVertex != itPolygon->mp_pmpvFirstPolygonVertex);
     // add current polygon splitted to triangles
-    for (size_t i = 2; i < ctPolygonVertices; ++i)
+    for (INDEX i = 2; i < ctPolygonVertices; ++i)
     {
       ImportedMesh::Triangle triangle;
       triangle.ct_iVtx[0] = aivVertices[0];
@@ -154,39 +158,35 @@ CMipModel::CMipModel(const ImportedMesh& mesh)
   char achrErrorVertice[ 256];
 
   // add mip surface
-  mm_amsSurfaces.New(mesh.m_materials.size());
+  mm_amsSurfaces.reserve(mesh.m_materials.size());
   // copy material data from object 3d to mip surfaces
-  INDEX iMaterial = 0;
-  FOREACHINDYNAMICARRAY( mm_amsSurfaces, CMipSurface, itSurface)
+  for (const auto& material : mesh.m_materials)
   {
-    itSurface->ms_strName =mesh.m_materials[iMaterial].cm_strName;
-    itSurface->ms_colColor =mesh.m_materials[iMaterial].cm_colColor;
-    iMaterial ++;
+    auto& itSurface = mm_amsSurfaces.emplace_back(std::make_unique<CMipSurface>());
+    itSurface->ms_strName = material.cm_strName;
+    itSurface->ms_colColor = material.cm_colColor;
   }
 
   // add mip vertices
-  mm_amvVertices.New(mesh.m_vertices.size());
+  mm_amvVertices.reserve(mesh.m_vertices.size());
   // copy vertice coordinates from object3d to mip vertices
-  INDEX iVertice = 0;
-  {FOREACHINDYNAMICARRAY( mm_amvVertices, CMipVertex, itVertice)
+  for (const auto& vertex : mesh.m_vertices)
   {
-    const FLOAT3D vertex = mesh.m_vertices[iVertice];
-    (FLOAT3D &)(*itVertice) = vertex;
+    auto& itVertice = mm_amvVertices.emplace_back(std::make_unique<CMipVertex>());
+    itVertice->m_vector = vertex;
     itVertice->mv_vRestFrameCoordinate = vertex;
     // calculate bounding box of all vertices
-    mm_boxBoundingBox |= *itVertice;
-    iVertice++;
-  }}
+    mm_boxBoundingBox |= vertex;
+  }
 
   // add mip polygons
-  mm_ampPolygons.New(mesh.m_triangles.size());
+  mm_ampPolygons.reserve(mesh.m_triangles.size());
   // copy polygons object 3d to mip polygons
   const size_t uv0 = mesh.m_defaultUVChannel;
-  INDEX iPolygon = 0;
-  FOREACHINDYNAMICARRAY( mm_ampPolygons, CMipPolygon, itPolygon)
+  for (const auto& triangle : mesh.m_triangles)
   {
-    const ImportedMesh::Triangle& triangle = mesh.m_triangles[iPolygon];
-    CMipPolygon &mpPolygon = itPolygon.Current();
+    auto& itPolygon = mm_ampPolygons.emplace_back(std::make_unique<CMipPolygon>());
+    CMipPolygon &mpPolygon = *itPolygon;
     // allocate polygon vertices
     CMipPolygonVertex *ppvPolygonVertices[3];
     INDEX iPolygonVertice=0;
@@ -205,9 +205,7 @@ CMipModel::CMipModel(const ImportedMesh& mesh)
       // set references to mip polygon and mip vertex
       ppvPolygonVertex->mpv_pmpPolygon = &mpPolygon;
       ppvPolygonVertex->m_uv = mesh.m_uvs[uv0][triangle.ct_iTVtx[uv0][iPolygonVertice]];
-      mm_amvVertices.Lock();
-      ppvPolygonVertex->mpv_pmvVertex = &mm_amvVertices[iVertexInSector];
-      mm_amvVertices.Unlock();
+      ppvPolygonVertex->mpv_pmvVertex = mm_amvVertices[iVertexInSector].get();
       // link to previous and next vertices in the mip polygon
       INDEX iNext=(iPolygonVertice+1)%3;
       ppvPolygonVertex->mpv_pmpvNextInPolygon = ppvPolygonVertices[ iNext];
@@ -216,7 +214,6 @@ CMipModel::CMipModel(const ImportedMesh& mesh)
     // set first polygon vertex ptr and surface index to polygon
     itPolygon->mp_pmpvFirstPolygonVertex = ppvPolygonVertices[ 0];
     itPolygon->mp_iSurface = triangle.ct_iMaterial;
-    iPolygon++;
   }
 
   if( ctInvalidVertices != 0)
@@ -234,7 +231,7 @@ CMipModel::CMipModel(const ImportedMesh& mesh)
 void CMipModel::CheckObjectValidity(void)
 {
   // for all polygons
-  FOREACHINDYNAMICARRAY( mm_ampPolygons, CMipPolygon, itPolygon)
+  for (auto& itPolygon : mm_ampPolygons)
   {
     CMipPolygon &mpMipPolygon = *itPolygon;
     CMipPolygonVertex *pvFirstInPolygon = mpMipPolygon.mp_pmpvFirstPolygonVertex;
@@ -251,20 +248,18 @@ void CMipModel::CheckObjectValidity(void)
 FLOAT CMipModel::GetGoodness(CMipVertex *pmvSource, CMipVertex *pmvTarget)
 {
   if( (_bPreserveSurfaces) && (pmvSource->mv_iSurface == -2) ) return -10000.0f;
-  FLOAT fDistST = ( *pmvSource - *pmvTarget).Length();
-  FLOAT fDistBBoxCenterT = ( mm_boxBoundingBox.Center() - *pmvTarget).Length();
+  FLOAT fDistST = ( pmvSource->m_vector - pmvTarget->m_vector).Length();
+  FLOAT fDistBBoxCenterT = ( mm_boxBoundingBox.Center() - pmvTarget->m_vector).Length();
   return fDistBBoxCenterT/100.0f + 1.0f/fDistST;
 }
 
 INDEX CMipModel::FindSurfacesForVertices(void)
 {
-  {FOREACHINDYNAMICARRAY( mm_amvVertices, CMipVertex, itVertice)
-  {
+  for (auto& itVertice : mm_amvVertices)
     itVertice->mv_iSurface = -1;
-  }}
 
   // for all polygons
-  {FOREACHINDYNAMICARRAY( mm_ampPolygons, CMipPolygon, itPolygon)
+  for (auto& itPolygon : mm_ampPolygons)
   {
     // for all vertices in this polygon
     CMipPolygonVertex *pmpvCurrentInPolygon = itPolygon->mp_pmpvFirstPolygonVertex;
@@ -278,22 +273,21 @@ INDEX CMipModel::FindSurfacesForVertices(void)
       pmpvCurrentInPolygon = pmpvCurrentInPolygon->mpv_pmpvNextInPolygon;
     }
     while( pmpvCurrentInPolygon != itPolygon->mp_pmpvFirstPolygonVertex);
-  }}
+  }
 
   // count vertices that are sourounded with only one surface
   INDEX ctVerticesWithOneSurface = 0;
   // for all vertices
-  {FOREACHINDYNAMICARRAY( mm_amvVertices, CMipVertex, itVertice)
-  {
+  for (auto& itVertice : mm_amvVertices)
     if( itVertice->mv_iSurface >= 0) ctVerticesWithOneSurface++;
-  }}
+
   return ctVerticesWithOneSurface;
 }
 
 void CMipModel::JoinVertexPair( CMipVertex *pmvBestSource, CMipVertex *pmvBestTarget)
 {
   // for all polygons
-  {FOREACHINDYNAMICARRAY( mm_ampPolygons, CMipPolygon, itPolygon)
+  for (auto& itPolygon : mm_ampPolygons)
   {
     // for all vertices in this polygon
     CMipPolygonVertex *pmpvCurrentInPolygon = itPolygon->mp_pmpvFirstPolygonVertex;
@@ -306,12 +300,15 @@ void CMipModel::JoinVertexPair( CMipVertex *pmvBestSource, CMipVertex *pmvBestTa
       pmpvCurrentInPolygon = pmpvCurrentInPolygon->mpv_pmpvNextInPolygon;
     }
     while( pmpvCurrentInPolygon != itPolygon->mp_pmpvFirstPolygonVertex);
-  }}
+  }
   // delete best source vertex
-  mm_amvVertices.Delete( pmvBestSource);
+  mm_amvVertices.erase(
+    std::remove_if(mm_amvVertices.begin(), mm_amvVertices.end(),
+      [=](const auto& v) { return v.get() == pmvBestSource; }),
+    mm_amvVertices.end());
 
   // for all polygons
-  {FOREACHINDYNAMICARRAY( mm_ampPolygons, CMipPolygon, itPolygon)
+  for (auto& itPolygon : mm_ampPolygons)
   {
     // for all vertices in this polygon
     CMipPolygonVertex *pmpvCurrentInPolygon = itPolygon->mp_pmpvFirstPolygonVertex;
@@ -334,11 +331,11 @@ void CMipModel::JoinVertexPair( CMipVertex *pmvBestSource, CMipVertex *pmvBestTa
       pmpvCurrentInPolygon = pmpvCurrentInPolygon->mpv_pmpvNextInPolygon;
     }
     while( pmpvCurrentInPolygon != itPolygon->mp_pmpvFirstPolygonVertex);
-  }}
+  }
 
-  CDynamicContainer<CMipPolygon> cPolygonsToDelete;
+  std::unordered_set<CMipPolygon*> cPolygonsToDelete;
   // for all polygons
-  {FOREACHINDYNAMICARRAY( mm_ampPolygons, CMipPolygon, itPolygon)
+  for (auto& itPolygon : mm_ampPolygons)
   {
     CMipPolygonVertex *pmpvFirst = itPolygon->mp_pmpvFirstPolygonVertex;
     // if this is polygon with one or two vertices
@@ -346,14 +343,14 @@ void CMipModel::JoinVertexPair( CMipVertex *pmvBestSource, CMipVertex *pmvBestTa
         (pmpvFirst->mpv_pmpvNextInPolygon->mpv_pmpvNextInPolygon == pmpvFirst) )
     {
       // add it to container for deleting
-      cPolygonsToDelete.Add( &itPolygon.Current());
+      cPolygonsToDelete.insert( itPolygon.get());
     }
-  }}
+  }
   // delete polygons
-  {FOREACHINDYNAMICCONTAINER(cPolygonsToDelete, CMipPolygon, itPolygon)
-  {
-    mm_ampPolygons.Delete( &itPolygon.Current());
-  }}
+  mm_ampPolygons.erase(
+    std::remove_if(mm_ampPolygons.begin(), mm_ampPolygons.end(),
+      [&](const auto& v) { return cPolygonsToDelete.contains(v.get()); }),
+    mm_ampPolygons.end());
 }
 
 void CMipModel::FindBestVertexPair( CMipVertex *&pmvBestSource, CMipVertex *&pmvBestTarget)
@@ -362,7 +359,7 @@ void CMipModel::FindBestVertexPair( CMipVertex *&pmvBestSource, CMipVertex *&pmv
   pmvBestTarget = NULL;
   FLOAT fBestGoodnes = -999999.9f;
   // for all polygons
-  {FOREACHINDYNAMICARRAY( mm_ampPolygons, CMipPolygon, itPolygon)
+  for (auto& itPolygon : mm_ampPolygons)
   {
     // for all vertices in this polygon
     CMipPolygonVertex *pmpvCurrentInPolygon = itPolygon->mp_pmpvFirstPolygonVertex;
@@ -390,7 +387,7 @@ void CMipModel::FindBestVertexPair( CMipVertex *&pmvBestSource, CMipVertex *&pmv
       pmpvCurrentInPolygon = pmpvCurrentInPolygon->mpv_pmpvNextInPolygon;
     }
     while( pmpvCurrentInPolygon != itPolygon->mp_pmpvFirstPolygonVertex);
-  }}
+  }
   ASSERT( (pmvBestSource != NULL) && (pmvBestTarget != NULL) );
   ASSERT( pmvBestSource != pmvBestTarget);
 }
@@ -398,18 +395,18 @@ void CMipModel::FindBestVertexPair( CMipVertex *&pmvBestSource, CMipVertex *&pmv
 void CMipModel::RemoveUnusedVertices(void)
 {
   // if there are no vertices
-  if (mm_amvVertices.Count()==0) {
+  if (mm_amvVertices.empty()) {
     // do nothing
     return;
   }
 
   // clear all vertex tags
-  {FOREACHINDYNAMICARRAY(mm_amvVertices, CMipVertex, itmvtx) {
+  for (auto& itmvtx : mm_amvVertices)
     itmvtx->mv_bUsed = FALSE;
-  }}
 
   // mark all vertices that are used by some polygon
-  {FOREACHINDYNAMICARRAY(mm_ampPolygons, CMipPolygon, itpo) {
+  for (auto& itpo : mm_ampPolygons)
+  {
     CMipPolygonVertex *pmpvCurrentInPolygon = itpo->mp_pmpvFirstPolygonVertex;
     do
     {
@@ -417,28 +414,31 @@ void CMipModel::RemoveUnusedVertices(void)
       pmpvCurrentInPolygon = pmpvCurrentInPolygon->mpv_pmpvNextInPolygon;
     }
     while( pmpvCurrentInPolygon != itpo->mp_pmpvFirstPolygonVertex);
-  }}
+  }
 
   // find number of used vertices
   INDEX ctUsedVertices = 0;
-  {FOREACHINDYNAMICARRAY(mm_amvVertices, CMipVertex, itmvtx) {
+  for (auto& itmvtx : mm_amvVertices)
     if (itmvtx->mv_bUsed) {
       ctUsedVertices++;
     }
-  }}
 
   // create a new array with as much vertices as we have counted in last pass
-  CDynamicArray<CMipVertex> amvxNew;
-  CMipVertex *pmvxUsed = amvxNew.New(ctUsedVertices);
+  std::vector<std::unique_ptr<CMipVertex>> amvxNew;
+  amvxNew.reserve(ctUsedVertices);
+  for (INDEX i = 0; i < ctUsedVertices; ++i)
+    amvxNew.emplace_back(std::make_unique<CMipVertex>());
+  INDEX pmvxUsed = 0;
 
   // for each vertex
-  {FOREACHINDYNAMICARRAY(mm_amvVertices, CMipVertex, itmvtx) {
+  for (auto& itmvtx : mm_amvVertices)
+  {
     // if it is used
     if (itmvtx->mv_bUsed) {
       // copy it to new array
-      *pmvxUsed = itmvtx.Current();
+      *amvxNew[pmvxUsed] = *itmvtx;
       // set its remap pointer into new array
-      itmvtx->mv_pmvxRemap = pmvxUsed;
+      itmvtx->mv_pmvxRemap = amvxNew[pmvxUsed].get();
       pmvxUsed++;
     // if it is not used
     } else {
@@ -447,10 +447,11 @@ void CMipModel::RemoveUnusedVertices(void)
       itmvtx->mv_pmvxRemap = NULL;
       #endif
     }
-  }}
+  }
 
   // for each polygon
-  {FOREACHINDYNAMICARRAY(mm_ampPolygons, CMipPolygon, itpo) {
+  for (auto& itpo : mm_ampPolygons)
+  {
     // for each polygon vertex in polygon
     CMipPolygonVertex *pmpvCurrentInPolygon = itpo->mp_pmpvFirstPolygonVertex;
     do
@@ -460,16 +461,16 @@ void CMipModel::RemoveUnusedVertices(void)
       pmpvCurrentInPolygon = pmpvCurrentInPolygon->mpv_pmpvNextInPolygon;
     }
     while( pmpvCurrentInPolygon != itpo->mp_pmpvFirstPolygonVertex);
-  }}
+  }
 
   // use new array of vertices instead of the old one
-  mm_amvVertices.Clear();
-  mm_amvVertices.MoveArray(amvxNew);
+  mm_amvVertices = std::move(amvxNew);
 }
 
 BOOL CMipModel::CreateMipModel_t(INDEX ctVerticesToRemove, INDEX iSurfacePreservingFactor)
 {
-  if( ctVerticesToRemove>mm_amvVertices.Count()) return FALSE;
+  if( ctVerticesToRemove > static_cast<INDEX>(mm_amvVertices.size()))
+    return FALSE;
 
   for( INDEX ctRemoved = 0; ctRemoved<ctVerticesToRemove; ctRemoved++)
   {
@@ -478,7 +479,7 @@ BOOL CMipModel::CreateMipModel_t(INDEX ctVerticesToRemove, INDEX iSurfacePreserv
     // setup flag for preserving surfaces
     _bPreserveSurfaces = TRUE;
     if( (ctVerticesWithOneSurface == 0) ||
-        (( ((FLOAT)ctVerticesWithOneSurface) / mm_amvVertices.Count())*100 <=
+        (( ((FLOAT)ctVerticesWithOneSurface) / mm_amvVertices.size())*100 <=
         (100-iSurfacePreservingFactor)) )
     {
       _bPreserveSurfaces = FALSE;
@@ -488,7 +489,7 @@ BOOL CMipModel::CreateMipModel_t(INDEX ctVerticesToRemove, INDEX iSurfacePreserv
     FindBestVertexPair( pmvBestSource, pmvBestTarget);
     JoinVertexPair( pmvBestSource, pmvBestTarget);
     RemoveUnusedVertices();
-    if( mm_amvVertices.Count() == 0) return FALSE;
+    if( mm_amvVertices.empty()) return FALSE;
   }
   return TRUE;
 }

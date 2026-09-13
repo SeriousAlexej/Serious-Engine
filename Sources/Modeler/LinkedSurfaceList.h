@@ -26,7 +26,7 @@ class CLinkedSurfaceList : public CCheckListBox
 {
 // Construction
 public:
-	CLinkedSurfaceList();
+  CLinkedSurfaceList();
   CDialog *m_pdlgParentDialog;
 
 // Attributes
@@ -36,23 +36,23 @@ public:
 public:
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CLinkedSurfaceList)
-	public:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CLinkedSurfaceList)
+  public:
+  virtual BOOL PreTranslateMessage(MSG* pMsg);
+  //}}AFX_VIRTUAL
 
 // Implementation
 public:
-	virtual ~CLinkedSurfaceList();
+  virtual ~CLinkedSurfaceList();
 
-	// Generated message map functions
+  // Generated message map functions
 protected:
-	//{{AFX_MSG(CLinkedSurfaceList)
-	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
-	//}}AFX_MSG
+  //{{AFX_MSG(CLinkedSurfaceList)
+  afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
+  //}}AFX_MSG
 
-	DECLARE_MESSAGE_MAP()
+  DECLARE_MESSAGE_MAP()
 };
 
 /////////////////////////////////////////////////////////////////////////////

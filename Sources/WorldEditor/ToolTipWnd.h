@@ -29,7 +29,7 @@ class CToolTipWnd : public CWnd
 {
 // Construction
 public:
-	CToolTipWnd();
+  CToolTipWnd();
 
 // Attributes
 public:
@@ -49,23 +49,23 @@ public:
 public:
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CToolTipWnd)
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CToolTipWnd)
+  //}}AFX_VIRTUAL
 
 // Implementation
 public:
-	virtual ~CToolTipWnd();
+  virtual ~CToolTipWnd();
 
-	// Generated message map functions
+  // Generated message map functions
 protected:
-	//{{AFX_MSG(CToolTipWnd)
-	afx_msg void OnPaint();
-	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
-	afx_msg void OnSetFocus(CWnd* pOldWnd);
-	afx_msg void OnTimer(UINT nIDEvent);
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+  //{{AFX_MSG(CToolTipWnd)
+  afx_msg void OnPaint();
+  afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
+  afx_msg void OnSetFocus(CWnd* pOldWnd);
+  afx_msg void OnTimer(UINT nIDEvent);
+  //}}AFX_MSG
+  DECLARE_MESSAGE_MAP()
 };
 
 /////////////////////////////////////////////////////////////////////////////

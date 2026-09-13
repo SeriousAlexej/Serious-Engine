@@ -31,8 +31,6 @@ static char THIS_FILE[] = __FILE__;
 
 CActiveTextureWnd::CActiveTextureWnd()
 {
-  m_pDrawPort = NULL;
-  m_pViewPort = NULL;
 }
 
 CActiveTextureWnd::~CActiveTextureWnd()
@@ -59,14 +57,14 @@ void CActiveTextureWnd::OnPaint()
   CPaintDC dc(this);
   }
 
-  if( (m_pViewPort == NULL) && (m_pDrawPort == NULL) )
+  if( (!m_pViewPort) && (!m_pDrawPort) )
   {
     // initialize canvas for active texture button
-    _pGfx->CreateWindowCanvas( m_hWnd, &m_pViewPort, &m_pDrawPort);
+    _pGfx_CreateWindowCanvas( m_hWnd, m_pViewPort, m_pDrawPort);
   }
 
   // if there is a valid drawport, and the drawport can be locked
-  if( (m_pDrawPort != NULL) && (m_pDrawPort->Lock()) )
+  if( m_pDrawPort && (m_pDrawPort->Lock()) )
   {
     PIXaabbox2D rectPict;
     rectPict = PIXaabbox2D( PIX2D(0, 0),
@@ -77,11 +75,11 @@ void CActiveTextureWnd::OnPaint()
     m_pDrawPort->FillZBuffer(ZBUF_BACK);
     
     // if there is valid active texture
-    if( theApp.m_ptdActiveTexture != NULL)
+    if( theApp.m_ptdActiveTexture)
     {
       CTextureObject toActiveTexture;
-      toActiveTexture.SetData( theApp.m_ptdActiveTexture);
-      m_pDrawPort->PutTexture( &toActiveTexture, rectPict);
+      toActiveTexture.SetData( *theApp.m_ptdActiveTexture);
+      m_pDrawPort->PutTexture( toActiveTexture, rectPict);
     }
     else
     {
@@ -95,7 +93,7 @@ void CActiveTextureWnd::OnPaint()
     // unlock the drawport
     m_pDrawPort->Unlock();
 
-    if (m_pViewPort!=NULL)
+    if (m_pViewPort)
     {
       m_pViewPort->SwapBuffers();
     }
@@ -104,7 +102,7 @@ void CActiveTextureWnd::OnPaint()
 
 void CActiveTextureWnd::OnLButtonDown(UINT nFlags, CPoint point) 
 {
-  if( theApp.m_ptdActiveTexture == NULL) return;
+  if( !theApp.m_ptdActiveTexture) return;
   HGLOBAL hglobal = CreateHDrop( theApp.m_ptdActiveTexture->GetName());
   m_DataSource.CacheGlobalData( CF_HDROP, hglobal);
   m_DataSource.DoDragDrop( DROPEFFECT_COPY);
@@ -120,12 +118,11 @@ void CActiveTextureWnd::OnDestroy()
 {
 	CWnd::OnDestroy();
 
-  if( m_pViewPort != NULL)
+  if( m_pViewPort )
   {
-    _pGfx->DestroyWindowCanvas( m_pViewPort);
-    m_pViewPort = NULL;
+    _pGfx_DestroyWindowCanvas( m_pViewPort);
   }
 
-  m_pViewPort = NULL;
-  m_pDrawPort = NULL;
+  m_pViewPort.Reset();
+  m_pDrawPort.Reset();
 }

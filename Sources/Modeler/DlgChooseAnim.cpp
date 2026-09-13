@@ -30,7 +30,7 @@ static char THIS_FILE[] = __FILE__;
 
 
 CDChooseAnim::CDChooseAnim(CAnimObject *pAO, CWnd* pParent /*=NULL*/)
-	: CDialog(CDChooseAnim::IDD, pParent)
+  : CDialog(CDChooseAnim::IDD, pParent)
 {
   m_pAnimObject = pAO;
 }
@@ -38,7 +38,7 @@ CDChooseAnim::CDChooseAnim(CAnimObject *pAO, CWnd* pParent /*=NULL*/)
 
 void CDChooseAnim::DoDataExchange(CDataExchange* pDX)
 {
-	CDialog::DoDataExchange(pDX);
+  CDialog::DoDataExchange(pDX);
 
   //{{AFX_DATA_MAP(CDChooseAnim)
   DDX_Control(pDX, IDC_LIST1, m_ListBox);
@@ -67,9 +67,9 @@ void CDChooseAnim::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CDChooseAnim, CDialog)
-	//{{AFX_MSG_MAP(CDChooseAnim)
-	ON_LBN_DBLCLK(IDC_LIST1, OnDblclkList1)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CDChooseAnim)
+  ON_LBN_DBLCLK(IDC_LIST1, OnDblclkList1)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -77,5 +77,5 @@ END_MESSAGE_MAP()
 
 void CDChooseAnim::OnDblclkList1() 
 {
-	CDialog::OnOK();
+  CDialog::OnOK();
 }

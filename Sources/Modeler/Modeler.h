@@ -17,7 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 //
 
 #ifndef __AFXWIN_H__
-	#error include 'stdafx.h' before including this file for PCH
+  #error include 'stdafx.h' before including this file for PCH
 #endif
 
 #include "resource.h"       // main symbols
@@ -36,9 +36,8 @@ class CBcgTexture
 public:
   CBcgTexture();
   ~CBcgTexture();
-  CListNode wt_ListNode;
   CTextureObject wt_toTexture;
-  CTextureData *wt_TextureData;
+  CTextureDataPtr wt_TextureData;
   CTFileName wt_FileName;
 };
 
@@ -46,8 +45,7 @@ public:
 class CWorkingPatch
 {
 public:
-  CListNode wp_ListNode;
-  CTextureData *wp_TextureData;
+  CTextureDataPtr wp_TextureData;
   CTFileName wp_FileName;
 };
 
@@ -55,7 +53,7 @@ public:
 class CAppPrefs
 {
 public:
-	~CAppPrefs();
+  ~CAppPrefs();
   BOOL ap_CopyExistingWindowPrefs;
   BOOL ap_bIsBcgVisibleByDefault;
   BOOL ap_bIsFloorVisibleByDefault;
@@ -85,21 +83,23 @@ public:
   void WriteToIniFile();
 };
 
-class CModelerApp : public CWinApp
+class CModelerApp : public CWinAppQt
 {
 private:
   void OnQtAbout();
 
 private:
   QObject* mp_qtContext = nullptr;
-  bool m_showing_modal_dialog;
 
 public:
+  void AddToRecentFileList(LPCTSTR lpszPathName) override;
   void EditScriptAndReopenDocument(CTFileName fnScriptName);
-	BOOL SubInitInstance(void);
+  BOOL SubInitInstance(void);
   BOOL m_bRefreshPatchPalette;
   BOOL m_bFirstTimeStarted;
   BOOL m_OnIdlePaused;
+  BOOL m_enableCrashDumps = TRUE;
+  BOOL m_enableFullCrashDumps = FALSE;
   void CreateNewDocument( CTFileName fnRequestedFile);
   BOOL AddModelerWorkingTexture( CTFileName fnTexName);
   BOOL AddModelerWorkingPatch( CTFileName fnPatchName);
@@ -110,72 +110,66 @@ public:
 
   INDEX m_iApi;
   BOOL m_bChangeDisplayModeInProgress;
-	// for lamp model
-  CModelData *m_pLampModelData;
-	CModelObject *m_LampModelObject;
-  CTextureData *m_ptdLamp;
+  // for lamp model
+  CModelDataPtr m_pLampModelData;
+  CModelObject* m_LampModelObject;
+  CTextureDataPtr m_ptdLamp;
   // for collision box
-  CTextureData *m_ptdCollisionBoxTexture;
-	CModelData *m_pCollisionBoxModelData;
-	CModelObject *m_pCollisionBoxModelObject;
+  CTextureDataPtr m_ptdCollisionBoxTexture;
+  CModelDataPtr m_pCollisionBoxModelData;
+  CModelObject* m_pCollisionBoxModelObject;
   // for floor
-  CTextureData *m_ptdFloorTexture;
-	CModelData *m_pFloorModelData;
-	CModelObject *m_pFloorModelObject;
+  CTextureDataPtr m_ptdFloorTexture;
+  CModelDataPtr m_pFloorModelData;
+  CModelObject* m_pFloorModelObject;
   CDocTemplate *m_pdtModelDocTemplate;
   // List head for holding working textures
-  CListHead m_WorkingTextures;
+  std::vector<std::unique_ptr<CBcgTexture>> m_WorkingTextures;
   // List head for holding working patches
-  CListHead m_WorkingPatches;
+  std::vector<std::unique_ptr<CWorkingPatch>> m_WorkingPatches;
   // Only instance of CAppPrefs holding preferences data for modeler application
   class CAppPrefs m_Preferences;
   // Application's Croteam font data
-  CFontData *m_pfntFont;
+  CFontDataPtr m_pfntFont;
 
   // ptrs to property pages
-	class CDlgInfoPgNone *m_pPgInfoNone;
+  class CDlgInfoPgNone *m_pPgInfoNone;
   class CDlgInfoPgRendering *m_pPgInfoRendering;
-	class CDlgInfoPgGlobal *m_pPgInfoGlobal;
-	class CDlgInfoPgMip *m_pPgInfoMip;
-	class CDlgInfoPgPos *m_pPgInfoPos;
-	class CDlgInfoPgAnim *m_pPgInfoAnim;
-	class CDlgPgCollision *m_pPgInfoCollision;
-	class CDlgPgInfoAttachingPlacement *m_pPgAttachingPlacement;
-	class CDlgInfoPgSurf *m_pPgInfoSurf;
-	class CDlgInfoPgColorizingSurface *m_pPgInfoColorizingSurface;
+  class CDlgInfoPgGlobal *m_pPgInfoGlobal;
+  class CDlgInfoPgMip *m_pPgInfoMip;
+  class CDlgInfoPgPos *m_pPgInfoPos;
+  class CDlgInfoPgAnim *m_pPgInfoAnim;
+  class CDlgPgCollision *m_pPgInfoCollision;
+  class CDlgPgInfoAttachingPlacement *m_pPgAttachingPlacement;
+  class CDlgInfoPgSurf *m_pPgInfoSurf;
+  class CDlgInfoPgColorizingSurface *m_pPgInfoColorizingSurface;
 
   // variables for display modes for different modes
-	CChangeable m_chPlacement;
-	CChangeable m_chGlobal;
-
-  struct ModalGuard
-  {
-    ModalGuard();
-    ~ModalGuard();
-  };
+  CChangeable m_chPlacement;
+  CChangeable m_chGlobal;
 
   CModelerApp();
   ~CModelerApp();
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CModelerApp)
-	public:
-	virtual BOOL InitInstance();
-	virtual BOOL OnIdle(LONG lCount);
-	virtual int ExitInstance();
-	virtual int Run();
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CModelerApp)
+  public:
+  virtual BOOL InitInstance();
+  virtual BOOL OnIdle(LONG lCount);
+  virtual int ExitInstance();
+  virtual int Run();
+  //}}AFX_VIRTUAL
 
 // Implementation
 
-	//{{AFX_MSG(CModelerApp)
-	afx_msg void OnAppAbout();
-	afx_msg void OnFileNew();
-	afx_msg void OnFileOpen();
-	afx_msg void OnFilePreferences();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+  //{{AFX_MSG(CModelerApp)
+  afx_msg void OnAppAbout();
+  afx_msg void OnFileNew();
+  afx_msg void OnFileOpen();
+  afx_msg void OnFilePreferences();
+  //}}AFX_MSG
+  DECLARE_MESSAGE_MAP()
 };
 
 extern CModelerApp theApp;

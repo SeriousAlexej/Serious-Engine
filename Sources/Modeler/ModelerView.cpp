@@ -20,8 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "Script/ScriptIO.h"
 
-#include <Engine/Models/ImportedMesh.h>
-#include <Engine/Templates/Stock_CTextureData.h>
+#include <EngineGUI/ImportedMesh.h>
+#include <SeriousEngineCppAPI/Templates/Stock_CTextureData.h>
 
 #ifdef _DEBUG
 #undef new
@@ -44,176 +44,176 @@ static FLOAT _bSoundPlayed = FALSE;
 IMPLEMENT_DYNCREATE(CModelerView, CView)
 
 BEGIN_MESSAGE_MAP(CModelerView, CView)
-	//{{AFX_MSG_MAP(CModelerView)
-	ON_WM_DESTROY()
-	ON_WM_MOUSEMOVE()
-	ON_WM_LBUTTONDOWN()
-	ON_COMMAND(ID_ANIM_PLAY, OnAnimPlay)  
-	ON_COMMAND(ID_ANIM_PREVANIM, OnAnimPrevAnim)
-	ON_COMMAND(ID_ANIM_NEXTANIM, OnAnimNextAnim)
-	ON_COMMAND(ID_ANIM_NEXTFRAME, OnAnimNextFrame)
-	ON_COMMAND(ID_ANIM_PREVFRAME, OnAnimPrevFrame)
-	ON_WM_RBUTTONDOWN()
-	ON_UPDATE_COMMAND_UI(ID_ANIM_PLAY, OnUpdateAnimPlay)
-	ON_UPDATE_COMMAND_UI(ID_ANIM_NEXTFRAME, OnUpdateAnimNextframe)
-	ON_UPDATE_COMMAND_UI(ID_ANIM_PREVFRAME, OnUpdateAnimPrevframe)
-	ON_COMMAND(ID_ANIM_CHOOSE, OnAnimChoose)
-	ON_COMMAND(ID_ANIM_MIP_PRECIZE, OnAnimMipPrecize)
-	ON_COMMAND(ID_ANIM_MIP_ROUGH, OnAnimMipRough)
-	ON_UPDATE_COMMAND_UI(ID_ANIM_MIP_PRECIZE, OnUpdateAnimMipPrecize)
-	ON_UPDATE_COMMAND_UI(ID_ANIM_MIP_ROUGH, OnUpdateAnimMipRough)
-	ON_COMMAND(ID_OPT_AUTO_MIP_MODELING, OnOptAutoMipModeling)
-	ON_UPDATE_COMMAND_UI(ID_OPT_AUTO_MIP_MODELING, OnUpdateOptAutoMipModeling)
-	ON_COMMAND(ID_ANIM_ROTATION, OnAnimRotation)
-	ON_UPDATE_COMMAND_UI(ID_ANIM_ROTATION, OnUpdateAnimRotation)
-	ON_WM_LBUTTONUP()
-	ON_WM_RBUTTONUP()
-	ON_WM_SIZE()
-	ON_WM_CONTEXTMENU()
-	ON_COMMAND(ID_PREFS_CHANGE_INK, OnPrefsChangeInk)
-	ON_COMMAND(ID_PREFS_CHANGE_PAPER, OnPrefsChangePaper)
-	ON_COMMAND(ID_FILE_REMOVE_TEXTURE, OnFileRemoveTexture)
-	ON_COMMAND(ID_SCRIPT_OPEN, OnScriptOpen)
-	ON_COMMAND(ID_SCRIPT_UPDATE_ANIMATIONS, OnScriptUpdateAnimations)
-	ON_COMMAND(ID_SCRIPT_UPDATE_MIPMODELS, OnScriptUpdateMipmodels)
-	ON_COMMAND(ID_LIGHT_ON, OnLightOn)
-	ON_COMMAND(ID_LIGHT_COLOR, OnLightColor)
-	ON_UPDATE_COMMAND_UI(ID_LIGHT_ON, OnUpdateLightOn)
-	ON_COMMAND(ID_REND_BBOX_ALL, OnRendBboxAll)
-	ON_COMMAND(ID_REND_BBOX_FRAME, OnRendBboxFrame)
-	ON_COMMAND(ID_REND_WIRE_ONOFF, OnRendWireOnoff)
-	ON_COMMAND(ID_REND_HIDDEN_LINES, OnRendHiddenLines)
-	ON_COMMAND(ID_REND_NO_TEXTURE, OnRendNoTexture)
-	ON_COMMAND(ID_REND_ON_COLORS, OnRendOnColors)
-	ON_COMMAND(ID_REND_OFF_COLORS, OnRendOffColors)
-	ON_COMMAND(ID_REND_SURFACE_COLORS, OnRendSurfaceColors)
-	ON_COMMAND(ID_REND_WHITE_TEXTURE, OnRendWhiteTexture)
-	ON_COMMAND(ID_REND_USE_TEXTURE, OnRendUseTexture)
-	ON_UPDATE_COMMAND_UI(ID_LIGHT_COLOR, OnUpdateLightColor)
-	ON_UPDATE_COMMAND_UI(ID_MAPPING_ON, OnUpdateMappingOn)
-	ON_UPDATE_COMMAND_UI(ID_SCRIPT_OPEN, OnUpdateScriptOpen)
-	ON_UPDATE_COMMAND_UI(ID_SCRIPT_UPDATE_ANIMATIONS, OnUpdateScriptUpdateAnimations)
-	ON_UPDATE_COMMAND_UI(ID_SCRIPT_UPDATE_MIPMODELS, OnUpdateScriptUpdateMipmodels)
-	ON_UPDATE_COMMAND_UI(ID_ANIM_NEXTANIM, OnUpdateAnimNextanim)
-	ON_UPDATE_COMMAND_UI(ID_ANIM_PREVANIM, OnUpdateAnimPrevanim)
-	ON_UPDATE_COMMAND_UI(ID_ANIM_CHOOSE, OnUpdateAnimChoose)
-	ON_UPDATE_COMMAND_UI(ID_FILE_REMOVE_TEXTURE, OnUpdateFileRemoveTexture)
-	ON_COMMAND(ID_MAGNIFY_LESS, OnMagnifyLess)
-	ON_COMMAND(ID_MAGNIFY_MORE, OnMagnifyMore)
-	ON_COMMAND(ID_WINDOW_FIT, OnWindowFit)
-	ON_COMMAND(ID_WINDOW_CENTER, OnWindowCenter)
-	ON_WM_KEYDOWN()
-	ON_WM_KEYUP()
-	ON_COMMAND(ID_BACKGROUND_TEXTURE, OnBackgroundTexture)
-	ON_UPDATE_COMMAND_UI(ID_REND_HIDDEN_LINES, OnUpdateRendHiddenLines)
-	ON_UPDATE_COMMAND_UI(ID_REND_WIRE_ONOFF, OnUpdateRendWireOnoff)
-	ON_UPDATE_COMMAND_UI(ID_REND_NO_TEXTURE, OnUpdateRendNoTexture)
-	ON_UPDATE_COMMAND_UI(ID_REND_WHITE_TEXTURE, OnUpdateRendWhiteTexture)
-	ON_UPDATE_COMMAND_UI(ID_REND_SURFACE_COLORS, OnUpdateRendSurfaceColors)
-	ON_UPDATE_COMMAND_UI(ID_REND_ON_COLORS, OnUpdateRendOnColors)
-	ON_UPDATE_COMMAND_UI(ID_REND_OFF_COLORS, OnUpdateRendOffColors)
-	ON_UPDATE_COMMAND_UI(ID_REND_USE_TEXTURE, OnUpdateRendUseTexture)
-	ON_UPDATE_COMMAND_UI(ID_REND_BBOX_ALL, OnUpdateRendBboxAll)
-	ON_UPDATE_COMMAND_UI(ID_REND_BBOX_FRAME, OnUpdateRendBboxFrame)
-	ON_COMMAND(ID_TAKE_SCREEN_SHOOT, OnTakeScreenShoot)
-	ON_WM_KILLFOCUS()
-	ON_COMMAND(ID_BACKG_PICTURE, OnBackgPicture)
-	ON_COMMAND(ID_BACKG_COLOR, OnBackgColor)
-	ON_COMMAND(ID_REND_FLOOR, OnRendFloor)
-	ON_UPDATE_COMMAND_UI(ID_REND_FLOOR, OnUpdateRendFloor)
-	ON_COMMAND(ID_STAINS_INSERT, OnStainsInsert)
-	ON_COMMAND(ID_STAINS_DELETE, OnStainsDelete)
-	ON_UPDATE_COMMAND_UI(ID_STAINS_DELETE, OnUpdateStainsDelete)
-	ON_COMMAND(ID_STAINS_PREVIOUS_STAIN, OnStainsPreviousStain)
-	ON_COMMAND(ID_STAINS_NEXT_STAIN, OnStainsNextStain)
-	ON_UPDATE_COMMAND_UI(ID_STAINS_INSERT, OnUpdateStainsInsert)
-	ON_UPDATE_COMMAND_UI(ID_STAINS_NEXT_STAIN, OnUpdateStainsNextStain)
-	ON_UPDATE_COMMAND_UI(ID_STAINS_PREVIOUS_STAIN, OnUpdateStainsPreviousStain)
-	ON_COMMAND(ID_SHADOW_WORSE, OnShadowWorse)
-	ON_COMMAND(ID_SHADOW_BETTER, OnShadowBetter)
-	ON_WM_LBUTTONDBLCLK()
-	ON_COMMAND(ID_SAVE_THUMBNAIL, OnSaveThumbnail)
-	ON_UPDATE_COMMAND_UI(ID_SAVE_THUMBNAIL, OnUpdateSaveThumbnail)
-	ON_COMMAND(ID_RESTART_ANIMATIONS, OnRestartAnimations)
-	ON_COMMAND(ID_FRAME_RATE, OnFrameRate)
-	ON_UPDATE_COMMAND_UI(ID_FRAME_RATE, OnUpdateFrameRate)
-	ON_COMMAND(ID_HEADING, OnHeading)
-	ON_COMMAND(ID_PITCH, OnPitch)
-	ON_COMMAND(ID_BANKING, OnBanking)
-	ON_UPDATE_COMMAND_UI(ID_COLLISION_BOX, OnUpdateCollisionBox)
-	ON_COMMAND(ID_COLLISION_BOX, OnCollisionBox)
-	ON_COMMAND(ID_RESET_VIEWER, OnResetViewer)
-	ON_UPDATE_COMMAND_UI(ID_RESET_VIEWER, OnUpdateResetViewer)
-	ON_COMMAND(ID_DOLLY_VIEWER, OnDollyViewer)
-	ON_UPDATE_COMMAND_UI(ID_DOLLY_VIEWER, OnUpdateDollyViewer)
-	ON_COMMAND(ID_DOLLY_LIGHT, OnDollyLight)
-	ON_UPDATE_COMMAND_UI(ID_DOLLY_LIGHT, OnUpdateDollyLight)
-	ON_COMMAND(ID_DOLLY_LIGHT_COLOR, OnDollyLightColor)
-	ON_UPDATE_COMMAND_UI(ID_DOLLY_LIGHT_COLOR, OnUpdateDollyLightColor)
-	ON_COMMAND(ID_NEXT_TEXTURE, OnNextTexture)
-	ON_UPDATE_COMMAND_UI(ID_NEXT_TEXTURE, OnUpdateNextTexture)
-	ON_COMMAND(ID_PREVIOUS_TEXTURE, OnPreviousTexture)
-	ON_UPDATE_COMMAND_UI(ID_PREVIOUS_TEXTURE, OnUpdatePreviousTexture)
-	ON_COMMAND(ID_RECREATE_TEXTURE, OnRecreateTexture)
-	ON_UPDATE_COMMAND_UI(ID_RECREATE_TEXTURE, OnUpdateRecreateTexture)
-	ON_COMMAND(ID_CREATE_MIP_MODELS, OnCreateMipModels)
-	ON_COMMAND(ID_PICK_VERTEX, OnPickVertex)
-	ON_UPDATE_COMMAND_UI(ID_PICK_VERTEX, OnUpdatePickVertex)
-	ON_COMMAND(ID_DOLLY_MIP_MODELING, OnDollyMipModeling)
-	ON_UPDATE_COMMAND_UI(ID_DOLLY_MIP_MODELING, OnUpdateDollyMipModeling)
-	ON_COMMAND(ID_ANIM_PLAY_ONCE, OnAnimPlayOnce)
-	ON_UPDATE_COMMAND_UI(ID_ANIM_PLAY_ONCE, OnUpdateAnimPlayOnce)
-	ON_COMMAND(ID_TILE_TEXTURE, OnTileTexture)
-	ON_UPDATE_COMMAND_UI(ID_TILE_TEXTURE, OnUpdateTileTexture)
-	ON_COMMAND(ID_ADD_REFLECTION_TEXTURE, OnAddReflectionTexture)
-	ON_COMMAND(ID_ADD_SPECULAR, OnAddSpecular)
-	ON_COMMAND(ID_REMOVE_REFLECTION, OnRemoveReflection)
-	ON_UPDATE_COMMAND_UI(ID_REMOVE_REFLECTION, OnUpdateRemoveReflection)
-	ON_COMMAND(ID_REMOVE_SPECULAR, OnRemoveSpecular)
-	ON_UPDATE_COMMAND_UI(ID_REMOVE_SPECULAR, OnUpdateRemoveSpecular)
-	ON_COMMAND(ID_ADD_BUMP_TEXTURE, OnAddBumpTexture)
-	ON_COMMAND(ID_REMOVE_BUMP_MAP, OnRemoveBumpMap)
-	ON_UPDATE_COMMAND_UI(ID_REMOVE_BUMP_MAP, OnUpdateRemoveBumpMap)
-	ON_COMMAND(ID_MAPPING_ON, OnMappingOn)
-	ON_COMMAND(ID_SKIN_TEXTURE, OnSkinTexture)
-	ON_UPDATE_COMMAND_UI(ID_SKIN_TEXTURE, OnUpdateSkinTexture)
-	ON_WM_RBUTTONDBLCLK()
-	ON_COMMAND(ID_SURFACE_NUMBERS, OnSurfaceNumbers)
-	ON_UPDATE_COMMAND_UI(ID_SURFACE_NUMBERS, OnUpdateSurfaceNumbers)
-	ON_COMMAND(ID_EXPORT_SURFACES, OnExportSurfaces)
-	ON_COMMAND(ID_PREVIOUS_BCG_TEXTURE, OnPreviousBcgTexture)
-	ON_COMMAND(ID_NEXT_BCG_TEXTURE, OnNextBcgTexture)
-	ON_UPDATE_COMMAND_UI(ID_PREVIOUS_BCG_TEXTURE, OnUpdatePreviousBcgTexture)
-	ON_UPDATE_COMMAND_UI(ID_NEXT_BCG_TEXTURE, OnUpdateNextBcgTexture)
-	ON_COMMAND(ID_WINDOW_TOGGLEMAX, OnWindowTogglemax)
-	ON_COMMAND(ID_EXPORT_FOR_SKINING, OnExportForSkining)
-	ON_COMMAND(ID_RENDER_SURFACES_IN_COLORS, OnRenderSurfacesInColors)
-	ON_UPDATE_COMMAND_UI(ID_RENDER_SURFACES_IN_COLORS, OnUpdateRenderSurfacesInColors)
-	ON_COMMAND(ID_VIEW_AXIS, OnViewAxis)
-	ON_UPDATE_COMMAND_UI(ID_VIEW_AXIS, OnUpdateViewAxis)
-	ON_COMMAND(ID_VIEW_INFO, OnViewInfo)
-	ON_COMMAND(ID_LIST_ANIMATIONS, OnListAnimations)
-	ON_UPDATE_COMMAND_UI(ID_LIST_ANIMATIONS, OnUpdateListAnimations)
-	ON_COMMAND(ID_CHANGE_AMBIENT, OnChangeAmbient)
-	ON_UPDATE_COMMAND_UI(ID_CHANGE_AMBIENT, OnUpdateChangeAmbient)
-	ON_COMMAND(ID_TOGGLE_ALL_SURFACES, OnToggleAllSurfaces)
-	ON_UPDATE_COMMAND_UI(ID_TOGGLE_ALL_SURFACES, OnUpdateToggleAllSurfaces)
-	ON_COMMAND(ID_KEY_A, OnKeyA)
-	ON_COMMAND(ID_KEY_T, OnKeyT)
-	ON_COMMAND(ID_ANIM_FIRST, OnAnimFirst)
-	ON_UPDATE_COMMAND_UI(ID_ANIM_FIRST, OnUpdateAnimFirst)
-	ON_COMMAND(ID_ANIM_LAST, OnAnimLast)
-	ON_UPDATE_COMMAND_UI(ID_ANIM_LAST, OnUpdateAnimLast)
-	ON_COMMAND(ID_TOGGLE_MEASURE_VTX, OnToggleMeasureVtx)
-	ON_UPDATE_COMMAND_UI(ID_TOGGLE_MEASURE_VTX, OnUpdateToggleMeasureVtx)
-	ON_COMMAND(ID_FIRST_FRAME, OnFirstFrame)
-	ON_COMMAND(ID_LAST_FRAME, OnLastFrame)
+  //{{AFX_MSG_MAP(CModelerView)
+  ON_WM_DESTROY()
+  ON_WM_MOUSEMOVE()
+  ON_WM_LBUTTONDOWN()
+  ON_COMMAND(ID_ANIM_PLAY, OnAnimPlay)  
+  ON_COMMAND(ID_ANIM_PREVANIM, OnAnimPrevAnim)
+  ON_COMMAND(ID_ANIM_NEXTANIM, OnAnimNextAnim)
+  ON_COMMAND(ID_ANIM_NEXTFRAME, OnAnimNextFrame)
+  ON_COMMAND(ID_ANIM_PREVFRAME, OnAnimPrevFrame)
+  ON_WM_RBUTTONDOWN()
+  ON_UPDATE_COMMAND_UI(ID_ANIM_PLAY, OnUpdateAnimPlay)
+  ON_UPDATE_COMMAND_UI(ID_ANIM_NEXTFRAME, OnUpdateAnimNextframe)
+  ON_UPDATE_COMMAND_UI(ID_ANIM_PREVFRAME, OnUpdateAnimPrevframe)
+  ON_COMMAND(ID_ANIM_CHOOSE, OnAnimChoose)
+  ON_COMMAND(ID_ANIM_MIP_PRECIZE, OnAnimMipPrecize)
+  ON_COMMAND(ID_ANIM_MIP_ROUGH, OnAnimMipRough)
+  ON_UPDATE_COMMAND_UI(ID_ANIM_MIP_PRECIZE, OnUpdateAnimMipPrecize)
+  ON_UPDATE_COMMAND_UI(ID_ANIM_MIP_ROUGH, OnUpdateAnimMipRough)
+  ON_COMMAND(ID_OPT_AUTO_MIP_MODELING, OnOptAutoMipModeling)
+  ON_UPDATE_COMMAND_UI(ID_OPT_AUTO_MIP_MODELING, OnUpdateOptAutoMipModeling)
+  ON_COMMAND(ID_ANIM_ROTATION, OnAnimRotation)
+  ON_UPDATE_COMMAND_UI(ID_ANIM_ROTATION, OnUpdateAnimRotation)
+  ON_WM_LBUTTONUP()
+  ON_WM_RBUTTONUP()
+  ON_WM_SIZE()
+  ON_WM_CONTEXTMENU()
+  ON_COMMAND(ID_PREFS_CHANGE_INK, OnPrefsChangeInk)
+  ON_COMMAND(ID_PREFS_CHANGE_PAPER, OnPrefsChangePaper)
+  ON_COMMAND(ID_FILE_REMOVE_TEXTURE, OnFileRemoveTexture)
+  ON_COMMAND(ID_SCRIPT_OPEN, OnScriptOpen)
+  ON_COMMAND(ID_SCRIPT_UPDATE_ANIMATIONS, OnScriptUpdateAnimations)
+  ON_COMMAND(ID_SCRIPT_UPDATE_MIPMODELS, OnScriptUpdateMipmodels)
+  ON_COMMAND(ID_LIGHT_ON, OnLightOn)
+  ON_COMMAND(ID_LIGHT_COLOR, OnLightColor)
+  ON_UPDATE_COMMAND_UI(ID_LIGHT_ON, OnUpdateLightOn)
+  ON_COMMAND(ID_REND_BBOX_ALL, OnRendBboxAll)
+  ON_COMMAND(ID_REND_BBOX_FRAME, OnRendBboxFrame)
+  ON_COMMAND(ID_REND_WIRE_ONOFF, OnRendWireOnoff)
+  ON_COMMAND(ID_REND_HIDDEN_LINES, OnRendHiddenLines)
+  ON_COMMAND(ID_REND_NO_TEXTURE, OnRendNoTexture)
+  ON_COMMAND(ID_REND_ON_COLORS, OnRendOnColors)
+  ON_COMMAND(ID_REND_OFF_COLORS, OnRendOffColors)
+  ON_COMMAND(ID_REND_SURFACE_COLORS, OnRendSurfaceColors)
+  ON_COMMAND(ID_REND_WHITE_TEXTURE, OnRendWhiteTexture)
+  ON_COMMAND(ID_REND_USE_TEXTURE, OnRendUseTexture)
+  ON_UPDATE_COMMAND_UI(ID_LIGHT_COLOR, OnUpdateLightColor)
+  ON_UPDATE_COMMAND_UI(ID_MAPPING_ON, OnUpdateMappingOn)
+  ON_UPDATE_COMMAND_UI(ID_SCRIPT_OPEN, OnUpdateScriptOpen)
+  ON_UPDATE_COMMAND_UI(ID_SCRIPT_UPDATE_ANIMATIONS, OnUpdateScriptUpdateAnimations)
+  ON_UPDATE_COMMAND_UI(ID_SCRIPT_UPDATE_MIPMODELS, OnUpdateScriptUpdateMipmodels)
+  ON_UPDATE_COMMAND_UI(ID_ANIM_NEXTANIM, OnUpdateAnimNextanim)
+  ON_UPDATE_COMMAND_UI(ID_ANIM_PREVANIM, OnUpdateAnimPrevanim)
+  ON_UPDATE_COMMAND_UI(ID_ANIM_CHOOSE, OnUpdateAnimChoose)
+  ON_UPDATE_COMMAND_UI(ID_FILE_REMOVE_TEXTURE, OnUpdateFileRemoveTexture)
+  ON_COMMAND(ID_MAGNIFY_LESS, OnMagnifyLess)
+  ON_COMMAND(ID_MAGNIFY_MORE, OnMagnifyMore)
+  ON_COMMAND(ID_WINDOW_FIT, OnWindowFit)
+  ON_COMMAND(ID_WINDOW_CENTER, OnWindowCenter)
+  ON_WM_KEYDOWN()
+  ON_WM_KEYUP()
+  ON_COMMAND(ID_BACKGROUND_TEXTURE, OnBackgroundTexture)
+  ON_UPDATE_COMMAND_UI(ID_REND_HIDDEN_LINES, OnUpdateRendHiddenLines)
+  ON_UPDATE_COMMAND_UI(ID_REND_WIRE_ONOFF, OnUpdateRendWireOnoff)
+  ON_UPDATE_COMMAND_UI(ID_REND_NO_TEXTURE, OnUpdateRendNoTexture)
+  ON_UPDATE_COMMAND_UI(ID_REND_WHITE_TEXTURE, OnUpdateRendWhiteTexture)
+  ON_UPDATE_COMMAND_UI(ID_REND_SURFACE_COLORS, OnUpdateRendSurfaceColors)
+  ON_UPDATE_COMMAND_UI(ID_REND_ON_COLORS, OnUpdateRendOnColors)
+  ON_UPDATE_COMMAND_UI(ID_REND_OFF_COLORS, OnUpdateRendOffColors)
+  ON_UPDATE_COMMAND_UI(ID_REND_USE_TEXTURE, OnUpdateRendUseTexture)
+  ON_UPDATE_COMMAND_UI(ID_REND_BBOX_ALL, OnUpdateRendBboxAll)
+  ON_UPDATE_COMMAND_UI(ID_REND_BBOX_FRAME, OnUpdateRendBboxFrame)
+  ON_COMMAND(ID_TAKE_SCREEN_SHOOT, OnTakeScreenShoot)
+  ON_WM_KILLFOCUS()
+  ON_COMMAND(ID_BACKG_PICTURE, OnBackgPicture)
+  ON_COMMAND(ID_BACKG_COLOR, OnBackgColor)
+  ON_COMMAND(ID_REND_FLOOR, OnRendFloor)
+  ON_UPDATE_COMMAND_UI(ID_REND_FLOOR, OnUpdateRendFloor)
+  ON_COMMAND(ID_STAINS_INSERT, OnStainsInsert)
+  ON_COMMAND(ID_STAINS_DELETE, OnStainsDelete)
+  ON_UPDATE_COMMAND_UI(ID_STAINS_DELETE, OnUpdateStainsDelete)
+  ON_COMMAND(ID_STAINS_PREVIOUS_STAIN, OnStainsPreviousStain)
+  ON_COMMAND(ID_STAINS_NEXT_STAIN, OnStainsNextStain)
+  ON_UPDATE_COMMAND_UI(ID_STAINS_INSERT, OnUpdateStainsInsert)
+  ON_UPDATE_COMMAND_UI(ID_STAINS_NEXT_STAIN, OnUpdateStainsNextStain)
+  ON_UPDATE_COMMAND_UI(ID_STAINS_PREVIOUS_STAIN, OnUpdateStainsPreviousStain)
+  ON_COMMAND(ID_SHADOW_WORSE, OnShadowWorse)
+  ON_COMMAND(ID_SHADOW_BETTER, OnShadowBetter)
+  ON_WM_LBUTTONDBLCLK()
+  ON_COMMAND(ID_SAVE_THUMBNAIL, OnSaveThumbnail)
+  ON_UPDATE_COMMAND_UI(ID_SAVE_THUMBNAIL, OnUpdateSaveThumbnail)
+  ON_COMMAND(ID_RESTART_ANIMATIONS, OnRestartAnimations)
+  ON_COMMAND(ID_FRAME_RATE, OnFrameRate)
+  ON_UPDATE_COMMAND_UI(ID_FRAME_RATE, OnUpdateFrameRate)
+  ON_COMMAND(ID_HEADING, OnHeading)
+  ON_COMMAND(ID_PITCH, OnPitch)
+  ON_COMMAND(ID_BANKING, OnBanking)
+  ON_UPDATE_COMMAND_UI(ID_COLLISION_BOX, OnUpdateCollisionBox)
+  ON_COMMAND(ID_COLLISION_BOX, OnCollisionBox)
+  ON_COMMAND(ID_RESET_VIEWER, OnResetViewer)
+  ON_UPDATE_COMMAND_UI(ID_RESET_VIEWER, OnUpdateResetViewer)
+  ON_COMMAND(ID_DOLLY_VIEWER, OnDollyViewer)
+  ON_UPDATE_COMMAND_UI(ID_DOLLY_VIEWER, OnUpdateDollyViewer)
+  ON_COMMAND(ID_DOLLY_LIGHT, OnDollyLight)
+  ON_UPDATE_COMMAND_UI(ID_DOLLY_LIGHT, OnUpdateDollyLight)
+  ON_COMMAND(ID_DOLLY_LIGHT_COLOR, OnDollyLightColor)
+  ON_UPDATE_COMMAND_UI(ID_DOLLY_LIGHT_COLOR, OnUpdateDollyLightColor)
+  ON_COMMAND(ID_NEXT_TEXTURE, OnNextTexture)
+  ON_UPDATE_COMMAND_UI(ID_NEXT_TEXTURE, OnUpdateNextTexture)
+  ON_COMMAND(ID_PREVIOUS_TEXTURE, OnPreviousTexture)
+  ON_UPDATE_COMMAND_UI(ID_PREVIOUS_TEXTURE, OnUpdatePreviousTexture)
+  ON_COMMAND(ID_RECREATE_TEXTURE, OnRecreateTexture)
+  ON_UPDATE_COMMAND_UI(ID_RECREATE_TEXTURE, OnUpdateRecreateTexture)
+  ON_COMMAND(ID_CREATE_MIP_MODELS, OnCreateMipModels)
+  ON_COMMAND(ID_PICK_VERTEX, OnPickVertex)
+  ON_UPDATE_COMMAND_UI(ID_PICK_VERTEX, OnUpdatePickVertex)
+  ON_COMMAND(ID_DOLLY_MIP_MODELING, OnDollyMipModeling)
+  ON_UPDATE_COMMAND_UI(ID_DOLLY_MIP_MODELING, OnUpdateDollyMipModeling)
+  ON_COMMAND(ID_ANIM_PLAY_ONCE, OnAnimPlayOnce)
+  ON_UPDATE_COMMAND_UI(ID_ANIM_PLAY_ONCE, OnUpdateAnimPlayOnce)
+  ON_COMMAND(ID_TILE_TEXTURE, OnTileTexture)
+  ON_UPDATE_COMMAND_UI(ID_TILE_TEXTURE, OnUpdateTileTexture)
+  ON_COMMAND(ID_ADD_REFLECTION_TEXTURE, OnAddReflectionTexture)
+  ON_COMMAND(ID_ADD_SPECULAR, OnAddSpecular)
+  ON_COMMAND(ID_REMOVE_REFLECTION, OnRemoveReflection)
+  ON_UPDATE_COMMAND_UI(ID_REMOVE_REFLECTION, OnUpdateRemoveReflection)
+  ON_COMMAND(ID_REMOVE_SPECULAR, OnRemoveSpecular)
+  ON_UPDATE_COMMAND_UI(ID_REMOVE_SPECULAR, OnUpdateRemoveSpecular)
+  ON_COMMAND(ID_ADD_BUMP_TEXTURE, OnAddBumpTexture)
+  ON_COMMAND(ID_REMOVE_BUMP_MAP, OnRemoveBumpMap)
+  ON_UPDATE_COMMAND_UI(ID_REMOVE_BUMP_MAP, OnUpdateRemoveBumpMap)
+  ON_COMMAND(ID_MAPPING_ON, OnMappingOn)
+  ON_COMMAND(ID_SKIN_TEXTURE, OnSkinTexture)
+  ON_UPDATE_COMMAND_UI(ID_SKIN_TEXTURE, OnUpdateSkinTexture)
+  ON_WM_RBUTTONDBLCLK()
+  ON_COMMAND(ID_SURFACE_NUMBERS, OnSurfaceNumbers)
+  ON_UPDATE_COMMAND_UI(ID_SURFACE_NUMBERS, OnUpdateSurfaceNumbers)
+  ON_COMMAND(ID_EXPORT_SURFACES, OnExportSurfaces)
+  ON_COMMAND(ID_PREVIOUS_BCG_TEXTURE, OnPreviousBcgTexture)
+  ON_COMMAND(ID_NEXT_BCG_TEXTURE, OnNextBcgTexture)
+  ON_UPDATE_COMMAND_UI(ID_PREVIOUS_BCG_TEXTURE, OnUpdatePreviousBcgTexture)
+  ON_UPDATE_COMMAND_UI(ID_NEXT_BCG_TEXTURE, OnUpdateNextBcgTexture)
+  ON_COMMAND(ID_WINDOW_TOGGLEMAX, OnWindowTogglemax)
+  ON_COMMAND(ID_EXPORT_FOR_SKINING, OnExportForSkining)
+  ON_COMMAND(ID_RENDER_SURFACES_IN_COLORS, OnRenderSurfacesInColors)
+  ON_UPDATE_COMMAND_UI(ID_RENDER_SURFACES_IN_COLORS, OnUpdateRenderSurfacesInColors)
+  ON_COMMAND(ID_VIEW_AXIS, OnViewAxis)
+  ON_UPDATE_COMMAND_UI(ID_VIEW_AXIS, OnUpdateViewAxis)
+  ON_COMMAND(ID_VIEW_INFO, OnViewInfo)
+  ON_COMMAND(ID_LIST_ANIMATIONS, OnListAnimations)
+  ON_UPDATE_COMMAND_UI(ID_LIST_ANIMATIONS, OnUpdateListAnimations)
+  ON_COMMAND(ID_CHANGE_AMBIENT, OnChangeAmbient)
+  ON_UPDATE_COMMAND_UI(ID_CHANGE_AMBIENT, OnUpdateChangeAmbient)
+  ON_COMMAND(ID_TOGGLE_ALL_SURFACES, OnToggleAllSurfaces)
+  ON_UPDATE_COMMAND_UI(ID_TOGGLE_ALL_SURFACES, OnUpdateToggleAllSurfaces)
+  ON_COMMAND(ID_KEY_A, OnKeyA)
+  ON_COMMAND(ID_KEY_T, OnKeyT)
+  ON_COMMAND(ID_ANIM_FIRST, OnAnimFirst)
+  ON_UPDATE_COMMAND_UI(ID_ANIM_FIRST, OnUpdateAnimFirst)
+  ON_COMMAND(ID_ANIM_LAST, OnAnimLast)
+  ON_UPDATE_COMMAND_UI(ID_ANIM_LAST, OnUpdateAnimLast)
+  ON_COMMAND(ID_TOGGLE_MEASURE_VTX, OnToggleMeasureVtx)
+  ON_UPDATE_COMMAND_UI(ID_TOGGLE_MEASURE_VTX, OnUpdateToggleMeasureVtx)
+  ON_COMMAND(ID_FIRST_FRAME, OnFirstFrame)
+  ON_COMMAND(ID_LAST_FRAME, OnLastFrame)
   ON_COMMAND(ID_ALTERNATIVE_MOVING_MODE, OnAlternativeMovingMode)
-	//}}AFX_MSG_MAP
-	// Standard printing commands
-	//ON_COMMAND(ID_FILE_PRINT, CView::OnFilePrint)
-	//ON_COMMAND(ID_FILE_PRINT_DIRECT, CView::OnFilePrint)
-	//ON_COMMAND(ID_FILE_PRINT_PREVIEW, CView::OnFilePrintPreview)
+  //}}AFX_MSG_MAP
+  // Standard printing commands
+  //ON_COMMAND(ID_FILE_PRINT, CView::OnFilePrint)
+  //ON_COMMAND(ID_FILE_PRINT_DIRECT, CView::OnFilePrint)
+  //ON_COMMAND(ID_FILE_PRINT_PREVIEW, CView::OnFilePrintPreview)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -224,11 +224,8 @@ CModelerView::CModelerView()
   m_bViewMeasureVertex = FALSE;
   m_vViewMeasureVertex = FLOAT3D(0,0,0);
   m_atAxisType = AT_NONE;
-  m_pmtvClosestVertex = NULL;
   m_bTileMappingBCG = FALSE;
   m_bAnyKeyPressed = FALSE;
-  m_pDrawPort = NULL;
-  m_pViewPort = NULL;
   m_InputAction = IA_NONE;
   m_fTargetDistance = 2.0f;
   m_fDollySpeedMipModeling = 2.0f;
@@ -334,10 +331,10 @@ CModelerView::CModelerView()
 
 CModelerView::~CModelerView()
 {
-	// destroy canvas that is currently used
-	if (m_pViewPort!=NULL) {
-    _pGfx->DestroyWindowCanvas(m_pViewPort);
-	}
+  // destroy canvas that is currently used
+  if (m_pViewPort) {
+    _pGfx_DestroyWindowCanvas(m_pViewPort);
+  }
 }
 
 void CModelerView::ResetViewerPosition(void)
@@ -345,7 +342,7 @@ void CModelerView::ResetViewerPosition(void)
   CModelerDoc* pDoc = GetDocument();
   // only now we can obtain model data and set initial viewer position
   // get model data
-  CModelData *pMD = &pDoc->m_emEditModel.edm_md;
+  CModelDataPtr pMD = &pDoc->m_emEditModel.edm_md;
   // obtain bounding box of all frames
   FLOATaabbox3D MaxBB;
   pMD->GetAllFramesBBox( MaxBB);
@@ -368,18 +365,17 @@ BOOL CModelerView::AssureValidTDI()
   
   CModelerDoc* pDoc = GetDocument();
   BOOL bValidTex = FALSE;
-  FOREACHINLIST( CTextureDataInfo, tdi_ListNode, pDoc->m_emEditModel.edm_WorkingSkins, it)
+  for (auto& it : pDoc->m_emEditModel.edm_WorkingSkins)
   {
-    if( &it.Current() == m_ptdiTextureDataInfo)
+    if( it.get() == m_ptdiTextureDataInfo)
     {
       bValidTex = TRUE;
       break;
     }
   }
-  if( (bValidTex == FALSE) && (!pDoc->m_emEditModel.edm_WorkingSkins.IsEmpty()) )
+  if( (bValidTex == FALSE) && (!pDoc->m_emEditModel.edm_WorkingSkins.empty()) )
   {
-  	m_ptdiTextureDataInfo = LIST_HEAD( pDoc->m_emEditModel.edm_WorkingSkins,
-                                    CTextureDataInfo, tdi_ListNode);
+    m_ptdiTextureDataInfo = pDoc->m_emEditModel.edm_WorkingSkins.front().get();
     bValidTex = TRUE;
   }
   
@@ -393,7 +389,7 @@ BOOL CModelerView::AssureValidTDI()
 // CModelerView drawing
 
 
-void CModelerView::SetProjectionData( CPerspectiveProjection3D &prProjection, CDrawPort *pDP)
+void CModelerView::SetProjectionData( CPerspectiveProjection3D &prProjection, CDrawPortPtr pDP)
 {
   prProjection.FOVL() = AngleDeg(m_fFOW);
   prProjection.ScreenBBoxL() = FLOATaabbox2D( FLOAT2D(0.0f,0.0f),
@@ -413,7 +409,7 @@ FLOAT CModelerView::GetModelToViewerDistance(void)
   return vDistance.Length();
 }
 
-void CModelerView::ClearBcg( COLOR color, CDrawPort *pDrawPort)
+void CModelerView::ClearBcg( COLOR color, CDrawPortPtr pDrawPort)
 {
   // delete bcg or fill it with texture
   CTextureObject *ptoValid = 
@@ -423,11 +419,11 @@ void CModelerView::ClearBcg( COLOR color, CDrawPort *pDrawPort)
     PIXaabbox2D screenBox;
     screenBox = PIXaabbox2D( PIX2D(0,0),
                              PIX2D(pDrawPort->GetWidth(), pDrawPort->GetHeight()) );
-    pDrawPort->PutTexture( ptoValid, screenBox);
+    pDrawPort->PutTexture( *ptoValid, screenBox);
   }
   else
   {
- 	  pDrawPort->Fill(color | CT_OPAQUE);
+     pDrawPort->Fill(color | CT_OPAQUE);
   }
 }
 
@@ -545,13 +541,14 @@ void CModelerView::RenderAxis( CPerspectiveProjection3D &prProjection, CPlacemen
   DrawArrowAndTypeText( prProjection, vCenter, vRotZ, C_RED|CT_OPAQUE, "-Z");
 }
 
-CStaticStackArray<CRenderModel> _armRenderModels;
+std::list<CRenderModel> _armRenderModels;
 
 void CModelerView::RenderAxisOfAllAttachments(CPerspectiveProjection3D &prProjection,
                                               CPlacement3D &plParent, CModelObject &mo)
 {
+  INDEX pushedCount = 1;
   // create render model structure of parent
-  CRenderModel *prmParent = &_armRenderModels.Push();
+  CRenderModel *prmParent = &_armRenderModels.emplace_back();
   CAnyProjection3D apr;
   apr = prProjection;
   BeginModelRenderingView(apr, m_pDrawPort);
@@ -563,18 +560,20 @@ void CModelerView::RenderAxisOfAllAttachments(CPerspectiveProjection3D &prProjec
   FOREACHINLIST( CAttachmentModelObject, amo_lnInMain, mo.mo_lhAttachments, itamo)
   {
     // create new render model structure
-    itamo->amo_prm = &_armRenderModels.Push();
+    ++pushedCount;
+    itamo->amo_prm = _armRenderModels.emplace_back();
     // obtain attachment's data
     mo.CreateAttachment(*prmParent, *itamo);
     // create placement of attachment (child)
     ANGLE3D a3dAnglesChild;
-    DecomposeRotationMatrix(a3dAnglesChild, itamo->amo_prm->rm_mObjectRotation);
-    CPlacement3D plChild = CPlacement3D( itamo->amo_prm->rm_vObjectPosition, a3dAnglesChild);
+    CRenderModelPtr amo_prm = itamo->amo_prm;
+    DecomposeRotationMatrix(a3dAnglesChild, amo_prm->rm_mObjectRotation);
+    CPlacement3D plChild = CPlacement3D(amo_prm->rm_vObjectPosition, a3dAnglesChild);
     // recurse
     RenderAxisOfAllAttachments( prProjection, plChild, itamo->amo_moModelObject);
     // don't render non-initialized attachments
-    CModelData *pmd = (CModelData *) itamo->amo_moModelObject.GetData();
-    if( pmd == NULL) continue;
+    CModelDataPtr pmd = itamo->amo_moModelObject.GetData();
+    if( !pmd) continue;
     // obtain bounding box of attachment
     FLOATaabbox3D box;
     pmd->GetAllFramesBBox( box);
@@ -582,18 +581,20 @@ void CModelerView::RenderAxisOfAllAttachments(CPerspectiveProjection3D &prProjec
     RenderAxis( prProjection, plChild, fSize);
   }
   // all done
-  _armRenderModels.PopAll();
+  while (pushedCount--)
+    _armRenderModels.pop_back();
 }
 
 
-void CModelerView::RenderView( CDrawPort *pDrawPort)
+void CModelerView::RenderView( CDrawPortPtr pDrawPort)
 {
   CMainFrame* pmf = STATIC_DOWNCAST(CMainFrame, AfxGetMainWnd());
   FLOATplane3D plFloorPlane;
   CModelerDoc* pDoc = GetDocument();
-  CModelData *pMD = &pDoc->m_emEditModel.edm_md;
-  CTextureData *pTD, *pOldTD;
-	INDEX i;
+  CModelDataPtr pMD = &pDoc->m_emEditModel.edm_md;
+  CTextureDataPtr pTD;
+  CTextureDataPtr pOldTD;
+  INDEX i;
   
   // set effect textures (if they exist in edit model)
   try {
@@ -612,7 +613,7 @@ void CModelerView::RenderView( CDrawPort *pDrawPort)
   // Calculate light position in absolute sytem 
   CModelInfo MI;
   FLOATaabbox3D MaxBB;
-  if( m_ModelObject.GetData() == NULL)
+  if( !m_ModelObject.GetData())
     return;
   m_ModelObject.GetModelInfo( MI);  // info describing our model (not light)
   for( i=0; i<MI.mi_FramesCt; i++) { // here we find max bbox, union of all frames bboxes
@@ -625,11 +626,11 @@ void CModelerView::RenderView( CDrawPort *pDrawPort)
   plLightPlacement.Translate_OwnSystem( FLOAT3D( 0.0f, 0.0f, m_LightDistance));
   plLightPlacement.Translate_AbsoluteSystem( m_plModelPlacement.pl_PositionVector);
 
-  pOldTD = (CTextureData *) m_ModelObject.mo_toTexture.GetData();
+  pOldTD = m_ModelObject.mo_toTexture.GetData();
   if( AssureValidTDI()) {
     pTD = m_ptdiTextureDataInfo->tdi_TextureData;
     if( pTD != m_ModelObject.mo_toTexture.GetData()) {
-      m_ModelObject.mo_toTexture.SetData( pTD);
+      m_ModelObject.mo_toTexture.SetData( *pTD);
     }
   } else {
     m_ModelObject.mo_toTexture.SetData( NULL);
@@ -661,7 +662,7 @@ void CModelerView::RenderView( CDrawPort *pDrawPort)
     m_iCurrentFrame = m_ModelObject.GetFrame();
 
     INDEX iAnim = m_ModelObject.GetAnim();
-    CAttachedSound &asSound = pDoc->m_emEditModel.edm_aasAttachedSounds[iAnim];
+    CAttachedSound &asSound = *pDoc->m_emEditModel.edm_aasAttachedSounds[iAnim];
     TIME tmAnimLen = m_ModelObject.GetAnimLength(iAnim);
     TIME tmPassed = m_ModelObject.GetPassedTime();
     
@@ -677,9 +678,9 @@ void CModelerView::RenderView( CDrawPort *pDrawPort)
           pDoc->m_soSoundObject.Stop();
           pDoc->m_soSoundObject.SetVolume( SL_VOLUME_MAX, SL_VOLUME_MAX);
           if( asSound.as_bLooping)
-            pDoc->m_soSoundObject.Play_t( asSound.as_fnAttachedSound, SOF_LOOP);
+            pDoc->m_soSoundObject.Play_t( asSound.as_fnAttachedSound, SOF_NONGAME | SOF_LOOP);
           else
-            pDoc->m_soSoundObject.Play_t( asSound.as_fnAttachedSound, 0);
+            pDoc->m_soSoundObject.Play_t( asSound.as_fnAttachedSound, SOF_NONGAME);
           _bSoundPlayed = TRUE;
         }
         catch( char *strError)
@@ -750,21 +751,21 @@ void CModelerView::RenderView( CDrawPort *pDrawPort)
     // obtain translation speed value
     CString csSpeed;
     pmf->m_ctrlZSpeed.GetWindowText( csSpeed);
-    CTString strSpeed = CStringA(csSpeed);
+    CTString strSpeed = static_cast<const char*>(CStringA(csSpeed));
     FLOAT fSpeed;
     BOOL bSpeedValid = strSpeed.ScanF( "%g", &fSpeed);
     
     // obtain loop value
     CString csLoop;
     pmf->m_ctrlZLoop.GetWindowText( csLoop);
-    CTString strLoop = CStringA(csLoop);
+    CTString strLoop = static_cast<const char*>(CStringA(csLoop));
     INDEX iLoop;
     BOOL bLoopValid = strLoop.ScanF( "%d", &iLoop);
     
     // simulate translation along z-axis
     CPlacement3D plTranslated = m_plModelPlacement;
     if( bLoopValid && bSpeedValid && fSpeed!=0 && iLoop>0 && !m_ModelObject.IsPaused()) {
-      TIME tmPassed = _pTimer->CurrentTick() - m_ModelObject.ao_tmAnimStart;
+      TIME tmPassed = _pTimer_CurrentTick() - m_ModelObject.ao_tmAnimStart;
       TIME tmDuration = m_ModelObject.GetCurrentAnimLength();
       if( tmPassed>tmDuration*iLoop) {
         tmPassed = 0;
@@ -796,7 +797,7 @@ void CModelerView::RenderView( CDrawPort *pDrawPort)
 
     // if lamp mode is on or allways see lamp flag is set on and if lamp model exist
     if( (m_LightModeOn || theApp.m_Preferences.ap_AllwaysSeeLamp)
-     && (theApp.m_pLampModelData != NULL))
+     && (theApp.m_pLampModelData))
     {
       // set projection data
       SetProjectionData( prPerspectiveProjection, pDrawPort);
@@ -888,8 +889,8 @@ void CModelerView::RenderView( CDrawPort *pDrawPort)
       v2D(1)=v3D(1);
       v2D(2)=v3D(2);
 
-      DrawLine(*pDrawPort, v2D-FLOAT2D(5,0), v2D+FLOAT2D(5,0), C_RED|CT_OPAQUE, _FULL_);
-      DrawLine(*pDrawPort, v2D-FLOAT2D(0,5), v2D+FLOAT2D(0,5), C_RED|CT_OPAQUE, _FULL_);
+      DrawLine(*pDrawPort, v2D-FLOAT2D(5.0f,0.0f), v2D+FLOAT2D(5.0f,0.0f), C_RED|CT_OPAQUE, _FULL_);
+      DrawLine(*pDrawPort, v2D-FLOAT2D(0.0f,5.0f), v2D+FLOAT2D(0.0f,5.0f), C_RED|CT_OPAQUE, _FULL_);
     }
 
     // if we should render axis
@@ -912,7 +913,7 @@ void CModelerView::RenderView( CDrawPort *pDrawPort)
       if( m_atAxisType == AT_ALL) {
         // render recursivly all attachments and their attachments,...
         RenderAxisOfAllAttachments( prProjection, plTranslated, m_ModelObject);
-        _armRenderModels.PopAll();
+        _armRenderModels.clear();
       }
       _iTextLine = 0;
     }
@@ -920,7 +921,7 @@ void CModelerView::RenderView( CDrawPort *pDrawPort)
   // mapping mode
   else
   {
- 	  MEX mexWidth, mexHeight;
+     MEX mexWidth, mexHeight;
     // pick up model's texture dimensions
     mexWidth = m_ModelObject.GetWidth();
     mexHeight = m_ModelObject.GetHeight();
@@ -933,16 +934,15 @@ void CModelerView::RenderView( CDrawPort *pDrawPort)
     PIXaabbox2D boxScreen( PIX2D(-m_offx, -m_offy),PIX2D(-m_offx + pixRight, -m_offy + pixDown));
 
     // set no valid texture mode
-    CTextureData *pTD = NULL;
-    CTextureData *pOldTD;
-    pOldTD = (CTextureData *) m_ModelObject.mo_toTexture.GetData();
+    CTextureDataPtr pTD;
+    CTextureDataPtr pOldTD = m_ModelObject.mo_toTexture.GetData();
     // try to get model's exsiting texture
     if( AssureValidTDI())
     {
       pTD = m_ptdiTextureDataInfo->tdi_TextureData;
       if(pTD != m_ModelObject.mo_toTexture.GetData())
       {
-        m_ModelObject.mo_toTexture.SetData( pTD);
+        m_ModelObject.mo_toTexture.SetData( *pTD);
       }
     }
     // if there are no textures in this model
@@ -951,11 +951,11 @@ void CModelerView::RenderView( CDrawPort *pDrawPort)
       m_ModelObject.mo_toTexture.SetData( NULL);
     }
 
-    if( (m_IsMappingBcgTexture) && (pTD != NULL) ) {
+    if( (m_IsMappingBcgTexture) && pTD ) {
       if( !m_bTileMappingBCG)
       {
         MEXaabbox2D boxTexture(MEX2D(0,0), MEX2D(mexWidth-1, mexHeight-1));
-        pDrawPort->PutTexture(&m_ModelObject.mo_toTexture, boxScreen, boxTexture);
+        pDrawPort->PutTexture(m_ModelObject.mo_toTexture, boxScreen, boxTexture);
       }
       else
       {
@@ -970,7 +970,7 @@ void CModelerView::RenderView( CDrawPort *pDrawPort)
         MEX mexU1 = MEX(mexU0+pixSizeI*fMexOverPix);
         MEX mexV1 = MEX(mexV0+pixSizeJ*fMexOverPix);
 
-        pDrawPort->PutTexture( &m_ModelObject.mo_toTexture,
+        pDrawPort->PutTexture( m_ModelObject.mo_toTexture,
                                PIXaabbox2D(PIX2D(0,0), PIX2D( pixSizeI, pixSizeJ)),
                                MEXaabbox2D(MEX2D( mexU0, mexV0), MEX2D( mexU1, mexV1)));
       }
@@ -981,8 +981,8 @@ void CModelerView::RenderView( CDrawPort *pDrawPort)
     }
     
     // render patches
-    CModelData *pMD = &pDoc->m_emEditModel.edm_md;
-    ModelMipInfo *pMMI = &pMD->md_MipInfos[ pDoc->m_iCurrentMip];
+    CModelDataPtr pMD = &pDoc->m_emEditModel.edm_md;
+    ModelMipInfoPtr pMMI = &pMD->md_MipInfos[ pDoc->m_iCurrentMip];
 
     // if pathes are not hidden for this mip model
     if( pMMI->mmpi_ulFlags & MM_PATCHES_VISIBLE)
@@ -991,9 +991,9 @@ void CModelerView::RenderView( CDrawPort *pDrawPort)
       // for each possible patch
       for( INDEX iMaskBit=0; iMaskBit<MAX_TEXTUREPATCHES; iMaskBit++)
       {
-        CTextureData *ptdPatch = (CTextureData *) pMD->md_mpPatches[iMaskBit].mp_toTexture.GetData();
+        CTextureDataPtr ptdPatch = pMD->md_mpPatches[iMaskBit].mp_toTexture.GetData();
         // if current patch exists and is turned on
-        if( (ptdPatch != NULL) &&
+        if( ptdPatch &&
             (m_ModelObject.GetPatchesMask() & ((1UL) << iMaskBit)) )
         {
           MEX mexPatchU = pMD->md_mpPatches[iMaskBit].mp_mexPosition(1);
@@ -1004,7 +1004,7 @@ void CModelerView::RenderView( CDrawPort *pDrawPort)
           PIX pixPatchVMax = (PIX) ((mexPatchV+ptdPatch->GetHeight()*pMD->md_mpPatches[iMaskBit].mp_fStretch) * m_MagnifyFactor - m_offy);
           PIXaabbox2D screenBox =  
             PIXaabbox2D( PIX2D(pixPatchUMin, pixPatchVMin),PIX2D(pixPatchUMax, pixPatchVMax));
-          pDrawPort->PutTexture( &pMD->md_mpPatches[iMaskBit].mp_toTexture, screenBox);
+          pDrawPort->PutTexture( pMD->md_mpPatches[iMaskBit].mp_toTexture, screenBox);
         }
       }
     }
@@ -1016,9 +1016,9 @@ void CModelerView::RenderView( CDrawPort *pDrawPort)
     {
       for( INDEX iSurface=0; iSurface<mmi.mmpi_MappingSurfaces.Count(); iSurface++)
       {
-        MappingSurface &ms = mmi.mmpi_MappingSurfaces[ iSurface];
+        MappingSurfacePtr ms = mmi.mmpi_MappingSurfaces[ iSurface];
         pDoc->m_emEditModel.DrawFilledSurface( pDrawPort, pDoc->m_iCurrentMip, iSurface, m_MagnifyFactor,
-          m_offx, m_offy, ms.ms_colColor, ms.ms_colColor);
+          m_offx, m_offy, ms->ms_colColor, ms->ms_colColor);
       }
     }                                                            
     
@@ -1026,8 +1026,8 @@ void CModelerView::RenderView( CDrawPort *pDrawPort)
     {
       for( INDEX iSurface=0; iSurface<mmi.mmpi_MappingSurfaces.Count(); iSurface++)
       {
-        MappingSurface &ms = mmi.mmpi_MappingSurfaces[ iSurface];
-        if( !(ms.ms_ulRenderingFlags&SRF_SELECTED))
+        MappingSurfacePtr ms = mmi.mmpi_MappingSurfaces[ iSurface];
+        if( !(ms->ms_ulRenderingFlags&SRF_SELECTED))
           pDoc->m_emEditModel.DrawWireSurface( pDrawPort, pDoc->m_iCurrentMip,
             iSurface, m_MagnifyFactor, m_offx, m_offy,
             theApp.m_Preferences.ap_MappingInactiveSurfaceColor,
@@ -1037,8 +1037,8 @@ void CModelerView::RenderView( CDrawPort *pDrawPort)
     // draw selected surfaces
     for( INDEX iSurface=0; iSurface<mmi.mmpi_MappingSurfaces.Count(); iSurface++)
     {
-      MappingSurface &ms = mmi.mmpi_MappingSurfaces[ iSurface];
-      if( ms.ms_ulRenderingFlags&SRF_SELECTED)
+      MappingSurfacePtr ms = mmi.mmpi_MappingSurfaces[ iSurface];
+      if( ms->ms_ulRenderingFlags&SRF_SELECTED)
         pDoc->m_emEditModel.DrawWireSurface( pDrawPort, pDoc->m_iCurrentMip, iSurface,
               m_MagnifyFactor, m_offx, m_offy,
               theApp.m_Preferences.ap_MappingActiveSurfaceColor, 
@@ -1063,11 +1063,11 @@ void CModelerView::OnDraw(CDC* pDC)
   if( !pDoc->m_bDocLoadedOk) return;
 
   // render view if drawport is valid
-  if( m_pDrawPort!=NULL && m_pDrawPort->Lock()) {
-    CTimerValue tvStart = _pTimer->GetHighPrecisionTimer();
+  if( m_pDrawPort && m_pDrawPort->Lock()) {
+    CTimerValue tvStart = _pTimer_GetHighPrecisionTimer();
     RenderView( m_pDrawPort);
     m_udViewPicture.MarkUpdated();
-    CTimerValue tvStop = _pTimer->GetHighPrecisionTimer();
+    CTimerValue tvStop = _pTimer_GetHighPrecisionTimer();
     TIME tmDelta = (tvStop-tvStart).GetSeconds() +tmSwapBuffers;
     // should we print frame rate?
     if( m_bFrameRate) {
@@ -1088,10 +1088,10 @@ void CModelerView::OnDraw(CDC* pDC)
     }
     m_pDrawPort->Unlock();
     // swap if there is a valid viewport
-    if( m_pViewPort!=NULL) {
-      tvStart = _pTimer->GetHighPrecisionTimer();
+    if( m_pViewPort) {
+      tvStart = _pTimer_GetHighPrecisionTimer();
       m_pViewPort->SwapBuffers();
-      tvStop = _pTimer->GetHighPrecisionTimer();
+      tvStop = _pTimer_GetHighPrecisionTimer();
       tmSwapBuffers = (tvStop-tvStart).GetSeconds();
     }
   }
@@ -1117,7 +1117,7 @@ void CModelerView::OnDraw(CDC* pDC)
       pMainFrame->m_wndStatusBar.SetPaneText( ACTIVE_SURFACE_PANE, CString(achrLine));
     }
   }
-  _pSound->UpdateSounds();
+  _pSound_UpdateSounds();
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1125,18 +1125,18 @@ void CModelerView::OnDraw(CDC* pDC)
 
 BOOL CModelerView::OnPreparePrinting(CPrintInfo* pInfo)
 {
-	// default preparation
-	return DoPreparePrinting(pInfo);
+  // default preparation
+  return DoPreparePrinting(pInfo);
 }
 
 void CModelerView::OnBeginPrinting(CDC* /*pDC*/, CPrintInfo* /*pInfo*/)
 {
-	// TODO: add extra initialization before printing
+  // TODO: add extra initialization before printing
 }
 
 void CModelerView::OnEndPrinting(CDC* /*pDC*/, CPrintInfo* /*pInfo*/)
 {
-	// TODO: add cleanup after printing
+  // TODO: add cleanup after printing
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1145,18 +1145,18 @@ void CModelerView::OnEndPrinting(CDC* /*pDC*/, CPrintInfo* /*pInfo*/)
 #ifdef _DEBUG
 void CModelerView::AssertValid() const
 {
-	CView::AssertValid();
+  CView::AssertValid();
 }
 
 void CModelerView::Dump(CDumpContext& dc) const
 {
-	CView::Dump(dc);
+  CView::Dump(dc);
 }
 
 CModelerDoc* CModelerView::GetDocument() // non-debug version is inline
 {
-	ASSERT(m_pDocument->IsKindOf(RUNTIME_CLASS(CModelerDoc)));
-	return (CModelerDoc*)m_pDocument;
+  ASSERT(m_pDocument->IsKindOf(RUNTIME_CLASS(CModelerDoc)));
+  return (CModelerDoc*)m_pDocument;
 }
 #endif //_DEBUG
 
@@ -1165,25 +1165,24 @@ CModelerDoc* CModelerView::GetDocument() // non-debug version is inline
 
 void CModelerView::OnInitialUpdate() 
 {
-	CView::OnInitialUpdate();
-	
-	// at this time, m_hWnd is valid, so we do canvas initialization here
- 	_pGfx->CreateWindowCanvas(m_hWnd, &m_pViewPort, &m_pDrawPort);
+  CView::OnInitialUpdate();
+  
+  // at this time, m_hWnd is valid, so we do canvas initialization here
+   _pGfx_CreateWindowCanvas(m_hWnd, m_pViewPort, m_pDrawPort);
   
   CModelerDoc* pDoc = GetDocument();
-	ASSERT_VALID(pDoc);
+  ASSERT_VALID(pDoc);
 
-  m_ModelObject.SetData( &pDoc->m_emEditModel.edm_md);
+  m_ModelObject.SetData( pDoc->m_emEditModel.edm_md);
   m_ModelObject.SetAnim( 0);
 
   m_iActivePatchBitIndex = 0;
   
   pDoc->m_emEditModel.GetFirstValidPatchIndex( m_iActivePatchBitIndex);
 
-  if( !pDoc->m_emEditModel.edm_WorkingSkins.IsEmpty())
+  if( !pDoc->m_emEditModel.edm_WorkingSkins.empty())
   {
-  	m_ptdiTextureDataInfo = LIST_HEAD( pDoc->m_emEditModel.edm_WorkingSkins,
-                                    CTextureDataInfo, tdi_ListNode);
+    m_ptdiTextureDataInfo = pDoc->m_emEditModel.edm_WorkingSkins.front().get();
   }
   
   // set default viewer position
@@ -1195,9 +1194,9 @@ void CModelerView::OnInitialUpdate()
 
 void CModelerView::OnSize(UINT nType, int cx, int cy) 
 {
-	CView::OnSize(nType, cx, cy);
-	// if window canvas is valid, resize it
-  if( m_pViewPort!=NULL) m_pViewPort->Resize();
+  CView::OnSize(nType, cx, cy);
+  // if window canvas is valid, resize it
+  if( m_pViewPort) m_pViewPort->Resize();
   theApp.m_chGlobal.MarkChanged();
 }
 
@@ -1225,8 +1224,8 @@ void CModelerView::OnMouseMove(UINT nFlags, CPoint point)
   plViewer.pl_OrientationAngle = m_angViewerOrientation;
   // moving offsets need small amounts
   FLOAT dx = 0.001f * offset.x * fDistance;
-	FLOAT dy = 0.001f * offset.y * fDistance;
-	FLOAT dz =  0.01f * offset.y * fDistance;
+  FLOAT dy = 0.001f * offset.y * fDistance;
+  FLOAT dz =  0.01f * offset.y * fDistance;
   // angles need lot for rotation
   ANGLE dAngleX = AngleDeg( -0.5f * offset.x);
   ANGLE dAngleY = AngleDeg( -0.5f * offset.y);
@@ -1418,7 +1417,7 @@ void CModelerView::OnMouseMove(UINT nFlags, CPoint point)
       float NewMagnifyFactor = m_MagnifyFactor + offset.y * m_MagnifyFactor/150.0f;
       if( (NewMagnifyFactor > 1/32768.0f) && (NewMagnifyFactor < 8.0f) )
       {
- 	      MEX mexWidth, mexHeight;
+         MEX mexWidth, mexHeight;
         mexWidth = m_ModelObject.GetWidth();
         mexHeight = m_ModelObject.GetHeight();
         PIX pixOldWidth = (PIX) (mexWidth * m_MagnifyFactor);
@@ -1519,7 +1518,7 @@ void CModelerView::FastZoomOut()
 //--------------------------------------------------------------------------------------------
 void CModelerView::OnLButtonDown(UINT nFlags, CPoint point) 
 {
-	CModelerDoc *pDoc = (CModelerDoc *) GetDocument();
+  CModelerDoc *pDoc = (CModelerDoc *) GetDocument();
   BOOL bSpace = (GetKeyState( ' ') & 128) != 0;  
   BOOL bAlt = (GetKeyState( VK_MENU)&0x8000) != 0;
   BOOL bCtrl = nFlags & MK_CONTROL;
@@ -1565,7 +1564,7 @@ void CModelerView::OnLButtonDown(UINT nFlags, CPoint point)
       SetProjectionData( prProjection, m_pDrawPort);
       // set position of document's model
       prProjection.ObjectPlacementL() = m_plModelPlacement;
-      m_ModelObject.ColorizePolygon( m_pDrawPort, &prProjection, point.x, point.y,
+      m_ModelObject.ColorizePolygon( m_pDrawPort, prProjection, point.x, point.y,
                                      m_iChoosedColor, m_bOnColorMode);
       pDoc->m_emEditModel.edm_md.md_bPreparedForRendering = FALSE;
       pDoc->SetModifiedFlag();
@@ -1595,12 +1594,12 @@ void CModelerView::OnLButtonDown(UINT nFlags, CPoint point)
   }
   
   m_MouseDownLocation = point;
-	CView::OnLButtonDown(nFlags, point);
+  CView::OnLButtonDown(nFlags, point);
 }
 //--------------------------------------------------------------------------------------------
 void CModelerView::OnRButtonDown(UINT nFlags, CPoint point) 
 {
-	CModelerDoc *pDoc = (CModelerDoc *) GetDocument();
+  CModelerDoc *pDoc = (CModelerDoc *) GetDocument();
   BOOL bSpace = (GetKeyState( ' ') & 128) != 0;  
   BOOL bAlt = (GetKeyState( VK_MENU)&0x8000) != 0;
   BOOL bCtrl = nFlags & MK_CONTROL;
@@ -1684,13 +1683,12 @@ void CModelerView::OnRButtonDown(UINT nFlags, CPoint point)
   }
 
   m_MouseDownLocation = point;
-	CView::OnRButtonDown(nFlags, point);
+  CView::OnRButtonDown(nFlags, point);
 }
 //--------------------------------------------------------------------------------------------
 void CModelerView::OnLButtonUp(UINT nFlags, CPoint point) 
 {
   CModelerDoc *pDoc = (CModelerDoc *) GetDocument();
-  m_pmtvClosestVertex = NULL;
   m_InputAction = IA_NONE;
   CView::OnLButtonUp(nFlags, point);
 }
@@ -1709,7 +1707,7 @@ void CModelerView::OnRButtonUp(UINT nFlags, CPoint point)
     prProjection.Prepare();
     // set current mip factor as switch factor for current mip model
     m_ModelObject.SetMipSwitchFactor( pDoc->m_iCurrentMip, m_fCurrentMipFactor);
-    CModelData *pMD = (CModelData *) m_ModelObject.GetData();
+    CModelDataPtr pMD = m_ModelObject.GetData();
     // spread switch factors of rougher mip models proportionally up to maximum
     // default factor
     pMD->SpreadMipSwitchFactors( pDoc->m_iCurrentMip + 1, m_fCurrentMipFactor);
@@ -1722,8 +1720,8 @@ void CModelerView::OnRButtonUp(UINT nFlags, CPoint point)
     if( !::IsWindow(pDlgMip->m_hWnd)) return; 
     pDlgMip->UpdateData( FALSE);
   }
-	
-	CView::OnRButtonUp(nFlags, point);
+  
+  CView::OnRButtonUp(nFlags, point);
 }
 //--------------------------------------------------------------------------------------------
 // restart animation for all attachments recursivly
@@ -1747,19 +1745,19 @@ void PauseAnimForAllAttachments( CModelObject &mo)
 
 void CModelerView::OnAnimNextAnim() 
 {
-	m_ModelObject.NextAnim();
+  m_ModelObject.NextAnim();
   if( m_ModelObject.IsPaused())
   {
-	  m_ModelObject.ao_tmAnimStart = 0;
+    m_ModelObject.ao_tmAnimStart = 0;
   }
 }
 
 void CModelerView::OnAnimPrevAnim() 
 {
-	m_ModelObject.PrevAnim();
+  m_ModelObject.PrevAnim();
   if( m_ModelObject.IsPaused())
   {
-	  m_ModelObject.ao_tmAnimStart = 0;
+    m_ModelObject.ao_tmAnimStart = 0;
   }
 }
 
@@ -1801,7 +1799,7 @@ void CModelerView::OnAnimNextFrame()
   {
     m_ModelObject.PauseAnim();
   }
-	m_ModelObject.NextFrame();	
+  m_ModelObject.NextFrame();  
 }
 
 void CModelerView::OnAnimPrevFrame() 
@@ -1810,12 +1808,12 @@ void CModelerView::OnAnimPrevFrame()
   {
     m_ModelObject.PauseAnim();
   }
-	m_ModelObject.PrevFrame();	
+  m_ModelObject.PrevFrame();  
 }
 
 void CModelerView::OnUpdateAnimPlay(CCmdUI* pCmdUI) 
 {
-	if( m_bMappingMode)
+  if( m_bMappingMode)
     pCmdUI->Enable( FALSE);
   else if (m_ModelObject.IsPaused()) {
     pCmdUI->SetCheck(0);
@@ -1831,9 +1829,9 @@ void CModelerView::OnRestartAnimations()
   // restart model's animation
   m_ModelObject.StartAnim( iMdlCurrentAnim);
   // retrieve current model's texture 
-  CTextureData *pTD = (CTextureData *) m_ModelObject.mo_toTexture.GetData();
-	// if model has texture
-  if( pTD != NULL)
+  CTextureDataPtr pTD = m_ModelObject.mo_toTexture.GetData();
+  // if model has texture
+  if( pTD)
   {
     // get model's texture animation index
     INDEX iTexCurrentAnim = m_ModelObject.mo_toTexture.GetAnim();
@@ -1844,7 +1842,7 @@ void CModelerView::OnRestartAnimations()
 
 void CModelerView::OnUpdateAnimNextframe(CCmdUI* pCmdUI) 
 {
-	if( m_bMappingMode)
+  if( m_bMappingMode)
     pCmdUI->Enable( FALSE);
   else 
     pCmdUI->Enable(TRUE);
@@ -1852,7 +1850,7 @@ void CModelerView::OnUpdateAnimNextframe(CCmdUI* pCmdUI)
 
 void CModelerView::OnUpdateAnimPrevframe(CCmdUI* pCmdUI) 
 {
-	if( m_bMappingMode)
+  if( m_bMappingMode)
     pCmdUI->Enable( FALSE);
   else
     pCmdUI->Enable(TRUE);
@@ -1888,61 +1886,61 @@ void CModelerView::_ApplyFreeModeControls(CPlacement3D& pl, ANGLE3D& aAbs, BOOL 
   FLOAT fRLR = 0.0f; // rotate left/right
   FLOAT fRUD = 0.0f; // rotate up/down
 
-  _pInput->GetInput(bPrescan);
+  _pInput_GetInput(bPrescan);
 
   if (!bPrescan)
   {
-    BOOL bAlt = _pInput->GetButtonState(KID_LALT) || _pInput->GetButtonState(KID_RALT);
+    BOOL bAlt = _pInput_GetButtonState(KID_LALT) || _pInput_GetButtonState(KID_RALT);
 
     // ---------- Simulate moving as in fly mode
     // forward
     if (
-      _pInput->GetButtonState(KID_W) ||
-      _pInput->GetButtonState(KID_MOUSE2) ||
-      _pInput->GetButtonState(KID_ARROWUP))
+      _pInput_GetButtonState(KID_W) ||
+      _pInput_GetButtonState(KID_MOUSE2) ||
+      _pInput_GetButtonState(KID_ARROWUP))
     {
       fFB = -FB_SPEED * m_flyModeSpeedMultiplier;
     }
     // backward
     if (
-      _pInput->GetButtonState(KID_S) ||
-      _pInput->GetButtonState(KID_MOUSE1) ||
-      _pInput->GetButtonState(KID_ARROWDOWN))
+      _pInput_GetButtonState(KID_S) ||
+      _pInput_GetButtonState(KID_MOUSE1) ||
+      _pInput_GetButtonState(KID_ARROWDOWN))
     {
       fFB = +FB_SPEED * m_flyModeSpeedMultiplier;
     }
     // strife left
     if (
-      _pInput->GetButtonState(KID_Q) ||
-      _pInput->GetButtonState(KID_A) ||
-      _pInput->GetButtonState(KID_ARROWLEFT))
+      _pInput_GetButtonState(KID_Q) ||
+      _pInput_GetButtonState(KID_A) ||
+      _pInput_GetButtonState(KID_ARROWLEFT))
     {
       fLR = -LR_SPEED * m_flyModeSpeedMultiplier;
     }
     // strife right
     if (
-      _pInput->GetButtonState(KID_E) ||
-      _pInput->GetButtonState(KID_D) ||
-      _pInput->GetButtonState(KID_ARROWRIGHT))
+      _pInput_GetButtonState(KID_E) ||
+      _pInput_GetButtonState(KID_D) ||
+      _pInput_GetButtonState(KID_ARROWRIGHT))
     {
       fLR = +LR_SPEED * m_flyModeSpeedMultiplier;
     }
     // up
-    if ((_pInput->GetButtonState(KID_R) && !bAlt) ||
-      _pInput->GetButtonState(KID_SPACE))
+    if ((_pInput_GetButtonState(KID_R) && !bAlt) ||
+      _pInput_GetButtonState(KID_SPACE))
     {
       fUD = +UD_SPEED * m_flyModeSpeedMultiplier;
     }
     // down
-    if (_pInput->GetButtonState(KID_F) || _pInput->GetButtonState(KID_C))
+    if (_pInput_GetButtonState(KID_F) || _pInput_GetButtonState(KID_C))
     {
       fUD = -UD_SPEED * m_flyModeSpeedMultiplier;
     }
   }
 
   // get current rotation
-  fRLR = _pInput->GetAxisValue(1) * ROT_SPEED;
-  fRUD = -_pInput->GetAxisValue(2) * ROT_SPEED;
+  fRLR = _pInput_GetAxisValue(1) * ROT_SPEED;
+  fRUD = -_pInput_GetAxisValue(2) * ROT_SPEED;
 
   // apply translation
   if (!bPrescan)
@@ -1958,22 +1956,22 @@ void CModelerView::OnAlternativeMovingMode()
   if (m_bMappingMode)
     return;
 
-  INDEX iAllowMouseAcceleration = _pShell->GetINDEX("inp_bAllowMouseAcceleration");
-  INDEX iFilterMouse = _pShell->GetINDEX("inp_bFilterMouse");
+  INDEX iAllowMouseAcceleration = _pShell_GetINDEX("inp_bAllowMouseAcceleration");
+  INDEX iFilterMouse = _pShell_GetINDEX("inp_bFilterMouse");
 
-  _pShell->SetINDEX("inp_bAllowMouseAcceleration", 1);
-  _pShell->SetINDEX("inp_bFilterMouse", 1);
+  _pShell_SetINDEX("inp_bAllowMouseAcceleration", 1);
+  _pShell_SetINDEX("inp_bFilterMouse", 1);
 
   CPlacement3D _plNew = _GetCameraPlacement();
   CPlacement3D _plOld = _plNew;
   ANGLE3D _aAbs = _plNew.pl_OrientationAngle;
-  TIME timeLastTick = _pTimer->GetRealTimeTick();
+  TIME timeLastTick = _pTimer_GetRealTimeTick();
 
-  _pInput->EnableInput(m_pViewPort);
+  _pInput_EnableInput(*m_pViewPort);
 
   BOOL bRunning = TRUE;
   INDEX iLastTick = 0;
-  CTimerValue tvStart = _pTimer->GetHighPrecisionTimer();
+  CTimerValue tvStart = _pTimer_GetHighPrecisionTimer();
 
   while (bRunning)
   {
@@ -2022,9 +2020,9 @@ void CModelerView::OnAlternativeMovingMode()
       }
     }
 
-    CTimerValue tvNow = _pTimer->GetHighPrecisionTimer();
+    CTimerValue tvNow = _pTimer_GetHighPrecisionTimer();
     FLOAT fPassed = (tvNow - tvStart).GetSeconds();
-    INDEX iNowTick = INDEX(fPassed / _pTimer->TickQuantum);
+    INDEX iNowTick = INDEX(fPassed / CTimer_TickQuantum);
     // apply controls for frame rates below tick quantum
     while (iLastTick < iNowTick - 1)
     {
@@ -2035,7 +2033,7 @@ void CModelerView::OnAlternativeMovingMode()
     _ApplyFreeModeControls(_plNew, _aAbs, TRUE);
 
     // set new viewer position
-    FLOAT fLerpFactor = (fPassed - iNowTick * _pTimer->TickQuantum) / _pTimer->TickQuantum;
+    FLOAT fLerpFactor = (fPassed - iNowTick * CTimer_TickQuantum) / CTimer_TickQuantum;
     ASSERT(fLerpFactor > 0 && fLerpFactor < 1.0f);
 
     CPlacement3D plToSet;
@@ -2048,33 +2046,33 @@ void CModelerView::OnAlternativeMovingMode()
     OnDraw(pDC);
     ReleaseDC(pDC);
 
-    TIME timeCurrentTick = _pTimer->GetRealTimeTick();
+    TIME timeCurrentTick = _pTimer_GetRealTimeTick();
     if (timeCurrentTick > timeLastTick)
     {
-      _pTimer->SetCurrentTick(timeCurrentTick);
+      _pTimer_SetCurrentTick(timeCurrentTick);
       timeLastTick = timeCurrentTick;
     }
   }
-  _pInput->DisableInput();
+  _pInput_DisableInput();
 
-  _pShell->SetINDEX("inp_bAllowMouseAcceleration", iAllowMouseAcceleration);
-  _pShell->SetINDEX("inp_bFilterMouse", iFilterMouse);
+  _pShell_SetINDEX("inp_bAllowMouseAcceleration", iAllowMouseAcceleration);
+  _pShell_SetINDEX("inp_bFilterMouse", iFilterMouse);
 }
 
 void CModelerView::OnIdle(void)
 {
   if( m_AutoRotating)
   {
-    TIME timeNow = _pTimer->GetRealTimeTick();
+    TIME timeNow = _pTimer_GetRealTimeTick();
     TIME tmDelta = timeNow-m_timeLastTick;
     m_plModelPlacement.pl_OrientationAngle( 1) -= AngleDeg(160.0f*tmDelta);
     theApp.m_chPlacement.MarkChanged();
     m_timeLastTick = timeNow;
   }
 
-  FLOAT fTimeVar1 = ((FLOAT)_pTimer->GetRealTimeTick()) / 1.5f;
-  FLOAT fTimeVar2 = ((FLOAT)_pTimer->GetRealTimeTick()) * 0.8f;
-  FLOAT fTimeVar3 = ((FLOAT)_pTimer->GetRealTimeTick()) * 1.8f;
+  FLOAT fTimeVar1 = ((FLOAT)_pTimer_GetRealTimeTick()) / 1.5f;
+  FLOAT fTimeVar2 = ((FLOAT)_pTimer_GetRealTimeTick()) * 0.8f;
+  FLOAT fTimeVar3 = ((FLOAT)_pTimer_GetRealTimeTick()) * 1.8f;
 
   if( m_bDollyViewer)
   {
@@ -2127,8 +2125,8 @@ void CModelerView::OnIdle(void)
                     theApp.m_chGlobal.IsUpToDate(m_udViewPicture) &&
                     theApp.m_chPlacement.IsUpToDate(m_udViewPicture) &&
                     (m_ModelObject.GetPatchesMask() == 0) );
-  CTextureData *pTD = (CTextureData *) m_ModelObject.mo_toTexture.GetData();
-  if( (pTD != NULL) && (pTD->td_ctFrames > 1) ) bUpdate = TRUE;
+  CTextureDataPtr pTD = m_ModelObject.mo_toTexture.GetData();
+  if( pTD && (pTD->td_ctFrames > 1) ) bUpdate = TRUE;
   
   if( bUpdate)
   {
@@ -2138,7 +2136,7 @@ void CModelerView::OnIdle(void)
 
 void CModelerView::OnAnimChoose()
 {                        
- 	CDChooseAnim dlg( &m_ModelObject);
+   CDChooseAnim dlg( &m_ModelObject);
   dlg.DoModal();
   Invalidate( FALSE);
 }
@@ -2155,7 +2153,7 @@ void CModelerView::OnAnimMipPrecize()
 void CModelerView::OnAnimMipRough() 
 {
   CModelerDoc* pDoc = GetDocument();
-	m_ModelObject.NextManualMipLevel();
+  m_ModelObject.NextManualMipLevel();
   pDoc->SelectMipModel( m_ModelObject.GetMipModel( m_fCurrentMipFactor));
   //pDoc->SelectMipModel( pDoc->m_iCurrentMip);
   theApp.m_chGlobal.MarkChanged();
@@ -2188,22 +2186,22 @@ void CModelerView::OnOptAutoMipModeling()
 
 void CModelerView::OnUpdateOptAutoMipModeling(CCmdUI* pCmdUI) 
 {
-	if( m_bMappingMode)    pCmdUI->Enable( FALSE);
+  if( m_bMappingMode)    pCmdUI->Enable( FALSE);
   else                pCmdUI->Enable( TRUE);
   pCmdUI->SetCheck( m_ModelObject.IsAutoMipModeling());
 }
 
 void CModelerView::OnAnimRotation() 
 {
-  m_timeLastTick = _pTimer->GetRealTimeTick();
+  m_timeLastTick = _pTimer_GetRealTimeTick();
   m_AutoRotating = !m_AutoRotating;
 }
 
 void CModelerView::OnUpdateAnimRotation(CCmdUI* pCmdUI) 
 {
-	if( m_bMappingMode)
+  if( m_bMappingMode)
     pCmdUI->Enable( FALSE);
-	pCmdUI->SetCheck( m_AutoRotating);
+  pCmdUI->SetCheck( m_AutoRotating);
 }
 
 CModelerView *CModelerView::GetActiveView(void)
@@ -2237,26 +2235,26 @@ CModelerView *CModelerView::GetActiveMappingNormalView(void)
 void CModelerView::OnContextMenu(CWnd* pWnd, CPoint point) 
 {
   CMenu menu;
-	
+  
   if( m_bMappingMode)
   {
     if( (m_InputAction == IA_CONTEXT_MENU) && (menu.LoadMenu(IDR_MAPPING_VIEW_POPUP)))
     {
-		  CMenu* pPopup = menu.GetSubMenu(0);
-		  ASSERT(pPopup != NULL);
+      CMenu* pPopup = menu.GetSubMenu(0);
+      ASSERT(pPopup != NULL);
       pPopup->TrackPopupMenu(TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_LEFTALIGN,
-								   point.x, point.y, this);
+                   point.x, point.y, this);
     }
   }
   else
   {
     if( (m_InputAction == IA_CONTEXT_MENU) && (menu.LoadMenu(IDR_MODEL_VIEW_POPUP)))
-  	{
-		  CMenu* pPopup = menu.GetSubMenu(0);
-		  ASSERT(pPopup != NULL);
-		  if( m_RenderPrefs.BBoxFrameVisible())
+    {
+      CMenu* pPopup = menu.GetSubMenu(0);
+      ASSERT(pPopup != NULL);
+      if( m_RenderPrefs.BBoxFrameVisible())
         pPopup->CheckMenuItem(ID_REND_BBOX_FRAME, MF_CHECKED);
-		  if( m_RenderPrefs.BBoxAllVisible())
+      if( m_RenderPrefs.BBoxAllVisible())
         pPopup->CheckMenuItem(ID_REND_BBOX_ALL, MF_CHECKED);
 
       if( m_RenderPrefs.WireOn()) pPopup->CheckMenuItem(ID_REND_WIRE_ONOFF, MF_CHECKED);
@@ -2284,15 +2282,15 @@ void CModelerView::OnContextMenu(CWnd* pWnd, CPoint point)
         pPopup->CheckMenuItem( ID_REND_PHONG, MF_CHECKED);
 
       pPopup->TrackPopupMenu(TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_LEFTALIGN,
-								   point.x, point.y, this);
-	  }
+                   point.x, point.y, this);
+    }
   }
-  m_InputAction = IA_NONE;	
+  m_InputAction = IA_NONE;  
 }
 
 BOOL MyChooseColor( COLORREF &clrNewColor, CWnd &wndOwner)
 {
-	COLORREF MyCustColors[ 16];
+  COLORREF MyCustColors[ 16];
   CHOOSECOLOR ccInit;
 
   ASSERT( &wndOwner != NULL);
@@ -2348,30 +2346,20 @@ void CModelerView::OnFileRemoveTexture()
 {
   // remove curently selected skin texture
   CMainFrame* pMainFrame = STATIC_DOWNCAST(CMainFrame, AfxGetMainWnd());
-	CModelerDoc *pDoc = (CModelerDoc *) GetDocument();
+  CModelerDoc *pDoc = (CModelerDoc *) GetDocument();
   ASSERT( pDoc->m_emEditModel.edm_WorkingSkins.Count() != 0);
-  CTextureDataInfo *ptdiSelected = NULL;
   INDEX iCurSel = pMainFrame->m_SkinComboBox.GetCurSel();
-  INDEX iIter = 0;
-  FOREACHINLIST( CTextureDataInfo, tdi_ListNode, pDoc->m_emEditModel.edm_WorkingSkins, it)
-  {
-    if( iCurSel == iIter)
-    {
-      ptdiSelected = &it.Current();
-      break;
-    }
-    iIter++;
-  }
-  _pTextureStock->Release( ptdiSelected->tdi_TextureData);
-  ptdiSelected->tdi_ListNode.Remove();
-  delete ptdiSelected;
+  CTextureDataInfo* ptdiSelected = pDoc->m_emEditModel.edm_WorkingSkins[iCurSel].get();
+  _pTextureStock_Release( *ptdiSelected->tdi_TextureData);
+  pDoc->m_emEditModel.edm_WorkingSkins.erase(pDoc->m_emEditModel.edm_WorkingSkins.begin() + iCurSel);
   Invalidate( FALSE);
 }
 
 void CModelerView::OnScriptOpen()
 {
   CModelerDoc* pDoc = (CModelerDoc *) GetDocument();
-  const CTFileName fnDocName = CTString(CStringA(pDoc->GetPathName()));
+  CTString pn = static_cast<const char*>(CStringA(pDoc->GetPathName()));
+  const CTFileName fnDocName = pn;
   theApp.EditScriptAndReopenDocument(fnDocName.FileDir() + fnDocName.FileName() + ".scr");
 }
 
@@ -2384,9 +2372,10 @@ BOOL CModelerView::UpdateAnimations(void)
 {
   CMainFrame* pMainFrame = STATIC_DOWNCAST(CMainFrame, AfxGetMainWnd());
   CModelerDoc *pDoc = (CModelerDoc *) GetDocument();
-  CTFileName fnModelName = CTString(CStringA(pDoc->GetPathName()));
+  CTString pn = static_cast<const char*>(CStringA(pDoc->GetPathName()));
+  CTFileName fnModelName = pn;
   CTFileName fnScriptName = fnModelName.FileDir() + fnModelName.FileName() + ".scr";
-	
+  
   pDoc->OnSaveDocument( pDoc->GetPathName());
 
   try
@@ -2416,9 +2405,10 @@ void CModelerView::OnScriptUpdateMipmodels()
 {
   CMainFrame* pMainFrame = STATIC_DOWNCAST(CMainFrame, AfxGetMainWnd());
   CModelerDoc *pDoc = (CModelerDoc *) GetDocument();
-  CTFileName fnModelName = CTString(CStringA(pDoc->GetPathName()));
+  CTString pn = static_cast<const char*>(CStringA(pDoc->GetPathName()));
+  CTFileName fnModelName = pn;
   CTFileName fnScriptName = fnModelName.FileDir() + fnModelName.FileName() + ".scr";
-	
+  
   if( ::MessageBoxA( this->m_hWnd, "Updating mip-models will discard current mip-model mapping "
                                   "and colorizing data. Are you sure that you want that?",
              "Warning !", MB_YESNO | MB_ICONWARNING | MB_DEFBUTTON1|
@@ -2445,7 +2435,7 @@ void CModelerView::OnScriptUpdateMipmodels()
 
 void CModelerView::OnLightOn() 
 {
-	if( !m_bMappingMode)
+  if( !m_bMappingMode)
   {
     m_LightModeOn = !m_LightModeOn;
     Invalidate( FALSE);
@@ -2464,25 +2454,25 @@ void CModelerView::OnLightColor()
 
 void CModelerView::OnUpdateLightOn(CCmdUI* pCmdUI) 
 {
-	pCmdUI->Enable( !m_bMappingMode);
+  pCmdUI->Enable( !m_bMappingMode);
   pCmdUI->SetCheck( m_LightModeOn);
 }
 
 void CModelerView::OnUpdateLightColor(CCmdUI* pCmdUI) 
 {
-	if( m_bMappingMode)
+  if( m_bMappingMode)
     pCmdUI->Enable( FALSE);
 }
 
 void CModelerView::OnRendBboxAll() 
 {
-	m_RenderPrefs.BBoxAllShow( !m_RenderPrefs.BBoxAllVisible());
+  m_RenderPrefs.BBoxAllShow( !m_RenderPrefs.BBoxAllVisible());
   GetDocument()->UpdateAllViews( NULL);
 }
 
 void CModelerView::OnRendBboxFrame() 
 {
-	m_RenderPrefs.BBoxFrameShow( !m_RenderPrefs.BBoxFrameVisible());
+  m_RenderPrefs.BBoxFrameShow( !m_RenderPrefs.BBoxFrameVisible());
   GetDocument()->UpdateAllViews( NULL);
 }
 
@@ -2506,32 +2496,32 @@ void CModelerView::OnRendNoTexture()
 
 void CModelerView::OnRendOnColors() 
 {
-	m_RenderPrefs.SetTextureType( RT_ON_COLORS);
+  m_RenderPrefs.SetTextureType( RT_ON_COLORS);
   GetDocument()->UpdateAllViews( NULL);
 }
 
 void CModelerView::OnRendOffColors() 
 {
-	m_RenderPrefs.SetTextureType( RT_OFF_COLORS);
+  m_RenderPrefs.SetTextureType( RT_OFF_COLORS);
   GetDocument()->UpdateAllViews( NULL);
 }
 
 void CModelerView::OnRendSurfaceColors() 
 {
-	m_RenderPrefs.SetTextureType( RT_SURFACE_COLORS);
+  m_RenderPrefs.SetTextureType( RT_SURFACE_COLORS);
   GetDocument()->UpdateAllViews( NULL);
 }
 
 void CModelerView::OnRendWhiteTexture() 
 {
-	m_RenderPrefs.SetTextureType( RT_WHITE_TEXTURE);
-  GetDocument()->UpdateAllViews( NULL);	
+  m_RenderPrefs.SetTextureType( RT_WHITE_TEXTURE);
+  GetDocument()->UpdateAllViews( NULL);  
 }
 
 void CModelerView::OnRendUseTexture() 
 {
   m_RenderPrefs.SetTextureType( RT_TEXTURE);
-  GetDocument()->UpdateAllViews( NULL);	
+  GetDocument()->UpdateAllViews( NULL);  
 }
 
 void CModelerView::OnMappingOn() 
@@ -2551,7 +2541,7 @@ void CModelerView::OnMappingOn()
     else                                    m_ModelObject.AutoMipModelingOff();
   }
 
-	m_bMappingMode = !m_bMappingMode;
+  m_bMappingMode = !m_bMappingMode;
   Invalidate( FALSE);
 }
 
@@ -2577,7 +2567,7 @@ void CModelerView::OnUpdateScriptUpdateMipmodels(CCmdUI* pCmdUI)
 
 void CModelerView::OnUpdateAnimNextanim(CCmdUI* pCmdUI) 
 {
-  pCmdUI->Enable( !m_bMappingMode);	
+  pCmdUI->Enable( !m_bMappingMode);  
 }
 
 void CModelerView::OnUpdateAnimPrevanim(CCmdUI* pCmdUI) 
@@ -2592,15 +2582,14 @@ void CModelerView::OnUpdateAnimChoose(CCmdUI* pCmdUI)
 
 void CModelerView::OnUpdateFileRemoveTexture(CCmdUI* pCmdUI)
 {
-	CModelerDoc *pDoc = (CModelerDoc *) GetDocument();
-  INDEX ctSkins = pDoc->m_emEditModel.edm_WorkingSkins.Count();
-  pCmdUI->Enable( !m_bMappingMode && (ctSkins!=0) );
+  CModelerDoc *pDoc = (CModelerDoc *) GetDocument();
+  pCmdUI->Enable( !m_bMappingMode && (!pDoc->m_emEditModel.edm_WorkingSkins.empty()) );
 }
 
 void CModelerView::OnMagnifyLess() 
 {
   BOOL bAlt = (GetKeyState( VK_MENU)&0x8000) != 0;
-	if( m_bMappingMode)
+  if( m_bMappingMode)
   {
     if( m_MagnifyFactor > 1.0/16384.0)
     {
@@ -2610,7 +2599,7 @@ void CModelerView::OnMagnifyLess()
         OnWindowFit();
       }
     }
-  }	
+  }  
   else if( m_fTargetDistance < 65535.0f)
   {
     m_fTargetDistance *= 2.0f;
@@ -2643,7 +2632,7 @@ void CModelerView::OnWindowFit()
 {
   if( m_bMappingMode && !GetParent()->IsZoomed())
   {
- 	  MEX mexWidth, mexHeight;
+     MEX mexWidth, mexHeight;
     mexWidth = m_ModelObject.GetWidth();
     mexHeight = m_ModelObject.GetHeight();
     PIX pixLeft = -m_offx;
@@ -2682,12 +2671,12 @@ void CModelerView::OnWindowCenter()
 {
   if( m_bMappingMode)
   {
- 	  MEX mexWidth, mexHeight;
+     MEX mexWidth, mexHeight;
     mexWidth = m_ModelObject.GetWidth();
     mexHeight = m_ModelObject.GetHeight();
     PIX pixRight = (PIX) (mexWidth * m_MagnifyFactor);
     PIX pixDown = (PIX) (mexHeight * m_MagnifyFactor);
-	  
+    
     PIX WinW, WinH;
     WinW = m_pDrawPort->GetWidth();
     WinH = m_pDrawPort->GetHeight();
@@ -2714,12 +2703,12 @@ void CModelerView::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
   {
     m_InputAction = IA_NONE;
   }
-	CView::OnKeyUp(nChar, nRepCnt, nFlags);
+  CView::OnKeyUp(nChar, nRepCnt, nFlags);
 }
 
 void CModelerView::OnListAnimations() 
 {
- 	CDChooseAnim dlg( &m_ModelObject);
+   CDChooseAnim dlg( &m_ModelObject);
   dlg.DoModal();
   Invalidate(FALSE);
 }
@@ -2846,36 +2835,36 @@ void CModelerView::OnTakeScreenShoot()
  */
 CMainFrame *CModelerView::GetMainFrame()
 {
-	// get the MDIChildFrame of this window
-	CChildFrame *pfrChild = (CChildFrame *)this->GetParentFrame();
+  // get the MDIChildFrame of this window
+  CChildFrame *pfrChild = (CChildFrame *)this->GetParentFrame();
   ASSERT(pfrChild!=NULL);
   // get the MDIFrameWnd
   CMainFrame *pfrMain = (CMainFrame *)pfrChild->GetParentFrame();
   ASSERT(pfrMain!=NULL);
 
-	return pfrMain;
+  return pfrMain;
 }
 
 void CModelerView::OnKillFocus(CWnd* pNewWnd) 
 {
-	CView::OnKillFocus(pNewWnd);
+  CView::OnKillFocus(pNewWnd);
 }
 
 void CModelerView::OnActivateView(BOOL bActivate, CView* pActivateView, CView* pDeactiveView) 
 {
   theApp.m_chGlobal.MarkChanged();
-	CView::OnActivateView(bActivate, pActivateView, pDeactiveView);
+  CView::OnActivateView(bActivate, pActivateView, pDeactiveView);
 }
 
 void CModelerView::OnBackgPicture() 
 {
-	m_IsWinBcgTexture = TRUE;	
+  m_IsWinBcgTexture = TRUE;  
   Invalidate( FALSE);
 }
 
 void CModelerView::OnBackgColor() 
 {
-	m_IsWinBcgTexture = FALSE;	
+  m_IsWinBcgTexture = FALSE;  
   Invalidate( FALSE);
 }
 
@@ -2907,26 +2896,18 @@ void CModelerView::OnStainsInsert()
 {
   CModelerDoc* pDoc = GetDocument();
   CMainFrame* pMainFrame = STATIC_DOWNCAST(CMainFrame, AfxGetMainWnd());
-  
-  CWorkingPatch *pWP = NULL;
+
   int iSelected = pMainFrame->m_StainsComboBox.GetCurSel();
 
-  if( iSelected != CB_ERR)
+  if (iSelected == CB_ERR)
   {
-    INDEX iCt = 0;
-    FOREACHINLIST( CWorkingPatch, wp_ListNode, theApp.m_WorkingPatches, it)
-    {
-      if( iCt == iSelected)
-      {
-        pWP = &it.Current();
-      }
-      iCt ++;
-    }
+    ASSERT(false);
+    return;
   }
-  ASSERT(pWP != NULL);
+  auto& pWP = theApp.m_WorkingPatches[iSelected];
 
-  CTextureData *pTD = pWP->wp_TextureData;
-  CModelData *pMD = (CModelData *) m_ModelObject.GetData();
+  CTextureDataPtr pTD = pWP->wp_TextureData;
+  CModelDataPtr pMD = m_ModelObject.GetData();
   MEX mexWidth, mexHeight;
   pMD->GetTextureDimensions( mexWidth, mexHeight);
   INDEX iMaskBit;
@@ -2997,7 +2978,7 @@ void CModelerView::OnStainsDelete()
 
 void CModelerView::OnUpdateStainsInsert(CCmdUI* pCmdUI) 
 {
-  pCmdUI->Enable( !theApp.m_WorkingPatches.IsEmpty());
+  pCmdUI->Enable( !theApp.m_WorkingPatches.empty());
 }
 
 void CModelerView::OnUpdateStainsDelete(CCmdUI* pCmdUI) 
@@ -3100,7 +3081,7 @@ void CModelerView::OnLButtonDblClk(UINT nFlags, CPoint point)
 
   Invalidate( FALSE);
 
-	CView::OnLButtonDblClk(nFlags, point);
+  CView::OnLButtonDblClk(nFlags, point);
 }
 
 void CModelerView::OnRButtonDblClk(UINT nFlags, CPoint point) 
@@ -3112,13 +3093,13 @@ void CModelerView::OnRButtonDblClk(UINT nFlags, CPoint point)
   if( bCtrl && bSpace) {
     FastZoomOut();
   }
-	
-	CView::OnRButtonDblClk(nFlags, point);
+  
+  CView::OnRButtonDblClk(nFlags, point);
 }
 
 void CModelerView::OnKeyA()
 {
-	if( m_bMappingMode)
+  if( m_bMappingMode)
   {
     OnToggleAllSurfaces();
   }
@@ -3145,7 +3126,7 @@ void CModelerView::OnSaveThumbnail()
 
 void CModelerView::SaveThumbnail() 
 {
-  CDrawPort *pDrawPort;
+  CDrawPortPtr pDrawPort;
   CImageInfo iiImageInfo;
   CTextureData TD;
   CAnimData AD;
@@ -3161,8 +3142,8 @@ void CModelerView::SaveThumbnail()
     ApplyThumbnailSettings( pDoc->m_emEditModel.edm_tsThumbnailSettings);
   }
 
-  _pGfx->CreateWorkCanvas( 128, 128, &pDrawPort);
-  if( pDrawPort != NULL)
+  _pGfx_CreateWorkCanvas( 128, 128, pDrawPort);
+  if( pDrawPort)
   {
     INDEX iCurrentMip = m_ModelObject.GetManualMipLevel();
     m_ModelObject.SetManualMipLevel(0);
@@ -3183,8 +3164,9 @@ void CModelerView::SaveThumbnail()
 
       pDrawPort->Unlock();
     }
-    
-    CTFileName fnDocName = CTString(CStringA(GetDocument()->GetPathName()));
+
+    CTString pn = static_cast<const char*>(CStringA(GetDocument()->GetPathName()));
+    CTFileName fnDocName = pn;
     CTFileName fnThumbnail = fnDocName.FileDir() + fnDocName.FileName() + ".tbn";
 
     pDrawPort->GrabScreen( iiImageInfo);
@@ -3192,7 +3174,7 @@ void CModelerView::SaveThumbnail()
     try {
       fnThumbnail.RemoveApplicationPath_t();
       // create texture
-      TD.Create_t( &iiImageInfo, 128, MAX_MEX_LOG2, FALSE);
+      TD.Create_t( iiImageInfo, 128, MAX_MEX_LOG2, FALSE);
       // save the thumbnail
       CTFileStream File;
       File.Create_t( fnThumbnail);
@@ -3210,7 +3192,7 @@ void CModelerView::SaveThumbnail()
     {
       m_ModelObject.AutoMipModelingOn();
     }
-    _pGfx->DestroyWorkCanvas( pDrawPort);
+    _pGfx_DestroyWorkCanvas( pDrawPort);
   }
   // restore current view settings
   ApplyThumbnailSettings( tsCurrent);
@@ -3284,7 +3266,7 @@ void CModelerView::OnResetViewer()
   }
   else
   {
-	  ResetViewerPosition();
+    ResetViewerPosition();
     OnFallDown();
   }
   theApp.m_chGlobal.MarkChanged();
@@ -3298,7 +3280,7 @@ void CModelerView::OnUpdateResetViewer(CCmdUI* pCmdUI)
 
 void CModelerView::OnDollyViewer() 
 {
-	m_bDollyViewer = !m_bDollyViewer;
+  m_bDollyViewer = !m_bDollyViewer;
   Invalidate( FALSE);
 }
 
@@ -3311,12 +3293,12 @@ void CModelerView::OnUpdateDollyViewer(CCmdUI* pCmdUI)
 void CModelerView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint) 
 {
   // just invalidate the whole window area
-	Invalidate(FALSE);	
+  Invalidate(FALSE);  
 }
 
 void CModelerView::OnDollyLight() 
 {
-	m_bDollyLight = !m_bDollyLight;
+  m_bDollyLight = !m_bDollyLight;
   Invalidate( FALSE);
 }
 
@@ -3328,7 +3310,7 @@ void CModelerView::OnUpdateDollyLight(CCmdUI* pCmdUI)
 
 void CModelerView::OnDollyLightColor() 
 {
-	m_bDollyLightColor = !m_bDollyLightColor;
+  m_bDollyLightColor = !m_bDollyLightColor;
   Invalidate( FALSE);
 }
 
@@ -3340,7 +3322,7 @@ void CModelerView::OnUpdateDollyLightColor(CCmdUI* pCmdUI)
 
 BOOL CModelerView::PreTranslateMessage(MSG* pMsg) 
 {
-	// translate message first
+  // translate message first
   BOOL bResult = CView::PreTranslateMessage(pMsg);
 
   CModelerView *pModelerView = CModelerView::GetActiveMappingNormalView();
@@ -3452,7 +3434,7 @@ BOOL CModelerView::PreTranslateMessage(MSG* pMsg)
       }
     }
   }
-	return bResult;	
+  return bResult;  
 }
 
 void CModelerView::OnNextTexture() 
@@ -3522,15 +3504,15 @@ void CModelerView::OnRecreateTexture()
 {
   // there must be valid texture
   ASSERT( AssureValidTDI());
-  CTextureData *pTD = m_ptdiTextureDataInfo->tdi_TextureData;
+  CTextureDataPtr pTD = m_ptdiTextureDataInfo->tdi_TextureData;
   CTFileName fnTextureName = pTD->GetName();
   // call (re)create texture dialog
   _EngineGUI.CreateTexture( fnTextureName);
   // try to 
-  CTextureData *ptdTextureToReload;
+  CTextureDataPtr ptdTextureToReload;
   try {
     // obtain texture
-    ptdTextureToReload = _pTextureStock->Obtain_t( fnTextureName);
+    ptdTextureToReload = _pTextureStock_Obtain_t( fnTextureName);
   }
   catch ( char *err_str) {
     AfxMessageBox( CString(err_str));
@@ -3539,7 +3521,7 @@ void CModelerView::OnRecreateTexture()
   // reload the texture
   ptdTextureToReload->Reload();
   // release the texture
-  _pTextureStock->Release( ptdTextureToReload);
+  _pTextureStock_Release( *ptdTextureToReload);
   CModelerDoc* pDoc = GetDocument();
   pDoc->UpdateAllViews( NULL);
 }
@@ -3561,7 +3543,8 @@ void CModelerView::OnCreateMipModels()
   CMainFrame* pMainFrame = STATIC_DOWNCAST(CMainFrame, AfxGetMainWnd());
 
   CModelerDoc* pDoc = GetDocument();
-  CTFileName fnModelName = CTString(CStringA(pDoc->GetPathName()));
+  CTString pn = static_cast<const char*>(CStringA(pDoc->GetPathName()));
+  CTFileName fnModelName = pn;
   CTFileName fnScriptName = fnModelName.FileDir() + fnModelName.FileName() + ".scr";
   try
   {
@@ -3659,7 +3642,7 @@ INDEX CModelerView::GetClosestVertex(FLOAT3D &vClosestVertex)
   SetProjectionData( prProjection, m_pDrawPort);
   // set position of document's model
   prProjection.ObjectPlacementL() = m_plModelPlacement;
-  return m_ModelObject.PickVertexIndex( m_pDrawPort, &prProjection,
+  return m_ModelObject.PickVertexIndex( m_pDrawPort, prProjection,
     m_MousePosition.x, m_MousePosition.y, vClosestVertex);
 }
 
@@ -3699,7 +3682,7 @@ void CModelerView::OnAnimPlayOnce()
 
 void CModelerView::OnUpdateAnimPlayOnce(CCmdUI* pCmdUI) 
 {
-	if( m_bMappingMode) pCmdUI->Enable( FALSE);
+  if( m_bMappingMode) pCmdUI->Enable( FALSE);
 }
 
 void CModelerView::FillThumbnailSettings( CThumbnailSettings &tsToReceive)
@@ -3739,7 +3722,7 @@ void CModelerView::ApplyThumbnailSettings( CThumbnailSettings &tsToApply)
 void CModelerView::OnTileTexture() 
 {
   m_bTileMappingBCG = !m_bTileMappingBCG;
-  GetDocument()->UpdateAllViews( NULL);	
+  GetDocument()->UpdateAllViews( NULL);  
 }
 
 void CModelerView::OnUpdateTileTexture(CCmdUI* pCmdUI) 
@@ -3830,27 +3813,27 @@ void CModelerView::OnRemoveBumpMap()
 
 void CModelerView::OnUpdateRemoveReflection(CCmdUI* pCmdUI) 
 {
-  pCmdUI->Enable( m_ModelObject.mo_toReflection.GetData() != NULL);
+  pCmdUI->Enable( m_ModelObject.mo_toReflection.GetData());
 }
 
 void CModelerView::OnUpdateRemoveSpecular(CCmdUI* pCmdUI) 
 {
-  pCmdUI->Enable( m_ModelObject.mo_toSpecular.GetData() != NULL);
+  pCmdUI->Enable( m_ModelObject.mo_toSpecular.GetData());
 }
 
 void CModelerView::OnUpdateRemoveBumpMap(CCmdUI* pCmdUI) 
 {
-  pCmdUI->Enable( m_ModelObject.mo_toBump.GetData() != NULL);
+  pCmdUI->Enable( m_ModelObject.mo_toBump.GetData());
 }
 
 void CModelerView::OnSurfaceNumbers() 
 {
-	m_bPrintSurfaceNumbers = !m_bPrintSurfaceNumbers;	
+  m_bPrintSurfaceNumbers = !m_bPrintSurfaceNumbers;  
 }
 
 void CModelerView::OnUpdateSurfaceNumbers(CCmdUI* pCmdUI) 
 {
-	if( !m_bMappingMode)
+  if( !m_bMappingMode)
   {
     pCmdUI->Enable( FALSE);
   }
@@ -3883,7 +3866,7 @@ void CModelerView::OnPreviousBcgTexture()
 
 void CModelerView::OnUpdatePreviousBcgTexture(CCmdUI* pCmdUI) 
 {
-  if( theApp.m_WorkingTextures.Count() > 1)
+  if( theApp.m_WorkingTextures.size() > 1)
   {
     pCmdUI->Enable(TRUE);
   }
@@ -3901,7 +3884,7 @@ void CModelerView::OnNextBcgTexture()
 
 void CModelerView::OnUpdateNextBcgTexture(CCmdUI* pCmdUI) 
 {
-  if( theApp.m_WorkingTextures.Count() > 1)
+  if( theApp.m_WorkingTextures.size() > 1)
   {
     pCmdUI->Enable(TRUE);
   }
@@ -3914,13 +3897,14 @@ void CModelerView::OnUpdateNextBcgTexture(CCmdUI* pCmdUI)
 void CModelerView::OnWindowTogglemax() 
 {
   CMainFrame* pMainFrame = STATIC_DOWNCAST(CMainFrame, AfxGetMainWnd());
-  pMainFrame->OnWindowTogglemax();	
+  pMainFrame->OnWindowTogglemax();  
 }
 
 void CModelerView::OnExportForSkining() 
 {
   CModelerDoc* pDoc = GetDocument();
-  CTFileName fnDocName = CTString(CStringA(pDoc->GetPathName()));
+  CTString pn = static_cast<const char*>(CStringA(pDoc->GetPathName()));
+  CTFileName fnDocName = pn;
   CTFileName fnDirectory = fnDocName.FileDir();
   CTFileName fnDefaultSelected = fnDocName.FileName()+CTString(".tga");
 
@@ -3945,8 +3929,8 @@ void CModelerView::OnExportForSkining()
   if( GetFileAttributesA( fnFullPath) != -1)
   {
     CTString strMsg;
-    strMsg.PrintF( "File \"%s\" already exist. Do you want to replace it?", fnFullPath);
-    if( ::MessageBoxA( this->m_hWnd, strMsg, "Warning !", MB_YESNO | MB_ICONWARNING | MB_DEFBUTTON1|
+    strMsg.PrintF( "File \"%s\" already exist. Do you want to replace it?", static_cast<const char*>(fnFullPath));
+    if( ::MessageBoxA( this->m_hWnd, static_cast<const char*>(strMsg), "Warning !", MB_YESNO | MB_ICONWARNING | MB_DEFBUTTON1|
                MB_SYSTEMMODAL | MB_TOPMOST) != IDYES)
     {
       return;
@@ -3963,16 +3947,16 @@ void CModelerView::OnExportForSkining()
   FLOAT fWHRatio = FLOAT(pDoc->m_emEditModel.edm_md.md_Width)/pDoc->m_emEditModel.edm_md.md_Height;
   PIX pixHeight = PIX( pixWidth/fWHRatio);
 
-  CDrawPort *pdp;
-  _pGfx->CreateWorkCanvas( pixWidth, pixHeight, &pdp);
-  if( pdp == NULL) return;
+  CDrawPortPtr pdp;
+  _pGfx_CreateWorkCanvas( pixWidth, pixHeight, pdp);
+  if( !pdp) return;
   
   if( !pdp->Lock()) return;
 
   // clear bcg
   pdp->Fill(colPaper|CT_OPAQUE);
 
- 	MEX mexWidth, mexHeight;
+   MEX mexWidth, mexHeight;
   mexWidth = m_ModelObject.GetWidth();
   mexHeight = m_ModelObject.GetHeight();
   FLOAT fMagnifyFit = FLOAT(pixWidth)/mexWidth;
@@ -3982,8 +3966,8 @@ void CModelerView::OnExportForSkining()
   {
     // render surface color
     if( dlg.m_bColoredSurfaces) {
-      MappingSurface &ms = mmi.mmpi_MappingSurfaces[ iSurface];
-      pDoc->m_emEditModel.DrawFilledSurface( pdp, 0, iSurface, fMagnifyFit, 0, 0, ms.ms_colColor, ms.ms_colColor);
+      MappingSurfacePtr ms = mmi.mmpi_MappingSurfaces[ iSurface];
+      pDoc->m_emEditModel.DrawFilledSurface( pdp, 0, iSurface, fMagnifyFit, 0, 0, ms->ms_colColor, ms->ms_colColor);
     }
     // render wire frame
     if( dlg.m_bWireFrame) {
@@ -4011,7 +3995,7 @@ void CModelerView::OnExportForSkining()
     AfxMessageBox(CString(strError));
   }
   
-  _pGfx->DestroyWorkCanvas( pdp);
+  _pGfx_DestroyWorkCanvas( pdp);
 }
 
 void CModelerView::OnRenderSurfacesInColors() 
@@ -4080,19 +4064,19 @@ void CModelerView::OnChangeAmbient()
 void CModelerView::OnUpdateChangeAmbient(CCmdUI* pCmdUI) 
 {
   pCmdUI->Enable( !m_bMappingMode);
-  GetDocument()->UpdateAllViews( NULL);	
+  GetDocument()->UpdateAllViews( NULL);  
 }
 
 void CModelerView::OnToggleAllSurfaces() 
 {
   m_ShowAllSurfaces = !m_ShowAllSurfaces;
-  GetDocument()->UpdateAllViews( NULL);	
+  GetDocument()->UpdateAllViews( NULL);  
 }
 
 void CModelerView::OnUpdateToggleAllSurfaces(CCmdUI* pCmdUI) 
 {
   pCmdUI->Enable( m_bMappingMode);
-  GetDocument()->UpdateAllViews( NULL);	
+  GetDocument()->UpdateAllViews( NULL);  
 }
 
 void CModelerView::OnKeyT() 

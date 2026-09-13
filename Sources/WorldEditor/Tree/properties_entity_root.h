@@ -22,12 +22,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class EntityRootProperties : public BasePropertyTreeItem
 {
 public:
-  EntityRootProperties(BasePropertyTreeItem* parent, const std::set<CEntity*>& entities);
+  EntityRootProperties(BasePropertyTreeItem* parent, const std::set<CEntity_*>& entities);
 
   QVariant data(int column, int role) const override;
 
 private:
-  const std::set<CEntity*> m_entities;
+  const std::set<CEntity_*> m_entities;
 };
 
 #endif

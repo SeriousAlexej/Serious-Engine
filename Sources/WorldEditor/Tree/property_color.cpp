@@ -21,7 +21,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <QWinWidget>
 #include <QColorDialog>
-#include <QPainter>
 
 namespace
 {
@@ -46,7 +45,8 @@ public:
 
   QWidget* CreateEditor(QWidget* parent) override
   {
-    auto* editor = new ColorWidget(_FromCTCol(_CurrentPropValue()), parent);
+    auto* editor = new ColorWidget(m_hue, m_sat, m_val, m_alp, parent);
+    editor->SetColor(_FromCTCol(_CurrentPropValue()));
 
     QObject::connect(editor, &ColorWidget::editingStarted, this, [this]
       {
@@ -57,34 +57,59 @@ public:
     QObject::connect(editor, &ColorWidget::editingFinished, this, [this, editor]
       {
         mp_signal_blocker.reset();
-        _WriteProperty(_FromQtCol(editor->GetColor()));
+        _WriteProperty(CacheColor(editor));
       });
 
     QObject::connect(editor, &ColorWidget::colorChanged, this, [this, editor]
       {
-        _WriteProperty(_FromQtCol(editor->GetColor()));
-        editor->SetColor(_FromCTCol(_CurrentPropValue()));
+        const auto new_col = CacheColor(editor);
+        _WriteProperty(new_col);
+        if (const auto set_col = _CurrentPropValue(); set_col != new_col)
+          editor->SetColor(_FromCTCol(set_col));
       });
 
     QObject::connect(editor, &ColorWidget::clicked, this, [this]
       {
         CWorldEditorApp::ModalGuard guard;
-        QWinWidget modal_widget(theApp.m_pMainWnd->GetSafeHwnd(), nullptr, Qt::WindowFlags{});
+        QWinWidget modal_widget(theApp.m_pMainWnd->GetSafeHwnd(), nullptr, Qt::WindowFlags {});
         QColorDialog color_dialog(&modal_widget);
         color_dialog.setOptions(QColorDialog::ShowAlphaChannel);
         color_dialog.setWindowTitle("Choose color");
         color_dialog.setCurrentColor(_FromCTCol(_CurrentPropValue()));
         color_dialog.exec();
         if (color_dialog.result() == QDialog::Accepted)
-          _WriteProperty(_FromQtCol(color_dialog.selectedColor()));
+          _WriteProperty(CacheColor(color_dialog));
       });
 
     return editor;
   }
 
+  COLOR CacheColor(const QColorDialog& color_dialog)
+  {
+    const auto col = color_dialog.selectedColor();
+    m_hue = col.hue();
+    m_sat = col.saturation();
+    m_val = col.value();
+    m_alp = col.alpha();
+    return _FromQtCol(col);
+  }
+
+  COLOR CacheColor(const ColorWidget* editor)
+  {
+    m_hue = editor->Hue();
+    m_sat = editor->Saturation();
+    m_val = editor->Value();
+    m_alp = editor->Alpha();
+    return _FromQtCol(QColor::fromHsv(m_hue, m_sat, m_val, m_alp));
+  }
+
   IMPL_GENERIC_PROPERTY_FUNCTIONS(COLOR)
 
 private:
+  int m_hue = 0;
+  int m_sat = 0;
+  int m_val = 0;
+  int m_alp = 255;
   std::unique_ptr<QSignalBlocker> mp_signal_blocker;
 };
 

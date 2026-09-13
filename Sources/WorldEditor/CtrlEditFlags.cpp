@@ -124,12 +124,12 @@ void CCtrlEditFlags::SetFirstEditableBank( void)
 }
 
 BEGIN_MESSAGE_MAP(CCtrlEditFlags, CButton)
-	//{{AFX_MSG_MAP(CCtrlEditFlags)
-	ON_WM_LBUTTONDOWN()
-	ON_WM_MOUSEMOVE()
-	ON_WM_LBUTTONUP()
-	ON_WM_KILLFOCUS()
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CCtrlEditFlags)
+  ON_WM_LBUTTONDOWN()
+  ON_WM_MOUSEMOVE()
+  ON_WM_LBUTTONUP()
+  ON_WM_KILLFOCUS()
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -201,7 +201,7 @@ void CCtrlEditFlags::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
     RECT rectText=GetRectForArea(8);
     CTString strCTBankNo;
     strCTBankNo.PrintF("%d",m_iCurrentBank);
-    CString strBankNo=strCTBankNo;
+    CString strBankNo=static_cast<const char*>(strCTBankNo);
     pDC->SetBkMode( TRANSPARENT);
     pDC->SetTextAlign(TA_CENTER);
     pDC->ExtTextOut( (rectText.left+rectText.right)/2, rectText.top, ETO_CLIPPED, &rectText, strBankNo, 1, NULL);
@@ -255,7 +255,7 @@ int CCtrlEditFlags::OnToolHitTest( CPoint point, TOOLINFO* pTI ) const
 
   CTString strToolTip=GetTipForArea(iArea);
   pTI->lpszText = (wchar_t *)malloc( sizeof(wchar_t) * (strlen(strToolTip)+1));
-  wcscpy( pTI->lpszText, CString(strToolTip));
+  wcscpy( pTI->lpszText, CString(static_cast<const char*>(strToolTip)));
   RECT rectToolTip;
   rectToolTip.left = 50;
   rectToolTip.right = 60;
@@ -273,7 +273,7 @@ void CCtrlEditFlags::OnLButtonDown(UINT nFlags, CPoint point)
   INDEX iArea=GetAreaUnderMouse( point);
   m_iMouseDownArea=iArea;
 
-	CButton::OnLButtonDown(nFlags, point);
+  CButton::OnLButtonDown(nFlags, point);
 }
 
 void CCtrlEditFlags::OnLButtonUp(UINT nFlags, CPoint point) 
@@ -307,16 +307,16 @@ void CCtrlEditFlags::OnLButtonUp(UINT nFlags, CPoint point)
   }
   Invalidate(FALSE);
 
-	CButton::OnLButtonUp(nFlags, point);
+  CButton::OnLButtonUp(nFlags, point);
 }
 
 void CCtrlEditFlags::OnMouseMove(UINT nFlags, CPoint point) 
 {
   m_iLastArea=GetAreaUnderMouse( point);
-	CButton::OnMouseMove(nFlags, point);
+  CButton::OnMouseMove(nFlags, point);
 }
 
 void CCtrlEditFlags::OnKillFocus(CWnd* pNewWnd) 
 {
-	CButton::OnKillFocus(pNewWnd);
+  CButton::OnKillFocus(pNewWnd);
 }

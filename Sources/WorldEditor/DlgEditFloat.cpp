@@ -32,12 +32,12 @@ static char THIS_FILE[] = __FILE__;
 
 
 CDlgEditFloat::CDlgEditFloat(CWnd* pParent /*=NULL*/)
-	: CDialog(CDlgEditFloat::IDD, pParent)
+  : CDialog(CDlgEditFloat::IDD, pParent)
 {
-	//{{AFX_DATA_INIT(CDlgEditFloat)
-	m_fEditFloat = 0.0f;
-	m_strVarName = _T("");
-	//}}AFX_DATA_INIT
+  //{{AFX_DATA_INIT(CDlgEditFloat)
+  m_fEditFloat = 0.0f;
+  m_strVarName = _T("");
+  //}}AFX_DATA_INIT
   m_strTitle="Type new value";
 }
 
@@ -53,18 +53,18 @@ void CDlgEditFloat::DoDataExchange(CDataExchange* pDX)
     }
   }
 
-	CDialog::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CDlgEditFloat)
-	DDX_Text(pDX, IDC_EDIT_FLOAT, m_fEditFloat);
-	DDX_Text(pDX, IDC_EDIT_FLOAT_T, m_strVarName);
-	//}}AFX_DATA_MAP
+  CDialog::DoDataExchange(pDX);
+  //{{AFX_DATA_MAP(CDlgEditFloat)
+  DDX_Text(pDX, IDC_EDIT_FLOAT, m_fEditFloat);
+  DDX_Text(pDX, IDC_EDIT_FLOAT_T, m_strVarName);
+  //}}AFX_DATA_MAP
 }
 
 
 BEGIN_MESSAGE_MAP(CDlgEditFloat, CDialog)
-	//{{AFX_MSG_MAP(CDlgEditFloat)
-		// NOTE: the ClassWizard will add message map macros here
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CDlgEditFloat)
+    // NOTE: the ClassWizard will add message map macros here
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////

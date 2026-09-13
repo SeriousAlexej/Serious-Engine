@@ -32,18 +32,18 @@ IMPLEMENT_DYNCREATE(CDlgPgCollision, CPropertyPage)
 
 CDlgPgCollision::CDlgPgCollision() : CPropertyPage(CDlgPgCollision::IDD)
 {
-	//{{AFX_DATA_INIT(CDlgPgCollision)
-	m_fWidth = 0.0f;
-	m_fHeight = 0.0f;
-	m_fLenght = 0.0f;
-	m_fXCenter = 0.0f;
-	m_fYDown = 0.0f;
-	m_fZCenter = 0.0f;
-	m_EqualityRadio = -1;
-	m_strCollisionBoxName = _T("");
-	m_strCollisionBoxIndex = _T("");
-	m_bCollideAsBox = FALSE;
-	//}}AFX_DATA_INIT
+  //{{AFX_DATA_INIT(CDlgPgCollision)
+  m_fWidth = 0.0f;
+  m_fHeight = 0.0f;
+  m_fLenght = 0.0f;
+  m_fXCenter = 0.0f;
+  m_fYDown = 0.0f;
+  m_fZCenter = 0.0f;
+  m_EqualityRadio = -1;
+  m_strCollisionBoxName = _T("");
+  m_strCollisionBoxIndex = _T("");
+  m_bCollideAsBox = FALSE;
+  //}}AFX_DATA_INIT
 
   theApp.m_pPgInfoCollision = this;
 }
@@ -83,7 +83,7 @@ void CDlgPgCollision::DoDataExchange(CDataExchange* pDX)
     sprintf( achrString, "%d.", pDoc->m_emEditModel.GetActiveCollisionBoxIndex());
     m_strCollisionBoxIndex = achrString;
     // get name of curently selected collision box
-    sprintf( achrString, "%s", pDoc->m_emEditModel.GetCollisionBoxName());
+    sprintf( achrString, "%s", static_cast<const char*>(pDoc->m_emEditModel.GetCollisionBoxName()));
     m_strCollisionBoxName = achrString;
 
     // enable all controls
@@ -133,7 +133,8 @@ void CDlgPgCollision::DoDataExchange(CDataExchange* pDX)
       }
       default:
       {
-        ASSERTALWAYS( "None of collision dimensions are the same and that can't be.");
+        // None of collision dimensions are the same and that can't be
+        break;
       }
     }
     // mark that the values have been updated to reflect the state of the view
@@ -141,18 +142,18 @@ void CDlgPgCollision::DoDataExchange(CDataExchange* pDX)
   }
     
   CPropertyPage::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CDlgPgCollision)
-	DDX_SkyFloat(pDX, IDC_EDIT_WIDTH, m_fWidth);
-	DDX_SkyFloat(pDX, IDC_EDIT_HEIGHT, m_fHeight);
-	DDX_SkyFloat(pDX, IDC_EDIT_LENGHT, m_fLenght);
-	DDX_SkyFloat(pDX, IDC_EDIT_XCENTER, m_fXCenter);
-	DDX_SkyFloat(pDX, IDC_EDIT_YDOWN, m_fYDown);
-	DDX_SkyFloat(pDX, IDC_EDIT_ZCENTER, m_fZCenter);
-	DDX_Radio(pDX, IDC_H_EQ_W, m_EqualityRadio);
-	DDX_Text(pDX, IDC_COLLISION_BOX_NAME, m_strCollisionBoxName);
-	DDX_Text(pDX, IDC_COLLISION_BOX_INDEX, m_strCollisionBoxIndex);
-	DDX_Check(pDX, IDC_COLLIDE_AS_BOX, m_bCollideAsBox);
-	//}}AFX_DATA_MAP
+  //{{AFX_DATA_MAP(CDlgPgCollision)
+  DDX_SkyFloat(pDX, IDC_EDIT_WIDTH, m_fWidth);
+  DDX_SkyFloat(pDX, IDC_EDIT_HEIGHT, m_fHeight);
+  DDX_SkyFloat(pDX, IDC_EDIT_LENGHT, m_fLenght);
+  DDX_SkyFloat(pDX, IDC_EDIT_XCENTER, m_fXCenter);
+  DDX_SkyFloat(pDX, IDC_EDIT_YDOWN, m_fYDown);
+  DDX_SkyFloat(pDX, IDC_EDIT_ZCENTER, m_fZCenter);
+  DDX_Radio(pDX, IDC_H_EQ_W, m_EqualityRadio);
+  DDX_Text(pDX, IDC_COLLISION_BOX_NAME, m_strCollisionBoxName);
+  DDX_Text(pDX, IDC_COLLISION_BOX_INDEX, m_strCollisionBoxIndex);
+  DDX_Check(pDX, IDC_COLLIDE_AS_BOX, m_bCollideAsBox);
+  //}}AFX_DATA_MAP
 
   // if transfering data from dialog to document
   if( pDX->m_bSaveAndValidate)
@@ -189,7 +190,8 @@ void CDlgPgCollision::DoDataExchange(CDataExchange* pDX)
         }
         default:
         {
-          ASSERTALWAYS( "Illegal value found in collision dimensions equality radio.");
+          // Illegal value found in collision dimensions equality radio
+          break;
         }
       }
       // set collision equality value
@@ -200,7 +202,8 @@ void CDlgPgCollision::DoDataExchange(CDataExchange* pDX)
     }
 
     // set name of curently selected collision box
-    pDoc->m_emEditModel.SetCollisionBoxName( CTString( CStringA(m_strCollisionBoxName)) );
+    CTString cbn = static_cast<const char*>(CStringA(m_strCollisionBoxName));
+    pDoc->m_emEditModel.SetCollisionBoxName( cbn );
     
     // get collision min and max vectors
     FLOAT3D vMinCollisionBox;
@@ -225,24 +228,24 @@ void CDlgPgCollision::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CDlgPgCollision, CPropertyPage)
-	//{{AFX_MSG_MAP(CDlgPgCollision)
-	ON_EN_CHANGE(IDC_EDIT_WIDTH, OnChangeEditWidth)
-	ON_EN_CHANGE(IDC_EDIT_HEIGHT, OnChangeEditHeight)
-	ON_EN_CHANGE(IDC_EDIT_LENGHT, OnChangeEditLenght)
-	ON_EN_CHANGE(IDC_EDIT_XCENTER, OnChangeEditXCenter)
-	ON_EN_CHANGE(IDC_EDIT_YDOWN, OnChangeEditYDown)
-	ON_EN_CHANGE(IDC_EDIT_ZCENTER, OnChangeEditZCenter)
-	ON_BN_CLICKED(IDC_H_EQ_W, OnHEqW)
-	ON_BN_CLICKED(IDC_L_EQ_W, OnLEqW)
-	ON_BN_CLICKED(IDC_L_EQ_H, OnLEqH)
-	ON_BN_CLICKED(IDC_ADD_COLLISION_BOX, OnAddCollisionBox)
-	ON_EN_CHANGE(IDC_COLLISION_BOX_NAME, OnChangeCollisionBoxName)
-	ON_BN_CLICKED(IDC_NEXT_COLLISION_BOX, OnNextCollisionBox)
-	ON_BN_CLICKED(IDC_PREVIOUS_COLLISION_BOX, OnPreviousCollisionBox)
-	ON_BN_CLICKED(IDC_REMOVE_COLLISION_BOX, OnRemoveCollisionBox)
-	ON_BN_CLICKED(IDC_COLLIDE_AS_BOX, OnCollideAsBox)
-	ON_BN_CLICKED(IDC_ALLIGN_TO_SIZE, OnAllignToSize)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CDlgPgCollision)
+  ON_EN_CHANGE(IDC_EDIT_WIDTH, OnChangeEditWidth)
+  ON_EN_CHANGE(IDC_EDIT_HEIGHT, OnChangeEditHeight)
+  ON_EN_CHANGE(IDC_EDIT_LENGHT, OnChangeEditLenght)
+  ON_EN_CHANGE(IDC_EDIT_XCENTER, OnChangeEditXCenter)
+  ON_EN_CHANGE(IDC_EDIT_YDOWN, OnChangeEditYDown)
+  ON_EN_CHANGE(IDC_EDIT_ZCENTER, OnChangeEditZCenter)
+  ON_BN_CLICKED(IDC_H_EQ_W, OnHEqW)
+  ON_BN_CLICKED(IDC_L_EQ_W, OnLEqW)
+  ON_BN_CLICKED(IDC_L_EQ_H, OnLEqH)
+  ON_BN_CLICKED(IDC_ADD_COLLISION_BOX, OnAddCollisionBox)
+  ON_EN_CHANGE(IDC_COLLISION_BOX_NAME, OnChangeCollisionBoxName)
+  ON_BN_CLICKED(IDC_NEXT_COLLISION_BOX, OnNextCollisionBox)
+  ON_BN_CLICKED(IDC_PREVIOUS_COLLISION_BOX, OnPreviousCollisionBox)
+  ON_BN_CLICKED(IDC_REMOVE_COLLISION_BOX, OnRemoveCollisionBox)
+  ON_BN_CLICKED(IDC_COLLIDE_AS_BOX, OnCollideAsBox)
+  ON_BN_CLICKED(IDC_ALLIGN_TO_SIZE, OnAllignToSize)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -264,74 +267,74 @@ BOOL CDlgPgCollision::OnIdle(LONG lCount)
 BOOL _bAvoidingLooping = FALSE;
 void CDlgPgCollision::OnChangeEditWidth() 
 {
-	if( !_bAvoidingLooping)
+  if( !_bAvoidingLooping)
   {
-	  _bAvoidingLooping = TRUE;
+    _bAvoidingLooping = TRUE;
     UpdateData(TRUE);
     //UpdateData(FALSE);
-	  _bAvoidingLooping = FALSE;
+    _bAvoidingLooping = FALSE;
   }
 }
 
 void CDlgPgCollision::OnChangeEditHeight() 
 {
-	if( !_bAvoidingLooping)
+  if( !_bAvoidingLooping)
   {
-	  _bAvoidingLooping = TRUE;
+    _bAvoidingLooping = TRUE;
     UpdateData(TRUE);
     //UpdateData(FALSE);
-	  _bAvoidingLooping = FALSE;
+    _bAvoidingLooping = FALSE;
   }
 }
 
 void CDlgPgCollision::OnChangeEditLenght() 
 {
-	if( !_bAvoidingLooping)
+  if( !_bAvoidingLooping)
   {
-	  _bAvoidingLooping = TRUE;
+    _bAvoidingLooping = TRUE;
     UpdateData(TRUE);
     //UpdateData(FALSE);
-	  _bAvoidingLooping = FALSE;
+    _bAvoidingLooping = FALSE;
   }
 }
 
 void CDlgPgCollision::OnChangeEditXCenter() 
 {
-	UpdateData(TRUE);	
+  UpdateData(TRUE);  
   //UpdateData(FALSE);
 }
 
 void CDlgPgCollision::OnChangeEditYDown() 
 {
-	UpdateData(TRUE);	
+  UpdateData(TRUE);  
   //UpdateData(FALSE);
 }
 
 void CDlgPgCollision::OnChangeEditZCenter() 
 {
-	UpdateData(TRUE);	
+  UpdateData(TRUE);  
   //UpdateData(FALSE);
 }
 
 void CDlgPgCollision::OnHEqW() 
 {
   m_EqualityRadio = 0;
-	UpdateData(TRUE);	
-	UpdateData(FALSE);	
+  UpdateData(TRUE);  
+  UpdateData(FALSE);  
 }
 
 void CDlgPgCollision::OnLEqW() 
 {
   m_EqualityRadio = 1;
-	UpdateData(TRUE);	
-	UpdateData(FALSE);	
+  UpdateData(TRUE);  
+  UpdateData(FALSE);  
 }
 
 void CDlgPgCollision::OnLEqH() 
 {
   m_EqualityRadio = 2;
-	UpdateData(TRUE);	
-	UpdateData(FALSE);	
+  UpdateData(TRUE);  
+  UpdateData(FALSE);  
 }
 
 void CDlgPgCollision::OnChangeCollisionBoxName() 
@@ -341,7 +344,7 @@ void CDlgPgCollision::OnChangeCollisionBoxName()
   CModelerDoc* pDoc = pModelerView->GetDocument();  
   // document has been changed
   pDoc->SetModifiedFlag();
-	UpdateData( TRUE);
+  UpdateData( TRUE);
 }
 
 void CDlgPgCollision::OnNextCollisionBox() 

@@ -22,24 +22,25 @@
     <Keyword>MFCProj</Keyword>
     <ProjectGuid>{DC47DA88-14E2-0634-61C5-7CEEC46A45C2}</ProjectGuid>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>SeriousEditorEX</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Template|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>Dynamic</UseOfMfc>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>Dynamic</UseOfMfc>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -52,28 +53,33 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(VCTargetsPath)Microsoft.Cpp.UpgradeFromVC60.props" />
     <Import Project="Qt.props" />
+    <Import Project="..\Version.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(VCTargetsPath)Microsoft.Cpp.UpgradeFromVC60.props" />
     <Import Project="Qt.props" />
+    <Import Project="..\Version.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>Release\</OutDir>
     <IntDir>Release\</IntDir>
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir);$(SolutionDir)..\Tools.Win32\Libraries\DX8SDK\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\Bin_1.10;$(SolutionDir)..\Tools.Win32\Libraries\DX8SDK\Lib;$(LibraryPath)</LibraryPath>
-    <TargetName>SeriousEditor</TargetName>
+    <IncludePath>$(SolutionDir);$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\Bin;$(LibraryPath)</LibraryPath>
+    <TargetName>SeriousEditorEX</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>Debug\</OutDir>
     <IntDir>Debug\</IntDir>
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir);$(SolutionDir)..\Tools.Win32\Libraries\DX8SDK\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\Bin_1.10\Debug;$(SolutionDir)..\Tools.Win32\Libraries\DX8SDK\Lib;$(LibraryPath)</LibraryPath>
-    <TargetName>SeriousEditor</TargetName>
+    <IncludePath>$(SolutionDir);$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\Bin\Debug;$(LibraryPath)</LibraryPath>
+    <TargetName>SeriousEditorEX</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">
+    <TargetName>SeriousEditorEX</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -94,8 +100,9 @@
       <ObjectFileName>.\Release\</ObjectFileName>
       <ProgramDataBaseFileName>.\Release\</ProgramDataBaseFileName>
       <DisableSpecificWarnings>4996;4333</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>$(SolutionDir)qtsolutions\qtwinmigrate\src\;$(Qt_dir)\include\;$(Qt_dir)\include\QtCore\;$(Qt_dir)\include\QtGui\;$(Qt_dir)\include\QtWidgets\;$(Qt_dir)\include\QtWinExtras\;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)qtsolutions\qtwinmigrate\src\;$(Qt_dir)\include\;$(Qt_dir)\include\QtCore\;$(Qt_dir)\include\QtGui\;$(Qt_dir)\include\QtWidgets\;$(ProjectDir);$(SolutionDir)CrashRpt\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Midl>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -116,20 +123,25 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
-      <IgnoreSpecificDefaultLibraries>game.lib gamemp.lib gamegui.lib gameguimp.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>Release/SeriousEditor.exe</OutputFile>
-      <AdditionalDependencies>htmlhelp.lib;Qt5Core.lib;Qt5Gui.lib;Qt5Widgets.lib;Qt5WinExtras.lib;QtSolutions_MFCMigrationFramework.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>
+      </IgnoreSpecificDefaultLibraries>
+      <OutputFile>Release/SeriousEditorEX.exe</OutputFile>
+      <AdditionalDependencies>SeriousEngineCAPI.lib;htmlhelp.lib;Qt6Core.lib;Qt6Gui.lib;Qt6Widgets.lib;qtwinmigrate.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateMapFile>true</GenerateMapFile>
-      <AdditionalLibraryDirectories>$(SolutionDir)Engine\$(Configuration)\;$(SolutionDir)EngineGUI\$(Configuration)\;$(SolutionDir)qtwinmigrateBuild\$(Configuration)\;$(Qt_dir)\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)SeriousEngineCAPI\Release\;$(SolutionDir)EngineGUI\$(Configuration)\;$(SolutionDir)qtwinmigrateBuild\$(Configuration)\;$(Qt_dir)\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <CustomBuildStep>
-      <Command>copy Release\$(TargetName).exe $(SolutionDir)..\Bin_1.10\ &gt;nul
-copy $(SolutionDir)qtwinmigrateBuild\install\QtSolutions_MFCMigrationFramework.dll $(SolutionDir)..\Bin_1.10\ &gt; nul
-$(Qt_dir)\bin\windeployqt.exe $(SolutionDir)..\Bin_1.10\$(TargetName).exe
-$(Qt_dir)\bin\windeployqt.exe $(SolutionDir)..\Bin_1.10\QtSolutions_MFCMigrationFramework.dll
+      <Command>copy Release\$(TargetName).exe $(SolutionDir)..\Bin\ &gt;nul
+copy $(SolutionDir)SeriousEngineCAPI\Release\SeriousEngineCAPI.dll $(SolutionDir)..\Bin\ &gt;nul
+copy $(SolutionDir)qtwinmigrateBuild\install\qtwinmigrate.dll $(SolutionDir)..\Bin\ &gt; nul
+copy $(SolutionDir)CrashRptBuild\bin\CrashRpt1403.dll $(SolutionDir)..\Bin\ &gt; nul
+copy $(SolutionDir)CrashRptBuild\bin\CrashSender1403.exe $(SolutionDir)..\Bin\ &gt; nul
+copy $(SolutionDir)CrashRpt\lang_files\crashrpt_lang_EN.ini $(SolutionDir)..\Bin\crashrpt_lang.ini &gt; nul
+$(Qt_dir)\bin\windeployqt.exe --no-translations --no-system-d3d-compiler --no-system-dxc-compiler --no-opengl-sw --skip-plugin-types generic,tls,networkinformation,sqldrivers $(SolutionDir)..\Bin\$(TargetName).exe
+$(Qt_dir)\bin\windeployqt.exe --no-translations --no-system-d3d-compiler --no-system-dxc-compiler --no-opengl-sw --skip-plugin-types generic,tls,networkinformation,sqldrivers $(SolutionDir)..\Bin\qtwinmigrate.dll
 </Command>
       <Message>Copying %(Filename) binaries to $(SolutionDir)..\Bin</Message>
-      <Outputs>$(SolutionDir)..\Bin_1.10\$(InputName).exe;%(Outputs)</Outputs>
+      <Outputs>$(SolutionDir)..\Bin\$(InputName).exe;%(Outputs)</Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -149,8 +161,9 @@ $(Qt_dir)\bin\windeployqt.exe $(SolutionDir)..\Bin_1.10\QtSolutions_MFCMigration
       <ObjectFileName>.\Debug\</ObjectFileName>
       <ProgramDataBaseFileName>.\Debug\</ProgramDataBaseFileName>
       <DisableSpecificWarnings>4996;4333</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>$(SolutionDir)qtsolutions\qtwinmigrate\src\;$(Qt_dir)\include\;$(Qt_dir)\include\QtCore\;$(Qt_dir)\include\QtGui\;$(Qt_dir)\include\QtWidgets\;$(Qt_dir)\include\QtWinExtras\;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)qtsolutions\qtwinmigrate\src\;$(Qt_dir)\include\;$(Qt_dir)\include\QtCore\;$(Qt_dir)\include\QtGui\;$(Qt_dir)\include\QtWidgets\;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Midl>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -171,20 +184,24 @@ $(Qt_dir)\bin\windeployqt.exe $(SolutionDir)..\Bin_1.10\QtSolutions_MFCMigration
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
-      <IgnoreSpecificDefaultLibraries>gamed.lib gamempd.lib gameguid.lib gameguimpd.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>Debug/SeriousEditor.exe</OutputFile>
-      <AdditionalDependencies>htmlhelp.lib;EngineD.lib;EngineGUID.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5Widgetsd.lib;Qt5WinExtrasd.lib;QtSolutions_MFCMigrationFrameworkd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>
+      </IgnoreSpecificDefaultLibraries>
+      <OutputFile>Debug/SeriousEditorEX.exe</OutputFile>
+      <AdditionalDependencies>SeriousEngineCAPI.lib;htmlhelp.lib;Qt6Cored.lib;Qt6Guid.lib;Qt6Widgetsd.lib;qtwinmigrated.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateMapFile>true</GenerateMapFile>
-      <AdditionalLibraryDirectories>$(SolutionDir)Engine\$(Configuration)\;$(SolutionDir)EngineGUI\$(Configuration)\;$(SolutionDir)qtwinmigrateBuild\$(Configuration)\;$(Qt_dir)\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)SeriousEngineCAPI\Release\;$(SolutionDir)EngineGUI\$(Configuration)\;$(SolutionDir)qtwinmigrateBuild\$(Configuration)\;$(Qt_dir)\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <CustomBuildStep>
-      <Command>copy Debug\$(TargetName).exe $(SolutionDir)..\Bin_1.10\Debug\ &gt;nul
-copy $(SolutionDir)qtwinmigrateBuild\install\QtSolutions_MFCMigrationFrameworkd.dll $(SolutionDir)..\Bin_1.10\Debug\ &gt; nul
-$(Qt_dir)\bin\windeployqt.exe $(SolutionDir)..\Bin_1.10\Debug\$(TargetName).exe
-$(Qt_dir)\bin\windeployqt.exe $(SolutionDir)..\Bin_1.10\Debug\QtSolutions_MFCMigrationFrameworkd.dll
+      <Command>copy Debug\$(TargetName).exe $(SolutionDir)..\Bin\Debug\ &gt;nul
+copy $(SolutionDir)qtwinmigrateBuild\install\qtwinmigrate.dll $(SolutionDir)..\Bin\Debug\ &gt; nul
+copy $(SolutionDir)CrashRptBuild\bin\CrashRpt1403.dll $(SolutionDir)..\Bin\Debug\ &gt; nul
+copy $(SolutionDir)CrashRptBuild\bin\CrashSender1403.exe $(SolutionDir)..\Bin\Debug\ &gt; nul
+copy $(SolutionDir)CrashRpt\lang_files\crashrpt_lang_EN.ini $(SolutionDir)..\Bin\Debug\crashrpt_lang.ini &gt; nul
+$(Qt_dir)\bin\windeployqt.exe $(SolutionDir)..\Bin\Debug\$(TargetName).exe
+$(Qt_dir)\bin\windeployqt.exe $(SolutionDir)..\Bin\Debug\qtwinmigrated.dll
 </Command>
-      <Message>Copying %(Filename) binaries to $(SolutionDir)..\Bin_1.10\Debug</Message>
-      <Outputs>$(SolutionDir)..\Bin_1.10\Debug\$(InputName).exe;%(Outputs)</Outputs>
+      <Message>Copying %(Filename) binaries to $(SolutionDir)..\Bin\Debug</Message>
+      <Outputs>$(SolutionDir)..\Bin\Debug\$(InputName).exe;%(Outputs)</Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">
@@ -193,7 +210,7 @@ $(Qt_dir)\bin\windeployqt.exe $(SolutionDir)..\Bin_1.10\Debug\QtSolutions_MFCMig
     </Link>
     <ClCompile>
       <AdditionalIncludeDirectories>$(SolutionDir)qtsolutions\qtwinmigrate\src\;$(Qt_dir)\include\;$(Qt_dir)\include\QtCore\;$(Qt_dir)\include\QtGui\;$(Qt_dir)\include\QtWidgets\;$(Qt_dir)\include\QtWinExtras\;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -204,6 +221,7 @@ $(Qt_dir)\bin\windeployqt.exe $(SolutionDir)..\Bin_1.10\Debug\QtSolutions_MFCMig
     <ClCompile Include="ChildFrm.cpp" />
     <ClCompile Include="ColoredButton.cpp" />
     <ClCompile Include="ColorPaletteWnd.cpp" />
+    <ClCompile Include="ConsoleSymbolsCombo.cpp" />
     <ClCompile Include="CSGDesitnationCombo.cpp" />
     <ClCompile Include="CtlTipOfTheDayText.cpp" />
     <ClCompile Include="CtrlAxisRadio.cpp" />
@@ -219,6 +237,7 @@ $(Qt_dir)\bin\windeployqt.exe $(SolutionDir)..\Bin_1.10\Debug\QtSolutions_MFCMig
     <ClCompile Include="DlgAutTexturize.cpp" />
     <ClCompile Include="DlgBrowseByClass.cpp" />
     <ClCompile Include="DlgComment.cpp" />
+    <ClCompile Include="DlgConsole.cpp" />
     <ClCompile Include="DlgCreateVirtualDirectory.cpp" />
     <ClCompile Include="DlgDisplaceMapSize.cpp" />
     <ClCompile Include="DlgEditFloat.cpp" />
@@ -251,6 +270,7 @@ $(Qt_dir)\bin\windeployqt.exe $(SolutionDir)..\Bin_1.10\Debug\QtSolutions_MFCMig
     <ClCompile Include="DlgTipOfTheDay.cpp" />
     <ClCompile Include="DlgTreeShortcuts.cpp" />
     <ClCompile Include="DlgWorldSettings.cpp" />
+    <ClCompile Include="EditConsole.cpp" />
     <ClCompile Include="EditMipSwitchDistance.cpp" />
     <ClCompile Include="EntitySelectionListBox.cpp" />
     <ClCompile Include="entity_selection.cpp" />
@@ -299,6 +319,7 @@ $(Qt_dir)\bin\windeployqt.exe $(SolutionDir)..\Bin_1.10\Debug\QtSolutions_MFCMig
     <ClCompile Include="Tree\property_item_delegate.cpp" />
     <ClCompile Include="Tree\property_weapons.cpp" />
     <ClCompile Include="Tree\spinbox_no_trailing.cpp" />
+    <ClCompile Include="Tree\string_widget.cpp" />
     <ClCompile Include="Tree\tree_icons.qrc.cpp" />
     <ClCompile Include="Tree\ui_property_factory.cpp" />
     <ClCompile Include="TriangularisationCombo.cpp" />
@@ -393,6 +414,7 @@ $(Qt_dir)\bin\windeployqt.exe $(SolutionDir)..\Bin_1.10\Debug\QtSolutions_MFCMig
     <ClInclude Include="ChildFrm.h" />
     <ClInclude Include="coloredbutton.h" />
     <ClInclude Include="ColorPaletteWnd.h" />
+    <ClInclude Include="ConsoleSymbolsCombo.h" />
     <ClInclude Include="CSGDesitnationCombo.h" />
     <ClInclude Include="CtlTipOfTheDayText.h" />
     <ClInclude Include="ctrlaxisradio.h" />
@@ -408,6 +430,7 @@ $(Qt_dir)\bin\windeployqt.exe $(SolutionDir)..\Bin_1.10\Debug\QtSolutions_MFCMig
     <ClInclude Include="DlgAutTexturize.h" />
     <ClInclude Include="DlgBrowseByClass.h" />
     <ClInclude Include="DlgComment.h" />
+    <ClInclude Include="DlgConsole.h" />
     <ClInclude Include="DlgCreateVirtualDirectory.h" />
     <ClInclude Include="DlgDisplaceMapSize.h" />
     <ClInclude Include="DlgEditFloat.h" />
@@ -440,6 +463,7 @@ $(Qt_dir)\bin\windeployqt.exe $(SolutionDir)..\Bin_1.10\Debug\QtSolutions_MFCMig
     <ClInclude Include="DlgTipOfTheDay.h" />
     <ClInclude Include="DlgTreeShortcuts.h" />
     <ClInclude Include="dlgworldsettings.h" />
+    <ClInclude Include="EditConsole.h" />
     <ClInclude Include="EditMipSwitchDistance.h" />
     <ClInclude Include="EntitySelectionListBox.h" />
     <CustomBuild Include="EventHub.h">
@@ -530,6 +554,11 @@ $(Qt_dir)\bin\windeployqt.exe $(SolutionDir)..\Bin_1.10\Debug\QtSolutions_MFCMig
     </CustomBuild>
     <ClInclude Include="Tree\properties_entity_root.h" />
     <ClInclude Include="Tree\spinbox_no_trailing.h" />
+    <CustomBuild Include="Tree\string_widget.h">
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Qt_dir)\bin\moc.exe %(FullPath) &gt; %(FullPath).moc</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(FullPath).moc;%(Outputs)</Outputs>
+    </CustomBuild>
+    <ClInclude Include="Tree\string_widget.ui.h" />
     <ClInclude Include="Tree\tree_icons.qrc.h" />
     <ClInclude Include="Tree\ui_property_factory.h" />
     <ClInclude Include="TriangularisationCombo.h" />
@@ -565,6 +594,18 @@ $(Qt_dir)\bin\windeployqt.exe $(SolutionDir)..\Bin_1.10\Debug\QtSolutions_MFCMig
       <Command Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">$(Qt_dir)\bin\rcc.exe %(FullPath) &gt; %(FullPath).h</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">%(FullPath).h;%(Outputs)</Outputs>
     </CustomBuild>
+    <CustomBuild Include="Tree\string_widget.ui">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Qt_dir)\bin\uic.exe %(FullPath) &gt; %(FullPath).h</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(FullPath).h;%(Outputs)</Outputs>
+    </CustomBuild>
+    <None Include="Tree\string_widget.h.moc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\pick.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="SeriousEngine.natvis" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

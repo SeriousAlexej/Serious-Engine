@@ -29,33 +29,33 @@ class CDlgDisplaceMapSize : public CDialog
 {
 // Construction
 public:
-	CDlgDisplaceMapSize(CWnd* pParent = NULL);   // standard constructor
+  CDlgDisplaceMapSize(CWnd* pParent = NULL);   // standard constructor
 
 // Dialog Data
-	//{{AFX_DATA(CDlgDisplaceMapSize)
-	enum { IDD = IDD_DISPLACE_MAP_SIZE };
-	UINT	m_pixWidth;
-	UINT	m_pixHeight;
-	BOOL	m_bMidPixSample;
-	BOOL	m_bHighResolution;
-	//}}AFX_DATA
+  //{{AFX_DATA(CDlgDisplaceMapSize)
+  enum { IDD = IDD_DISPLACE_MAP_SIZE };
+  UINT  m_pixWidth;
+  UINT  m_pixHeight;
+  BOOL  m_bMidPixSample;
+  BOOL  m_bHighResolution;
+  //}}AFX_DATA
 
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CDlgDisplaceMapSize)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CDlgDisplaceMapSize)
+  protected:
+  virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+  //}}AFX_VIRTUAL
 
 // Implementation
 protected:
 
-	// Generated message map functions
-	//{{AFX_MSG(CDlgDisplaceMapSize)
-		// NOTE: the ClassWizard will add member functions here
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+  // Generated message map functions
+  //{{AFX_MSG(CDlgDisplaceMapSize)
+    // NOTE: the ClassWizard will add member functions here
+  //}}AFX_MSG
+  DECLARE_MESSAGE_MAP()
 };
 
 //{{AFX_INSERT_LOCATION}}

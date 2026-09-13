@@ -29,13 +29,13 @@ class CWndDisplayTexture : public CWnd
 {
 // Construction
 public:
-	CWndDisplayTexture();
+  CWndDisplayTexture();
 
 // Attributes
 public:
-  CTextureData *m_ptd;
-  CDrawPort *m_pDrawPort;
-  CViewPort *m_pViewPort;
+  CTextureDataPtr m_ptd;
+  CDrawPortPtr m_pDrawPort;
+  CViewPortPtr m_pViewPort;
   CTString m_strText1;
   CTString m_strText2;
   PIXaabbox2D m_boxTexture;
@@ -46,24 +46,24 @@ public:
 public:
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CWndDisplayTexture)
-	public:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CWndDisplayTexture)
+  public:
+  virtual BOOL PreTranslateMessage(MSG* pMsg);
+  //}}AFX_VIRTUAL
 
 // Implementation
 public:
-	virtual ~CWndDisplayTexture();
-  BOOL Initialize(PIX pixX, PIX pixY, CTextureData *ptd, CTString strText1="", CTString strText2="", BOOL bDown=FALSE);
+  virtual ~CWndDisplayTexture();
+  BOOL Initialize(PIX pixX, PIX pixY, CTextureDataPtr ptd, CTString strText1="", CTString strText2="", BOOL bDown=FALSE);
 
-	// Generated message map functions
+  // Generated message map functions
 protected:
-	//{{AFX_MSG(CWndDisplayTexture)
-	afx_msg void OnPaint();
-	afx_msg void OnKillFocus(CWnd* pNewWnd);
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+  //{{AFX_MSG(CWndDisplayTexture)
+  afx_msg void OnPaint();
+  afx_msg void OnKillFocus(CWnd* pNewWnd);
+  //}}AFX_MSG
+  DECLARE_MESSAGE_MAP()
 };
 
 /////////////////////////////////////////////////////////////////////////////

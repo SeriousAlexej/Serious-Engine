@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+  <Type Name="CTString">
+    <DisplayString>{*(char**)mp_string}</DisplayString>
+    <StringView>*(char**)mp_string</StringView>
+    <Expand>
+      <Item Name="[value]">*(char**)mp_string</Item>
+    </Expand>
+  </Type>
+
+  <Type Name ="FLOAT2D">
+    <DisplayString>{{ x = {*(float*)mp_vector}, y = {*(((float*)mp_vector) + 1)} }}</DisplayString>
+    <Expand>
+      <Item Name="[x]">*(float*)mp_vector</Item>
+      <Item Name="[y]">*(((float*)mp_vector) + 1)</Item>
+    </Expand>
+  </Type>
+  <Type Name ="FLOAT3D">
+    <DisplayString>{{ x = {*(float*)mp_vector}, y = {*(((float*)mp_vector) + 1)}, z = {*(((float*)mp_vector) + 2)} }}</DisplayString>
+    <Expand>
+      <Item Name="[x]">*(float*)mp_vector</Item>
+      <Item Name="[y]">*(((float*)mp_vector) + 1)</Item>
+      <Item Name="[z]">*(((float*)mp_vector) + 2)</Item>
+    </Expand>
+  </Type>
+  <Type Name ="FLOAT4D">
+    <DisplayString>{{ x = {*(float*)mp_vector}, y = {*(((float*)mp_vector) + 1)}, z = {*(((float*)mp_vector) + 2)}, w = {*(((float*)mp_vector) + 3)} }}</DisplayString>
+    <Expand>
+      <Item Name="[x]">*(float*)mp_vector</Item>
+      <Item Name="[y]">*(((float*)mp_vector) + 1)</Item>
+      <Item Name="[z]">*(((float*)mp_vector) + 2)</Item>
+      <Item Name="[w]">*(((float*)mp_vector) + 3)</Item>
+    </Expand>
+  </Type>
+  <Type Name ="DOUBLE2D">
+    <DisplayString>{{ x = {*(double*)mp_vector}, y = {*(((double*)mp_vector) + 1)} }}</DisplayString>
+    <Expand>
+      <Item Name="[x]">*(double*)mp_vector</Item>
+      <Item Name="[y]">*(((double*)mp_vector) + 1)</Item>
+    </Expand>
+  </Type>
+  <Type Name ="DOUBLE3D">
+    <DisplayString>{{ x = {*(double*)mp_vector}, y = {*(((double*)mp_vector) + 1)}, z = {*(((double*)mp_vector) + 2)} }}</DisplayString>
+    <Expand>
+      <Item Name="[x]">*(double*)mp_vector</Item>
+      <Item Name="[y]">*(((double*)mp_vector) + 1)</Item>
+      <Item Name="[z]">*(((double*)mp_vector) + 2)</Item>
+    </Expand>
+  </Type>
+  <Type Name ="DOUBLE4D">
+    <DisplayString>{{ x = {*(double*)mp_vector}, y = {*(((double*)mp_vector) + 1)}, z = {*(((double*)mp_vector) + 2)}, w = {*(((double*)mp_vector) + 3)} }}</DisplayString>
+    <Expand>
+      <Item Name="[x]">*(double*)mp_vector</Item>
+      <Item Name="[y]">*(((double*)mp_vector) + 1)</Item>
+      <Item Name="[z]">*(((double*)mp_vector) + 2)</Item>
+      <Item Name="[w]">*(((double*)mp_vector) + 3)</Item>
+    </Expand>
+  </Type>
+  <Type Name ="INDEX2D">
+    <DisplayString>{{ x = {*(int32_t*)mp_vector}, y = {*(((int32_t*)mp_vector) + 1)} }}</DisplayString>
+    <Expand>
+      <Item Name="[x]">*(int32_t*)mp_vector</Item>
+      <Item Name="[y]">*(((int32_t*)mp_vector) + 1)</Item>
+    </Expand>
+  </Type>
+  <Type Name ="INDEX3D">
+    <DisplayString>{{ x = {*(int32_t*)mp_vector}, y = {*(((int32_t*)mp_vector) + 1)}, z = {*(((int32_t*)mp_vector) + 2)} }}</DisplayString>
+    <Expand>
+      <Item Name="[x]">*(int32_t*)mp_vector</Item>
+      <Item Name="[y]">*(((int32_t*)mp_vector) + 1)</Item>
+      <Item Name="[z]">*(((int32_t*)mp_vector) + 2)</Item>
+    </Expand>
+  </Type>
+  <Type Name ="INDEX4D">
+    <DisplayString>{{ x = {*(int32_t*)mp_vector}, y = {*(((int32_t*)mp_vector) + 1)}, z = {*(((int32_t*)mp_vector) + 2)}, w = {*(((int32_t*)mp_vector) + 3)} }}</DisplayString>
+    <Expand>
+      <Item Name="[x]">*(int32_t*)mp_vector</Item>
+      <Item Name="[y]">*(((int32_t*)mp_vector) + 1)</Item>
+      <Item Name="[z]">*(((int32_t*)mp_vector) + 2)</Item>
+      <Item Name="[w]">*(((int32_t*)mp_vector) + 3)</Item>
+    </Expand>
+  </Type>
+  <Type Name ="SWORD3D">
+    <DisplayString>{{ x = {*(int16_t*)mp_vector}, y = {*(((int16_t*)mp_vector) + 1)}, z = {*(((int16_t*)mp_vector) + 2)} }}</DisplayString>
+    <Expand>
+      <Item Name="[x]">*(int16_t*)mp_vector</Item>
+      <Item Name="[y]">*(((int16_t*)mp_vector) + 1)</Item>
+      <Item Name="[z]">*(((int16_t*)mp_vector) + 2)</Item>
+    </Expand>
+  </Type>
+  <Type Name ="SBYTE3D">
+    <DisplayString>{{ x = {*(signed char*)mp_vector}, y = {*(((signed char*)mp_vector) + 1)}, z = {*(((signed char*)mp_vector) + 2)} }}</DisplayString>
+    <Expand>
+      <Item Name="[x]">*(signed char*)mp_vector</Item>
+      <Item Name="[y]">*(((signed char*)mp_vector) + 1)</Item>
+      <Item Name="[z]">*(((signed char*)mp_vector) + 2)</Item>
+    </Expand>
+  </Type>
+
+  <Type Name ="FLOATmatrix2D">
+    <DisplayString>
+      {{
+      {{{((float*)mp_matrix)[0]}, {((float*)mp_matrix)[1]}}},
+      {{{((float*)mp_matrix)[1]}, {((float*)mp_matrix)[2]}}}
+      }}
+    </DisplayString>
+    <Expand>
+      <Item Name="[1, 1]">((float*)mp_matrix)[0]</Item>
+      <Item Name="[1, 2]">((float*)mp_matrix)[1]</Item>
+      <Item Name="[2, 1]">((float*)mp_matrix)[2]</Item>
+      <Item Name="[2, 2]">((float*)mp_matrix)[3]</Item>
+    </Expand>
+  </Type>
+  <Type Name ="FLOATmatrix3D">
+    <DisplayString>
+      {{
+      {{{((float*)mp_matrix)[0]}, {((float*)mp_matrix)[1]}, {((float*)mp_matrix)[2]}}},
+      {{{((float*)mp_matrix)[3]}, {((float*)mp_matrix)[4]}, {((float*)mp_matrix)[5]}}},
+      {{{((float*)mp_matrix)[6]}, {((float*)mp_matrix)[7]}, {((float*)mp_matrix)[8]}}},
+      }}
+    </DisplayString>
+    <Expand>
+      <Item Name="[1, 1]">((float*)mp_matrix)[0]</Item>
+      <Item Name="[1, 2]">((float*)mp_matrix)[1]</Item>
+      <Item Name="[1, 3]">((float*)mp_matrix)[2]</Item>
+      <Item Name="[2, 1]">((float*)mp_matrix)[3]</Item>
+      <Item Name="[2, 2]">((float*)mp_matrix)[4]</Item>
+      <Item Name="[2, 3]">((float*)mp_matrix)[5]</Item>
+      <Item Name="[3, 1]">((float*)mp_matrix)[6]</Item>
+      <Item Name="[3, 2]">((float*)mp_matrix)[7]</Item>
+      <Item Name="[3, 3]">((float*)mp_matrix)[8]</Item>
+    </Expand>
+  </Type>
+  <Type Name ="FLOATmatrix4D">
+    <DisplayString>
+      {{
+      {{{((float*)mp_matrix)[0]}, {((float*)mp_matrix)[1]}, {((float*)mp_matrix)[2]}, {((float*)mp_matrix)[3]}}},
+      {{{((float*)mp_matrix)[4]}, {((float*)mp_matrix)[5]}, {((float*)mp_matrix)[6]}, {((float*)mp_matrix)[7]}}},
+      {{{((float*)mp_matrix)[8]}, {((float*)mp_matrix)[9]}, {((float*)mp_matrix)[10]}, {((float*)mp_matrix)[11]}}},
+      {{{((float*)mp_matrix)[12]}, {((float*)mp_matrix)[13]}, {((float*)mp_matrix)[14]}, {((float*)mp_matrix)[15]}}}
+      }}
+    </DisplayString>
+    <Expand>
+      <Item Name="[1, 1]">((float*)mp_matrix)[0]</Item>
+      <Item Name="[1, 2]">((float*)mp_matrix)[1]</Item>
+      <Item Name="[1, 3]">((float*)mp_matrix)[2]</Item>
+      <Item Name="[1, 4]">((float*)mp_matrix)[3]</Item>
+      <Item Name="[2, 1]">((float*)mp_matrix)[4]</Item>
+      <Item Name="[2, 2]">((float*)mp_matrix)[5]</Item>
+      <Item Name="[2, 3]">((float*)mp_matrix)[6]</Item>
+      <Item Name="[2, 4]">((float*)mp_matrix)[7]</Item>
+      <Item Name="[3, 1]">((float*)mp_matrix)[8]</Item>
+      <Item Name="[3, 2]">((float*)mp_matrix)[9]</Item>
+      <Item Name="[3, 3]">((float*)mp_matrix)[10]</Item>
+      <Item Name="[3, 4]">((float*)mp_matrix)[11]</Item>
+      <Item Name="[4, 1]">((float*)mp_matrix)[12]</Item>
+      <Item Name="[4, 2]">((float*)mp_matrix)[13]</Item>
+      <Item Name="[4, 3]">((float*)mp_matrix)[14]</Item>
+      <Item Name="[4, 4]">((float*)mp_matrix)[15]</Item>
+    </Expand>
+  </Type>
+
+  <Type Name ="DOUBLEmatrix2D">
+    <DisplayString>
+      {{
+      {{{((double*)mp_matrix)[0]}, {((double*)mp_matrix)[1]}}},
+      {{{((double*)mp_matrix)[1]}, {((double*)mp_matrix)[2]}}}
+      }}
+    </DisplayString>
+    <Expand>
+      <Item Name="[1, 1]">((double*)mp_matrix)[0]</Item>
+      <Item Name="[1, 2]">((double*)mp_matrix)[1]</Item>
+      <Item Name="[2, 1]">((double*)mp_matrix)[2]</Item>
+      <Item Name="[2, 2]">((double*)mp_matrix)[3]</Item>
+    </Expand>
+  </Type>
+  <Type Name ="DOUBLEmatrix3D">
+    <DisplayString>
+      {{
+      {{{((double*)mp_matrix)[0]}, {((double*)mp_matrix)[1]}, {((double*)mp_matrix)[2]}}},
+      {{{((double*)mp_matrix)[3]}, {((double*)mp_matrix)[4]}, {((double*)mp_matrix)[5]}}},
+      {{{((double*)mp_matrix)[6]}, {((double*)mp_matrix)[7]}, {((double*)mp_matrix)[8]}}},
+      }}
+    </DisplayString>
+    <Expand>
+      <Item Name="[1, 1]">((double*)mp_matrix)[0]</Item>
+      <Item Name="[1, 2]">((double*)mp_matrix)[1]</Item>
+      <Item Name="[1, 3]">((double*)mp_matrix)[2]</Item>
+      <Item Name="[2, 1]">((double*)mp_matrix)[3]</Item>
+      <Item Name="[2, 2]">((double*)mp_matrix)[4]</Item>
+      <Item Name="[2, 3]">((double*)mp_matrix)[5]</Item>
+      <Item Name="[3, 1]">((double*)mp_matrix)[6]</Item>
+      <Item Name="[3, 2]">((double*)mp_matrix)[7]</Item>
+      <Item Name="[3, 3]">((double*)mp_matrix)[8]</Item>
+    </Expand>
+  </Type>
+  <Type Name ="DOUBLEmatrix4D">
+    <DisplayString>
+      {{
+      {{{((double*)mp_matrix)[0]}, {((double*)mp_matrix)[1]}, {((double*)mp_matrix)[2]}, {((double*)mp_matrix)[3]}}},
+      {{{((double*)mp_matrix)[4]}, {((double*)mp_matrix)[5]}, {((double*)mp_matrix)[6]}, {((double*)mp_matrix)[7]}}},
+      {{{((double*)mp_matrix)[8]}, {((double*)mp_matrix)[9]}, {((double*)mp_matrix)[10]}, {((double*)mp_matrix)[11]}}},
+      {{{((double*)mp_matrix)[12]}, {((double*)mp_matrix)[13]}, {((double*)mp_matrix)[14]}, {((double*)mp_matrix)[15]}}}
+      }}
+    </DisplayString>
+    <Expand>
+      <Item Name="[1, 1]">((double*)mp_matrix)[0]</Item>
+      <Item Name="[1, 2]">((double*)mp_matrix)[1]</Item>
+      <Item Name="[1, 3]">((double*)mp_matrix)[2]</Item>
+      <Item Name="[1, 4]">((double*)mp_matrix)[3]</Item>
+      <Item Name="[2, 1]">((double*)mp_matrix)[4]</Item>
+      <Item Name="[2, 2]">((double*)mp_matrix)[5]</Item>
+      <Item Name="[2, 3]">((double*)mp_matrix)[6]</Item>
+      <Item Name="[2, 4]">((double*)mp_matrix)[7]</Item>
+      <Item Name="[3, 1]">((double*)mp_matrix)[8]</Item>
+      <Item Name="[3, 2]">((double*)mp_matrix)[9]</Item>
+      <Item Name="[3, 3]">((double*)mp_matrix)[10]</Item>
+      <Item Name="[3, 4]">((double*)mp_matrix)[11]</Item>
+      <Item Name="[4, 1]">((double*)mp_matrix)[12]</Item>
+      <Item Name="[4, 2]">((double*)mp_matrix)[13]</Item>
+      <Item Name="[4, 3]">((double*)mp_matrix)[14]</Item>
+      <Item Name="[4, 4]">((double*)mp_matrix)[15]</Item>
+    </Expand>
+  </Type>
+
+  <Type Name ="INDEXmatrix2D">
+    <DisplayString>
+      {{
+      {{{((int32_t*)mp_matrix)[0]}, {((int32_t*)mp_matrix)[1]}}},
+      {{{((int32_t*)mp_matrix)[1]}, {((int32_t*)mp_matrix)[2]}}}
+      }}
+    </DisplayString>
+    <Expand>
+      <Item Name="[1, 1]">((int32_t*)mp_matrix)[0]</Item>
+      <Item Name="[1, 2]">((int32_t*)mp_matrix)[1]</Item>
+      <Item Name="[2, 1]">((int32_t*)mp_matrix)[2]</Item>
+      <Item Name="[2, 2]">((int32_t*)mp_matrix)[3]</Item>
+    </Expand>
+  </Type>
+  <Type Name ="INDEXmatrix3D">
+    <DisplayString>
+      {{
+      {{{((int32_t*)mp_matrix)[0]}, {((int32_t*)mp_matrix)[1]}, {((int32_t*)mp_matrix)[2]}}},
+      {{{((int32_t*)mp_matrix)[3]}, {((int32_t*)mp_matrix)[4]}, {((int32_t*)mp_matrix)[5]}}},
+      {{{((int32_t*)mp_matrix)[6]}, {((int32_t*)mp_matrix)[7]}, {((int32_t*)mp_matrix)[8]}}},
+      }}
+    </DisplayString>
+    <Expand>
+      <Item Name="[1, 1]">((int32_t*)mp_matrix)[0]</Item>
+      <Item Name="[1, 2]">((int32_t*)mp_matrix)[1]</Item>
+      <Item Name="[1, 3]">((int32_t*)mp_matrix)[2]</Item>
+      <Item Name="[2, 1]">((int32_t*)mp_matrix)[3]</Item>
+      <Item Name="[2, 2]">((int32_t*)mp_matrix)[4]</Item>
+      <Item Name="[2, 3]">((int32_t*)mp_matrix)[5]</Item>
+      <Item Name="[3, 1]">((int32_t*)mp_matrix)[6]</Item>
+      <Item Name="[3, 2]">((int32_t*)mp_matrix)[7]</Item>
+      <Item Name="[3, 3]">((int32_t*)mp_matrix)[8]</Item>
+    </Expand>
+  </Type>
+  <Type Name ="INDEXmatrix4D">
+    <DisplayString>
+      {{
+      {{{((int32_t*)mp_matrix)[0]}, {((int32_t*)mp_matrix)[1]}, {((int32_t*)mp_matrix)[2]}, {((int32_t*)mp_matrix)[3]}}},
+      {{{((int32_t*)mp_matrix)[4]}, {((int32_t*)mp_matrix)[5]}, {((int32_t*)mp_matrix)[6]}, {((int32_t*)mp_matrix)[7]}}},
+      {{{((int32_t*)mp_matrix)[8]}, {((int32_t*)mp_matrix)[9]}, {((int32_t*)mp_matrix)[10]}, {((int32_t*)mp_matrix)[11]}}},
+      {{{((int32_t*)mp_matrix)[12]}, {((int32_t*)mp_matrix)[13]}, {((int32_t*)mp_matrix)[14]}, {((int32_t*)mp_matrix)[15]}}}
+      }}
+    </DisplayString>
+    <Expand>
+      <Item Name="[1, 1]">((int32_t*)mp_matrix)[0]</Item>
+      <Item Name="[1, 2]">((int32_t*)mp_matrix)[1]</Item>
+      <Item Name="[1, 3]">((int32_t*)mp_matrix)[2]</Item>
+      <Item Name="[1, 4]">((int32_t*)mp_matrix)[3]</Item>
+      <Item Name="[2, 1]">((int32_t*)mp_matrix)[4]</Item>
+      <Item Name="[2, 2]">((int32_t*)mp_matrix)[5]</Item>
+      <Item Name="[2, 3]">((int32_t*)mp_matrix)[6]</Item>
+      <Item Name="[2, 4]">((int32_t*)mp_matrix)[7]</Item>
+      <Item Name="[3, 1]">((int32_t*)mp_matrix)[8]</Item>
+      <Item Name="[3, 2]">((int32_t*)mp_matrix)[9]</Item>
+      <Item Name="[3, 3]">((int32_t*)mp_matrix)[10]</Item>
+      <Item Name="[3, 4]">((int32_t*)mp_matrix)[11]</Item>
+      <Item Name="[4, 1]">((int32_t*)mp_matrix)[12]</Item>
+      <Item Name="[4, 2]">((int32_t*)mp_matrix)[13]</Item>
+      <Item Name="[4, 3]">((int32_t*)mp_matrix)[14]</Item>
+      <Item Name="[4, 4]">((int32_t*)mp_matrix)[15]</Item>
+    </Expand>
+  </Type>
+</AutoVisualizer>

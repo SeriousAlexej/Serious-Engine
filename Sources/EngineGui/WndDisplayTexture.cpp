@@ -17,7 +17,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 //
 
 #include "StdH.h"
-#include <Engine/Graphics/TextureEffects.h>
 
 #ifdef _DEBUG
 #undef new
@@ -37,8 +36,6 @@ CWndDisplayTexture::CWndDisplayTexture()
   m_pLeftMouseButtonReleased = NULL;
   m_pRightMouseButtonClicked = NULL;
   m_pRightMouseButtonMoved = NULL;
-  m_pDrawPort = NULL;
-  m_pViewPort = NULL;
   m_iTimerID = -1;
   m_bChequeredAlpha = TRUE;
   m_bForce32  = FALSE;
@@ -51,15 +48,15 @@ CWndDisplayTexture::~CWndDisplayTexture()
 
 
 BEGIN_MESSAGE_MAP(CWndDisplayTexture, CWnd)
-	//{{AFX_MSG_MAP(CWndDisplayTexture)
-	ON_WM_DESTROY()
-	ON_WM_PAINT()
-	ON_WM_TIMER()
-	ON_WM_LBUTTONDOWN()
-	ON_WM_RBUTTONDOWN()
-	ON_WM_LBUTTONUP()
-	ON_WM_MOUSEMOVE()
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CWndDisplayTexture)
+  ON_WM_DESTROY()
+  ON_WM_PAINT()
+  ON_WM_TIMER()
+  ON_WM_LBUTTONDOWN()
+  ON_WM_RBUTTONDOWN()
+  ON_WM_LBUTTONUP()
+  ON_WM_MOUSEMOVE()
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 
@@ -75,25 +72,25 @@ static void ConvertCoords( CTextureData *pTD, PIX &pixU, PIX &pixV)
 void CWndDisplayTexture::OnPaint() 
 {
   { CPaintDC dc(this); } // device context for painting
-	
+  
   if( m_iTimerID==-1) m_iTimerID = (int)SetTimer( 1, 50, NULL);
 
-  if( m_pViewPort==NULL && m_pDrawPort==NULL)
+  if( !m_pViewPort && !m_pDrawPort)
   { // initialize canvas for active texture button
-    _pGfx->CreateWindowCanvas( m_hWnd, &m_pViewPort, &m_pDrawPort);
+    _pGfx_CreateWindowCanvas( m_hWnd, m_pViewPort, m_pDrawPort);
   }
 
   // get texture data
-  CTextureData *pTD = (CTextureData*)m_toTexture.GetData();
+  CTextureDataPtr pTD = m_toTexture.GetData();
   BOOL bAlphaChannel = FALSE;
   // if there is a valid drawport, and the drawport can be locked
-  if( m_pDrawPort!=NULL && m_pDrawPort->Lock())
+  if( m_pDrawPort && m_pDrawPort->Lock())
   { // if it has any texture
-    if( pTD!=NULL) {
+    if( pTD) {
       PIX pixWidth  = pTD->GetPixWidth();
       PIX pixHeight = pTD->GetPixHeight();
       // adjust for effect texture
-      if( pTD->td_ptegEffect != NULL) {
+      if( pTD->HasEffectTexture()) {
         pixWidth  = pTD->td_pixBufferWidth;
         pixHeight = pTD->td_pixBufferHeight;
       }
@@ -140,12 +137,12 @@ void CWndDisplayTexture::OnPaint()
     }
 
     // if it has any texture
-    if( pTD!=NULL) {
+    if( pTD) {
       // create rectangle proportional with texture ratio covering whole draw port
       PIXaabbox2D rectPict = PIXaabbox2D( PIX2D( m_pixWinOffsetU, m_pixWinOffsetV),
                                           PIX2D( m_pixWinOffsetU+m_pixWinWidth, m_pixWinOffsetV+m_pixWinHeight));
       // draw texture
-      m_pDrawPort->PutTexture( &m_toTexture, rectPict);
+      m_pDrawPort->PutTexture( m_toTexture, rectPict);
     } 
 
     // draw line on left mouse move
@@ -159,13 +156,13 @@ void CWndDisplayTexture::OnPaint()
     // unlock the drawport
     m_pDrawPort->Unlock();
     // swap if there is a valid viewport
-    if( m_pViewPort!=NULL) m_pViewPort->SwapBuffers();
+    if( m_pViewPort) m_pViewPort->SwapBuffers();
   }
 
   // if this is effect texture
-  if( pTD!=NULL && pTD->td_ptegEffect!=NULL)
+  if( pTD && pTD->HasEffectTexture())
   { // display rendering speed
-    DOUBLE dMS = pTD->td_ptegEffect->GetRenderingTime() * 1000.0;
+    DOUBLE dMS = pTD->td_ptegEffect_GetRenderingTime() * 1000.0;
     // only if valid
     if( dMS>0) {
       char achrSpeed[256];
@@ -182,33 +179,33 @@ void CWndDisplayTexture::OnPaint()
 
 void CWndDisplayTexture::OnTimer(UINT nIDEvent) 
 {
-	// on our timer discard test animation window
+  // on our timer discard test animation window
   if( nIDEvent == 1)
   {
-    TIME timeCurrentTick = _pTimer->GetRealTimeTick();
+    TIME timeCurrentTick = _pTimer_GetRealTimeTick();
     if( timeCurrentTick > timeLastTick )
     {
-      _pTimer->SetCurrentTick( timeCurrentTick);
+      _pTimer_SetCurrentTick( timeCurrentTick);
       timeLastTick = timeCurrentTick;
     }
-    Invalidate(FALSE);	
+    Invalidate(FALSE);
   }
 
-	CWnd::OnTimer(nIDEvent);
+  CWnd::OnTimer(nIDEvent);
 }
 
 
 void CWndDisplayTexture::OnDestroy() 
 {
-  if( m_pViewPort != NULL)
+  if( m_pViewPort)
   {
-    _pGfx->DestroyWindowCanvas( m_pViewPort);
-    m_pViewPort = NULL;
+    _pGfx_DestroyWindowCanvas( m_pViewPort);
+    m_pViewPort.Reset();
   }
 
   KillTimer( m_iTimerID);
-  _pTimer->SetCurrentTick( 0.0f);
-	CWnd::OnDestroy();
+  _pTimer_SetCurrentTick( 0.0f);
+  CWnd::OnDestroy();
 }
 
 
@@ -223,7 +220,6 @@ void CWndDisplayTexture::OnLButtonDown(UINT nFlags, CPoint point)
   m_pixLineStopV  = point.y;
 
   // get texture data from surface
-  CTextureData *pTD = (CTextureData*)m_toTexture.GetData();
   PIX pixU = point.x-m_pixWinOffsetU;
   PIX pixV = point.y-m_pixWinOffsetV;
   if( pixU<0 || pixU>m_pixWinWidth ) return;
@@ -237,7 +233,7 @@ void CWndDisplayTexture::OnLButtonDown(UINT nFlags, CPoint point)
     m_pLeftMouseButtonClicked(pixU, pixV);
   }
 
-	CWnd::OnLButtonDown(nFlags, point);
+  CWnd::OnLButtonDown(nFlags, point);
 }
 
 void CWndDisplayTexture::OnLButtonUp(UINT nFlags, CPoint point) 
@@ -246,7 +242,6 @@ void CWndDisplayTexture::OnLButtonUp(UINT nFlags, CPoint point)
   m_bDrawLine = FALSE;
 
   // get texture data from surface
-  CTextureData *pTD = (CTextureData*)m_toTexture.GetData();
   PIX pixU = point.x-m_pixWinOffsetU;
   PIX pixV = point.y-m_pixWinOffsetV;
   if( pixU<0 || pixU>m_pixWinWidth ) return;
@@ -260,13 +255,12 @@ void CWndDisplayTexture::OnLButtonUp(UINT nFlags, CPoint point)
     m_pLeftMouseButtonReleased(pixU, pixV);
   }
 
-	CWnd::OnLButtonUp(nFlags, point);
+  CWnd::OnLButtonUp(nFlags, point);
 }
 
 void CWndDisplayTexture::OnRButtonDown(UINT nFlags, CPoint point) 
 {
   // get texture data from surface
-  CTextureData *pTD = (CTextureData*)m_toTexture.GetData();
   PIX pixU = point.x-m_pixWinOffsetU;
   PIX pixV = point.y-m_pixWinOffsetV;
   if( pixU<0 || pixU>m_pixWinWidth ) return;
@@ -280,7 +274,7 @@ void CWndDisplayTexture::OnRButtonDown(UINT nFlags, CPoint point)
     m_pRightMouseButtonClicked(pixU, pixV);
   }
 
-	CWnd::OnRButtonDown(nFlags, point);
+  CWnd::OnRButtonDown(nFlags, point);
 }
 
 void CWndDisplayTexture::OnMouseMove(UINT nFlags, CPoint point) 
@@ -288,7 +282,6 @@ void CWndDisplayTexture::OnMouseMove(UINT nFlags, CPoint point)
   // if right mouse is down
   if (nFlags&MK_RBUTTON) {
     // get texture data from surface
-    CTextureData *pTD = (CTextureData*)m_toTexture.GetData();
     PIX pixU = point.x-m_pixWinOffsetU;
     PIX pixV = point.y-m_pixWinOffsetV;
     if( pixU<0 || pixU>m_pixWinWidth ) return;
@@ -307,6 +300,6 @@ void CWndDisplayTexture::OnMouseMove(UINT nFlags, CPoint point)
     m_pixLineStopU = point.x;
     m_pixLineStopV = point.y;
   }
-	
-	CWnd::OnMouseMove(nFlags, point);
+  
+  CWnd::OnMouseMove(nFlags, point);
 }

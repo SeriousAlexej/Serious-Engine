@@ -43,9 +43,9 @@ void CCtrlColorBrowsingModeRadio::SetDialogPtr( CPropertyComboBar *pDialog)
 
 
 BEGIN_MESSAGE_MAP(CCtrlColorBrowsingModeRadio, CButton)
-	//{{AFX_MSG_MAP(CCtrlColorBrowsingModeRadio)
-	ON_CONTROL_REFLECT(BN_CLICKED, OnClicked)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CCtrlColorBrowsingModeRadio)
+  ON_CONTROL_REFLECT(BN_CLICKED, OnClicked)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -58,5 +58,5 @@ void CCtrlColorBrowsingModeRadio::OnClicked()
   // select clicked axis radio
   m_pDialog->SelectColorBrowsingModeRadio( this);
   // show that second axis have been selected
-	m_pDialog->ArrangeControls();
+  m_pDialog->ArrangeControls();
 }

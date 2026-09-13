@@ -25,23 +25,24 @@ public:
 
   size_t Count() const;
   BOOL IsSelected(const CEntity& entity) const;
+  void Select(const std::set<CEntity_*>& entities);
   void Select(CEntity& entity);
   void Deselect(CEntity& entity);
-  CEntity* GetFirstInSelection() const;
+  CEntityPtr GetFirstInSelection() const;
   void Clear();
   void DestroyEntities(CWorld& world);
-  void ConvertToCTContainer(CDynamicContainer<CEntity>& output_container) const;
+  void ConvertToCTContainer(CDynamicContainer_CEntity& output_container) const;
   void ConvertFromCTSelection(CEntitySelection& input_selection);
   void Notify() const;
-  const std::set<CEntity*>& Set() const;
+  const std::set<CEntity_*>& Set() const;
 
-  std::set<CEntity*>::iterator begin();
-  std::set<CEntity*>::iterator end();
-  std::set<CEntity*>::const_iterator cbegin() const;
-  std::set<CEntity*>::const_iterator cend() const;
+  std::set<CEntity_*>::iterator begin();
+  std::set<CEntity_*>::iterator end();
+  std::set<CEntity_*>::const_iterator cbegin() const;
+  std::set<CEntity_*>::const_iterator cend() const;
 
 private:
-  std::set<CEntity*> m_entities;
+  std::set<CEntity_*> m_entities;
 };
 
 #endif

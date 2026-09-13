@@ -29,44 +29,44 @@ class CDlgFilterPolygonSelection : public CDialog
 {
 // Construction
 public:
-	CDlgFilterPolygonSelection(CWnd* pParent = NULL);   // standard constructor
+  CDlgFilterPolygonSelection(CWnd* pParent = NULL);   // standard constructor
 
 // Dialog Data
-	//{{AFX_DATA(CDlgFilterPolygonSelection)
-	enum { IDD = IDD_FILTER_POLYGON_SELECTION };
-	CColoredButton	m_ctrlMultiplyColor;
-	CComboBox	m_ctrlFilterPolygonMirror;
-	CComboBox	m_ctrFilterPolygonSurface;
-	CComboBox	m_ctrlClusterMemoryCombo;
-	CComboBox	m_ctrlClusterSizeCombo;
-	float	m_fMinH;
-	float	m_fMinP;
-	float	m_fMaxH;
-	float	m_fMaxP;
-	float	m_fMinX;
-	float	m_fMinY;
-	float	m_fMinZ;
-	float	m_fMaxX;
-	float	m_fMaxY;
-	float	m_fMaxZ;
-	//}}AFX_DATA
+  //{{AFX_DATA(CDlgFilterPolygonSelection)
+  enum { IDD = IDD_FILTER_POLYGON_SELECTION };
+  CColoredButton  m_ctrlMultiplyColor;
+  CComboBox  m_ctrlFilterPolygonMirror;
+  CComboBox  m_ctrFilterPolygonSurface;
+  CComboBox  m_ctrlClusterMemoryCombo;
+  CComboBox  m_ctrlClusterSizeCombo;
+  float  m_fMinH;
+  float  m_fMinP;
+  float  m_fMaxH;
+  float  m_fMaxP;
+  float  m_fMinX;
+  float  m_fMinY;
+  float  m_fMinZ;
+  float  m_fMaxX;
+  float  m_fMaxY;
+  float  m_fMaxZ;
+  //}}AFX_DATA
 
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CDlgFilterPolygonSelection)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CDlgFilterPolygonSelection)
+  protected:
+  virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+  //}}AFX_VIRTUAL
 
 // Implementation
 protected:
 
-	// Generated message map functions
-	//{{AFX_MSG(CDlgFilterPolygonSelection)
-	virtual BOOL OnInitDialog();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+  // Generated message map functions
+  //{{AFX_MSG(CDlgFilterPolygonSelection)
+  virtual BOOL OnInitDialog();
+  //}}AFX_MSG
+  DECLARE_MESSAGE_MAP()
 };
 
 //{{AFX_INSERT_LOCATION}}

@@ -29,7 +29,7 @@ class CCtlTipOfTheDayText : public CStatic
 {
 // Construction
 public:
-	CCtlTipOfTheDayText();
+  CCtlTipOfTheDayText();
 
 // Attributes
 public:
@@ -39,21 +39,21 @@ public:
 public:
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CCtlTipOfTheDayText)
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CCtlTipOfTheDayText)
+  //}}AFX_VIRTUAL
 
 // Implementation
 public:
-	virtual ~CCtlTipOfTheDayText();
+  virtual ~CCtlTipOfTheDayText();
 
-	// Generated message map functions
+  // Generated message map functions
 protected:
-	//{{AFX_MSG(CCtlTipOfTheDayText)
-	afx_msg void OnPaint();
-	//}}AFX_MSG
+  //{{AFX_MSG(CCtlTipOfTheDayText)
+  afx_msg void OnPaint();
+  //}}AFX_MSG
 
-	DECLARE_MESSAGE_MAP()
+  DECLARE_MESSAGE_MAP()
 };
 
 /////////////////////////////////////////////////////////////////////////////

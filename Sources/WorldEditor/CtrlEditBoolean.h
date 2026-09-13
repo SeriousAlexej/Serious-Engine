@@ -26,7 +26,7 @@ class CCtrlEditBoolean : public CButton
 {
 // Construction
 public:
-	CCtrlEditBoolean();
+  CCtrlEditBoolean();
 
 // Attributes
 public:
@@ -39,21 +39,21 @@ public:
   void SetDialogPtr( CWnd *pDialog);
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CCtrlEditBoolean)
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CCtrlEditBoolean)
+  //}}AFX_VIRTUAL
 
 // Implementation
 public:
-	virtual ~CCtrlEditBoolean();
+  virtual ~CCtrlEditBoolean();
 
-	// Generated message map functions
+  // Generated message map functions
 protected:
-	//{{AFX_MSG(CCtrlEditBoolean)
-	afx_msg void OnClicked();
-	//}}AFX_MSG
+  //{{AFX_MSG(CCtrlEditBoolean)
+  afx_msg void OnClicked();
+  //}}AFX_MSG
 
-	DECLARE_MESSAGE_MAP()
+  DECLARE_MESSAGE_MAP()
 };
 
 /////////////////////////////////////////////////////////////////////////////

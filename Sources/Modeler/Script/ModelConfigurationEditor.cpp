@@ -1,4 +1,4 @@
-/* Copyright (c) 2022 SeriousAlexej (Oleksii Sierov).
+﻿/* Copyright (c) 2022 SeriousAlexej (Oleksii Sierov).
 This program is free software; you can redistribute it and/or modify
 it under the terms of version 2 of the GNU General Public License as published by
 the Free Software Foundation
@@ -19,16 +19,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "ModelConfigurationEditor.h.moc"
 #include "AnglePicker.h"
 
-#include <Engine/Models/ImportedMesh.h>
-#include <Engine/Models/ImportedSkeleton.h>
-#include <Engine/Models/ImportedSkeletalAnimation.h>
+#include <EngineGUI/ImportedMesh.h>
+#include <EngineGUI/ImportedSkeleton.h>
+#include <EngineGUI/ImportedSkeletalAnimation.h>
 
 #include <QMessageBox>
 #include <QMenu>
 
-static constexpr int g_label = 8800;
-static constexpr int g_none = 42;
-static constexpr int g_browse = 1337;
+static constexpr int g_label = -1;
+static constexpr int g_none = -2;
+static constexpr int g_browse = -3;
 
 ModelConfigurationEditor::ModelConfigurationEditor(ModelScript& script, QWidget* parent)
   : QDialog(parent)
@@ -44,6 +44,9 @@ ModelConfigurationEditor::ModelConfigurationEditor(ModelScript& script, QWidget*
     std::array<QDoubleSpinBox*,3>{ mp_ui->t21, mp_ui->t22, mp_ui->t23 },
     std::array<QDoubleSpinBox*,3>{ mp_ui->t31, mp_ui->t32, mp_ui->t33 }
   };
+
+  mp_ui->comboInterpolation->addItem("Linear", static_cast<int>(BlenderFCurve::InterpolationMode::Linear));
+  mp_ui->comboInterpolation->addItem(QString::fromUtf8(u8"B\u00E9zier"), static_cast<int>(BlenderFCurve::InterpolationMode::Bezier));
 
   _FillAnims();
   _FillSkeleton();
@@ -124,8 +127,8 @@ void ModelConfigurationEditor::_SortFrames()
 
   std::sort(currAnim.m_frames.begin(), currAnim.m_frames.end(), [this](const CTFileName& lhs, const CTFileName& rhs)
     {
-      std::string lhsFile = lhs.FileName();
-      std::string rhsFile = rhs.FileName();
+      std::string lhsFile = static_cast<const char*>(lhs.FileName());
+      std::string rhsFile = static_cast<const char*>(rhs.FileName());
       for (auto* p_str : { &lhsFile, &rhsFile })
         std::transform(p_str->begin(), p_str->end(), p_str->begin(), [](unsigned char c) { return std::tolower(c); });
       if (m_reverseSort)
@@ -142,7 +145,7 @@ void ModelConfigurationEditor::_FillFrames()
   auto& currAnim = m_script.m_animations[mp_ui->listAnims->currentRow()];
   mp_ui->listFrames->clear();
   for (const auto& frame : currAnim.m_frames)
-    mp_ui->listFrames->addItem(frame.str_String);
+    mp_ui->listFrames->addItem(static_cast<const char*>(frame));
 }
 
 void ModelConfigurationEditor::_FillAnims()
@@ -156,7 +159,7 @@ void ModelConfigurationEditor::_FillMips()
 {
   mp_ui->listMips->clear();
   for (const auto& mip : m_script.m_mipModels)
-    mp_ui->listMips->addItem(mip.str_String);
+    mp_ui->listMips->addItem(static_cast<const char*>(mip));
 
   if (!m_script.m_skeleton.has_value())
     _FillSkeleton();
@@ -176,13 +179,13 @@ void ModelConfigurationEditor::_FillSkeleton()
   const CTFileName* p_skeleton = &m_script.m_mipModels.front();
   if (m_script.m_skeleton.has_value())
     p_skeleton = &(*m_script.m_skeleton);
-  QString label = QString(p_skeleton->FileName().str_String) + p_skeleton->FileExt().str_String;
+  QString label = QString(static_cast<const char*>(p_skeleton->FileName())) + static_cast<const char*>(p_skeleton->FileExt());
   if (!m_script.m_skeleton.has_value())
     label = "(from mip 0, " + label + ')';
   QSignalBlocker block(mp_ui->comboSkeleton);
   mp_ui->comboSkeleton->clear();
   mp_ui->comboSkeleton->addItem(label, g_label);
-  mp_ui->comboSkeleton->setToolTip(p_skeleton->str_String);
+  mp_ui->comboSkeleton->setToolTip(static_cast<const char*>(*p_skeleton));
   mp_ui->comboSkeleton->addItem("(browse)", g_browse);
   mp_ui->comboSkeleton->addItem("(none)", g_none);
   mp_ui->comboSkeleton->setCurrentIndex(mp_ui->comboSkeleton->findData(g_label));
@@ -196,8 +199,8 @@ void ModelConfigurationEditor::_FillRefSkeleton()
   if (currAnim.m_optRefSkeleton.has_value())
   {
     const auto& skel = *currAnim.m_optRefSkeleton;
-    mp_ui->comboReferenceSkeleton->addItem(QString(skel.FileName().str_String) + skel.FileExt().str_String, g_label);
-    mp_ui->comboReferenceSkeleton->setToolTip(skel.str_String);
+    mp_ui->comboReferenceSkeleton->addItem(QString(static_cast<const char*>(skel.FileName())) + static_cast<const char*>(skel.FileExt()), g_label);
+    mp_ui->comboReferenceSkeleton->setToolTip(static_cast<const char*>(skel));
   }
   mp_ui->comboReferenceSkeleton->addItem("(browse)", g_browse);
   mp_ui->comboReferenceSkeleton->addItem("(none)", g_none);
@@ -210,10 +213,29 @@ void ModelConfigurationEditor::_FillSkelAnimFile()
   const auto& src = currAnim.m_frames.front();
   QSignalBlocker block(mp_ui->comboSourceFile);
   mp_ui->comboSourceFile->clear();
-  mp_ui->comboSourceFile->addItem(QString(src.FileName().str_String) + src.FileExt().str_String, g_label);
-  mp_ui->comboSourceFile->setToolTip(src.str_String);
+  mp_ui->comboSourceFile->addItem(QString(static_cast<const char*>(src.FileName())) + static_cast<const char*>(src.FileExt()), g_label);
+  mp_ui->comboSourceFile->setToolTip(static_cast<const char*>(src));
   mp_ui->comboSourceFile->addItem("(browse)", g_browse);
   mp_ui->comboSourceFile->setCurrentIndex(mp_ui->comboSourceFile->findData(g_label));
+}
+
+void ModelConfigurationEditor::_FillSkelBones()
+{
+  const auto& currAnim = m_script.m_animations[mp_ui->listAnims->currentRow()];
+  QSignalBlocker block(mp_ui->comboRelativeOriginBone);
+  mp_ui->comboRelativeOriginBone->clear();
+  if (currAnim.m_type != ModelScript::Animation::Type::Skeletal)
+    return;
+  const auto& src = currAnim.m_frames.front();
+  ImportedSkeleton skeleton;
+  skeleton.FillFromFile(src);
+  mp_ui->comboRelativeOriginBone->addItem("(none)", g_none);
+  for (const auto& [bone_name, bone] : skeleton.m_bones)
+    mp_ui->comboRelativeOriginBone->addItem(QString::fromStdString(bone_name));
+  if (currAnim.m_optOriginBone.has_value())
+    mp_ui->comboRelativeOriginBone->setCurrentIndex(mp_ui->comboRelativeOriginBone->findText(QString::fromStdString(*currAnim.m_optOriginBone)));
+  else
+    mp_ui->comboRelativeOriginBone->setCurrentIndex(0);
 }
 
 void ModelConfigurationEditor::_FillAnimSourceNames(const std::vector<std::string>& animNames)
@@ -232,7 +254,7 @@ void ModelConfigurationEditor::_AddAnim()
   QMenu menu;
   const auto* p_vertex = menu.addAction("Vertex");
   const auto* p_skeletal = menu.addAction("Skeletal");
-  auto* p_action = menu.exec(mp_ui->buttonAnimAdd->mapToGlobal({ 0, 0 }));
+  auto* p_action = menu.exec(mp_ui->buttonAnimAdd->mapToGlobal(QPoint{ 0, 0 }));
 
   const size_t prevAnimCount = m_script.m_animations.size();
   if (p_action == p_vertex)
@@ -294,7 +316,7 @@ void ModelConfigurationEditor::_OnFrameUp()
 {
   auto& currAnim = m_script.m_animations[mp_ui->listAnims->currentRow()];
   const int currItem = mp_ui->listFrames->currentRow();
-  if (currItem < 1 || currItem >= currAnim.m_frames.size())
+  if (currItem < 1 || currItem >= static_cast<int>(currAnim.m_frames.size()))
     return;
   std::swap(currAnim.m_frames[currItem - 1], currAnim.m_frames[currItem]);
   _FillFrames();
@@ -305,7 +327,7 @@ void ModelConfigurationEditor::_OnFrameDown()
 {
   auto& currAnim = m_script.m_animations[mp_ui->listAnims->currentRow()];
   const int currItem = mp_ui->listFrames->currentRow();
-  if (currItem < 0 || currItem + 1 >= currAnim.m_frames.size())
+  if (currItem < 0 || currItem + 1 >= static_cast<int>(currAnim.m_frames.size()))
     return;
   std::swap(currAnim.m_frames[currItem + 1], currAnim.m_frames[currItem]);
   _FillFrames();
@@ -316,7 +338,7 @@ void ModelConfigurationEditor::_OnFrameDuplicate()
 {
   auto& currAnim = m_script.m_animations[mp_ui->listAnims->currentRow()];
   const int currItem = mp_ui->listFrames->currentRow();
-  if (currItem < 0 || currItem >= currAnim.m_frames.size())
+  if (currItem < 0 || currItem >= static_cast<int>(currAnim.m_frames.size()))
     return;
   currAnim.m_frames.insert(currAnim.m_frames.begin() + currItem + 1, currAnim.m_frames[currItem]);
   _FillFrames();
@@ -327,17 +349,17 @@ void ModelConfigurationEditor::_OnFrameDelete()
 {
   auto& currAnim = m_script.m_animations[mp_ui->listAnims->currentRow()];
   const int currItem = mp_ui->listFrames->currentRow();
-  if (currItem < 0 || currItem >= currAnim.m_frames.size())
+  if (currItem < 0 || currItem >= static_cast<int>(currAnim.m_frames.size()))
     return;
   currAnim.m_frames.erase(currAnim.m_frames.begin() + currItem);
   _FillFrames();
-  mp_ui->listFrames->setCurrentRow(currItem < currAnim.m_frames.size() ? currItem : currItem - 1, QItemSelectionModel::Rows | QItemSelectionModel::ClearAndSelect);
+  mp_ui->listFrames->setCurrentRow(currItem < static_cast<int>(currAnim.m_frames.size()) ? currItem : currItem - 1, QItemSelectionModel::Rows | QItemSelectionModel::ClearAndSelect);
 }
 
 void ModelConfigurationEditor::_OnAnimUp()
 {
   const int currItem = mp_ui->listAnims->currentRow();
-  if (currItem < 1 || currItem >= m_script.m_animations.size())
+  if (currItem < 1 || currItem >= static_cast<int>(m_script.m_animations.size()))
     return;
   std::swap(m_script.m_animations[currItem - 1], m_script.m_animations[currItem]);
   _FillAnims();
@@ -347,7 +369,7 @@ void ModelConfigurationEditor::_OnAnimUp()
 void ModelConfigurationEditor::_OnAnimDown()
 {
   const int currItem = mp_ui->listAnims->currentRow();
-  if (currItem < 0 || currItem + 1 >= m_script.m_animations.size())
+  if (currItem < 0 || currItem + 1 >= static_cast<int>(m_script.m_animations.size()))
     return;
   std::swap(m_script.m_animations[currItem + 1], m_script.m_animations[currItem]);
   _FillAnims();
@@ -357,17 +379,17 @@ void ModelConfigurationEditor::_OnAnimDown()
 void ModelConfigurationEditor::_OnAnimDelete()
 {
   const int currItem = mp_ui->listAnims->currentRow();
-  if (currItem < 0 || currItem >= m_script.m_animations.size())
+  if (currItem < 0 || currItem >= static_cast<int>(m_script.m_animations.size()))
     return;
   m_script.m_animations.erase(m_script.m_animations.begin() + currItem);
   _FillAnims();
-  mp_ui->listAnims->setCurrentRow(currItem < m_script.m_animations.size() ? currItem : currItem - 1, QItemSelectionModel::Rows | QItemSelectionModel::ClearAndSelect);
+  mp_ui->listAnims->setCurrentRow(currItem < static_cast<int>(m_script.m_animations.size()) ? currItem : currItem - 1, QItemSelectionModel::Rows | QItemSelectionModel::ClearAndSelect);
 }
 
 void ModelConfigurationEditor::_OnMipUp()
 {
   const int currItem = mp_ui->listMips->currentRow();
-  if (currItem < 1 || currItem >= m_script.m_mipModels.size())
+  if (currItem < 1 || currItem >= static_cast<int>(m_script.m_mipModels.size()))
     return;
   std::swap(m_script.m_mipModels[currItem - 1], m_script.m_mipModels[currItem]);
   _FillMips();
@@ -377,7 +399,7 @@ void ModelConfigurationEditor::_OnMipUp()
 void ModelConfigurationEditor::_OnMipDown()
 {
   const int currItem = mp_ui->listMips->currentRow();
-  if (currItem < 0 || currItem + 1 >= m_script.m_mipModels.size())
+  if (currItem < 0 || currItem + 1 >= static_cast<int>(m_script.m_mipModels.size()))
     return;
   std::swap(m_script.m_mipModels[currItem + 1], m_script.m_mipModels[currItem]);
   _FillMips();
@@ -387,11 +409,11 @@ void ModelConfigurationEditor::_OnMipDown()
 void ModelConfigurationEditor::_OnMipDelete()
 {
   const int currItem = mp_ui->listMips->currentRow();
-  if (currItem < 0 || currItem >= m_script.m_mipModels.size())
+  if (currItem < 0 || currItem >= static_cast<int>(m_script.m_mipModels.size()))
     return;
   m_script.m_mipModels.erase(m_script.m_mipModels.begin() + currItem);
   _FillMips();
-  mp_ui->listMips->setCurrentRow(currItem < m_script.m_mipModels.size() ? currItem : currItem - 1, QItemSelectionModel::Rows | QItemSelectionModel::ClearAndSelect);
+  mp_ui->listMips->setCurrentRow(currItem < static_cast<int>(m_script.m_mipModels.size()) ? currItem : currItem - 1, QItemSelectionModel::Rows | QItemSelectionModel::ClearAndSelect);
 }
 
 void ModelConfigurationEditor::_OnPickMips()
@@ -420,7 +442,7 @@ void ModelConfigurationEditor::_OnMipSelected(QListWidgetItem* current, QListWid
   Q_UNUSED(prev);
   const bool has_selection = current != nullptr;
   mp_ui->buttonMipUp->setEnabled(has_selection && mp_ui->listMips->row(current) > 0);
-  mp_ui->buttonMipDown->setEnabled(has_selection && mp_ui->listMips->row(current) + 1 < m_script.m_mipModels.size());
+  mp_ui->buttonMipDown->setEnabled(has_selection && mp_ui->listMips->row(current) + 1 < static_cast<int>(m_script.m_mipModels.size()));
   mp_ui->buttonMipDelete->setEnabled(has_selection && m_script.m_mipModels.size() > 1);
 }
 
@@ -433,7 +455,7 @@ void ModelConfigurationEditor::_OnAnimSelected(QListWidgetItem* current, QListWi
 
   const bool has_selection = current != nullptr;
   mp_ui->buttonAnimUp->setEnabled(has_selection && mp_ui->listAnims->row(current) > 0);
-  mp_ui->buttonAnimDown->setEnabled(has_selection && mp_ui->listAnims->row(current) + 1 < m_script.m_animations.size());
+  mp_ui->buttonAnimDown->setEnabled(has_selection && mp_ui->listAnims->row(current) + 1 < static_cast<int>(m_script.m_animations.size()));
   mp_ui->buttonAnimDelete->setEnabled(has_selection && m_script.m_animations.size() > 1);
   if (!has_selection)
   {
@@ -452,7 +474,7 @@ void ModelConfigurationEditor::_OnFrameSelected(QListWidgetItem* current, QListW
   auto& currAnim = m_script.m_animations[mp_ui->listAnims->currentRow()];
   const bool has_selection = current != nullptr;
   mp_ui->buttonFrameUp->setEnabled(has_selection && mp_ui->listFrames->row(current) > 0);
-  mp_ui->buttonFrameDown->setEnabled(has_selection && mp_ui->listFrames->row(current) + 1 < currAnim.m_frames.size());
+  mp_ui->buttonFrameDown->setEnabled(has_selection && mp_ui->listFrames->row(current) + 1 < static_cast<int>(currAnim.m_frames.size()));
   mp_ui->buttonFrameDuplicate->setEnabled(has_selection);
   mp_ui->buttonFrameDelete->setEnabled(has_selection && currAnim.m_frames.size() > 1);
 }
@@ -467,8 +489,11 @@ void ModelConfigurationEditor::_FillAnimWidgets(ModelScript::Animation& anim)
 
   _FillFrames();
   _FillSkelAnimFile();
+  _FillSkelBones();
   _FillAnimSourceNames(ImportedSkeletalAnimation::GetAnimationsInFile(anim.m_frames.front()));
   _FillRefSkeleton();
+
+  mp_ui->comboInterpolation->setCurrentIndex(mp_ui->comboInterpolation->findData(static_cast<int>(anim.m_interpolation)));
 
   if (anim.m_customSourceName.has_value())
     mp_ui->comboAnimSourceName->setCurrentIndex(mp_ui->comboAnimSourceName->findData(QString::fromStdString(*anim.m_customSourceName).toUpper()));
@@ -485,6 +510,8 @@ void ModelConfigurationEditor::_FillAnimWidgets(ModelScript::Animation& anim)
 
   m_animConnections.emplace_back(connect(mp_ui->comboAnimSourceName, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this, p_anim](int index)
     { p_anim->m_customSourceName = mp_ui->comboAnimSourceName->itemData(index).toString().toStdString(); }));
+  m_animConnections.emplace_back(connect(mp_ui->comboRelativeOriginBone, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &ModelConfigurationEditor::_OnPickOriginBone));
+  m_animConnections.emplace_back(connect(mp_ui->comboInterpolation, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &ModelConfigurationEditor::_OnPickInterpolation));
   m_animConnections.emplace_back(connect(mp_ui->comboReferenceSkeleton, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &ModelConfigurationEditor::_OnPickRefSkeleton));
   m_animConnections.emplace_back(connect(mp_ui->comboSourceFile, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &ModelConfigurationEditor::_OnPickSkelAnimFile));
   m_animConnections.emplace_back(connect(p_nameEdit, &QLineEdit::textEdited, this, [this, p_anim](const QString& n)
@@ -543,7 +570,7 @@ void ModelConfigurationEditor::_OnPickSkeleton(int index)
     auto fileFilter = _EngineGUI.GetListOf3DFormats();
     const auto newSkeleton = _EngineGUI.FileRequester("Select Skeleton",
       fileFilter.data(),
-      nullptr, currSkelDir.str_String);
+      nullptr, currSkelDir);
 
     if (newSkeleton != "")
     {
@@ -572,12 +599,28 @@ void ModelConfigurationEditor::_OnPickSkelAnimFile(int index)
 
   src = newSrc;
   _FillSkelAnimFile();
+  _FillSkelBones();
   _FillAnimSourceNames(anims);
 
   if (anims.size() <= 1)
     currAnim.m_customSourceName = std::nullopt;
   else
     currAnim.m_customSourceName = anims.front();
+}
+
+void ModelConfigurationEditor::_OnPickOriginBone(int index)
+{
+  auto& currAnim = m_script.m_animations[mp_ui->listAnims->currentRow()];
+  if (index == 0)
+    currAnim.m_optOriginBone.reset();
+  else
+    currAnim.m_optOriginBone = mp_ui->comboRelativeOriginBone->itemText(index).toStdString();
+}
+
+void ModelConfigurationEditor::_OnPickInterpolation(int index)
+{
+  auto& currAnim = m_script.m_animations[mp_ui->listAnims->currentRow()];
+  currAnim.m_interpolation = static_cast<BlenderFCurve::InterpolationMode>(mp_ui->comboInterpolation->itemData(index).toInt());
 }
 
 void ModelConfigurationEditor::_OnPickRefSkeleton(int index)
@@ -602,7 +645,7 @@ void ModelConfigurationEditor::_OnPickRefSkeleton(int index)
     auto fileFilter = _EngineGUI.GetListOf3DFormats();
     const auto newSkeleton = _EngineGUI.FileRequester("Select Skeleton",
       fileFilter.data(),
-      nullptr, currDir.str_String);
+      nullptr, currDir);
 
     if (newSkeleton != "")
     {
@@ -640,7 +683,7 @@ void ModelConfigurationEditor::_AnalyzeTransform()
       mx(row, col) = m_uiTransform[row - 1][col - 1]->value();
 
   // mx is a rotation matrix if det(mx) = 1, mxT = mx^-1 (ie mxT * mx = 1)
-  if (std::abs(Determinant(mx) - 1.0f) < 0.001f)
+  if (std::abs(mx.Determinant() - 1.0f) < 0.001f)
   {
     FLOATmatrix3D mxt;
     for (int row = 1; row <= 3; ++row)
@@ -669,7 +712,7 @@ ModelConfigurationEditor::TFileAndAnims ModelConfigurationEditor::_PickFileWithA
   auto fileFilter = _EngineGUI.GetListOf3DFormats();
   const auto newSrc = _EngineGUI.FileRequester("Select animation file",
     fileFilter.data(),
-    nullptr, defaultDir.str_String);
+    nullptr, defaultDir);
 
   if (newSrc == "")
     return { {}, {} };
@@ -691,11 +734,11 @@ ModelConfigurationEditor::TFileAndAnims ModelConfigurationEditor::_PickFileWithA
 
 std::vector<ModelConfigurationEditor::TFileAndAnims> ModelConfigurationEditor::_PickFilesWithAnimations(const CTFileName& defaultDir)
 {
-  CDynamicArray<CTFileName> newAnimsDynArr;
+  CDynamicArray_CTFileName newAnimsDynArr;
   auto fileFilter = _EngineGUI.GetListOf3DFormats();
   _EngineGUI.FileRequester("Select animation file(s)",
     fileFilter.data(),
-    nullptr, defaultDir.str_String, "", &newAnimsDynArr);
+    nullptr, defaultDir, "", &newAnimsDynArr);
 
   if (newAnimsDynArr.Count() == 0)
     return {};
@@ -704,18 +747,18 @@ std::vector<ModelConfigurationEditor::TFileAndAnims> ModelConfigurationEditor::_
   FOREACHINDYNAMICARRAY(newAnimsDynArr, CTFileName, itFile)
   {
     const auto& animFile = itFile.Current();
-    if (!ImportedSkeleton::ContainsSkeleton(animFile))
+    if (!ImportedSkeleton::ContainsSkeleton(*animFile))
     {
-      QMessageBox::warning(this, "Warning", QString("'%1' contains no skeleton!").arg(animFile.str_String));
+      QMessageBox::warning(this, "Warning", QString("'%1' contains no skeleton!").arg(static_cast<const char*>(*animFile)));
       continue;
     }
-    const auto anims = ImportedSkeletalAnimation::GetAnimationsInFile(animFile);
+    const auto anims = ImportedSkeletalAnimation::GetAnimationsInFile(*animFile);
     if (anims.empty())
     {
-      QMessageBox::warning(this, "Warning", QString("'%1' contains no animations!").arg(animFile.str_String));
+      QMessageBox::warning(this, "Warning", QString("'%1' contains no animations!").arg(static_cast<const char*>(*animFile)));
       continue;
     }
-    filesAndAnims.push_back({ animFile, anims });
+    filesAndAnims.push_back({ *animFile, anims });
   }
 
   return filesAndAnims;
@@ -723,11 +766,11 @@ std::vector<ModelConfigurationEditor::TFileAndAnims> ModelConfigurationEditor::_
 
 std::vector<CTFileName> ModelConfigurationEditor::_PickFrames(const CTFileName& defaultDir)
 {
-  CDynamicArray<CTFileName> newFramesDynArr;
+  CDynamicArray_CTFileName newFramesDynArr;
   auto fileFilter = _EngineGUI.GetListOf3DFormats();
   _EngineGUI.FileRequester("Select frames",
     fileFilter.data(),
-    nullptr, defaultDir.str_String, "", &newFramesDynArr);
+    nullptr, defaultDir, "", &newFramesDynArr);
 
   if (newFramesDynArr.Count() == 0)
     return {};
@@ -735,7 +778,7 @@ std::vector<CTFileName> ModelConfigurationEditor::_PickFrames(const CTFileName& 
   std::vector<CTFileName> newFrames;
   newFrames.reserve(newFramesDynArr.Count());
   FOREACHINDYNAMICARRAY(newFramesDynArr, CTFileName, itFrame)
-  { newFrames.push_back(itFrame.Current()); }
+  { newFrames.push_back(*itFrame.Current()); }
 
   if (newFrames.size() > 1 && std::any_of(newFrames.begin() + 1, newFrames.end(), [&](const CTFileName& f)
     { return f.FileDir() != newFrames.front().FileDir(); }))

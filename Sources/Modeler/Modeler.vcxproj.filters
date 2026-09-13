@@ -16,9 +16,6 @@
     <Filter Include="Help Files">
       <UniqueIdentifier>{6f0f024b-e993-48ae-8e55-97ef401a2e2b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Wizard Files">
-      <UniqueIdentifier>{b933183f-60c0-4afe-a38e-e176b4dcb145}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Script">
       <UniqueIdentifier>{c989f1c2-618a-4112-8ab1-e7439247effe}</UniqueIdentifier>
     </Filter>
@@ -479,9 +476,6 @@
     </CustomBuild>
     <CustomBuild Include="hlp\Scmin.bmp">
       <Filter>Help Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Modeler.clw">
-      <Filter>Wizard Files</Filter>
     </CustomBuild>
     <CustomBuild Include="Script\ModelConfigurationEditor.ui">
       <Filter>Source Files\Script</Filter>

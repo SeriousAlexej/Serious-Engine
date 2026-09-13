@@ -33,21 +33,21 @@ IMPLEMENT_DYNCREATE(CDlgPgSector, CPropertyPage)
 
 CDlgPgSector::CDlgPgSector() : CPropertyPage(CDlgPgSector::IDD)
 {
-	//{{AFX_DATA_INIT(CDlgPgSector)
-	m_iBrowseModeRadio = -1;
-	m_strSectorName = _T("");
-	m_radioInclude = -1;
-	//}}AFX_DATA_INIT
+  //{{AFX_DATA_INIT(CDlgPgSector)
+  m_iBrowseModeRadio = -1;
+  m_strSectorName = _T("");
+  m_radioInclude = -1;
+  //}}AFX_DATA_INIT
   
   if( 
     CTString( CStringA(theApp.GetProfileString(L"World editor", L"Color browsing mode (info)"))) ==
     CTString("RGB"))
   {
-	  m_iBrowseModeRadio = 0;
+    m_iBrowseModeRadio = 0;
   }
   else
   {
-	  m_iBrowseModeRadio = 1;
+    m_iBrowseModeRadio = 1;
   }
   
   m_colLastSectorAmbientColor = -1;
@@ -86,17 +86,17 @@ void CDlgPgSector::DoDataExchange(CDataExchange* pDX)
     m_comboContentType.ResetContent();
     for(INDEX iContentType=0; iContentType<MAX_UBYTE; iContentType++)
     {
-      CTString &strContent = pDoc->m_woWorld.wo_actContentTypes[iContentType].ct_strName;
+      CTString strContent = pDoc->m_woWorld.wo_actContentTypes[iContentType]->ct_strName;
       if( strContent == "") break;
-      m_comboContentType.AddString( CString(strContent));
+      m_comboContentType.AddString( CString(static_cast<const char*>(strContent)));
     }
 
     m_comboEnvironmentType.ResetContent();
     for(INDEX iEnvironmentType=0; iEnvironmentType<MAX_UBYTE; iEnvironmentType++)
     {
-      CTString &strEnvironment = pDoc->m_woWorld.wo_aetEnvironmentTypes[iEnvironmentType].et_strName;
+      CTString strEnvironment = pDoc->m_woWorld.wo_aetEnvironmentTypes[iEnvironmentType]->et_strName;
       if( strEnvironment == "") break;
-      m_comboEnvironmentType.AddString( CString(strEnvironment));
+      m_comboEnvironmentType.AddString( CString(static_cast<const char*>(strEnvironment)));
     }
 
     if( bSelectionExists)
@@ -110,7 +110,7 @@ void CDlgPgSector::DoDataExchange(CDataExchange* pDX)
       m_comboForceField.ResetContent();
       m_comboFog.ResetContent();
       m_comboHaze.ResetContent();
-      CBrush3D *pbrBrush = NULL;
+      CBrush3DPtr pbrBrush;
       INDEX iSector = 0;
       // for all sectors
       FOREACHINDYNAMICCONTAINER(pDoc->m_selSectorSelection, CBrushSector, itbsc)
@@ -128,28 +128,28 @@ void CDlgPgSector::DoDataExchange(CDataExchange* pDX)
         INDEX iHaze = itbsc->GetHazeType();
         if( iHaze != iFirstHaze) bSameHaze = FALSE;
         // get sector brush
-        if( (pbrBrush == NULL) || (pbrBrush == itbsc->bsc_pbmBrushMip->bm_pbrBrush) )
+        if( (!pbrBrush) || (pbrBrush == CBrush3DPtr(CBrushMipPtr(itbsc->bsc_pbmBrushMip)->bm_pbrBrush)) )
         {
-          if( pbrBrush == NULL)
+          if( !pbrBrush )
           {
-            pbrBrush = itbsc->bsc_pbmBrushMip->bm_pbrBrush;
+            pbrBrush = CBrushMipPtr(itbsc->bsc_pbmBrushMip)->bm_pbrBrush;
             for(INDEX iForceField=0; iForceField<MAX_UBYTE; iForceField++)
             {
-              CTString strForceName = pbrBrush->br_penEntity->GetForceName( iForceField);
+              CTString strForceName = CEntityPtr(pbrBrush->br_penEntity)->GetForceName( iForceField);
               if( strForceName == "") break;
-              m_comboForceField.AddString( CString(strForceName));
+              m_comboForceField.AddString( CString(static_cast<const char*>(strForceName)));
             }
             for(INDEX iFog=0; iFog<MAX_UBYTE; iFog++)
             {
-              CTString strFogName = pbrBrush->br_penEntity->GetFogName( iFog);
+              CTString strFogName = CEntityPtr(pbrBrush->br_penEntity)->GetFogName( iFog);
               if( strFogName == "") break;
-              m_comboFog.AddString( CString(strFogName));
+              m_comboFog.AddString( CString(static_cast<const char*>(strFogName)));
             }
             for(INDEX iHaze=0; iHaze<MAX_UBYTE; iHaze++)
             {
-              CTString strHazeName = pbrBrush->br_penEntity->GetHazeName( iHaze);
+              CTString strHazeName = CEntityPtr(pbrBrush->br_penEntity)->GetHazeName( iHaze);
               if( strHazeName == "") break;
-              m_comboHaze.AddString( CString(strHazeName));
+              m_comboHaze.AddString( CString(static_cast<const char*>(strHazeName)));
             }
           }
         }
@@ -201,13 +201,13 @@ void CDlgPgSector::DoDataExchange(CDataExchange* pDX)
     // for all sectors
     FOREACHINDYNAMICCONTAINER(pDoc->m_selSectorSelection, CBrushSector, itbsc)
     {
-      CBrushSector &bsc=*itbsc;
+      CBrushSector bsc(*itbsc, false);
       if( iSector == 0)
       {
         iFirstContent = bsc.GetContentType();
         iFirstEnvironment = bsc.GetEnvironmentType();
         m_SectorAmbientColor.SetColor( bsc.bsc_colAmbient);
-        m_strSectorName = bsc.bsc_strName;
+        m_strSectorName = static_cast<const char*>(bsc.bsc_strName);
         m_ctrlVisibilityFlags.SetFlags(bsc.bsc_ulVisFlags);
         m_ctrlClassificationFlags.SetFlags(bsc.bsc_ulVisFlags);
         iInclude=(bsc.bsc_ulFlags2&BSCF2_VISIBILITYINCLUDE) ? 0 : 1;
@@ -240,8 +240,8 @@ void CDlgPgSector::DoDataExchange(CDataExchange* pDX)
     m_colLastSectorAmbientColor = m_SectorAmbientColor.GetColor();
     m_bLastSectorAmbientColorMixed = !m_SectorAmbientColor.IsColorValid();
     m_SectorAmbientColor.EnableWindow( bSelectionExists);
-	  m_comboContentType.EnableWindow( bSelectionExists);
-	  m_comboEnvironmentType.EnableWindow( bSelectionExists);
+    m_comboContentType.EnableWindow( bSelectionExists);
+    m_comboEnvironmentType.EnableWindow( bSelectionExists);
 
     GetDlgItem( IDC_STATIC_CONTENT_TYPE_T)->EnableWindow( bSelectionExists);
     GetDlgItem( IDC_STATIC_ENVIRONMENT_TYPE_T)->EnableWindow( bSelectionExists);
@@ -260,18 +260,18 @@ void CDlgPgSector::DoDataExchange(CDataExchange* pDX)
     m_udSectorsData.MarkUpdated();
   }
 
-	//{{AFX_DATA_MAP(CDlgPgSector)
-	DDX_Control(pDX, ID_CLASSIFICATION_FLAGS, m_ctrlClassificationFlags);
-	DDX_Control(pDX, ID_VISIBILITY_FLAGS, m_ctrlVisibilityFlags);
-	DDX_Control(pDX, IDC_STATIC_ENVIRONMENT_TYPE, m_comboEnvironmentType);
-	DDX_Control(pDX, IDC_HAZE_COMBO, m_comboHaze);
-	DDX_Control(pDX, IDC_FOG_COMBO, m_comboFog);
-	DDX_Control(pDX, IDC_FORCE_FIELD_COMBO, m_comboForceField);
-	DDX_Control(pDX, IDC_CONTENT_TYPE_COMBO, m_comboContentType);
-	DDX_Control(pDX, ID_SECTOR_COLOR, m_SectorAmbientColor);
-	DDX_Text(pDX, IDC_SECTOR_NAME, m_strSectorName);
-	DDX_Radio(pDX, IDC_SECTOR_INCLUDE, m_radioInclude);
-	//}}AFX_DATA_MAP
+  //{{AFX_DATA_MAP(CDlgPgSector)
+  DDX_Control(pDX, ID_CLASSIFICATION_FLAGS, m_ctrlClassificationFlags);
+  DDX_Control(pDX, ID_VISIBILITY_FLAGS, m_ctrlVisibilityFlags);
+  DDX_Control(pDX, IDC_STATIC_ENVIRONMENT_TYPE, m_comboEnvironmentType);
+  DDX_Control(pDX, IDC_HAZE_COMBO, m_comboHaze);
+  DDX_Control(pDX, IDC_FOG_COMBO, m_comboFog);
+  DDX_Control(pDX, IDC_FORCE_FIELD_COMBO, m_comboForceField);
+  DDX_Control(pDX, IDC_CONTENT_TYPE_COMBO, m_comboContentType);
+  DDX_Control(pDX, ID_SECTOR_COLOR, m_SectorAmbientColor);
+  DDX_Text(pDX, IDC_SECTOR_NAME, m_strSectorName);
+  DDX_Radio(pDX, IDC_SECTOR_INCLUDE, m_radioInclude);
+  //}}AFX_DATA_MAP
 
   // if dialog is giving data and control windows are valid
   if( (pDX->m_bSaveAndValidate != FALSE) && IsWindow( m_SectorAmbientColor.m_hWnd) )
@@ -279,7 +279,7 @@ void CDlgPgSector::DoDataExchange(CDataExchange* pDX)
     // for all sectors
     FOREACHINDYNAMICCONTAINER(pDoc->m_selSectorSelection, CBrushSector, itbsc)
     {
-      CBrushSector &bsc=*itbsc;
+      CBrushSector bsc(*itbsc, false);
       INDEX iNewContent = m_comboContentType.GetCurSel();
       if( iNewContent!=CB_ERR)
       {
@@ -336,21 +336,21 @@ void CDlgPgSector::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CDlgPgSector, CPropertyPage)
-	//{{AFX_MSG_MAP(CDlgPgSector)
-	ON_WM_HSCROLL()
-	ON_CBN_DROPDOWN(IDC_CONTENT_TYPE_COMBO, OnDropdownContentTypeCombo)
-	ON_CBN_SELCHANGE(IDC_CONTENT_TYPE_COMBO, OnSelchangeContentTypeCombo)
-	ON_CBN_SELCHANGE(IDC_FORCE_FIELD_COMBO, OnSelchangeForceFieldCombo)
-	ON_CBN_DROPDOWN(IDC_FORCE_FIELD_COMBO, OnDropdownForceFieldCombo)
-	ON_CBN_DROPDOWN(IDC_FOG_COMBO, OnDropdownFogCombo)
-	ON_CBN_SELCHANGE(IDC_FOG_COMBO, OnSelchangeFogCombo)
-	ON_CBN_DROPDOWN(IDC_HAZE_COMBO, OnDropdownHazeCombo)
-	ON_CBN_SELCHANGE(IDC_HAZE_COMBO, OnSelchangeHazeCombo)
-	ON_CBN_DROPDOWN(IDC_STATIC_ENVIRONMENT_TYPE, OnDropdownStaticEnvironmentType)
-	ON_CBN_SELCHANGE(IDC_STATIC_ENVIRONMENT_TYPE, OnSelchangeStaticEnvironmentType)
-	ON_BN_CLICKED(IDC_SECTOR_INCLUDE, OnSectorInclude)
-	ON_BN_CLICKED(IDC_SECTOR_EXCLUDE, OnSectorExclude)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CDlgPgSector)
+  ON_WM_HSCROLL()
+  ON_CBN_DROPDOWN(IDC_CONTENT_TYPE_COMBO, OnDropdownContentTypeCombo)
+  ON_CBN_SELCHANGE(IDC_CONTENT_TYPE_COMBO, OnSelchangeContentTypeCombo)
+  ON_CBN_SELCHANGE(IDC_FORCE_FIELD_COMBO, OnSelchangeForceFieldCombo)
+  ON_CBN_DROPDOWN(IDC_FORCE_FIELD_COMBO, OnDropdownForceFieldCombo)
+  ON_CBN_DROPDOWN(IDC_FOG_COMBO, OnDropdownFogCombo)
+  ON_CBN_SELCHANGE(IDC_FOG_COMBO, OnSelchangeFogCombo)
+  ON_CBN_DROPDOWN(IDC_HAZE_COMBO, OnDropdownHazeCombo)
+  ON_CBN_SELCHANGE(IDC_HAZE_COMBO, OnSelchangeHazeCombo)
+  ON_CBN_DROPDOWN(IDC_STATIC_ENVIRONMENT_TYPE, OnDropdownStaticEnvironmentType)
+  ON_CBN_SELCHANGE(IDC_STATIC_ENVIRONMENT_TYPE, OnSelchangeStaticEnvironmentType)
+  ON_BN_CLICKED(IDC_SECTOR_INCLUDE, OnSectorInclude)
+  ON_BN_CLICKED(IDC_SECTOR_EXCLUDE, OnSectorExclude)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -389,7 +389,7 @@ BOOL CDlgPgSector::OnIdle(LONG lCount)
 
 void CDlgPgSector::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
 {
-	CPropertyPage::OnHScroll(nSBCode, nPos, pScrollBar);
+  CPropertyPage::OnHScroll(nSBCode, nPos, pScrollBar);
   UpdateData( TRUE);
   m_colLastSectorAmbientColor = m_SectorAmbientColor.GetColor();
   m_bLastSectorAmbientColorMixed = FALSE;
@@ -427,7 +427,7 @@ void CDlgPgSector::OnSelchangeHazeCombo()
 
 BOOL CDlgPgSector::PreTranslateMessage(MSG* pMsg) 
 {
-	if(pMsg->message==WM_KEYDOWN && pMsg->wParam==VK_RETURN)
+  if(pMsg->message==WM_KEYDOWN && pMsg->wParam==VK_RETURN)
   {
     // move coordinates from page to entity and snap them
     UpdateData( TRUE);
@@ -436,7 +436,7 @@ BOOL CDlgPgSector::PreTranslateMessage(MSG* pMsg)
     // the message is handled
     return TRUE;
   }
-	return CPropertyPage::PreTranslateMessage(pMsg);
+  return CPropertyPage::PreTranslateMessage(pMsg);
 }
 
 

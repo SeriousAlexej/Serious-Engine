@@ -69,7 +69,7 @@ CheckListWidget::CheckListWidget(QWidget* parent)
   QObject::connect(&m_model, &QStandardItemModel::dataChanged, this, [this]
     {
       _UpdateText();
-      Changed();
+      m_changed = true;
     });
 
   setStyleSheet(g_combo_style);
@@ -110,6 +110,20 @@ bool CheckListWidget::eventFilter(QObject* object, QEvent* event)
   }
 
   return false;
+}
+
+void CheckListWidget::showPopup()
+{
+  QComboBox::showPopup();
+  m_changed = false;
+}
+
+void CheckListWidget::hidePopup()
+{
+  QComboBox::hidePopup();
+  if (m_changed)
+    Changed();
+  m_changed = false;
 }
 
 std::optional<Qt::CheckState> CheckListWidget::_GlobalCheckState() const

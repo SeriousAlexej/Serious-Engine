@@ -93,7 +93,7 @@ ModelScript ReadFromFile(const CTFileName& filename)
 {
   const CTString strFile = _fnmApplicationPath + filename;
   std::ifstream file;
-  file.open(strFile.str_String, std::ios_base::in);
+  file.open(strFile, std::ios_base::in);
   if (!file.is_open())
     throw "Failed to open script!";
 
@@ -202,6 +202,22 @@ ModelScript ReadFromFile(const CTFileName& filename)
         auto& anim = script.m_animations.back();
         const auto base_skel = base_dir + Trim({ line.begin() + strlen("ORIG_SKELETON "), line.end() });
         anim.m_optRefSkeleton = CTString(base_skel.c_str());
+      }
+      else if (StartsWith(line, "ORIGIN_BONE "))
+      {
+        auto& anim = script.m_animations.back();
+        anim.m_optOriginBone = { line.begin() + strlen("ORIGIN_BONE "), line.end() };
+      }
+      else if (StartsWith(line, "INTERPOLATION "))
+      {
+        auto& anim = script.m_animations.back();
+        const std::string interp_line(line.begin() + strlen("INTERPOLATION "), line.end());
+        if (interp_line == "Linear")
+          anim.m_interpolation = BlenderFCurve::InterpolationMode::Linear;
+        else if (interp_line == "Bezier")
+          anim.m_interpolation = BlenderFCurve::InterpolationMode::Bezier;
+        else
+          ThrowF_t("Animation %s has unknown interpolation mode \"%s\". Expected \"Linear\" or \"Bezier\".", anim.m_name.c_str(), interp_line.c_str());
       }
       else if (StartsWith(line, "DURATION "))
       {
@@ -417,7 +433,7 @@ void SaveToFile(const ModelScript& script, const CTFileName& filename)
 {
   const CTString strFile = _fnmApplicationPath + filename;
   std::ofstream file;
-  file.open(strFile.str_String, std::ios_base::out | std::ios_base::trunc);
+  file.open(strFile, std::ios_base::out | std::ios_base::trunc);
   if (!file.is_open())
     throw "Failed to save script!";
 
@@ -428,12 +444,12 @@ void SaveToFile(const ModelScript& script, const CTFileName& filename)
     if (lastDir == dir)
       return;
     lastDir = dir;
-    file << "DIRECTORY " << dir.str_String << '\n';
+    file << "DIRECTORY " << dir << '\n';
   };
   auto write_file = [&](const CTFileName& f, const char* tag = "")
   {
     const CTString fnm = static_cast<CTString>(f.FileName() + f.FileExt());
-    file << tag << ' ' << fnm.str_String << '\n';
+    file << tag << ' ' << fnm << '\n';
   };
 
   file << "TEXTURE_DIM " << script.m_textureScale(1) << ' ' << script.m_textureScale(2) << '\n';
@@ -510,6 +526,20 @@ void SaveToFile(const ModelScript& script, const CTFileName& filename)
 
       if (anim.m_optRefSkeleton.has_value())
         write_file(*anim.m_optRefSkeleton, "ORIG_SKELETON");
+
+      if (anim.m_optOriginBone.has_value())
+        file << "ORIGIN_BONE " << *anim.m_optOriginBone << '\n';
+
+      switch (anim.m_interpolation)
+      {
+      case BlenderFCurve::InterpolationMode::Linear:
+        file << "INTERPOLATION Linear\n";
+        break;
+
+      case BlenderFCurve::InterpolationMode::Bezier:
+        file << "INTERPOLATION Bezier\n";
+        break;
+      }
 
       if (anim.m_optDuration.has_value())
         file << "DURATION " << *anim.m_optDuration << '\n';

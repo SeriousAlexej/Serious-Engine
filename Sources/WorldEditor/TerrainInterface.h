@@ -51,7 +51,7 @@ extern CTerrainEditBrush atebDefaultEditBrushValues[];
 extern CTerrainEditBrush atebCustomEditBrushes[];
 extern void InvokeTerrainTilePalette( PIX pixX, PIX pixY);
 extern void InvokeTerrainBrushPalette( PIX pixX, PIX pixY);
-extern void RenderBrushShape( INDEX iBrush, PIXaabbox2D rect, CDrawPort *pdp);
+extern void RenderBrushShape( INDEX iBrush, PIXaabbox2D rect, CDrawPortPtr pdp);
 extern void GetEditingModeInfo(INDEX iMode, INDEX &iIcon, CTString &strText);
 extern CBrushPaletteWnd *_pBrushPalette;
 extern void GenerateTerrainBrushTexture( INDEX iBrush, FLOAT fHotSpot, FLOAT fFallOff);
@@ -86,15 +86,15 @@ struct CTIButton {
   FLOAT *tib_pfData2;
   INDEX tib_iLayer;
   CTString tib_strToolTip;
-  void (*tib_pOnRender)(CTIButton *ptib, CDrawPort *pdp);
-  void (*tib_pOnLeftClick)(CTIButton *ptib, CPoint pt, CDrawPort *pdp);
-  void (*tib_pOnLeftClickMove)(CTIButton *ptib, FLOAT fdx, FLOAT fdy, CDrawPort *pdp);
-  void (*tib_pOnRightClick)(CTIButton *ptib, CPoint pt, CDrawPort *pdp);
-  void (*tib_pOnRightClickMove)(CTIButton *ptib, FLOAT fdx, FLOAT fdy, CDrawPort *pdp);
-  void (*tib_pPreRender)(CTIButton *ptib, CDrawPort *pdp); 
+  void (*tib_pOnRender)(CTIButton *ptib, CDrawPortPtr pdp);
+  void (*tib_pOnLeftClick)(CTIButton *ptib, CPoint pt, CDrawPortPtr pdp);
+  void (*tib_pOnLeftClickMove)(CTIButton *ptib, FLOAT fdx, FLOAT fdy, CDrawPortPtr pdp);
+  void (*tib_pOnRightClick)(CTIButton *ptib, CPoint pt, CDrawPortPtr pdp);
+  void (*tib_pOnRightClickMove)(CTIButton *ptib, FLOAT fdx, FLOAT fdy, CDrawPortPtr pdp);
+  void (*tib_pPreRender)(CTIButton *ptib, CDrawPortPtr pdp);
   // misc functions
-  void (*tib_pOnDropFiles)(CTIButton *ptib, CPoint pt, CDrawPort *pdp, CTFileName fnFile);
-  CTString (*tib_pGetClickMoveData)(CTIButton *ptib, CPoint pt, CDrawPort *pdp, BOOL bLmb);
+  void (*tib_pOnDropFiles)(CTIButton *ptib, CPoint pt, CDrawPortPtr pdp, CTFileName fnFile);
+  CTString (*tib_pGetClickMoveData)(CTIButton *ptib, CPoint pt, CDrawPortPtr pdp, BOOL bLmb);
   BOOL (*tib_pIsEnabled)(CTIButton *ptib);
 
   // construction
@@ -103,12 +103,12 @@ struct CTIButton {
   void SetData( FLOAT fDataMin, FLOAT fDataMax, FLOAT fDataDelta, 
     BOOL bWrap=FALSE, FLOAT *pfData1=NULL, FLOAT *pfData2=NULL);
   void SetFunctions(
-    void (*pOnRender)(CTIButton *ptib, CDrawPort *pdp)=NULL,
-    void (*pOnLeftClick)(CTIButton *ptib, CPoint pt, CDrawPort *pdp)=NULL,
-    void (*pOnLeftClickMove)(CTIButton *ptib, FLOAT fdx, FLOAT fdy, CDrawPort *pdp)=NULL,
-    void (*pOnRightClick)(CTIButton *ptib, CPoint pt, CDrawPort *pdp)=NULL,
-    void (*pOnRighClickMove)(CTIButton *ptib, FLOAT fdx, FLOAT fdy, CDrawPort *pdp)=NULL,
-    void (*pPreRender)(CTIButton *ptib, CDrawPort *pdp)=NULL);
+    void (*pOnRender)(CTIButton *ptib, CDrawPortPtr pdp)=NULL,
+    void (*pOnLeftClick)(CTIButton *ptib, CPoint pt, CDrawPortPtr pdp)=NULL,
+    void (*pOnLeftClickMove)(CTIButton *ptib, FLOAT fdx, FLOAT fdy, CDrawPortPtr pdp)=NULL,
+    void (*pOnRightClick)(CTIButton *ptib, CPoint pt, CDrawPortPtr pdp)=NULL,
+    void (*pOnRighClickMove)(CTIButton *ptib, FLOAT fdx, FLOAT fdy, CDrawPortPtr pdp)=NULL,
+    void (*pPreRender)(CTIButton *ptib, CDrawPortPtr pdp)=NULL);
 };
 
 
@@ -116,11 +116,11 @@ class CTerrainInterface : public CWnd
 { 
 // Construction
 public:
-	CTerrainInterface();
-  void InitializeInterface(CDrawPort *pdp);
+  CTerrainInterface();
+  void InitializeInterface(CDrawPortPtr pdp);
 
-  CDrawPort *m_pDrawPort;
-  CViewPort *m_pViewPort;
+  CDrawPortPtr m_pDrawPort;
+  CViewPortPtr m_pViewPort;
   COleDataSource m_DataSource;
 
   INDEX m_iBrush;
@@ -147,34 +147,34 @@ public:
   void UnhideCursor(void);
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CTerrainInterface)
-	public:
-	virtual BOOL Create(LPCTSTR lpszClassName, LPCTSTR lpszWindowName, DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID, CCreateContext* pContext = NULL);
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CTerrainInterface)
+  public:
+  virtual BOOL Create(LPCTSTR lpszClassName, LPCTSTR lpszWindowName, DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID, CCreateContext* pContext = NULL);
+  virtual BOOL PreTranslateMessage(MSG* pMsg);
+  //}}AFX_VIRTUAL
 
 // Implementation
 public:
-	virtual ~CTerrainInterface();
-  void RenderInterface(CDrawPort *pDP);
+  virtual ~CTerrainInterface();
+  void RenderInterface(CDrawPortPtr pDP);
   BOOL IsClicked(CTIButton &tib, CPoint pt) const;
 
-	// Generated message map functions
+  // Generated message map functions
 protected:
-	//{{AFX_MSG(CTerrainInterface)
-	afx_msg void OnPaint();
-	afx_msg void OnDestroy();
-	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
-	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
-	afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
-	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
-	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
-	afx_msg void OnDropFiles(HDROP hDropInfo);
-	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+  //{{AFX_MSG(CTerrainInterface)
+  afx_msg void OnPaint();
+  afx_msg void OnDestroy();
+  afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+  afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+  afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
+  afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
+  afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
+  afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
+  afx_msg void OnDropFiles(HDROP hDropInfo);
+  afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
+  //}}AFX_MSG
+  DECLARE_MESSAGE_MAP()
 };
 
 /////////////////////////////////////////////////////////////////////////////

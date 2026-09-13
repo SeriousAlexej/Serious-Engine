@@ -29,7 +29,7 @@ class CCtrlColorBrowsingModeRadio : public CButton
 {
 // Construction
 public:
-	CCtrlColorBrowsingModeRadio();
+  CCtrlColorBrowsingModeRadio();
 
 // Attributes
 public:
@@ -42,21 +42,21 @@ public:
   void SetDialogPtr( CPropertyComboBar *pDialog);
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CCtrlColorBrowsingModeRadio)
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CCtrlColorBrowsingModeRadio)
+  //}}AFX_VIRTUAL
 
 // Implementation
 public:
-	virtual ~CCtrlColorBrowsingModeRadio();
+  virtual ~CCtrlColorBrowsingModeRadio();
 
-	// Generated message map functions
+  // Generated message map functions
 protected:
-	//{{AFX_MSG(CCtrlColorBrowsingModeRadio)
-	afx_msg void OnClicked();
-	//}}AFX_MSG
+  //{{AFX_MSG(CCtrlColorBrowsingModeRadio)
+  afx_msg void OnClicked();
+  //}}AFX_MSG
 
-	DECLARE_MESSAGE_MAP()
+  DECLARE_MESSAGE_MAP()
 };
 
 /////////////////////////////////////////////////////////////////////////////

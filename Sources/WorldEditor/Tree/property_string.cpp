@@ -16,18 +16,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "StdAfx.h"
 #include "ui_property_factory.h"
 #include "base_entity_property_tree_item.h"
-
-#include <QLineEdit>
-
-namespace
-{
-  const char* g_lineedit_style = R"(
-QLineEdit {
-  background-color: transparent;border:
-  0px;
-}
-)";
-}
+#include "string_widget.h"
 
 class Property_String : public BaseEntityPropertyTreeItem
 {
@@ -39,13 +28,11 @@ public:
 
   QWidget* CreateEditor(QWidget* parent) override
   {
-    auto* editor = new QLineEdit(parent);
-    editor->setStyleSheet(g_lineedit_style);
-    editor->setText(QString::fromLocal8Bit(_CurrentPropValue().str_String));
+    auto* editor = new StringWidget(QString::fromLocal8Bit(static_cast<const char*>(_CurrentPropValue())), parent);
 
-    QObject::connect(editor, &QLineEdit::editingFinished, this, [this, editor]
+    QObject::connect(editor, &StringWidget::editingFinished, this, [this, editor]
       {
-        CTString new_value = editor->text().toLocal8Bit().data();
+        CTString new_value = editor->Text().toLocal8Bit().data();
         _WriteProperty(new_value);
       });
     return editor;

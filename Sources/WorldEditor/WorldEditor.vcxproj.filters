@@ -354,6 +354,18 @@
     <ClCompile Include="Tree\property_ammo.cpp">
       <Filter>Source Files\Tree</Filter>
     </ClCompile>
+    <ClCompile Include="Tree\string_widget.cpp">
+      <Filter>Source Files\Tree</Filter>
+    </ClCompile>
+    <ClCompile Include="DlgConsole.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EditConsole.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ConsoleSymbolsCombo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WorldEditor.rc">
@@ -619,6 +631,18 @@
     <ClInclude Include="Tree\spinbox_no_trailing.h">
       <Filter>Header Files\Tree</Filter>
     </ClInclude>
+    <ClInclude Include="Tree\string_widget.ui.h">
+      <Filter>Header Files\Tree</Filter>
+    </ClInclude>
+    <ClInclude Include="DlgConsole.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EditConsole.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ConsoleSymbolsCombo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="ReadMe.txt">
@@ -841,6 +865,12 @@
     <CustomBuild Include="Tree\checklist_widget.h">
       <Filter>Header Files\Tree</Filter>
     </CustomBuild>
+    <CustomBuild Include="Tree\string_widget.ui">
+      <Filter>Source Files\Tree</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Tree\string_widget.h">
+      <Filter>Header Files\Tree</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <None Include="Tree\property_item_delegate.h.moc">
@@ -867,5 +897,16 @@
     <None Include="Tree\checklist_widget.h.moc">
       <Filter>Header Files\Tree</Filter>
     </None>
+    <None Include="Tree\string_widget.h.moc">
+      <Filter>Header Files\Tree</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\pick.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="SeriousEngine.natvis" />
   </ItemGroup>
 </Project>

@@ -32,11 +32,11 @@ static char THIS_FILE[] = __FILE__;
 
 
 CDlgProgress::CDlgProgress( CWnd* pParent /*=NULL*/, BOOL bCanCancel/*=FALSE*/)
-	: CDialog(CDlgProgress::IDD, pParent)
+  : CDialog(CDlgProgress::IDD, pParent)
 {
   //{{AFX_DATA_INIT(CDlgProgress)
-	m_strProgressMessage = _T("");
-	//}}AFX_DATA_INIT
+  m_strProgressMessage = _T("");
+  //}}AFX_DATA_INIT
 
   m_bHasCancel = bCanCancel;
   m_bCancelPressed = FALSE;
@@ -45,7 +45,7 @@ CDlgProgress::CDlgProgress( CWnd* pParent /*=NULL*/, BOOL bCanCancel/*=FALSE*/)
 
 void CDlgProgress::DoDataExchange(CDataExchange* pDX)
 {
-	CDialog::DoDataExchange(pDX);
+  CDialog::DoDataExchange(pDX);
 
   if( m_bHasCancel)
   {
@@ -58,10 +58,10 @@ void CDlgProgress::DoDataExchange(CDataExchange* pDX)
     GetDlgItem(IDCANCEL)->EnableWindow( FALSE);
   }
 
-	//{{AFX_DATA_MAP(CDlgProgress)
-	DDX_Control(pDX, IDC_PROGRESS, m_ctrlProgres);
-	DDX_Text(pDX, IDC_PROGRESS_MESSAGE, m_strProgressMessage);
-	//}}AFX_DATA_MAP
+  //{{AFX_DATA_MAP(CDlgProgress)
+  DDX_Control(pDX, IDC_PROGRESS, m_ctrlProgres);
+  DDX_Text(pDX, IDC_PROGRESS_MESSAGE, m_strProgressMessage);
+  //}}AFX_DATA_MAP
 }
 
 void CDlgProgress::SetProgressMessageAndPosition( char *strProgressMessage, INDEX iCurrentPos)
@@ -74,9 +74,9 @@ void CDlgProgress::SetProgressMessageAndPosition( char *strProgressMessage, INDE
 }
 
 BEGIN_MESSAGE_MAP(CDlgProgress, CDialog)
-	//{{AFX_MSG_MAP(CDlgProgress)
-	ON_BN_CLICKED(IDC_CANCEL, OnCancel)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CDlgProgress)
+  ON_BN_CLICKED(IDC_CANCEL, OnCancel)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////

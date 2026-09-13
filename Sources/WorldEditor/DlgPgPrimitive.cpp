@@ -35,21 +35,21 @@ IMPLEMENT_DYNCREATE(CDlgPgPrimitive, CPropertyPage)
 
 CDlgPgPrimitive::CDlgPgPrimitive() : CPropertyPage(CDlgPgPrimitive::IDD)
 {
-	//{{AFX_DATA_INIT(CDlgPgPrimitive)
-	m_fHeight = 0.0f;
-	m_fLenght = 0.0f;
-	m_fWidth = 0.0f;
-	m_fEdit1 = 0.0f;
-	m_fEdit2 = 0.0f;
-	m_fEdit3 = 0.0f;
-	m_fEdit4 = 0.0f;
-	m_fEdit5 = 0.0f;
-	m_bIfRoom = FALSE;
-	m_bIfSpiral = FALSE;
-	m_bIfOuter = FALSE;
-	m_strDisplacePicture = _T("");
-	m_bAutoCreateMipBrushes = FALSE;
-	//}}AFX_DATA_INIT
+  //{{AFX_DATA_INIT(CDlgPgPrimitive)
+  m_fHeight = 0.0f;
+  m_fLenght = 0.0f;
+  m_fWidth = 0.0f;
+  m_fEdit1 = 0.0f;
+  m_fEdit2 = 0.0f;
+  m_fEdit3 = 0.0f;
+  m_fEdit4 = 0.0f;
+  m_fEdit5 = 0.0f;
+  m_bIfRoom = FALSE;
+  m_bIfSpiral = FALSE;
+  m_bIfOuter = FALSE;
+  m_strDisplacePicture = _T("");
+  m_bAutoCreateMipBrushes = FALSE;
+  //}}AFX_DATA_INIT
   // set some initial colors;
 
   m_colLastSectorColor = 0x12345678;
@@ -77,9 +77,9 @@ void CDlgPgPrimitive::DoDataExchange(CDataExchange* pDX)
   // if dialog is recieving data
   if( (pDX->m_bSaveAndValidate == FALSE) && (IsWindow(m_comboTopShape.m_hWnd)) )
   {
-	  m_fWidth = theApp.m_vfpCurrent.vfp_fXMax-theApp.m_vfpCurrent.vfp_fXMin;
-	  m_fLenght = theApp.m_vfpCurrent.vfp_fZMax-theApp.m_vfpCurrent.vfp_fZMin;
-	  m_fHeight = theApp.m_vfpCurrent.vfp_fYMax-theApp.m_vfpCurrent.vfp_fYMin;
+    m_fWidth = theApp.m_vfpCurrent.vfp_fXMax-theApp.m_vfpCurrent.vfp_fXMin;
+    m_fLenght = theApp.m_vfpCurrent.vfp_fZMax-theApp.m_vfpCurrent.vfp_fZMin;
+    m_fHeight = theApp.m_vfpCurrent.vfp_fYMax-theApp.m_vfpCurrent.vfp_fYMin;
     m_SectorColor.SetColor( theApp.m_vfpCurrent.vfp_colSectorsColor);
     m_PolygonColor.SetColor( theApp.m_vfpCurrent.vfp_colPolygonsColor);
     m_bAutoCreateMipBrushes = theApp.m_vfpCurrent.vfp_bAutoCreateMipBrushes;
@@ -119,11 +119,11 @@ void CDlgPgPrimitive::DoDataExchange(CDataExchange* pDX)
         GetDlgItem(IDC_BOTTOM_SHAPE)->ShowWindow( SW_HIDE);
         m_fEdit1 = theApp.m_vfpCurrent.vfp_fShearX;
         m_fEdit2 = theApp.m_vfpCurrent.vfp_fShearZ;
-        m_fEdit3 = (float) theApp.m_vfpCurrent.vfp_avVerticesOnBaseOfPrimitive.Count();
+        m_fEdit3 = (float) theApp.m_vfpCurrent.vfp_avVerticesOnBaseOfPrimitive.size();
         m_fEdit4 = theApp.m_vfpCurrent.vfp_fStretchX;
         m_fEdit5 = theApp.m_vfpCurrent.vfp_fStretchY;
-	      m_bIfRoom = theApp.m_vfpCurrent.vfp_bClosed;
-	      m_bIfOuter = theApp.m_vfpCurrent.vfp_bOuter;
+        m_bIfRoom = theApp.m_vfpCurrent.vfp_bClosed;
+        m_bIfOuter = theApp.m_vfpCurrent.vfp_bOuter;
         break;
       }
     case PT_TORUS:
@@ -152,10 +152,10 @@ void CDlgPgPrimitive::DoDataExchange(CDataExchange* pDX)
         GetDlgItem(IDC_IF_OUTER)->ShowWindow( SW_SHOW);
         m_fEdit1 = (float)theApp.m_vfpCurrent.vfp_iSlicesIn360;
         m_fEdit2 = (float)theApp.m_vfpCurrent.vfp_iNoOfSlices;
-        m_fEdit3 = (float)theApp.m_vfpCurrent.vfp_avVerticesOnBaseOfPrimitive.Count();
+        m_fEdit3 = (float)theApp.m_vfpCurrent.vfp_avVerticesOnBaseOfPrimitive.size();
         m_fEdit4 = theApp.m_vfpCurrent.vfp_fRadius;
-	      m_bIfRoom = theApp.m_vfpCurrent.vfp_bClosed;
-	      m_bIfOuter = theApp.m_vfpCurrent.vfp_bOuter;
+        m_bIfRoom = theApp.m_vfpCurrent.vfp_bClosed;
+        m_bIfOuter = theApp.m_vfpCurrent.vfp_bOuter;
         break;
       }
     case PT_STAIRCASES:
@@ -178,7 +178,7 @@ void CDlgPgPrimitive::DoDataExchange(CDataExchange* pDX)
         GetDlgItem(IDC_IF_SPIRAL)->ShowWindow( SW_SHOW);
         GetDlgItem(IDC_IF_SPIRAL)->SetWindowText( L"Spiral:");
 
-	      if( theApp.m_vfpCurrent.vfp_bLinearStaircases)
+        if( theApp.m_vfpCurrent.vfp_bLinearStaircases)
         {
           GetDlgItem(IDC_LENGHT)->EnableWindow( TRUE);
           GetDlgItem(IDC_LENGHT_T)->EnableWindow( TRUE);
@@ -201,9 +201,9 @@ void CDlgPgPrimitive::DoDataExchange(CDataExchange* pDX)
         m_fEdit1 = (float)theApp.m_vfpCurrent.vfp_iSlicesIn360;
         m_fEdit2 = (float)theApp.m_vfpCurrent.vfp_iNoOfSlices;
         m_fEdit3 = theApp.m_vfpCurrent.vfp_fRadius;
-	      m_bIfRoom = theApp.m_vfpCurrent.vfp_bClosed;
-	      m_bIfSpiral = !theApp.m_vfpCurrent.vfp_bLinearStaircases;
-	      m_bIfOuter = theApp.m_vfpCurrent.vfp_bOuter;
+        m_bIfRoom = theApp.m_vfpCurrent.vfp_bClosed;
+        m_bIfSpiral = !theApp.m_vfpCurrent.vfp_bLinearStaircases;
+        m_bIfOuter = theApp.m_vfpCurrent.vfp_bOuter;
         m_comboTopShape.SetCurSel( (int)theApp.m_vfpCurrent.vfp_iTopShape);
         m_comboBottomShape.SetCurSel( (int)theApp.m_vfpCurrent.vfp_iBottomShape);
         break;
@@ -298,66 +298,66 @@ void CDlgPgPrimitive::DoDataExchange(CDataExchange* pDX)
   }
 
   //{{AFX_DATA_MAP(CDlgPgPrimitive)
-	DDX_Control(pDX, IDC_PRIMITIVE_HISTORY, m_comboPrimitiveHistory);
-	DDX_Control(pDX, IDC_TOP_SHAPE, m_comboTopShape);
-	DDX_Control(pDX, IDC_BOTTOM_SHAPE, m_comboBottomShape);
-	DDX_Control(pDX, ID_SECTOR_COLOR, m_SectorColor);
-	DDX_Control(pDX, ID_POLYGON_COLOR, m_PolygonColor);
-	DDX_Text(pDX, IDC_HEIGHT, m_fHeight);
-	DDV_MinMaxFloat(pDX, m_fHeight, -256000.0f, 256000.0f);
-	DDX_Text(pDX, IDC_LENGHT, m_fLenght);
-	DDV_MinMaxFloat(pDX, m_fLenght, -256000.0f, 256000.0f);
-	DDX_Text(pDX, IDC_WIDTH, m_fWidth);
-	DDV_MinMaxFloat(pDX, m_fWidth, -256000.0f, 256000.0f);
-	DDX_Text(pDX, IDC_EDIT1, m_fEdit1);
-	DDX_Text(pDX, IDC_EDIT2, m_fEdit2);
-	DDX_Text(pDX, IDC_EDIT3, m_fEdit3);
-	DDX_Text(pDX, IDC_EDIT4, m_fEdit4);
-	DDX_Text(pDX, IDC_EDIT5, m_fEdit5);
-	DDX_Check(pDX, IDC_IF_ROOM, m_bIfRoom);
-	DDX_Check(pDX, IDC_IF_SPIRAL, m_bIfSpiral);
-	DDX_Check(pDX, IDC_IF_OUTER, m_bIfOuter);
-	DDX_Text(pDX, IDC_DISPLACE_FILE, m_strDisplacePicture);
-	DDX_Check(pDX, IDC_AUTO_CREATE_MIP_BRUSHES, m_bAutoCreateMipBrushes);
-	//}}AFX_DATA_MAP
+  DDX_Control(pDX, IDC_PRIMITIVE_HISTORY, m_comboPrimitiveHistory);
+  DDX_Control(pDX, IDC_TOP_SHAPE, m_comboTopShape);
+  DDX_Control(pDX, IDC_BOTTOM_SHAPE, m_comboBottomShape);
+  DDX_Control(pDX, ID_SECTOR_COLOR, m_SectorColor);
+  DDX_Control(pDX, ID_POLYGON_COLOR, m_PolygonColor);
+  DDX_Text(pDX, IDC_HEIGHT, m_fHeight);
+  DDV_MinMaxFloat(pDX, m_fHeight, -256000.0f, 256000.0f);
+  DDX_Text(pDX, IDC_LENGHT, m_fLenght);
+  DDV_MinMaxFloat(pDX, m_fLenght, -256000.0f, 256000.0f);
+  DDX_Text(pDX, IDC_WIDTH, m_fWidth);
+  DDV_MinMaxFloat(pDX, m_fWidth, -256000.0f, 256000.0f);
+  DDX_Text(pDX, IDC_EDIT1, m_fEdit1);
+  DDX_Text(pDX, IDC_EDIT2, m_fEdit2);
+  DDX_Text(pDX, IDC_EDIT3, m_fEdit3);
+  DDX_Text(pDX, IDC_EDIT4, m_fEdit4);
+  DDX_Text(pDX, IDC_EDIT5, m_fEdit5);
+  DDX_Check(pDX, IDC_IF_ROOM, m_bIfRoom);
+  DDX_Check(pDX, IDC_IF_SPIRAL, m_bIfSpiral);
+  DDX_Check(pDX, IDC_IF_OUTER, m_bIfOuter);
+  DDX_Text(pDX, IDC_DISPLACE_FILE, m_strDisplacePicture);
+  DDX_Check(pDX, IDC_AUTO_CREATE_MIP_BRUSHES, m_bAutoCreateMipBrushes);
+  //}}AFX_DATA_MAP
 
   // if dialog is giving data
   if( pDX->m_bSaveAndValidate != FALSE)
   {
     CValuesForPrimitive vfpBeforeDDX = theApp.m_vfpCurrent;
     theApp.m_vfpCurrent.vfp_bDummy = FALSE;
-	  theApp.m_vfpCurrent.vfp_bAutoCreateMipBrushes = m_bAutoCreateMipBrushes;
+    theApp.m_vfpCurrent.vfp_bAutoCreateMipBrushes = m_bAutoCreateMipBrushes;
     theApp.m_vfpCurrent.vfp_colSectorsColor = m_SectorColor.GetColor();
     theApp.m_vfpCurrent.vfp_colPolygonsColor = m_PolygonColor.GetColor();
 #define PRIMITIVE_CHANGED_DELTA 0.01f
     if( Abs(theApp.m_vfpCurrent.vfp_fXMax-theApp.m_vfpCurrent.vfp_fXMin-m_fWidth) > PRIMITIVE_CHANGED_DELTA)
     {
       theApp.m_vfpCurrent.vfp_fXMin = -m_fWidth/2;
-	    theApp.m_vfpCurrent.vfp_fXMax =  m_fWidth/2;
+      theApp.m_vfpCurrent.vfp_fXMax =  m_fWidth/2;
     }
     if( Abs(theApp.m_vfpCurrent.vfp_fYMax-theApp.m_vfpCurrent.vfp_fYMin-m_fHeight) > PRIMITIVE_CHANGED_DELTA)
     {
-	    theApp.m_vfpCurrent.vfp_fYMin =  0;
-	    theApp.m_vfpCurrent.vfp_fYMax =  m_fHeight;
+      theApp.m_vfpCurrent.vfp_fYMin =  0;
+      theApp.m_vfpCurrent.vfp_fYMax =  m_fHeight;
     }
     if( Abs(theApp.m_vfpCurrent.vfp_fZMax-theApp.m_vfpCurrent.vfp_fZMin-m_fLenght) > PRIMITIVE_CHANGED_DELTA)
     {
-	    theApp.m_vfpCurrent.vfp_fZMin = -m_fLenght/2;
-	    theApp.m_vfpCurrent.vfp_fZMax =  m_fLenght/2;
+      theApp.m_vfpCurrent.vfp_fZMin = -m_fLenght/2;
+      theApp.m_vfpCurrent.vfp_fZMax =  m_fLenght/2;
     }
 
     if( ((theApp.m_vfpCurrent.vfp_ptPrimitiveType == PT_CONUS) ||
          (theApp.m_vfpCurrent.vfp_ptPrimitiveType == PT_TORUS)) &&
-         (theApp.m_vfpCurrent.vfp_avVerticesOnBaseOfPrimitive.Count() != m_fEdit3) &&
+         (theApp.m_vfpCurrent.vfp_avVerticesOnBaseOfPrimitive.size() != m_fEdit3) &&
          ((INDEX)(m_fEdit3) > 0) )
     {
-      theApp.m_vfpCurrent.vfp_avVerticesOnBaseOfPrimitive.Clear();
-      theApp.m_vfpCurrent.vfp_avVerticesOnBaseOfPrimitive.New( Abs((INDEX) m_fEdit3));
+      theApp.m_vfpCurrent.vfp_avVerticesOnBaseOfPrimitive.clear();
+      theApp.m_vfpCurrent.vfp_avVerticesOnBaseOfPrimitive.resize( Abs((INDEX) m_fEdit3), DOUBLE3D(0, 0, 0));
     }
-	  theApp.m_vfpCurrent.vfp_fShearX = m_fEdit1;
-	  theApp.m_vfpCurrent.vfp_iSlicesIn360 = (INDEX) m_fEdit1;
-	  theApp.m_vfpCurrent.vfp_iMeridians = (INDEX) m_fEdit1;
-	  theApp.m_vfpCurrent.vfp_iSlicesPerWidth = (INDEX) m_fEdit1;
+    theApp.m_vfpCurrent.vfp_fShearX = m_fEdit1;
+    theApp.m_vfpCurrent.vfp_iSlicesIn360 = (INDEX) m_fEdit1;
+    theApp.m_vfpCurrent.vfp_iMeridians = (INDEX) m_fEdit1;
+    theApp.m_vfpCurrent.vfp_iSlicesPerWidth = (INDEX) m_fEdit1;
 
     theApp.m_vfpCurrent.vfp_fShearZ = m_fEdit2;
     theApp.m_vfpCurrent.vfp_iNoOfSlices = (INDEX) m_fEdit2;
@@ -371,7 +371,7 @@ void CDlgPgPrimitive::DoDataExchange(CDataExchange* pDX)
     if( theApp.m_vfpCurrent.vfp_ptPrimitiveType == PT_STAIRCASES)
     {
       theApp.m_vfpCurrent.vfp_fRadius = m_fEdit3;
-  	  theApp.m_vfpCurrent.vfp_bLinearStaircases = !m_bIfSpiral;
+      theApp.m_vfpCurrent.vfp_bLinearStaircases = !m_bIfSpiral;
     }
 
     if( theApp.m_vfpCurrent.vfp_ptPrimitiveType == PT_TERRAIN)
@@ -382,11 +382,11 @@ void CDlgPgPrimitive::DoDataExchange(CDataExchange* pDX)
     }
     else
     {
-	    theApp.m_vfpCurrent.vfp_fStretchX = m_fEdit4;
-	    theApp.m_vfpCurrent.vfp_fStretchY = m_fEdit5;
+      theApp.m_vfpCurrent.vfp_fStretchX = m_fEdit4;
+      theApp.m_vfpCurrent.vfp_fStretchY = m_fEdit5;
     }
     theApp.m_vfpCurrent.vfp_bClosed = m_bIfRoom;
-	  theApp.m_vfpCurrent.vfp_bOuter = m_bIfOuter;
+    theApp.m_vfpCurrent.vfp_bOuter = m_bIfOuter;
     theApp.m_vfpCurrent.vfp_iTopShape = m_comboTopShape.GetCurSel();
     theApp.m_vfpCurrent.vfp_iBottomShape = m_comboBottomShape.GetCurSel();
     // if anything changed
@@ -401,25 +401,25 @@ void CDlgPgPrimitive::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CDlgPgPrimitive, CPropertyPage)
-	//{{AFX_MSG_MAP(CDlgPgPrimitive)
-	ON_CBN_SELCHANGE(IDC_BOTTOM_SHAPE, OnSelchangeBottomShape)
-	ON_CBN_SELCHANGE(IDC_TOP_SHAPE, OnSelchangeTopShape)
-	ON_BN_CLICKED(IDC_IF_ROOM, OnIfRoom)
-	ON_BN_CLICKED(IDC_IF_SPIRAL, OnIfSpiral)
-	ON_BN_CLICKED(IDC_IF_OUTER, OnIfOuter)
-	ON_CBN_SELCHANGE(IDC_PRIMITIVE_HISTORY, OnSelchangePrimitiveHistory)
-	ON_CBN_DROPDOWN(IDC_PRIMITIVE_HISTORY, OnDropdownPrimitiveHistory)
-	ON_BN_CLICKED(IDC_DISPLACE_BROWSE, OnDisplaceBrowse)
-	ON_BN_CLICKED(IDC_DISPLACE_NONE, OnDisplaceNone)
-	ON_WM_CONTEXTMENU()
-	ON_COMMAND(ID_LOAD_PRIMITIVE_SETTINGS, OnLoadPrimitiveSettings)
-	ON_COMMAND(ID_SAVE_PRIMITIVE_SETTINGS, OnSavePrimitiveSettings)
-	ON_COMMAND(ID_SAVE_AS_PRIMITIVE_SETTINGS, OnSaveAsPrimitiveSettings)
-	ON_COMMAND(ID_RESET_PRIMITIVE, OnResetPrimitive)
-	ON_CBN_DROPDOWN(IDC_TOP_SHAPE, OnDropdownTopShape)
-	ON_CBN_DROPDOWN(IDC_BOTTOM_SHAPE, OnDropdownBottomShape)
-	ON_BN_CLICKED(IDC_AUTO_CREATE_MIP_BRUSHES, OnAutoCreateMipBrushes)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CDlgPgPrimitive)
+  ON_CBN_SELCHANGE(IDC_BOTTOM_SHAPE, OnSelchangeBottomShape)
+  ON_CBN_SELCHANGE(IDC_TOP_SHAPE, OnSelchangeTopShape)
+  ON_BN_CLICKED(IDC_IF_ROOM, OnIfRoom)
+  ON_BN_CLICKED(IDC_IF_SPIRAL, OnIfSpiral)
+  ON_BN_CLICKED(IDC_IF_OUTER, OnIfOuter)
+  ON_CBN_SELCHANGE(IDC_PRIMITIVE_HISTORY, OnSelchangePrimitiveHistory)
+  ON_CBN_DROPDOWN(IDC_PRIMITIVE_HISTORY, OnDropdownPrimitiveHistory)
+  ON_BN_CLICKED(IDC_DISPLACE_BROWSE, OnDisplaceBrowse)
+  ON_BN_CLICKED(IDC_DISPLACE_NONE, OnDisplaceNone)
+  ON_WM_CONTEXTMENU()
+  ON_COMMAND(ID_LOAD_PRIMITIVE_SETTINGS, OnLoadPrimitiveSettings)
+  ON_COMMAND(ID_SAVE_PRIMITIVE_SETTINGS, OnSavePrimitiveSettings)
+  ON_COMMAND(ID_SAVE_AS_PRIMITIVE_SETTINGS, OnSaveAsPrimitiveSettings)
+  ON_COMMAND(ID_RESET_PRIMITIVE, OnResetPrimitive)
+  ON_CBN_DROPDOWN(IDC_TOP_SHAPE, OnDropdownTopShape)
+  ON_CBN_DROPDOWN(IDC_BOTTOM_SHAPE, OnDropdownBottomShape)
+  ON_BN_CLICKED(IDC_AUTO_CREATE_MIP_BRUSHES, OnAutoCreateMipBrushes)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -459,7 +459,7 @@ void CDlgPgPrimitive::ApplySCGChange()
   CWorldEditorDoc* pDoc = theApp.GetActiveDocument();
   ASSERT( pDoc != NULL);
 
-	// snap all values to grid
+  // snap all values to grid
   pDoc->SnapPrimitiveValuesToGrid();
   // recreate primitive with new values
   pDoc->CreatePrimitive();
@@ -469,7 +469,7 @@ void CDlgPgPrimitive::ApplySCGChange()
 
 BOOL CDlgPgPrimitive::PreTranslateMessage(MSG* pMsg)
 {
-	if(pMsg->message==WM_KEYDOWN && pMsg->wParam==VK_RETURN)
+  if(pMsg->message==WM_KEYDOWN && pMsg->wParam==VK_RETURN)
   {
     // move data from page to primitive
     UpdateData( TRUE);
@@ -478,7 +478,7 @@ BOOL CDlgPgPrimitive::PreTranslateMessage(MSG* pMsg)
     // the message is handled
     return TRUE;
   }
-	return CPropertyPage::PreTranslateMessage(pMsg);
+  return CPropertyPage::PreTranslateMessage(pMsg);
 }
 
 BOOL CDlgPgPrimitive::OnInitDialog()
@@ -494,84 +494,84 @@ BOOL CDlgPgPrimitive::OnInitDialog()
 
   INDEX iCt = 1;
   // add descriptions of primitives from history list into combo
-  FOREACHINLIST( CPrimitiveInHistoryBuffer, pihb_lnNode, theApp.m_lhPrimitiveHistory, itPrim)
+  for (auto& itPrim : theApp.m_lhPrimitiveHistory)
   {
     CTString strNo;
     strNo.PrintF("%d) ", iCt);
     CTString strDescription;
-    switch( itPrim->pihb_vfpPrimitive.vfp_ptPrimitiveType)
+    switch( itPrim->vfp_ptPrimitiveType)
     {
     case PT_CONUS:
       {
         strDescription.PrintF("%d vtx, Size(%g,%g,%g) Shear(%g,%g) Stretch(%g,%g)",
-          itPrim->pihb_vfpPrimitive.vfp_avVerticesOnBaseOfPrimitive.Count(),
-          itPrim->pihb_vfpPrimitive.vfp_fXMax-itPrim->pihb_vfpPrimitive.vfp_fXMin,
-          itPrim->pihb_vfpPrimitive.vfp_fZMax-itPrim->pihb_vfpPrimitive.vfp_fZMin,
-          itPrim->pihb_vfpPrimitive.vfp_fYMax-itPrim->pihb_vfpPrimitive.vfp_fYMin,
-          itPrim->pihb_vfpPrimitive.vfp_fShearX, itPrim->pihb_vfpPrimitive.vfp_fShearZ,
-          itPrim->pihb_vfpPrimitive.vfp_fStretchX, itPrim->pihb_vfpPrimitive.vfp_fStretchY);
+          static_cast<int>(itPrim->vfp_avVerticesOnBaseOfPrimitive.size()),
+          itPrim->vfp_fXMax-itPrim->vfp_fXMin,
+          itPrim->vfp_fZMax-itPrim->vfp_fZMin,
+          itPrim->vfp_fYMax-itPrim->vfp_fYMin,
+          itPrim->vfp_fShearX, itPrim->vfp_fShearZ,
+          itPrim->vfp_fStretchX, itPrim->vfp_fStretchY);
         break;
       }
     case PT_TORUS:
       {
         strDescription.PrintF("%d vtx, Size(%g,%g) Radius(%g) Slices(%d,%d)",
-          itPrim->pihb_vfpPrimitive.vfp_avVerticesOnBaseOfPrimitive.Count(),
-          itPrim->pihb_vfpPrimitive.vfp_fXMax-itPrim->pihb_vfpPrimitive.vfp_fXMin,
-          itPrim->pihb_vfpPrimitive.vfp_fZMax-itPrim->pihb_vfpPrimitive.vfp_fZMin,
-          itPrim->pihb_vfpPrimitive.vfp_fRadius,
-          itPrim->pihb_vfpPrimitive.vfp_iSlicesIn360,
-          itPrim->pihb_vfpPrimitive.vfp_iNoOfSlices);
+          static_cast<int>(itPrim->vfp_avVerticesOnBaseOfPrimitive.size()),
+          itPrim->vfp_fXMax-itPrim->vfp_fXMin,
+          itPrim->vfp_fZMax-itPrim->vfp_fZMin,
+          itPrim->vfp_fRadius,
+          itPrim->vfp_iSlicesIn360,
+          itPrim->vfp_iNoOfSlices);
         break;
       }
     case PT_STAIRCASES:
       {
-        if( itPrim->pihb_vfpPrimitive.vfp_bLinearStaircases)
+        if( itPrim->vfp_bLinearStaircases)
         {
           strDescription.PrintF("%d stairs, Size(%g,%g,%g)",
-            itPrim->pihb_vfpPrimitive.vfp_iNoOfSlices,
-            itPrim->pihb_vfpPrimitive.vfp_fXMax-itPrim->pihb_vfpPrimitive.vfp_fXMin,
-            itPrim->pihb_vfpPrimitive.vfp_fZMax-itPrim->pihb_vfpPrimitive.vfp_fZMin,
-            itPrim->pihb_vfpPrimitive.vfp_fYMax-itPrim->pihb_vfpPrimitive.vfp_fYMin);
+            itPrim->vfp_iNoOfSlices,
+            itPrim->vfp_fXMax-itPrim->vfp_fXMin,
+            itPrim->vfp_fZMax-itPrim->vfp_fZMin,
+            itPrim->vfp_fYMax-itPrim->vfp_fYMin);
         }
         else
         {
           strDescription.PrintF("Radius(%g), %d Slices %d Stairs Size(%g,%g)",
-            itPrim->pihb_vfpPrimitive.vfp_fRadius,
-            itPrim->pihb_vfpPrimitive.vfp_iSlicesIn360,
-            itPrim->pihb_vfpPrimitive.vfp_iNoOfSlices,
-            itPrim->pihb_vfpPrimitive.vfp_fXMax-itPrim->pihb_vfpPrimitive.vfp_fXMin,
-            itPrim->pihb_vfpPrimitive.vfp_fYMax-itPrim->pihb_vfpPrimitive.vfp_fYMin);
+            itPrim->vfp_fRadius,
+            itPrim->vfp_iSlicesIn360,
+            itPrim->vfp_iNoOfSlices,
+            itPrim->vfp_fXMax-itPrim->vfp_fXMin,
+            itPrim->vfp_fYMax-itPrim->vfp_fYMin);
         }
         break;
       }
     case PT_SPHERE:
       {
         strDescription.PrintF("Size(%g,%g,%g) %d meridians %d parallels",
-          itPrim->pihb_vfpPrimitive.vfp_fXMax-itPrim->pihb_vfpPrimitive.vfp_fXMin,
-          itPrim->pihb_vfpPrimitive.vfp_fZMax-itPrim->pihb_vfpPrimitive.vfp_fZMin,
-          itPrim->pihb_vfpPrimitive.vfp_fYMax-itPrim->pihb_vfpPrimitive.vfp_fYMin,
-          itPrim->pihb_vfpPrimitive.vfp_iMeridians,
-          itPrim->pihb_vfpPrimitive.vfp_iParalels);
+          itPrim->vfp_fXMax-itPrim->vfp_fXMin,
+          itPrim->vfp_fZMax-itPrim->vfp_fZMin,
+          itPrim->vfp_fYMax-itPrim->vfp_fYMin,
+          itPrim->vfp_iMeridians,
+          itPrim->vfp_iParalels);
         break;
       }
     case PT_TERRAIN:
       {
         strDescription.PrintF("Size(%g,%g,%g) Slices(%d,%d)",
-          itPrim->pihb_vfpPrimitive.vfp_fXMax-itPrim->pihb_vfpPrimitive.vfp_fXMin,
-          itPrim->pihb_vfpPrimitive.vfp_fZMax-itPrim->pihb_vfpPrimitive.vfp_fZMin,
-          itPrim->pihb_vfpPrimitive.vfp_fYMax-itPrim->pihb_vfpPrimitive.vfp_fYMin,
-          itPrim->pihb_vfpPrimitive.vfp_iSlicesPerWidth,
-          itPrim->pihb_vfpPrimitive.vfp_iSlicesPerHeight);
-         if( itPrim->pihb_vfpPrimitive.vfp_fnDisplacement != "")
+          itPrim->vfp_fXMax-itPrim->vfp_fXMin,
+          itPrim->vfp_fZMax-itPrim->vfp_fZMin,
+          itPrim->vfp_fYMax-itPrim->vfp_fYMin,
+          itPrim->vfp_iSlicesPerWidth,
+          itPrim->vfp_iSlicesPerHeight);
+         if( itPrim->vfp_fnDisplacement != "")
          {
-           strDescription.PrintF( "%s, Displ.: \"%s\", Amp. %g", strDescription,
-             (CTString&)(itPrim->pihb_vfpPrimitive.vfp_fnDisplacement.FileName()+
-             itPrim->pihb_vfpPrimitive.vfp_fnDisplacement.FileExt()),
-             itPrim->pihb_vfpPrimitive.vfp_fAmplitude);
+           strDescription.PrintF( "%s, Displ.: \"%s\", Amp. %g", static_cast<const char*>(strDescription),
+             static_cast<const char*>((CTString&)(itPrim->vfp_fnDisplacement.FileName()+
+             itPrim->vfp_fnDisplacement.FileExt())),
+             itPrim->vfp_fAmplitude);
          }
          else
          {
-           strDescription.PrintF( "%s, No displacement picture", strDescription);
+           strDescription.PrintF( "%s, No displacement picture", static_cast<const char*>(strDescription));
          }
         break;
       }
@@ -582,15 +582,15 @@ BOOL CDlgPgPrimitive::OnInitDialog()
     }
     CTString strPosition;
     strPosition.PrintF(", Pos(%g,%g,%g), Ang(%g,%g,%g)",
-          itPrim->pihb_vfpPrimitive.vfp_plPrimitive.pl_PositionVector(1),
-          itPrim->pihb_vfpPrimitive.vfp_plPrimitive.pl_PositionVector(2),
-          itPrim->pihb_vfpPrimitive.vfp_plPrimitive.pl_PositionVector(3),
-          DegAngle( itPrim->pihb_vfpPrimitive.vfp_plPrimitive.pl_OrientationAngle(1)),
-          DegAngle( itPrim->pihb_vfpPrimitive.vfp_plPrimitive.pl_OrientationAngle(2)),
-          DegAngle( itPrim->pihb_vfpPrimitive.vfp_plPrimitive.pl_OrientationAngle(3)));
+          itPrim->vfp_plPrimitive.pl_PositionVector(1),
+          itPrim->vfp_plPrimitive.pl_PositionVector(2),
+          itPrim->vfp_plPrimitive.pl_PositionVector(3),
+          DegAngle( itPrim->vfp_plPrimitive.pl_OrientationAngle(1)),
+          DegAngle( itPrim->vfp_plPrimitive.pl_OrientationAngle(2)),
+          DegAngle( itPrim->vfp_plPrimitive.pl_OrientationAngle(3)));
 
     CTString strTriangularisation;
-    switch( itPrim->pihb_vfpPrimitive.vfp_ttTriangularisationType)
+    switch( itPrim->vfp_ttTriangularisationType)
     {
     case TT_NONE: strTriangularisation = ""; break;
     case TT_CENTER_VERTEX: strTriangularisation = ", Triang:Center"; break;
@@ -612,12 +612,12 @@ BOOL CDlgPgPrimitive::OnInitDialog()
     case TT_FROM_VTX15: strTriangularisation = ", Triang:Vtx15"; break;
     }
 
-    INDEX iAddedAs = m_comboPrimitiveHistory.AddString(CString(
-      strNo+strDescription+strPosition+strTriangularisation));
-    m_comboPrimitiveHistory.SetItemData( iAddedAs, (ULONG) &itPrim->pihb_vfpPrimitive);
+    INDEX iAddedAs = m_comboPrimitiveHistory.AddString(CString(static_cast<const char*>(
+      strNo+strDescription+strPosition+strTriangularisation)));
+    m_comboPrimitiveHistory.SetItemData( iAddedAs, (ULONG) itPrim.get());
     iCt++;
   }
-	return TRUE;
+  return TRUE;
 }
 
 void CDlgPgPrimitive::OnAutoCreateMipBrushes()
@@ -675,11 +675,11 @@ void CDlgPgPrimitive::OnSelchangePrimitiveHistory()
   if( iSelected == CB_ERR) return;
   INDEX iCurrent = 0;
   // write history primitives list
-  FOREACHINLIST( CPrimitiveInHistoryBuffer, pihb_lnNode, theApp.m_lhPrimitiveHistory, itPrim)
+  for (auto& itPrim : theApp.m_lhPrimitiveHistory)
   {
-    if( iCurrent == iSelected)
+    if (iCurrent == iSelected)
     {
-      theApp.m_vfpCurrent = itPrim->pihb_vfpPrimitive;
+      theApp.m_vfpCurrent = *itPrim;
       break;
     }
     iCurrent++;
@@ -741,9 +741,9 @@ void CDlgPgPrimitive::OnContextMenu(CWnd* pWnd, CPoint point)
   CMenu menu;
   if( menu.LoadMenu(IDR_PRIMITIVE_SETTINGS))
   {
-		CMenu* pPopup = menu.GetSubMenu(0);
+    CMenu* pPopup = menu.GetSubMenu(0);
     pPopup->TrackPopupMenu(TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_LEFTALIGN,
-								 point.x, point.y, this);
+                 point.x, point.y, this);
   }
 }
 

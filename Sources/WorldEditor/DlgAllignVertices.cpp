@@ -32,29 +32,29 @@ static char THIS_FILE[] = __FILE__;
 
 
 CDlgAllignVertices::CDlgAllignVertices(CWnd* pParent /*=NULL*/)
-	: CDialog(CDlgAllignVertices::IDD, pParent)
+  : CDialog(CDlgAllignVertices::IDD, pParent)
 {
-	//{{AFX_DATA_INIT(CDlgAllignVertices)
-		// NOTE: the ClassWizard will add member initialization here
-	//}}AFX_DATA_INIT
+  //{{AFX_DATA_INIT(CDlgAllignVertices)
+    // NOTE: the ClassWizard will add member initialization here
+  //}}AFX_DATA_INIT
 }
 
 
 void CDlgAllignVertices::DoDataExchange(CDataExchange* pDX)
 {
-	CDialog::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CDlgAllignVertices)
-		// NOTE: the ClassWizard will add DDX and DDV calls here
-	//}}AFX_DATA_MAP
+  CDialog::DoDataExchange(pDX);
+  //{{AFX_DATA_MAP(CDlgAllignVertices)
+    // NOTE: the ClassWizard will add DDX and DDV calls here
+  //}}AFX_DATA_MAP
 }
 
 
 BEGIN_MESSAGE_MAP(CDlgAllignVertices, CDialog)
-	//{{AFX_MSG_MAP(CDlgAllignVertices)
-	ON_BN_CLICKED(IDC_ALLIGN_X, OnAllignX)
-	ON_BN_CLICKED(IDC_ALLIGN_Y, OnAllignY)
-	ON_BN_CLICKED(IDC_ALLIGN_Z, OnAllignZ)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CDlgAllignVertices)
+  ON_BN_CLICKED(IDC_ALLIGN_X, OnAllignX)
+  ON_BN_CLICKED(IDC_ALLIGN_Y, OnAllignY)
+  ON_BN_CLICKED(IDC_ALLIGN_Z, OnAllignZ)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -130,11 +130,11 @@ void CDlgAllignVertices::OnAllignZ()
 
 BOOL CDlgAllignVertices::PreTranslateMessage(MSG* pMsg) 
 {
-	if(pMsg->message==WM_KEYDOWN)
+  if(pMsg->message==WM_KEYDOWN)
   {
     if( pMsg->wParam=='X') OnAllignX();
     if( pMsg->wParam=='Y') OnAllignY();
     if( pMsg->wParam=='Z') OnAllignZ();
   }
-	return CDialog::PreTranslateMessage(pMsg);
+  return CDialog::PreTranslateMessage(pMsg);
 }

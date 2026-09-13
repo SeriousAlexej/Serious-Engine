@@ -43,9 +43,9 @@ void CCtrlEditBoolean::SetDialogPtr( CWnd *pDialog)
 }
 
 BEGIN_MESSAGE_MAP(CCtrlEditBoolean, CButton)
-	//{{AFX_MSG_MAP(CCtrlEditBoolean)
-	ON_CONTROL_REFLECT(BN_CLICKED, OnClicked)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CCtrlEditBoolean)
+  ON_CONTROL_REFLECT(BN_CLICKED, OnClicked)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -65,5 +65,5 @@ void CCtrlEditBoolean::OnClicked()
   // mark that document is changed
   theApp.GetDocument()->SetModifiedFlag( TRUE);
   // update dialog data (to reflect data change)
-	m_pDialog->UpdateData( TRUE);
+  m_pDialog->UpdateData( TRUE);
 }

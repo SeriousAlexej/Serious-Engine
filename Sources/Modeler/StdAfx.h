@@ -18,12 +18,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 //      are changed infrequently
 //
 
-#define VC_EXTRALEAN		// Exclude rarely-used stuff from Windows headers
+#define VC_EXTRALEAN    // Exclude rarely-used stuff from Windows headers
 
 #include <afxwin.h>         // MFC core and standard components
 #include <afxext.h>         // MFC extensions
 #ifndef _AFX_NO_AFXCMN_SUPPORT
-#include <afxcmn.h>			// MFC support for Windows Common Controls
+#include <afxcmn.h>      // MFC support for Windows Common Controls
 #endif // _AFX_NO_AFXCMN_SUPPORT
 
 #include <htmlhelp.h>
@@ -33,5 +33,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define ENGINE_INTERNAL 1
 #include <EngineGUI/EngineGUI.h>
 #include "Modeler.h"
+
+struct FLOAT2DHasher
+{
+  size_t operator()(const FLOAT2D& v) const
+  {
+    size_t result = std::hash<FLOAT>()(v(1));
+    HashCombine<FLOAT>(result, v(2));
+    return result;
+  }
+};
 
 #pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='x86' publicKeyToken='6595b64144ccf1df' language='*'\"")

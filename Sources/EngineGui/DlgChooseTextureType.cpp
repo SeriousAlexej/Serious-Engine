@@ -31,29 +31,29 @@ static char THIS_FILE[] = __FILE__;
 
 
 CDlgChooseTextureType::CDlgChooseTextureType(CWnd* pParent /*=NULL*/)
-	: CDialog(CDlgChooseTextureType::IDD, pParent)
+  : CDialog(CDlgChooseTextureType::IDD, pParent)
 {
-	//{{AFX_DATA_INIT(CDlgChooseTextureType)
-		// NOTE: the ClassWizard will add member initialization here
-	//}}AFX_DATA_INIT
+  //{{AFX_DATA_INIT(CDlgChooseTextureType)
+    // NOTE: the ClassWizard will add member initialization here
+  //}}AFX_DATA_INIT
 }
 
 
 void CDlgChooseTextureType::DoDataExchange(CDataExchange* pDX)
 {
-	CDialog::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CDlgChooseTextureType)
-		// NOTE: the ClassWizard will add DDX and DDV calls here
-	//}}AFX_DATA_MAP
+  CDialog::DoDataExchange(pDX);
+  //{{AFX_DATA_MAP(CDlgChooseTextureType)
+    // NOTE: the ClassWizard will add DDX and DDV calls here
+  //}}AFX_DATA_MAP
 }
 
 
 BEGIN_MESSAGE_MAP(CDlgChooseTextureType, CDialog)
-	//{{AFX_MSG_MAP(CDlgChooseTextureType)
-	ON_BN_CLICKED(ID_ANIMATED_TEXTURE, OnAnimatedTexture)
-	ON_BN_CLICKED(ID_EFFECT_TEXTURE, OnEffectTexture)
-	ON_BN_CLICKED(ID_NORMAL_TEXTURE, OnNormalTexture)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CDlgChooseTextureType)
+  ON_BN_CLICKED(ID_ANIMATED_TEXTURE, OnAnimatedTexture)
+  ON_BN_CLICKED(ID_EFFECT_TEXTURE, OnEffectTexture)
+  ON_BN_CLICKED(ID_NORMAL_TEXTURE, OnNormalTexture)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////

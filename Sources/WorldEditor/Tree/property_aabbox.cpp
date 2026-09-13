@@ -104,7 +104,7 @@ public:
     appendChild(std::make_unique<AABBox_SubItem>(this, "Z"));
 
     QObject::connect(&EventHub::instance(), &EventHub::PropertyChanged, this,
-      [this](const std::set<CEntity*>&, CPropertyID*, BasePropertyTreeItem* source)
+      [this](const std::set<CEntity_*>&, CPropertyID*, BasePropertyTreeItem* source)
       {
         if (source == this && !ValueIsCommonForAllEntities())
         {
@@ -155,7 +155,7 @@ private:
   SpinBoxNoTrailing* _CreateSubSpinbox(QWidget* parent)
   {
     auto* spinbox = new SpinBoxNoTrailing(parent);
-    spinbox->setRange(-99999999, 99999999);
+    spinbox->setRange(-FLT_MAX, FLT_MAX);
     spinbox->setDecimals(4);
     spinbox->setSingleStep(0.25);
     spinbox->setSuffix(" m");

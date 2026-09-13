@@ -35,12 +35,12 @@ enum ModeID {
 
 class CInfoSheet : public CPropertySheet
 {
-	DECLARE_DYNAMIC(CInfoSheet)
+  DECLARE_DYNAMIC(CInfoSheet)
 
 // Construction
 public:
-	CInfoSheet(CWnd* pWndParent);
-	BOOL OnIdle(LONG lCount);
+  CInfoSheet(CWnd* pWndParent);
+  BOOL OnIdle(LONG lCount);
   // functions for dealing with pages
   void DeleteAllPages();
   void SetInfoModeGlobal(void);
@@ -52,7 +52,7 @@ public:
   void SoftSetActivePage( INDEX iActivePage);
 // Attributes
 public:
-	ModeID m_ModeID;
+  ModeID m_ModeID;
   CDlgPgGlobal m_PgGlobal;
   CDlgPgTerrain m_PgTerrain;
   CDlgPgPosition m_PgPosition;
@@ -67,24 +67,24 @@ public:
 public:
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CInfoSheet)
-	public:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);
-	virtual void PostNcDestroy();
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CInfoSheet)
+  public:
+  virtual BOOL PreTranslateMessage(MSG* pMsg);
+  protected:
+  virtual void DoDataExchange(CDataExchange* pDX);
+  virtual void PostNcDestroy();
+  //}}AFX_VIRTUAL
 
 // Implementation
 public:
-	virtual ~CInfoSheet();
+  virtual ~CInfoSheet();
 
-	// Generated message map functions
+  // Generated message map functions
 protected:
-	//{{AFX_MSG(CInfoSheet)
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+  //{{AFX_MSG(CInfoSheet)
+  //}}AFX_MSG
+  DECLARE_MESSAGE_MAP()
 };
 
 /////////////////////////////////////////////////////////////////////////////

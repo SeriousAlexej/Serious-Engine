@@ -23,42 +23,42 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class CDlgPgGlobal : public CPropertyPage
 {
-	DECLARE_DYNCREATE(CDlgPgGlobal)
+  DECLARE_DYNCREATE(CDlgPgGlobal)
 
 // Construction
 public:
-	CDlgPgGlobal();
-	~CDlgPgGlobal();
+  CDlgPgGlobal();
+  ~CDlgPgGlobal();
   BOOL OnIdle(LONG lCount);
-	CActiveTextureWnd	m_wndActiveTexture;
+  CActiveTextureWnd  m_wndActiveTexture;
 
   CUpdateableRT m_udSelectionCounts;
 
 // Dialog Data
-	//{{AFX_DATA(CDlgPgGlobal)
-	enum { IDD = IDD_PG_GLOBAL };
-	CString	m_strTextureInfo;
-	CString	m_strSelectedEntitiesCt;
-	CString	m_strSelectedPolygonsCt;
-	CString	m_strSelectedSectorsCt;
-	//}}AFX_DATA
+  //{{AFX_DATA(CDlgPgGlobal)
+  enum { IDD = IDD_PG_GLOBAL };
+  CString  m_strTextureInfo;
+  CString  m_strSelectedEntitiesCt;
+  CString  m_strSelectedPolygonsCt;
+  CString  m_strSelectedSectorsCt;
+  //}}AFX_DATA
 
 
 // Overrides
-	// ClassWizard generate virtual function overrides
-	//{{AFX_VIRTUAL(CDlgPgGlobal)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
+  // ClassWizard generate virtual function overrides
+  //{{AFX_VIRTUAL(CDlgPgGlobal)
+  protected:
+  virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+  //}}AFX_VIRTUAL
 
 // Implementation
 protected:
-	// Generated message map functions
-	//{{AFX_MSG(CDlgPgGlobal)
-	virtual BOOL OnInitDialog();
-	afx_msg void OnDropFiles(HDROP hDropInfo);
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+  // Generated message map functions
+  //{{AFX_MSG(CDlgPgGlobal)
+  virtual BOOL OnInitDialog();
+  afx_msg void OnDropFiles(HDROP hDropInfo);
+  //}}AFX_MSG
+  DECLARE_MESSAGE_MAP()
 
 };
 #endif // DLGPGGLOBAL_H

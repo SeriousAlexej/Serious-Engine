@@ -17,6 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 //
 
 #include "stdafx.h"
+#include <SeriousEngineCAPI/Base/Memory.h>
 
 #ifdef _DEBUG
 #undef new
@@ -111,11 +112,11 @@ BOOL PlaneRayIntersection(
 }
 
 CDlgCreateReflectionTexture::CDlgCreateReflectionTexture(CWnd* pParent /*=NULL*/)
-	: CDialog(CDlgCreateReflectionTexture::IDD, pParent)
+  : CDialog(CDlgCreateReflectionTexture::IDD, pParent)
 {
-	//{{AFX_DATA_INIT(CDlgCreateReflectionTexture)
-	m_bAutoRotate = FALSE;
-	//}}AFX_DATA_INIT
+  //{{AFX_DATA_INIT(CDlgCreateReflectionTexture)
+  m_bAutoRotate = FALSE;
+  //}}AFX_DATA_INIT
 
   m_bAutoRotate = TRUE;
   m_colorReflection.m_pwndParentDialog = this;
@@ -123,10 +124,6 @@ CDlgCreateReflectionTexture::CDlgCreateReflectionTexture(CWnd* pParent /*=NULL*/
   m_colorAmbient.m_pwndParentDialog = this;
 
   m_colorAmbient.SetColor( 0x030303FF);
-  for (INDEX iwin=0; iwin<7; iwin++) {
-    m_apdp[iwin] = NULL;
-    m_apvp[iwin] = NULL;
-  }
   
   m_bCustomWindowsCreated = FALSE;
 
@@ -140,19 +137,19 @@ CDlgCreateReflectionTexture::CDlgCreateReflectionTexture(CWnd* pParent /*=NULL*/
 
 void CDlgCreateReflectionTexture::DoDataExchange(CDataExchange* pDX)
 {
-	CDialog::DoDataExchange(pDX);
+  CDialog::DoDataExchange(pDX);
 
   if( !pDX->m_bSaveAndValidate)
   {
   }
 
-	//{{AFX_DATA_MAP(CDlgCreateReflectionTexture)
-	DDX_Control(pDX, IDC_SIZE_IN_PIXELS, m_comboSizeInPixels);
-	DDX_Control(pDX, IDC_REFLECTION_COLOR, m_colorReflection);
-	DDX_Control(pDX, IDC_LIGHT_COLOR, m_colorLight);
-	DDX_Control(pDX, IDC_AMBIENT_COLOR, m_colorAmbient);
-	DDX_Check(pDX, IDC_AUTO_ROTATE, m_bAutoRotate);
-	//}}AFX_DATA_MAP
+  //{{AFX_DATA_MAP(CDlgCreateReflectionTexture)
+  DDX_Control(pDX, IDC_SIZE_IN_PIXELS, m_comboSizeInPixels);
+  DDX_Control(pDX, IDC_REFLECTION_COLOR, m_colorReflection);
+  DDX_Control(pDX, IDC_LIGHT_COLOR, m_colorLight);
+  DDX_Control(pDX, IDC_AMBIENT_COLOR, m_colorAmbient);
+  DDX_Check(pDX, IDC_AUTO_ROTATE, m_bAutoRotate);
+  //}}AFX_DATA_MAP
 
   if( pDX->m_bSaveAndValidate)
   { 
@@ -160,9 +157,9 @@ void CDlgCreateReflectionTexture::DoDataExchange(CDataExchange* pDX)
     _bTimerEnabled = FALSE;
     try {
       CreateReflectionTexture_t( CTString("temp\\ReflectionTemp.tex"));
-      CTextureData *pTD = (CTextureData *) m_moModel.mo_toReflection.GetData();
-      if( pTD != NULL) pTD->Reload();
-    } catch( char *strError) { 
+      auto pTD = m_moModel.mo_toReflection.GetData();
+      if (pTD) pTD->Reload();
+    } catch( char *strError) {
       WarningMessage( strError);
     }
     _bTimerEnabled = TRUE;
@@ -172,13 +169,13 @@ void CDlgCreateReflectionTexture::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CDlgCreateReflectionTexture, CDialog)
-	//{{AFX_MSG_MAP(CDlgCreateReflectionTexture)
-	ON_WM_PAINT()
-	ON_WM_TIMER()
-	ON_WM_DESTROY()
-	ON_BN_CLICKED(IDC_AUTO_ROTATE, OnAutoRotate)
-	ON_CBN_SELCHANGE(IDC_SIZE_IN_PIXELS, OnSelchangeSizeInPixels)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CDlgCreateReflectionTexture)
+  ON_WM_PAINT()
+  ON_WM_TIMER()
+  ON_WM_DESTROY()
+  ON_BN_CLICKED(IDC_AUTO_ROTATE, OnAutoRotate)
+  ON_CBN_SELCHANGE(IDC_SIZE_IN_PIXELS, OnSelchangeSizeInPixels)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -191,7 +188,7 @@ void CDlgCreateReflectionTexture::CreateReflectionTexture_t( CTFileName fnTextur
   PIX pixSize = 1UL<<(iSelectedSize+1);
   PIX pixSizeU = pixSize;
   PIX pixSizeV = pixSize;
-  UBYTE *pubImage = (UBYTE *)AllocMemory(pixSize*pixSize*3);
+  UBYTE *pubImage = (UBYTE *)AllocMemory_(pixSize*pixSize*3);
 
   CTFileName fnN = m_strBase+"N"+m_strExt;
   CTFileName fnS = m_strBase+"S"+m_strExt;
@@ -219,12 +216,12 @@ void CDlgCreateReflectionTexture::CreateReflectionTexture_t( CTFileName fnTextur
   BOOL bSucesseful = TRUE;
   try
   {
-    iiN.LoadAnyGfxFormat_t(fnN);
-    iiS.LoadAnyGfxFormat_t(fnS);
-    iiE.LoadAnyGfxFormat_t(fnE);
-    iiW.LoadAnyGfxFormat_t(fnW);
-    iiF.LoadAnyGfxFormat_t(fnF);
-    iiC.LoadAnyGfxFormat_t(fnC);
+    _EngineGUI.LoadAnyGfxFormat_t(iiN, fnN);
+    _EngineGUI.LoadAnyGfxFormat_t(iiS, fnS);
+    _EngineGUI.LoadAnyGfxFormat_t(iiE, fnE);
+    _EngineGUI.LoadAnyGfxFormat_t(iiW, fnW);
+    _EngineGUI.LoadAnyGfxFormat_t(iiF, fnF);
+    _EngineGUI.LoadAnyGfxFormat_t(iiC, fnC);
   }
   catch( char *strError)
   {
@@ -262,7 +259,7 @@ void CDlgCreateReflectionTexture::CreateReflectionTexture_t( CTFileName fnTextur
         fX/=fLen;
         fY/=fLen;
         fZ/=fLen;
-        Swap(fZ, fY);
+        std::swap(fZ, fY);
 
         UBYTE (*paub)[256][256][3] = NULL;
         FLOAT fU, fV, fL, fBestU, fBestV, fBestL;
@@ -350,7 +347,7 @@ void CDlgCreateReflectionTexture::CreateReflectionTexture_t( CTFileName fnTextur
     CTFileStream fsFile;
     CTextureData td;
     iiEnv.SaveTGA_t( fnEnv.NoExt()+".tga");
-    td.Create_t( &iiEnv, pixSize, 1, FALSE);
+    td.Create_t( iiEnv, pixSize, 1, FALSE);
     fsFile.Create_t(fnEnv);
     td.Write_t( &fsFile);
     fsFile.Close();
@@ -362,15 +359,15 @@ void CDlgCreateReflectionTexture::CreateReflectionTexture_t( CTFileName fnTextur
   }
   iiEnv.Detach();
   
-  FreeMemory(pubImage);
+  FreeMemory_(pubImage);
 }
 
-void CDlgCreateReflectionTexture::DrawPreview( CDrawPort *pdp)
+void CDlgCreateReflectionTexture::DrawPreview( CDrawPortPtr pdp)
 {
   BOOL bErrorOcured = FALSE;
   
-  if( (m_moModel.GetData() == NULL) || (m_moModel.mo_toTexture.GetData() == NULL) ||
-      (m_moModel.mo_toReflection.GetData() == NULL) )
+  if( (!m_moModel.GetData()) || (!m_moModel.mo_toTexture.GetData()) ||
+      (!m_moModel.mo_toReflection.GetData()) )
   // obtain components for rendering
   try
   {
@@ -390,12 +387,12 @@ void CDlgCreateReflectionTexture::DrawPreview( CDrawPort *pdp)
 
   if( !bErrorOcured)
   {
-    ((CModelData*)m_moModel.GetData())->md_colReflections = m_colorReflection.GetColor();
+    m_moModel.GetData()->md_colReflections = m_colorReflection.GetColor();
     PIXaabbox2D screenBox = PIXaabbox2D( PIX2D(0,0), PIX2D(pdp->GetWidth(), pdp->GetHeight()) );
     //pdp->PutTexture( &m_moModel.mo_toReflection, screenBox);
     //return;
-    if( m_toBackground.GetData() != NULL) {
-      pdp->PutTexture( &m_toBackground, screenBox);
+    if( m_toBackground.GetData()) {
+      pdp->PutTexture( m_toBackground, screenBox);
     } else {
       pdp->Fill( C_BLACK|CT_OPAQUE);
     }
@@ -436,35 +433,35 @@ void CDlgCreateReflectionTexture::DrawPreview( CDrawPort *pdp)
 
 void CDlgCreateReflectionTexture::PutPicture(CWnd &wnd, CTextureObject &to, INDEX iwin)
 {
-  CDrawPort *&pdp = m_apdp[iwin];
-  CViewPort *&pvp = m_apvp[iwin];
-  if (pvp==NULL) {
-    _pGfx->CreateWindowCanvas( wnd.m_hWnd, &pvp, &pdp);
+  CDrawPortPtr& pdp = m_apdp[iwin];
+  CViewPortPtr& pvp = m_apvp[iwin];
+  if (!pvp) {
+    _pGfx_CreateWindowCanvas( wnd.m_hWnd, pvp, pdp);
   }
-  if( (pdp != NULL) && (pdp->Lock()) ) {
-    if( to.GetData()!= NULL) {
+  if( pdp && (pdp->Lock()) ) {
+    if( to.GetData()) {
       PIXaabbox2D screenBox = PIXaabbox2D( PIX2D(0,0), PIX2D(pdp->GetWidth(), pdp->GetHeight()) );
-      pdp->PutTexture( &to, screenBox);
+      pdp->PutTexture( to, screenBox);
     } else {
       pdp->Fill( C_BLACK|CT_OPAQUE);
     }
     pdp->Unlock();
   }
-  if (pvp!=NULL)    pvp->SwapBuffers();
+  if (pvp)    pvp->SwapBuffers();
 }
 
 void CDlgCreateReflectionTexture::RenderPreview(void) 
 {
   // ******** Render preview window
-  CDrawPort *&pdp = m_apdp[0];
-  CViewPort *&pvp = m_apvp[0];
-  if (pvp==NULL) _pGfx->CreateWindowCanvas( m_wndPreview.m_hWnd, &pvp, &pdp);
-  if( (pdp != NULL) && (pdp->Lock()) )
+  CDrawPortPtr& pdp = m_apdp[0];
+  CViewPortPtr& pvp = m_apvp[0];
+  if (!pvp) _pGfx_CreateWindowCanvas( m_wndPreview.m_hWnd, pvp, pdp);
+  if( pdp && (pdp->Lock()) )
   {
     DrawPreview( pdp);
     pdp->Unlock();
   }
-  if (pvp!=NULL) pvp->SwapBuffers();
+  if (pvp) pvp->SwapBuffers();
 
   PutPicture(m_wndN, m_toN, 1);
   PutPicture(m_wndE, m_toE, 2);
@@ -481,7 +478,7 @@ void CDlgCreateReflectionTexture::RenderPreview(void)
   wnd.Create( NULL, NULL, WS_BORDER|WS_VISIBLE, rectWnd, this, IDW);
 void CDlgCreateReflectionTexture::OnPaint() 
 {
-	CPaintDC dc(this); // device context for painting
+  CPaintDC dc(this); // device context for painting
 
   if( m_iTimerID == -1)
   {
@@ -510,42 +507,42 @@ void CDlgCreateReflectionTexture::OnPaint()
 
 BOOL CDlgCreateReflectionTexture::OnInitDialog() 
 {
-	CDialog::OnInitDialog();
-	
+  CDialog::OnInitDialog();
+  
   if(::IsWindow( m_comboSizeInPixels.m_hWnd))
   {
     m_comboSizeInPixels.SetCurSel( 6);
   }
   UpdateData( TRUE);
-	return TRUE;
+  return TRUE;
 }
 
 void CDlgCreateReflectionTexture::OnTimer(UINT nIDEvent) 
 {
-	// on our timer discard preview window
+  // on our timer discard preview window
   if( nIDEvent == 1 && _bTimerEnabled)
   {
-    TIME timeCurrentTick = _pTimer->GetRealTimeTick();
+    TIME timeCurrentTick = _pTimer_GetRealTimeTick();
     if( timeCurrentTick > timeLastTick )
     {
-      _pTimer->SetCurrentTick( timeCurrentTick);
+      _pTimer_SetCurrentTick( timeCurrentTick);
       timeLastTick = timeCurrentTick;
     }
-    RenderPreview();	
+    RenderPreview();  
   }
 
-	CDialog::OnTimer(nIDEvent);
+  CDialog::OnTimer(nIDEvent);
 }
 
 void CDlgCreateReflectionTexture::OnDestroy() 
 {
   for (INDEX iwin=0; iwin<7; iwin++) {
-    if( m_apvp[iwin]!=NULL) _pGfx->DestroyWindowCanvas( m_apvp[iwin]);
+    if( m_apvp[iwin]) _pGfx_DestroyWindowCanvas( m_apvp[iwin]);
   }
 
   KillTimer( m_iTimerID);
-  _pTimer->SetCurrentTick( 0.0f);
-	CDialog::OnDestroy();
+  _pTimer_SetCurrentTick( 0.0f);
+  CDialog::OnDestroy();
 }
 
 void CDlgCreateReflectionTexture::OnAutoRotate() 
@@ -580,12 +577,12 @@ void CDlgCreateReflectionTexture::AutoSetTextures( CTFileName fnFile)
 
   try
   {
-    CreateTexture_t( m_strBase+"N"+m_strExt, CTString("Temp\\TempN.tex"), 256, 15, FALSE);
-    CreateTexture_t( m_strBase+"E"+m_strExt, CTString("Temp\\TempE.tex"), 256, 15, FALSE);
-    CreateTexture_t( m_strBase+"S"+m_strExt, CTString("Temp\\TempS.tex"), 256, 15, FALSE);
-    CreateTexture_t( m_strBase+"W"+m_strExt, CTString("Temp\\TempW.tex"), 256, 15, FALSE);
-    CreateTexture_t( m_strBase+"C"+m_strExt, CTString("Temp\\TempC.tex"), 256, 15, FALSE);
-    CreateTexture_t( m_strBase+"F"+m_strExt, CTString("Temp\\TempF.tex"), 256, 15, FALSE);
+    _EngineGUI.CreateTexture_t( m_strBase+"N"+m_strExt, CTString("Temp\\TempN.tex"), 256, 15, FALSE);
+    _EngineGUI.CreateTexture_t( m_strBase+"E"+m_strExt, CTString("Temp\\TempE.tex"), 256, 15, FALSE);
+    _EngineGUI.CreateTexture_t( m_strBase+"S"+m_strExt, CTString("Temp\\TempS.tex"), 256, 15, FALSE);
+    _EngineGUI.CreateTexture_t( m_strBase+"W"+m_strExt, CTString("Temp\\TempW.tex"), 256, 15, FALSE);
+    _EngineGUI.CreateTexture_t( m_strBase+"C"+m_strExt, CTString("Temp\\TempC.tex"), 256, 15, FALSE);
+    _EngineGUI.CreateTexture_t( m_strBase+"F"+m_strExt, CTString("Temp\\TempF.tex"), 256, 15, FALSE);
 
     m_toN.SetData_t( CTString("Temp\\TempN.tex"));
     m_toE.SetData_t( CTString("Temp\\TempE.tex"));
@@ -660,9 +657,9 @@ BOOL CDlgCreateReflectionTexture::PreTranslateMessage(MSG* pMsg)
   pWnd->ClientToScreen( &rectWnd);\
   if( rectWnd.PtInRect( pointScreen)) {\
   try {\
-    if( to.GetName() == m_toBackground.GetName()){\
+    if( *to.GetName() == *m_toBackground.GetName()){\
       m_toBackground.SetData_t( fnBCGTexture);\
-    } else { m_toBackground.SetData_t( to.GetName());};\
+    } else { m_toBackground.SetData_t( *to.GetName());};\
   } catch( char *strError) { (void) strError;};};
 
   if( pMsg->message == WM_LBUTTONUP)
@@ -706,5 +703,5 @@ void CDlgCreateReflectionTexture::OnOK()
     CopyFileA( fnTemp, _fnmApplicationPath+fnFinal, FALSE);
   }
 
-	CDialog::OnOK();
+  CDialog::OnOK();
 }

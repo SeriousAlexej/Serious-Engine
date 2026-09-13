@@ -32,18 +32,18 @@ IMPLEMENT_DYNCREATE(CDlgInfoPgRendering, CPropertyPage)
 
 CDlgInfoPgRendering::CDlgInfoPgRendering() : CPropertyPage(CDlgInfoPgRendering::IDD)
 {
-	//{{AFX_DATA_INIT(CDlgInfoPgRendering)
-	m_strMipModel = _T("");
-	m_strSurfaceName = _T("");
-	//}}AFX_DATA_INIT
+  //{{AFX_DATA_INIT(CDlgInfoPgRendering)
+  m_strMipModel = _T("");
+  m_strSurfaceName = _T("");
+  //}}AFX_DATA_INIT
   
-	m_IsDoubleSided.SetDialogPtr( this);
-	m_IsInvisible.SetDialogPtr( this);
-	m_IsDiffuse.SetDialogPtr( this);
-	m_IsReflections.SetDialogPtr( this);
-	m_IsSpecular.SetDialogPtr( this);
-	m_IsBump.SetDialogPtr( this);
-	m_IsDetail.SetDialogPtr( this);
+  m_IsDoubleSided.SetDialogPtr( this);
+  m_IsInvisible.SetDialogPtr( this);
+  m_IsDiffuse.SetDialogPtr( this);
+  m_IsReflections.SetDialogPtr( this);
+  m_IsSpecular.SetDialogPtr( this);
+  m_IsBump.SetDialogPtr( this);
+  m_IsDetail.SetDialogPtr( this);
 
   m_colorDiffuse.m_pwndParentDialog = this;
   m_colorBump.m_pwndParentDialog = this;
@@ -58,7 +58,7 @@ CDlgInfoPgRendering::~CDlgInfoPgRendering()
 
 void CDlgInfoPgRendering::DoDataExchange(CDataExchange* pDX)
 {
-	CPropertyPage::DoDataExchange(pDX);
+  CPropertyPage::DoDataExchange(pDX);
   
   CModelerDoc* pDoc = theApp.GetDocument();
   if( pDoc == NULL) return;
@@ -90,7 +90,8 @@ void CDlgInfoPgRendering::DoDataExchange(CDataExchange* pDX)
     ModelMipInfo &mmi = pDoc->m_emEditModel.edm_md.md_MipInfos[ pDoc->m_iCurrentMip];
     for( INDEX iSurface=0; iSurface<mmi.mmpi_MappingSurfaces.Count(); iSurface++)
     {
-      MappingSurface &ms = mmi.mmpi_MappingSurfaces[ iSurface];
+      MappingSurfacePtr pms = mmi.mmpi_MappingSurfaces[ iSurface];
+      MappingSurface& ms = *pms;
       // skip non selected surfaces
       if( !(ms.ms_ulRenderingFlags&SRF_SELECTED)) continue;
       strFirstName = ms.ms_Name;
@@ -120,7 +121,7 @@ void CDlgInfoPgRendering::DoDataExchange(CDataExchange* pDX)
       if( sstFirstShading != ms.ms_sstShadingType) bSameShading = FALSE;
       if( sttFirstTranslucency != ms.ms_sttTranslucencyType) bSameTranslucency = FALSE;
     }
-	  
+    
     if( bSameDiffuse) m_colorDiffuse.SetColor( colFirstDiffuse);
     else m_colorDiffuse.SetMixedColor();
     if( bSameReflections) m_colorReflections.SetColor( colFirstReflections);
@@ -133,7 +134,7 @@ void CDlgInfoPgRendering::DoDataExchange(CDataExchange* pDX)
     CTString strText;
     if( ctSelectedSurfaces == 0) strText = "No surfaces selected";
     else if( ctSelectedSurfaces > 1) strText.PrintF( "%d surfaces selected", ctSelectedSurfaces);
-    else strText.PrintF( "Surface: %s", strFirstName);
+    else strText.PrintF( "Surface: %s", static_cast<const char*>(strFirstName));
     m_strSurfaceName = strText;
 
     strText.PrintF( "Mip: %d", pDoc->m_iCurrentMip);
@@ -185,18 +186,18 @@ void CDlgInfoPgRendering::DoDataExchange(CDataExchange* pDX)
     m_comboShading.EnableWindow( bSelectionExists);
 
     m_IsDoubleSided.EnableWindow( bSelectionExists);
-	  m_IsInvisible.EnableWindow( bSelectionExists);
+    m_IsInvisible.EnableWindow( bSelectionExists);
     m_IsDiffuse.EnableWindow( bSelectionExists);
-	  m_IsReflections.EnableWindow( bSelectionExists);
-	  m_IsSpecular.EnableWindow( bSelectionExists);
-	  m_IsBump.EnableWindow( bSelectionExists);
-	  m_IsDetail.EnableWindow( bSelectionExists);
+    m_IsReflections.EnableWindow( bSelectionExists);
+    m_IsSpecular.EnableWindow( bSelectionExists);
+    m_IsBump.EnableWindow( bSelectionExists);
+    m_IsDetail.EnableWindow( bSelectionExists);
     
-	  m_colorSpecular.EnableWindow( bSelectionExists);
-	  m_colorReflections.EnableWindow( bSelectionExists);
-	  m_colorDiffuse.EnableWindow( bSelectionExists);
-	  m_colorBump.EnableWindow( bSelectionExists);
-	
+    m_colorSpecular.EnableWindow( bSelectionExists);
+    m_colorReflections.EnableWindow( bSelectionExists);
+    m_colorDiffuse.EnableWindow( bSelectionExists);
+    m_colorBump.EnableWindow( bSelectionExists);
+  
     GetDlgItem( IDC_TRANSLUCENCY)->EnableWindow( bSelectionExists);
     GetDlgItem( IDC_TRANSLUCENCY_T)->EnableWindow( bSelectionExists);
     GetDlgItem( IDC_MIP_MODEL)->EnableWindow( bSelectionExists);
@@ -212,23 +213,23 @@ void CDlgInfoPgRendering::DoDataExchange(CDataExchange* pDX)
     m_udAllValues.MarkUpdated();
   }
 
-	//{{AFX_DATA_MAP(CDlgInfoPgRendering)
-	DDX_Control(pDX, IDC_TRANSLUCENCY, m_comboTranslucency);
-	DDX_Control(pDX, IDC_SHADING, m_comboShading);
-	DDX_Control(pDX, IDC_SPECULAR_COLOR, m_colorSpecular);
-	DDX_Control(pDX, IDC_REFLECTION_COLOR, m_colorReflections);
-	DDX_Control(pDX, IDC_DIFUSE_COLOR, m_colorDiffuse);
-	DDX_Control(pDX, IDC_BUMP_COLOR, m_colorBump);
-	DDX_Text(pDX, IDC_MIP_MODEL, m_strMipModel);
-	DDX_Text(pDX, IDC_SURFACE_NAME, m_strSurfaceName);
+  //{{AFX_DATA_MAP(CDlgInfoPgRendering)
+  DDX_Control(pDX, IDC_TRANSLUCENCY, m_comboTranslucency);
+  DDX_Control(pDX, IDC_SHADING, m_comboShading);
+  DDX_Control(pDX, IDC_SPECULAR_COLOR, m_colorSpecular);
+  DDX_Control(pDX, IDC_REFLECTION_COLOR, m_colorReflections);
+  DDX_Control(pDX, IDC_DIFUSE_COLOR, m_colorDiffuse);
+  DDX_Control(pDX, IDC_BUMP_COLOR, m_colorBump);
+  DDX_Text(pDX, IDC_MIP_MODEL, m_strMipModel);
+  DDX_Text(pDX, IDC_SURFACE_NAME, m_strSurfaceName);
   DDX_Control(pDX, IDC_DOUBLE_SIDED, m_IsDoubleSided);
-	DDX_Control(pDX, IDC_INVISIBLE, m_IsInvisible);
-	DDX_Control(pDX, IDC_USE_DIFUSE, m_IsDiffuse);
-	DDX_Control(pDX, IDC_USE_REFLECTIVITY, m_IsReflections);
-	DDX_Control(pDX, IDC_USE_SPECULAR, m_IsSpecular);
-	DDX_Control(pDX, IDC_USE_BUMP, m_IsBump);
-	DDX_Control(pDX, IDC_DETAIL, m_IsDetail);
-	//}}AFX_DATA_MAP
+  DDX_Control(pDX, IDC_INVISIBLE, m_IsInvisible);
+  DDX_Control(pDX, IDC_USE_DIFUSE, m_IsDiffuse);
+  DDX_Control(pDX, IDC_USE_REFLECTIVITY, m_IsReflections);
+  DDX_Control(pDX, IDC_USE_SPECULAR, m_IsSpecular);
+  DDX_Control(pDX, IDC_USE_BUMP, m_IsBump);
+  DDX_Control(pDX, IDC_DETAIL, m_IsDetail);
+  //}}AFX_DATA_MAP
 
 // set flags back to surface
 #define TRI_STATE_CTRL_TO_FLAGS( ctrl, flag)\
@@ -246,7 +247,8 @@ void CDlgInfoPgRendering::DoDataExchange(CDataExchange* pDX)
     ModelMipInfo &mmi = pDoc->m_emEditModel.edm_md.md_MipInfos[ pDoc->m_iCurrentMip];
     for( INDEX iSurface=0; iSurface<mmi.mmpi_MappingSurfaces.Count(); iSurface++)
     {
-      MappingSurface &ms = mmi.mmpi_MappingSurfaces[ iSurface];
+      MappingSurfacePtr pms = mmi.mmpi_MappingSurfaces[ iSurface];
+      MappingSurface& ms = *pms;
       ULONG ulFlagsBefore = ms.ms_ulRenderingFlags;
       // skip non selected surfaces
       if( !(ms.ms_ulRenderingFlags&SRF_SELECTED)) continue;
@@ -307,11 +309,11 @@ void CDlgInfoPgRendering::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CDlgInfoPgRendering, CPropertyPage)
-	//{{AFX_MSG_MAP(CDlgInfoPgRendering)
-	ON_CBN_SELCHANGE(IDC_SHADING, OnSelchangeShading)
-	ON_CBN_SELCHANGE(IDC_TRANSLUCENCY, OnSelchangeTranslucency)
-	ON_BN_CLICKED(IDC_SELECT_ALL_SURFACES, OnSelectAllSurfaces)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CDlgInfoPgRendering)
+  ON_CBN_SELCHANGE(IDC_SHADING, OnSelchangeShading)
+  ON_CBN_SELCHANGE(IDC_TRANSLUCENCY, OnSelchangeTranslucency)
+  ON_BN_CLICKED(IDC_SELECT_ALL_SURFACES, OnSelectAllSurfaces)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -340,7 +342,7 @@ BOOL CDlgInfoPgRendering::PreTranslateMessage(MSG* pMsg)
 {
   CModelerDoc* pDoc = theApp.GetDocument();
   if( pDoc == NULL) return TRUE;
-	BOOL bShift = (GetKeyState( VK_SHIFT)&0x8000) != 0;
+  BOOL bShift = (GetKeyState( VK_SHIFT)&0x8000) != 0;
   
   if(pMsg->message==WM_KEYDOWN)
   {
@@ -357,7 +359,7 @@ BOOL CDlgInfoPgRendering::PreTranslateMessage(MSG* pMsg)
     }
   }
 
-	return CPropertyPage::PreTranslateMessage(pMsg);
+  return CPropertyPage::PreTranslateMessage(pMsg);
 }
 
 void CDlgInfoPgRendering::OnSelectAllSurfaces() 

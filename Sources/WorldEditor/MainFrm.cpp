@@ -20,10 +20,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "stdafx.h"
 #include "MainFrm.h"
 #include "EventHub.h"
-#include <Engine/Templates/Stock_CTextureData.h>
+#include "EditConsole.h"
+#include "ConsoleSymbolsCombo.h"
+#include "DlgConsole.h"
+#include <SeriousEngineCppAPI/Templates/Stock_CTextureData.h>
 #include <process.h>
+#include <afxpriv.h>
 
 #include <QFile>
+#include <QTimer>
 
 #ifdef _DEBUG
 #undef new
@@ -59,85 +64,87 @@ IMPLEMENT_DYNAMIC(CMainFrame, CMDIFrameWnd)
 BEGIN_MESSAGE_MAP(CMainFrame, CMDIFrameWnd)
   ON_COMMAND_EX(ID_VIEW_PROPERTY_TREE, OnBarCheck)
   ON_UPDATE_COMMAND_UI(ID_VIEW_PROPERTY_TREE, OnUpdateControlBarMenu)
-	ON_COMMAND_EX(ID_VIEW_PROPERTYCOMBO, OnBarCheck)
-	ON_UPDATE_COMMAND_UI(ID_VIEW_PROPERTYCOMBO, OnUpdateControlBarMenu)
-	ON_COMMAND_EX(ID_VIEW_BROWSEDIALOGBAR, OnBarCheck)
-	ON_UPDATE_COMMAND_UI(ID_VIEW_BROWSEDIALOGBAR, OnUpdateControlBarMenu)
-	//{{AFX_MSG_MAP(CMainFrame)
-	ON_WM_CREATE()
-	ON_COMMAND(ID_VIRTUAL_TREE, OnVirtualTree)
-	ON_WM_CLOSE()
-	ON_WM_CANCELMODE()
-	ON_WM_INITMENU()
-	ON_COMMAND(ID_VIEW_INFOWINDOW, OnViewInfowindow)
-	ON_UPDATE_COMMAND_UI(ID_VIEW_INFOWINDOW, OnUpdateViewInfowindow)
-	ON_COMMAND(ID_VIEW_CSGTOOLS, OnViewCsgtools)
-	ON_UPDATE_COMMAND_UI(ID_VIEW_CSGTOOLS, OnUpdateViewCsgtools)
-	ON_COMMAND(ID_VIEW_PROJECTIONS_BAR, OnViewProjectionsBar)
-	ON_UPDATE_COMMAND_UI(ID_VIEW_PROJECTIONS_BAR, OnUpdateViewProjectionsBar)
-	ON_COMMAND(ID_VIEW_WORK_BAR, OnViewWorkBar)
-	ON_UPDATE_COMMAND_UI(ID_VIEW_WORK_BAR, OnUpdateViewWorkBar)
-	ON_WM_ACTIVATEAPP()
-	ON_COMMAND(ID_CREATE_TEXTURE, OnCreateTexture)
-	ON_COMMAND(ID_CALL_MODELER, OnCallModeler)
-	ON_COMMAND(ID_CALL_TEXMAKER, OnCallTexmaker)
-	ON_COMMAND(ID_VIEW_SETTINGS_AND_UTILITY_BAR, OnViewSettingsAndUtilityBar)
-	ON_UPDATE_COMMAND_UI(ID_VIEW_SETTINGS_AND_UTILITY_BAR, OnUpdateViewSettingsAndUtilityBar)
-	ON_COMMAND(ID_VIEW_SHADOWS_AND_TEXTURE_BAR, OnViewShadowsAndTextureBar)
-	ON_UPDATE_COMMAND_UI(ID_VIEW_SHADOWS_AND_TEXTURE_BAR, OnUpdateViewShadowsAndTextureBar)
-	ON_COMMAND(ID_VIEW_SELECT_ENTITY_BAR, OnViewSelectEntityBar)
-	ON_UPDATE_COMMAND_UI(ID_VIEW_SELECT_ENTITY_BAR, OnUpdateViewSelectEntityBar)
-	ON_COMMAND(ID_VIEW_VIEW_TOOLS_BAR, OnViewViewToolsBar)
-	ON_UPDATE_COMMAND_UI(ID_VIEW_VIEW_TOOLS_BAR, OnUpdateViewViewToolsBar)
-	ON_COMMAND(ID_VIEW_VIEW_TOOLS_BAR2, OnViewViewToolsBar2)
-	ON_UPDATE_COMMAND_UI(ID_VIEW_VIEW_TOOLS_BAR2, OnUpdateViewViewToolsBar2)
-	ON_COMMAND(ID_GAME_AUDIO, OnGameAudio)
-	ON_COMMAND(ID_GAME_VIDEO, OnGameVideo)
-	ON_COMMAND(ID_GAME_PLAYER, OnGamePlayer)
-	ON_COMMAND(ID_GAME_SELECT_PLAYER, OnGameSelectPlayer)
-	ON_COMMAND(ID_SHOW_TREE_SHORTCUTS, OnShowTreeShortcuts)
-	ON_COMMAND(ID_MENU_SHORTCUT01, OnMenuShortcut01)
-	ON_COMMAND(ID_MENU_SHORTCUT02, OnMenuShortcut02)
-	ON_COMMAND(ID_MENU_SHORTCUT03, OnMenuShortcut03)
-	ON_COMMAND(ID_MENU_SHORTCUT04, OnMenuShortcut04)
-	ON_COMMAND(ID_MENU_SHORTCUT05, OnMenuShortcut05)
-	ON_COMMAND(ID_MENU_SHORTCUT06, OnMenuShortcut06)
-	ON_COMMAND(ID_MENU_SHORTCUT07, OnMenuShortcut07)
-	ON_COMMAND(ID_MENU_SHORTCUT08, OnMenuShortcut08)
-	ON_COMMAND(ID_MENU_SHORTCUT09, OnMenuShortcut09)
-	ON_COMMAND(ID_MENU_SHORTCUT10, OnMenuShortcut10)
-	ON_COMMAND(ID_STORE_MENU_SHORTCUT01, OnStoreMenuShortcut01)
-	ON_COMMAND(ID_STORE_MENU_SHORTCUT02, OnStoreMenuShortcut02)
-	ON_COMMAND(ID_STORE_MENU_SHORTCUT03, OnStoreMenuShortcut03)
-	ON_COMMAND(ID_STORE_MENU_SHORTCUT04, OnStoreMenuShortcut04)
-	ON_COMMAND(ID_STORE_MENU_SHORTCUT05, OnStoreMenuShortcut05)
-	ON_COMMAND(ID_STORE_MENU_SHORTCUT06, OnStoreMenuShortcut06)
-	ON_COMMAND(ID_STORE_MENU_SHORTCUT07, OnStoreMenuShortcut07)
-	ON_COMMAND(ID_STORE_MENU_SHORTCUT08, OnStoreMenuShortcut08)
-	ON_COMMAND(ID_STORE_MENU_SHORTCUT09, OnStoreMenuShortcut09)
-	ON_COMMAND(ID_STORE_MENU_SHORTCUT10, OnStoreMenuShortcut10)
-	ON_COMMAND(ID_CONSOLE, OnConsole)
-	ON_COMMAND(ID_VIEW_MIP_TOOLS_BAR, OnViewMipToolsBar)
-	ON_UPDATE_COMMAND_UI(ID_VIEW_MIP_TOOLS_BAR, OnUpdateViewMipToolsBar)
-	ON_COMMAND(ID_TOOL_RECREATE_TEXTURE, OnToolRecreateTexture)
-	ON_COMMAND(ID_RECREATE_CURRENT_TEXTURE, OnRecreateCurrentTexture)
-	ON_COMMAND(ID_LIGHT_ANIMATION, OnLightAnimation)
-	ON_WM_TIMER()
-	ON_COMMAND(ID_HELP_FINDER, OnHelpFinder)
-	//}}AFX_MSG_MAP
-	// Global help commands - modified to use html-help
-	//ON_COMMAND(ID_HELP_FINDER, CMDIFrameWnd::OnHelpFinder)
-	//ON_COMMAND(ID_HELP, OnHelpFinder)
-	ON_COMMAND(ID_CONTEXT_HELP, CMDIFrameWnd::OnContextHelp)
+  ON_COMMAND_EX(ID_VIEW_PROPERTYCOMBO, OnBarCheck)
+  ON_UPDATE_COMMAND_UI(ID_VIEW_PROPERTYCOMBO, OnUpdateControlBarMenu)
+  ON_COMMAND_EX(ID_VIEW_BROWSEDIALOGBAR, OnBarCheck)
+  ON_UPDATE_COMMAND_UI(ID_VIEW_BROWSEDIALOGBAR, OnUpdateControlBarMenu)
+  //{{AFX_MSG_MAP(CMainFrame)
+  ON_WM_CREATE()
+  ON_COMMAND(ID_VIRTUAL_TREE, OnVirtualTree)
+  ON_WM_CLOSE()
+  ON_WM_CANCELMODE()
+  ON_WM_INITMENU()
+  ON_COMMAND(ID_VIEW_INFOWINDOW, OnViewInfowindow)
+  ON_UPDATE_COMMAND_UI(ID_VIEW_INFOWINDOW, OnUpdateViewInfowindow)
+  ON_COMMAND(ID_VIEW_CSGTOOLS, OnViewCsgtools)
+  ON_UPDATE_COMMAND_UI(ID_VIEW_CSGTOOLS, OnUpdateViewCsgtools)
+  ON_COMMAND(ID_VIEW_PROJECTIONS_BAR, OnViewProjectionsBar)
+  ON_UPDATE_COMMAND_UI(ID_VIEW_PROJECTIONS_BAR, OnUpdateViewProjectionsBar)
+  ON_COMMAND(ID_VIEW_WORK_BAR, OnViewWorkBar)
+  ON_UPDATE_COMMAND_UI(ID_VIEW_WORK_BAR, OnUpdateViewWorkBar)
+  ON_WM_ACTIVATEAPP()
+  ON_COMMAND(ID_CREATE_TEXTURE, OnCreateTexture)
+  ON_COMMAND(ID_CALL_MODELER, OnCallModeler)
+  ON_COMMAND(ID_CALL_TEXMAKER, OnCallTexmaker)
+  ON_COMMAND(ID_VIEW_SETTINGS_AND_UTILITY_BAR, OnViewSettingsAndUtilityBar)
+  ON_UPDATE_COMMAND_UI(ID_VIEW_SETTINGS_AND_UTILITY_BAR, OnUpdateViewSettingsAndUtilityBar)
+  ON_COMMAND(ID_VIEW_SHADOWS_AND_TEXTURE_BAR, OnViewShadowsAndTextureBar)
+  ON_UPDATE_COMMAND_UI(ID_VIEW_SHADOWS_AND_TEXTURE_BAR, OnUpdateViewShadowsAndTextureBar)
+  ON_COMMAND(ID_VIEW_SELECT_ENTITY_BAR, OnViewSelectEntityBar)
+  ON_UPDATE_COMMAND_UI(ID_VIEW_SELECT_ENTITY_BAR, OnUpdateViewSelectEntityBar)
+  ON_COMMAND(ID_VIEW_VIEW_TOOLS_BAR, OnViewViewToolsBar)
+  ON_UPDATE_COMMAND_UI(ID_VIEW_VIEW_TOOLS_BAR, OnUpdateViewViewToolsBar)
+  ON_COMMAND(ID_VIEW_VIEW_TOOLS_BAR2, OnViewViewToolsBar2)
+  ON_UPDATE_COMMAND_UI(ID_VIEW_VIEW_TOOLS_BAR2, OnUpdateViewViewToolsBar2)
+  ON_COMMAND(ID_SHOW_TREE_SHORTCUTS, OnShowTreeShortcuts)
+  ON_COMMAND(ID_MENU_SHORTCUT01, OnMenuShortcut01)
+  ON_COMMAND(ID_MENU_SHORTCUT02, OnMenuShortcut02)
+  ON_COMMAND(ID_MENU_SHORTCUT03, OnMenuShortcut03)
+  ON_COMMAND(ID_MENU_SHORTCUT04, OnMenuShortcut04)
+  ON_COMMAND(ID_MENU_SHORTCUT05, OnMenuShortcut05)
+  ON_COMMAND(ID_MENU_SHORTCUT06, OnMenuShortcut06)
+  ON_COMMAND(ID_MENU_SHORTCUT07, OnMenuShortcut07)
+  ON_COMMAND(ID_MENU_SHORTCUT08, OnMenuShortcut08)
+  ON_COMMAND(ID_MENU_SHORTCUT09, OnMenuShortcut09)
+  ON_COMMAND(ID_MENU_SHORTCUT10, OnMenuShortcut10)
+  ON_COMMAND(ID_STORE_MENU_SHORTCUT01, OnStoreMenuShortcut01)
+  ON_COMMAND(ID_STORE_MENU_SHORTCUT02, OnStoreMenuShortcut02)
+  ON_COMMAND(ID_STORE_MENU_SHORTCUT03, OnStoreMenuShortcut03)
+  ON_COMMAND(ID_STORE_MENU_SHORTCUT04, OnStoreMenuShortcut04)
+  ON_COMMAND(ID_STORE_MENU_SHORTCUT05, OnStoreMenuShortcut05)
+  ON_COMMAND(ID_STORE_MENU_SHORTCUT06, OnStoreMenuShortcut06)
+  ON_COMMAND(ID_STORE_MENU_SHORTCUT07, OnStoreMenuShortcut07)
+  ON_COMMAND(ID_STORE_MENU_SHORTCUT08, OnStoreMenuShortcut08)
+  ON_COMMAND(ID_STORE_MENU_SHORTCUT09, OnStoreMenuShortcut09)
+  ON_COMMAND(ID_STORE_MENU_SHORTCUT10, OnStoreMenuShortcut10)
+  ON_COMMAND(ID_CONSOLE, OnConsole)
+  ON_COMMAND(ID_VIEW_MIP_TOOLS_BAR, OnViewMipToolsBar)
+  ON_UPDATE_COMMAND_UI(ID_VIEW_MIP_TOOLS_BAR, OnUpdateViewMipToolsBar)
+  ON_COMMAND(ID_TOOL_RECREATE_TEXTURE, OnToolRecreateTexture)
+  ON_COMMAND(ID_RECREATE_CURRENT_TEXTURE, OnRecreateCurrentTexture)
+  ON_COMMAND(ID_LIGHT_ANIMATION, OnLightAnimation)
+  ON_WM_TIMER()
+  ON_COMMAND(ID_HELP_FINDER, OnHelpFinder)
+  //}}AFX_MSG_MAP
+  // Global help commands - modified to use html-help
+  //ON_COMMAND(ID_HELP_FINDER, CMDIFrameWnd::OnHelpFinder)
+  //ON_COMMAND(ID_HELP, OnHelpFinder)
+  ON_COMMAND(ID_CONTEXT_HELP, CMDIFrameWnd::OnContextHelp)
+  ON_COMMAND(ID_DISPLAY_CAMERA_VIEWFINDER, OnDisplayCameraViewfinder)
+  ON_UPDATE_COMMAND_UI(ID_DISPLAY_CAMERA_VIEWFINDER, OnUpdateDisplayCameraViewfinder)
+  ON_COMMAND(ID_ENABLE_CRASH_DUMPS, OnEnableCrashDumps)
+  ON_UPDATE_COMMAND_UI(ID_ENABLE_CRASH_DUMPS, OnUpdateEnableCrashDumps)
+  ON_COMMAND(ID_ENABLE_FULL_CRASH_DUMPS, OnEnableFullCrashDumps)
+  ON_UPDATE_COMMAND_UI(ID_ENABLE_FULL_CRASH_DUMPS, OnUpdateEnableFullCrashDumps)
 END_MESSAGE_MAP()
 
 static UINT indicators[] =
 {
-	ID_SEPARATOR,           // status line indicator
-	ID_SEPARATOR,
-	ID_SEPARATOR,
-	ID_SEPARATOR,
-	ID_SEPARATOR,
+  ID_SEPARATOR,           // status line indicator
+  ID_SEPARATOR,
+  ID_SEPARATOR,
+  ID_SEPARATOR,
+  ID_SEPARATOR,
 };
 
 #define STD_BROWSER_WIDTH  481
@@ -148,16 +155,16 @@ static UINT indicators[] =
 #define STD_PROPERTYTREE_HEIGHT 600
 
 #define SET_BAR_SIZE( bar, dx, dy)   \
-	bar.m_Size.cx = dx;                 \
-	bar.m_Size.cy = dy;                 \
+  bar.m_Size.cx = dx;                 \
+  bar.m_Size.cy = dy;                 \
   bar.CalcDynamicLayout(0, LM_HORZDOCK)
 #define LOAD_BAR_STATE( WName, HName, bar, dx, dy)                                      \
-	bar.m_Size.cx = (AfxGetApp()->GetProfileInt(_T("General"),_T(WName),dx));             \
-	bar.m_Size.cy = (AfxGetApp()->GetProfileInt(_T("General"),_T(HName),dy));             \
+  bar.m_Size.cx = (AfxGetApp()->GetProfileInt(_T("General"),_T(WName),dx));             \
+  bar.m_Size.cy = (AfxGetApp()->GetProfileInt(_T("General"),_T(HName),dy));             \
   bar.CalcDynamicLayout(0, LM_HORZDOCK)
 #define SAVE_BAR_STATE( WName, HName, bar)                                              \
   AfxGetApp()->WriteProfileInt( _T("General"),_T(WName), bar.m_Size.cx);                \
-	AfxGetApp()->WriteProfileInt( _T("General"),_T(HName), bar.m_Size.cy)
+  AfxGetApp()->WriteProfileInt( _T("General"),_T(HName), bar.m_Size.cy)
 
 // test buffer keys, return pressed buffer number
 extern INDEX TestKeyBuffers(void)
@@ -192,7 +199,7 @@ CMainFrame::~CMainFrame()
   // info frame window will be destroyed trough auto destroy object mechanism
 
   CWorldEditorApp *pApp = (CWorldEditorApp *)AfxGetApp();
-  pApp->WriteProfileString(L"World editor", L"Last virtual tree", CString(m_fnLastVirtualTree));
+  pApp->WriteProfileString(L"World editor", L"Last virtual tree", CString(static_cast<const char*>(m_fnLastVirtualTree)));
 
   // destroy color palette
   if( m_pColorPalette != NULL)
@@ -213,34 +220,34 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
   CWorldEditorApp *pApp = (CWorldEditorApp *)AfxGetApp();
   if (CMDIFrameWnd::OnCreate(lpCreateStruct) == -1)
-		return -1;
+    return -1;
 
   // set same styles for use with all toolbars
   DWORD dwToolBarStyles = WS_CHILD | WS_VISIBLE | CBRS_SIZE_DYNAMIC |
-			CBRS_TOP | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_GRIPPER;
+      CBRS_TOP | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_GRIPPER;
   CRect rectDummy(0,0,0,0);
 
-	if (!m_wndToolBar.CreateEx(this, TBSTYLE_FLAT, dwToolBarStyles, rectDummy, IDW_TOOLBAR_MAIN) ||
-		!m_wndToolBar.LoadToolBar(IDR_MAINFRAME))
-	{
-		TRACE0("Failed to create toolbar\n");
-		return -1;      // fail to create
-	}
+  if (!m_wndToolBar.CreateEx(this, TBSTYLE_FLAT, dwToolBarStyles, rectDummy, IDW_TOOLBAR_MAIN) ||
+    !m_wndToolBar.LoadToolBar(IDR_MAINFRAME))
+  {
+    TRACE0("Failed to create toolbar\n");
+    return -1;      // fail to create
+  }
 
-	if (!m_wndWorkTools.CreateEx(this, TBSTYLE_FLAT, dwToolBarStyles, rectDummy, IDW_TOOLBAR_WORK) ||
-		!m_wndWorkTools.LoadToolBar(IDR_WORK_TOOLS))
-	{
-		TRACE0("Failed to create work toolbar\n");
-		return -1;      // fail to create
-	}
+  if (!m_wndWorkTools.CreateEx(this, TBSTYLE_FLAT, dwToolBarStyles, rectDummy, IDW_TOOLBAR_WORK) ||
+    !m_wndWorkTools.LoadToolBar(IDR_WORK_TOOLS))
+  {
+    TRACE0("Failed to create work toolbar\n");
+    return -1;      // fail to create
+  }
 
   if (!m_wndStatusBar.Create(this, WS_CHILD|WS_VISIBLE|CBRS_BOTTOM, IDW_STATUSBAR) ||
-		!m_wndStatusBar.SetIndicators(indicators,
-		  sizeof(indicators)/sizeof(UINT)))
-	{
-		TRACE0("Failed to create status bar\n");
-		return -1;      // fail to create
-	}
+    !m_wndStatusBar.SetIndicators(indicators,
+      sizeof(indicators)/sizeof(UINT)))
+  {
+    TRACE0("Failed to create status bar\n");
+    return -1;      // fail to create
+  }
 
   // create pane for grid size
   UINT nID;
@@ -265,152 +272,152 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
   cxWidth = 90;
   m_wndStatusBar.SetPaneInfo( EDITING_MODE_PANE, nID, nStyle, cxWidth);
 
-	if (!m_wndCSGTools.CreateEx(this, TBSTYLE_FLAT, dwToolBarStyles, rectDummy, IDW_TOOLBAR_CSG) ||
-		!m_wndCSGTools.LoadToolBar(IDR_CSG_TOOLS))
-	{
-		TRACE0("Failed to create CSG tools toolbar\n");
-		return -1;      // fail to create
-	}
+  if (!m_wndCSGTools.CreateEx(this, TBSTYLE_FLAT, dwToolBarStyles, rectDummy, IDW_TOOLBAR_CSG) ||
+    !m_wndCSGTools.LoadToolBar(IDR_CSG_TOOLS))
+  {
+    TRACE0("Failed to create CSG tools toolbar\n");
+    return -1;      // fail to create
+  }
 
-	if (!m_wndMipTools.CreateEx(this, TBSTYLE_FLAT, dwToolBarStyles, rectDummy, IDW_TOOLBAR_MIP) ||
-		!m_wndMipTools.LoadToolBar(IDR_MIP_TOOLS))
-	{
-		TRACE0("Failed to create mip tools toolbar\n");
-		return -1;      // fail to create
-	}
+  if (!m_wndMipTools.CreateEx(this, TBSTYLE_FLAT, dwToolBarStyles, rectDummy, IDW_TOOLBAR_MIP) ||
+    !m_wndMipTools.LoadToolBar(IDR_MIP_TOOLS))
+  {
+    TRACE0("Failed to create mip tools toolbar\n");
+    return -1;      // fail to create
+  }
 
-	if (!m_wndProjections.CreateEx(this, TBSTYLE_FLAT, dwToolBarStyles, rectDummy, IDW_TOOLBAR_PROJECTIONS) ||
-		!m_wndProjections.LoadToolBar(IDR_PROJECTIONS))
-	{
-		TRACE0("Failed to create projections toolbar\n");
-		return -1;      // fail to create
-	}
+  if (!m_wndProjections.CreateEx(this, TBSTYLE_FLAT, dwToolBarStyles, rectDummy, IDW_TOOLBAR_PROJECTIONS) ||
+    !m_wndProjections.LoadToolBar(IDR_PROJECTIONS))
+  {
+    TRACE0("Failed to create projections toolbar\n");
+    return -1;      // fail to create
+  }
 
-	if (!m_wndSettingsAndUtility.CreateEx(this, TBSTYLE_FLAT, dwToolBarStyles, rectDummy, IDW_TOOLBAR_SETTINGS_AND_UTILITY)
+  if (!m_wndSettingsAndUtility.CreateEx(this, TBSTYLE_FLAT, dwToolBarStyles, rectDummy, IDW_TOOLBAR_SETTINGS_AND_UTILITY)
      || !m_wndSettingsAndUtility.LoadToolBar(IDR_SETTINGS_AND_UTILITY) )
-	{
-		TRACE0("Failed to create settings and utility toolbar\n");
-		return -1;      // fail to create
-	}
+  {
+    TRACE0("Failed to create settings and utility toolbar\n");
+    return -1;      // fail to create
+  }
 
   if (!m_wndShadowsAndTexture.CreateEx(this, TBSTYLE_FLAT, dwToolBarStyles, rectDummy, IDW_TOOLBAR_SHADOWS_AND_TEXTURE)
      || !m_wndShadowsAndTexture.LoadToolBar(IDR_SHADOWS_AND_TEXTURE) )
-	{
-		TRACE0("Failed to create shadow and texture toolbar\n");
-		return -1;
-	}
+  {
+    TRACE0("Failed to create shadow and texture toolbar\n");
+    return -1;
+  }
   static UINT aidShadowsAndTextureToolBar[5] =
   {ID_TEXTURE_1, ID_TEXTURE_2, ID_TEXTURE_3, ID_VIEW_SHADOWS_ONOFF, ID_CALCULATE_SHADOWS_ONOFF};
   m_wndShadowsAndTexture.SetButtons( aidShadowsAndTextureToolBar, 5);
 
   if (!m_wndSelectEntity.CreateEx(this, TBSTYLE_FLAT, dwToolBarStyles, rectDummy, IDW_TOOLBAR_SELECT_ENTITY)
      || !m_wndSelectEntity.LoadToolBar(IDR_SELECT_ENTITY) )
-	{
-		TRACE0("Failed to create select entity toolbar\n");
-		return -1;
-	}
+  {
+    TRACE0("Failed to create select entity toolbar\n");
+    return -1;
+  }
 
-	if (!m_wndViewTools.CreateEx(this, TBSTYLE_FLAT, dwToolBarStyles, rectDummy, IDW_TOOLBAR_VIEW_TOOLS)
+  if (!m_wndViewTools.CreateEx(this, TBSTYLE_FLAT, dwToolBarStyles, rectDummy, IDW_TOOLBAR_VIEW_TOOLS)
      || !m_wndViewTools.LoadToolBar(IDR_VIEW_TOOLS) )
-	{
-		TRACE0("Failed to create view tools toolbar\n");
-		return -1;      // fail to create
-	}
+  {
+    TRACE0("Failed to create view tools toolbar\n");
+    return -1;      // fail to create
+  }
 
-	if (!m_wndViewTools2.CreateEx(this, TBSTYLE_FLAT, dwToolBarStyles, rectDummy, IDW_TOOLBAR_VIEW_TOOLS2)
+  if (!m_wndViewTools2.CreateEx(this, TBSTYLE_FLAT, dwToolBarStyles, rectDummy, IDW_TOOLBAR_VIEW_TOOLS2)
      || !m_wndViewTools2.LoadToolBar(IDR_VIEW_TOOLS2) )
-	{
-		TRACE0("Failed to create view tools 2 toolbar\n");
-		return -1;      // fail to create
-	}
+  {
+    TRACE0("Failed to create view tools 2 toolbar\n");
+    return -1;      // fail to create
+  }
 
   // set horizontal size to item that will carry CSG destination combo box
   m_wndCSGTools.SetButtonInfo(0, ID_CSG_DESTINATION, TBBS_SEPARATOR, 128);
   CRect rect;
   // get dimensions of item that will carry combo
-	m_wndCSGTools.GetItemRect(0, &rect);
+  m_wndCSGTools.GetItemRect(0, &rect);
   rect.top = 2;
-	// set combo's drop down height
+  // set combo's drop down height
   rect.bottom = rect.top + 100;
   if (!m_CSGDesitnationCombo.Create(
-			CBS_DROPDOWNLIST|WS_VISIBLE|WS_TABSTOP|WS_VSCROLL,
-			rect, &m_wndCSGTools, ID_CSG_DESTINATION))
-	{
-		TRACE0("Failed to create CSG destination combo-box\n");
-		return FALSE;
-	}
+      CBS_DROPDOWNLIST|WS_VISIBLE|WS_TABSTOP|WS_VSCROLL,
+      rect, &m_wndCSGTools, ID_CSG_DESTINATION))
+  {
+    TRACE0("Failed to create CSG destination combo-box\n");
+    return FALSE;
+  }
   m_CSGDesitnationCombo.SetDroppedWidth( 256);
 
   // set horizontal size to item that will carry triangularisation type combo box
   m_wndCSGTools.SetButtonInfo(11, ID_TRIANGULARIZE, TBBS_SEPARATOR, 100);
   CRect rectCombo2;
   // get dimensions of item that will carry combo
-	m_wndCSGTools.GetItemRect(11, &rectCombo2);
+  m_wndCSGTools.GetItemRect(11, &rectCombo2);
   rectCombo2.top = 2;
-	// set combo's drop down height
+  // set combo's drop down height
   rectCombo2.bottom = rectCombo2.top + 100;
   if (!m_TriangularisationCombo.Create(
-			CBS_DROPDOWNLIST|WS_VISIBLE|WS_TABSTOP|WS_VSCROLL,
-			rectCombo2, &m_wndCSGTools, ID_TRIANGULARIZE))
-	{
-		TRACE0("Failed to create triangularization type combo-box\n");
-		return FALSE;
-	}
+      CBS_DROPDOWNLIST|WS_VISIBLE|WS_TABSTOP|WS_VSCROLL,
+      rectCombo2, &m_wndCSGTools, ID_TRIANGULARIZE))
+  {
+    TRACE0("Failed to create triangularization type combo-box\n");
+    return FALSE;
+  }
 
   // set horizontal size to item that will hold mip switch edit ctrl
   m_wndMipTools.SetButtonInfo(2, ID_EDIT_MIP_SWITCH_DISTANCE, TBBS_SEPARATOR, 64);
   CRect rectEdit1;
   // get dimensions of item that will carry edit ctrl
-	m_wndMipTools.GetItemRect(2, &rectEdit1);
+  m_wndMipTools.GetItemRect(2, &rectEdit1);
   rectEdit1.top = 2;
   rectEdit1.bottom = rectEdit1.top + 18;
   
   if (!m_ctrlEditMipSwitchDistance.Create( WS_VISIBLE|WS_BORDER,
     rectEdit1, &m_wndMipTools, ID_EDIT_MIP_SWITCH_DISTANCE) )
-	{
-		TRACE0("Failed to create mip switch distance edit control\n");
-		return FALSE;
-	}
-
-
-	// Initialize dialog bar m_Browser
-	if (!m_Browser.Create(this, CG_IDD_BROWSEDIALOGBAR,
-		CBRS_LEFT | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_HIDE_INPLACE | CBRS_SIZE_DYNAMIC,
-		ID_VIEW_BROWSEDIALOGBAR))
-	{
-		TRACE0("Failed to create dialog bar m_Browser\n");
-		return -1;		// fail to create
-	}
-
-	// Try to load virtual tree to browser
-  m_fnLastVirtualTree = CTString( CStringA(pApp->GetProfileString(L"World editor",
-    L"Last virtual tree", L"VirtualTrees\\BasicVirtualTree.vrt")));
-  if( m_fnLastVirtualTree != "")
   {
-    try
-    {
-      m_Browser.LoadVirtualTree_t( m_fnLastVirtualTree, NULL);
-    }
-    catch( char *strError)
-    {
-      (void) strError;
-      CTString strMessage;
-      strMessage.PrintF("Error reading virtual tree file:\n%s.\n\nSwitching to empty virtual tree.", m_fnLastVirtualTree);
-      AfxMessageBox( CString(strMessage));
-      m_Browser.m_VirtualTree.MakeRoot();
-      m_Browser.OnUpdateVirtualTreeControl();
-    }
+    TRACE0("Failed to create mip switch distance edit control\n");
+    return FALSE;
   }
 
 
-	// Initialize dialog bar m_PropertyComboBar
+  // Initialize dialog bar m_Browser
+  if (!m_Browser.Create(this, CG_IDD_BROWSEDIALOGBAR,
+    CBRS_LEFT | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_HIDE_INPLACE | CBRS_SIZE_DYNAMIC,
+    ID_VIEW_BROWSEDIALOGBAR))
+  {
+    TRACE0("Failed to create dialog bar m_Browser\n");
+    return -1;    // fail to create
+  }
+
+  // Try to load virtual tree to browser
+  m_fnLastVirtualTree = CTString( CStringA(pApp->GetProfileString(L"World editor",
+    L"Last virtual tree", L"VirtualTrees\\BasicVirtualTree.vrt")));
+  if (m_fnLastVirtualTree == "")
+    m_fnLastVirtualTree = CTString("VirtualTrees\\BasicVirtualTree.vrt");
+
+  try
+  {
+    m_Browser.LoadVirtualTree_t( m_fnLastVirtualTree, NULL);
+  }
+  catch( char *strError)
+  {
+    (void) strError;
+    CTString strMessage;
+    strMessage.PrintF("Error reading virtual tree file:\n%s.\n\nSwitching to empty virtual tree.", static_cast<const char*>(m_fnLastVirtualTree));
+    AfxMessageBox( CString(static_cast<const char*>(strMessage)));
+    m_Browser.m_VirtualTree.MakeRoot();
+    m_Browser.OnUpdateVirtualTreeControl();
+  }
+
+
+  // Initialize dialog bar m_PropertyComboBar
   if (!m_PropertyComboBar.Create(this, CG_IDD_PROPERTYCOMBO,
-		CBRS_RIGHT | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_HIDE_INPLACE | CBRS_SIZE_DYNAMIC,
-		ID_VIEW_PROPERTYCOMBO))
-	{
-		TRACE0("Failed to create dialog bar m_PropertyComboBar\n");
-		return -1;		// fail to create
-	}
+    CBRS_RIGHT | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_HIDE_INPLACE | CBRS_SIZE_DYNAMIC,
+    ID_VIEW_PROPERTYCOMBO))
+  {
+    TRACE0("Failed to create dialog bar m_PropertyComboBar\n");
+    return -1;    // fail to create
+  }
 
   if (!m_propertyTree.Create(this, IDD_PROPERTY_TREE,
     CBRS_LEFT | CBRS_FLYBY | CBRS_HIDE_INPLACE | CBRS_SIZE_DYNAMIC,
@@ -420,59 +427,59 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
     return -1;
   }
 
-	// Initialize windows classic tool bar
+  // Initialize windows classic tool bar
   m_wndToolBar.SetWindowText(L"File tools");
   m_wndToolBar.SetBarStyle(m_wndToolBar.GetBarStyle() |
-		CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC);
-	m_wndToolBar.EnableDocking(CBRS_ALIGN_ANY);
-	// Initialize work tool bar
+    CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC);
+  m_wndToolBar.EnableDocking(CBRS_ALIGN_ANY);
+  // Initialize work tool bar
   m_wndWorkTools.SetWindowText(L"Work tools");
   m_wndWorkTools.SetBarStyle(m_wndWorkTools.GetBarStyle() |
-		CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC);
-	m_wndWorkTools.EnableDocking(CBRS_ALIGN_ANY);
-	// Initialize CSG tools tool bar
+    CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC);
+  m_wndWorkTools.EnableDocking(CBRS_ALIGN_ANY);
+  // Initialize CSG tools tool bar
   m_wndCSGTools.SetWindowText(L"CSG tools");
   m_wndCSGTools.SetBarStyle(m_wndCSGTools.GetBarStyle() |
-		CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC);
-	m_wndCSGTools.EnableDocking(CBRS_ALIGN_ANY);
-	// Initialize mip tools tool bar
+    CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC);
+  m_wndCSGTools.EnableDocking(CBRS_ALIGN_ANY);
+  // Initialize mip tools tool bar
   m_wndMipTools.SetWindowText(L"Mip tools");
   m_wndMipTools.SetBarStyle(m_wndMipTools.GetBarStyle() |
-		CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC);
-	m_wndMipTools.EnableDocking(CBRS_ALIGN_ANY);
-	// Initialize projections tools tool bar
+    CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC);
+  m_wndMipTools.EnableDocking(CBRS_ALIGN_ANY);
+  // Initialize projections tools tool bar
   m_wndProjections.SetWindowText(L"Projections");
   m_wndProjections.SetBarStyle(m_wndProjections.GetBarStyle() |
-		CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC);
-	m_wndProjections.EnableDocking(CBRS_ALIGN_ANY);
-	// Initialize setting and utility tools tool bar
+    CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC);
+  m_wndProjections.EnableDocking(CBRS_ALIGN_ANY);
+  // Initialize setting and utility tools tool bar
   m_wndSettingsAndUtility.SetWindowText(L"Settings and utility");
   m_wndSettingsAndUtility.SetBarStyle(m_wndSettingsAndUtility.GetBarStyle() |
-		CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC);
-	m_wndSettingsAndUtility.EnableDocking(CBRS_ALIGN_ANY);
-	// Initialize shadows and texture tool bar
+    CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC);
+  m_wndSettingsAndUtility.EnableDocking(CBRS_ALIGN_ANY);
+  // Initialize shadows and texture tool bar
   m_wndShadowsAndTexture.SetWindowText(L"Shadows and texture");
   m_wndShadowsAndTexture.SetBarStyle(m_wndShadowsAndTexture.GetBarStyle() |
-		CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC);
-	m_wndShadowsAndTexture.EnableDocking(CBRS_ALIGN_ANY);
-	// Initialize select entity tool bar
+    CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC);
+  m_wndShadowsAndTexture.EnableDocking(CBRS_ALIGN_ANY);
+  // Initialize select entity tool bar
   m_wndSelectEntity.SetWindowText(L"Select entity");
   m_wndSelectEntity.SetBarStyle(m_wndSelectEntity.GetBarStyle() |
-		CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC);
-	m_wndSelectEntity.EnableDocking(CBRS_ALIGN_ANY);
+    CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC);
+  m_wndSelectEntity.EnableDocking(CBRS_ALIGN_ANY);
   // Initialize view tools tool bar
   m_wndViewTools.SetWindowText(L"View tools");
   m_wndViewTools.SetBarStyle(m_wndViewTools.GetBarStyle() |
-		CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC);
-	m_wndViewTools.EnableDocking(CBRS_ALIGN_ANY);
+    CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC);
+  m_wndViewTools.EnableDocking(CBRS_ALIGN_ANY);
   // Initialize view tools tool bar
   m_wndViewTools2.SetWindowText(L"View tools 2");
   m_wndViewTools2.SetBarStyle(m_wndViewTools2.GetBarStyle() |
-		CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC);
-	m_wndViewTools2.EnableDocking(CBRS_ALIGN_ANY);
+    CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC);
+  m_wndViewTools2.EnableDocking(CBRS_ALIGN_ANY);
   // Initialize browser dialog bar
   m_Browser.SetWindowText(L"Browser");
-	m_Browser.EnableDocking(CBRS_ALIGN_LEFT | CBRS_ALIGN_RIGHT);
+  m_Browser.EnableDocking(CBRS_ALIGN_LEFT | CBRS_ALIGN_RIGHT);
   // Initialize property dialog bar
   m_PropertyComboBar.SetWindowText(L"Entity properties");
   m_PropertyComboBar.EnableDocking(CBRS_ALIGN_ANY);
@@ -480,33 +487,33 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
   m_propertyTree.SetWindowText(L"Property tree");
   m_propertyTree.EnableDocking(CBRS_ALIGN_ANY);
 
-	EnableDocking(CBRS_ALIGN_ANY);
+  EnableDocking(CBRS_ALIGN_ANY);
 
   // We will set default width and height of browser and property dialog bars
-	SET_BAR_SIZE(m_Browser, STD_BROWSER_WIDTH, STD_BROWSER_HEIGHT);
-	SET_BAR_SIZE(m_PropertyComboBar, STD_PROPERTYCOMBO_WIDTH, STD_PROPERTYCOMBO_HEIGHT);
+  SET_BAR_SIZE(m_Browser, STD_BROWSER_WIDTH, STD_BROWSER_HEIGHT);
+  SET_BAR_SIZE(m_PropertyComboBar, STD_PROPERTYCOMBO_WIDTH, STD_PROPERTYCOMBO_HEIGHT);
 
   DockControlBar(&m_wndToolBar);
-	DockControlBar(&m_wndWorkTools);
+  DockControlBar(&m_wndWorkTools);
   DockControlBar(&m_wndProjections);
   DockControlBar(&m_wndSettingsAndUtility);
   DockControlBar(&m_wndShadowsAndTexture);
   DockControlBar(&m_wndSelectEntity);
   DockControlBar(&m_wndViewTools);
   DockControlBar(&m_wndViewTools2);
-	DockControlBar(&m_wndCSGTools);
+  DockControlBar(&m_wndCSGTools);
   DockControlBar(&m_wndMipTools);
 
   // dock browser and properties dialog
   DockControlBar(&m_Browser);
-	DockControlBar(&m_PropertyComboBar);
+  DockControlBar(&m_PropertyComboBar);
   DockControlBar(&m_propertyTree);
-	//DockControlBarRelativeTo(&m_PropertyComboBar, &m_Browser, DOCK_UP);
+  //DockControlBarRelativeTo(&m_PropertyComboBar, &m_Browser, DOCK_UP);
 
   // We will try to load tool docked and floated positions of all ctrl bars from INI file
-	LOAD_BAR_STATE("Browser width", "Browser height", m_Browser,
+  LOAD_BAR_STATE("Browser width", "Browser height", m_Browser,
     STD_BROWSER_WIDTH, STD_BROWSER_HEIGHT);
-	LOAD_BAR_STATE("Property width", "Property height", m_PropertyComboBar,
+  LOAD_BAR_STATE("Property width", "Property height", m_PropertyComboBar,
     STD_PROPERTYCOMBO_WIDTH, STD_PROPERTYCOMBO_HEIGHT);
   LOAD_BAR_STATE("Tree width", "Tree height", m_propertyTree,
     STD_PROPERTYTREE_WIDTH, STD_PROPERTYTREE_HEIGHT);
@@ -575,26 +582,26 @@ void CMainFrame::DockControlBarRelativeTo(CControlBar* pbarToDock,
                                           CControlBar* pbarRelativeTo,
                                           ULONG ulDockDirection /*= DOCK_RIGHT*/)
 {
-	CRect rectToDock;
-	CRect rectRelativeTo;
-	CRect rectResult;
-	DWORD dw;
-	UINT n;
+  CRect rectToDock;
+  CRect rectRelativeTo;
+  CRect rectResult;
+  DWORD dw;
+  UINT n;
 
-	// get MFC to adjust the dimensions of all docked ToolBars
-	// so that GetWindowRect will be accurate
-//	RecalcLayout();
-	pbarRelativeTo->GetWindowRect( &rectRelativeTo);
+  // get MFC to adjust the dimensions of all docked ToolBars
+  // so that GetWindowRect will be accurate
+//  RecalcLayout();
+  pbarRelativeTo->GetWindowRect( &rectRelativeTo);
   pbarToDock->GetWindowRect( &rectToDock);
 
   PIX pixOffsetX = rectRelativeTo.Width();
   PIX pixOffsetY = rectRelativeTo.Height();
 
-	rectResult = CRect( rectRelativeTo.left,
+  rectResult = CRect( rectRelativeTo.left,
                       0/*rectRelativeTo.top*/,
                       rectRelativeTo.left+rectToDock.Width(),
                       /*rectRelativeTo.top+*/rectToDock.Height() );
-	switch( ulDockDirection)
+  switch( ulDockDirection)
   {
   case DOCK_LEFT:
     {
@@ -619,28 +626,28 @@ void CMainFrame::DockControlBarRelativeTo(CControlBar* pbarToDock,
   }
 
   dw=pbarRelativeTo->GetBarStyle();
-	n = 0;
-	n = (dw&CBRS_ALIGN_TOP) ? AFX_IDW_DOCKBAR_TOP : n;
-	n = (dw&CBRS_ALIGN_BOTTOM && n==0) ? AFX_IDW_DOCKBAR_BOTTOM : n;
-	n = (dw&CBRS_ALIGN_LEFT && n==0) ? AFX_IDW_DOCKBAR_LEFT : n;
-	n = (dw&CBRS_ALIGN_RIGHT && n==0) ? AFX_IDW_DOCKBAR_RIGHT : n;
+  n = 0;
+  n = (dw&CBRS_ALIGN_TOP) ? AFX_IDW_DOCKBAR_TOP : n;
+  n = (dw&CBRS_ALIGN_BOTTOM && n==0) ? AFX_IDW_DOCKBAR_BOTTOM : n;
+  n = (dw&CBRS_ALIGN_LEFT && n==0) ? AFX_IDW_DOCKBAR_LEFT : n;
+  n = (dw&CBRS_ALIGN_RIGHT && n==0) ? AFX_IDW_DOCKBAR_RIGHT : n;
 
-	// When we take the default parameters on rect, DockControlBar will dock
-	// each Toolbar on a seperate line.  By calculating a rectangle, we in effect
-	// are simulating a Toolbar being dragged to that location and docked.
-	DockControlBar( pbarToDock, n, &rectResult);
+  // When we take the default parameters on rect, DockControlBar will dock
+  // each Toolbar on a seperate line.  By calculating a rectangle, we in effect
+  // are simulating a Toolbar being dragged to that location and docked.
+  DockControlBar( pbarToDock, n, &rectResult);
 }
 
 
 BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)
 {
-	// TODO: Modify the Window class or styles here by modifying
-	//  the CREATESTRUCT cs
+  // TODO: Modify the Window class or styles here by modifying
+  //  the CREATESTRUCT cs
 
-	cs.style = WS_OVERLAPPED | WS_CAPTION | FWS_ADDTOTITLE
-		| WS_THICKFRAME | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_MAXIMIZE;
+  cs.style = WS_OVERLAPPED | WS_CAPTION | FWS_ADDTOTITLE
+    | WS_THICKFRAME | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_MAXIMIZE;
 
-	return CMDIFrameWnd::PreCreateWindow(cs);
+  return CMDIFrameWnd::PreCreateWindow(cs);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -649,12 +656,12 @@ BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)
 #ifdef _DEBUG
 void CMainFrame::AssertValid() const
 {
-	CMDIFrameWnd::AssertValid();
+  CMDIFrameWnd::AssertValid();
 }
 
 void CMainFrame::Dump(CDumpContext& dc) const
 {
-	CMDIFrameWnd::Dump(dc);
+  CMDIFrameWnd::Dump(dc);
 }
 
 #endif //_DEBUG
@@ -679,15 +686,15 @@ BOOL CMainFrame::DestroyWindow()
 {
   m_Browser.CloseSelectedDirectory();
 
-	return CMDIFrameWnd::DestroyWindow();
+  return CMDIFrameWnd::DestroyWindow();
 }
 
 void CMainFrame::OnClose()
 {
-	SaveBarState(_T("General"));
+  SaveBarState(_T("General"));
   m_propertyTree.SaveState();
-	SAVE_BAR_STATE("Browser width", "Browser height", m_Browser);
-	SAVE_BAR_STATE("Property width", "Property height", m_PropertyComboBar);
+  SAVE_BAR_STATE("Browser width", "Browser height", m_Browser);
+  SAVE_BAR_STATE("Property width", "Property height", m_PropertyComboBar);
   SAVE_BAR_STATE("Tree width", "Tree height", m_propertyTree);
 
   // save custom picker colors to registry
@@ -729,11 +736,11 @@ void CMainFrame::OnClose()
 
 void CMainFrame::OnCancelMode()
 {
-	// switches out of eventual direct screen mode
+  // switches out of eventual direct screen mode
   CWorldEditorView *pwndView = (CWorldEditorView *)GetActiveView();
   if (pwndView != NULL) {
-	  // get the MDIChildFrame of active window
-	  CChildFrame *pfrChild = (CChildFrame *)pwndView->GetParentFrame();
+    // get the MDIChildFrame of active window
+    CChildFrame *pfrChild = (CChildFrame *)pwndView->GetParentFrame();
     ASSERT(pfrChild!=NULL);
   }
   CMDIFrameWnd::OnCancelMode();
@@ -742,11 +749,11 @@ void CMainFrame::OnCancelMode()
 
 void CMainFrame::OnInitMenu(CMenu* pMenu)
 {
-	// switches out of eventual direct screen mode
+  // switches out of eventual direct screen mode
   CWorldEditorView *pwndView = (CWorldEditorView *)GetActiveView();
   if (pwndView != NULL) {
-	  // get the MDIChildFrame of active window
-	  CChildFrame *pfrChild = (CChildFrame *)pwndView->GetParentFrame();
+    // get the MDIChildFrame of active window
+    CChildFrame *pfrChild = (CChildFrame *)pwndView->GetParentFrame();
     ASSERT(pfrChild!=NULL);
   }
   CMDIFrameWnd::OnInitMenu(pMenu);
@@ -851,8 +858,8 @@ void CMainFrame::CustomColorPicker( PIX pixX, PIX pixY)
       return;
     }
     // initialize canvas for active texture button
-    _pGfx->CreateWindowCanvas( m_pColorPalette->m_hWnd, &m_pColorPalette->m_pViewPort,
-                               &m_pColorPalette->m_pDrawPort);
+    _pGfx_CreateWindowCanvas( m_pColorPalette->m_hWnd, m_pColorPalette->m_pViewPort,
+                               m_pColorPalette->m_pDrawPort);
   }
   else
   {
@@ -863,6 +870,12 @@ void CMainFrame::CustomColorPicker( PIX pixX, PIX pixY)
 
 BOOL CMainFrame::OnIdle(LONG lCount)
 {
+  HMONITOR comboMonitor = ::MonitorFromWindow(GetSafeHwnd(), MONITOR_DEFAULTTONEAREST);
+  MONITORINFO monitorInfo;
+  monitorInfo.cbSize = sizeof(MONITORINFO);
+  ::GetMonitorInfo(comboMonitor, &monitorInfo);
+  m_monitor_width = abs(monitorInfo.rcMonitor.right - monitorInfo.rcMonitor.left);
+
   // Call OnIdle() for info frame's property sheet
   if( m_pInfoFrame != NULL)
   {
@@ -972,10 +985,10 @@ void CMainFrame::OnViewInfowindow()
     CRect rectInfoWindow(0, 0, 0, 0);
     if( !m_pInfoFrame->Create( NULL, L"Tools info",
         MFS_SYNCACTIVE|WS_POPUP|WS_CAPTION|WS_SYSMENU, rectInfoWindow, this))
-	  {
-		  AfxMessageBox(L"Failed to create info frame window m_pInfoFrame");
+    {
+      AfxMessageBox(L"Failed to create info frame window m_pInfoFrame");
       return;
-	  }
+    }
     //m_pInfoFrame->DragAcceptFiles();
   }
 
@@ -1061,7 +1074,7 @@ BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
       static CPoint ptLast;
       CPoint ptNow;
       GetCursorPos( &ptNow);
-      CTimerValue tvNow = _pTimer->GetHighPrecisionTimer();
+      CTimerValue tvNow = _pTimer_GetHighPrecisionTimer();
       FLOAT tmDelta = (tvNow-tvLast).GetSeconds();
       if( tmDelta<0.5f && abs(ptNow.x-ptLast.x)<5 && abs(ptNow.y-ptLast.y)<5)
       {
@@ -1085,13 +1098,13 @@ BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
     }
   }
 
-	// if we caught key down message or alt key is pressed
+  // if we caught key down message or alt key is pressed
   if( (pMsg->message==WM_KEYDOWN) || bAlt)
   {
     int iVirtKey = (int) pMsg->wParam;
     int lKeyData = pMsg->lParam;
     // get scan code
-  	UWORD uwScanCode = (HIWORD( lKeyData)) & 255;
+    UWORD uwScanCode = (HIWORD( lKeyData)) & 255;
     // if ctrl pressed
     BOOL bCtrl = (GetKeyState( VK_CONTROL)&0x8000) != 0;
     // if left shift pressed
@@ -1176,7 +1189,7 @@ BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
         CWorldEditorDoc *pDoc = theApp.GetDocument();
         if( pDoc != NULL && pDoc->GetEditingMode()==TERRAIN_MODE)
         {
-          FLOAT fCurrentTime = _pTimer->GetRealTimeTick();
+          FLOAT fCurrentTime = _pTimer_GetRealTimeTick();
           if(_fLastNumKeyDownTime==-1)
           {
             _fLastNumKeyDownTime = fCurrentTime;
@@ -1210,7 +1223,7 @@ BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
       CWorldEditorDoc *pDoc = theApp.GetDocument();
       if( pDoc != NULL && pDoc->GetEditingMode()==TERRAIN_MODE)
       {
-        FLOAT fCurrentTime = _pTimer->GetRealTimeTick();
+        FLOAT fCurrentTime = _pTimer_GetRealTimeTick();
         if( fCurrentTime-_fLastNumKeyDownTime<BRUSH_PRESSURE_DELAY)
         {
           if( fCurrentTime-_fLastTimePressureApplied<BRUSH_PRESSURE_SUB_DELAY)
@@ -1238,63 +1251,63 @@ BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
 
 void CMainFrame::OnViewCsgtools()
 {
-	BOOL bVisible = ((m_wndCSGTools.GetStyle() & WS_VISIBLE) != 0);
+  BOOL bVisible = ((m_wndCSGTools.GetStyle() & WS_VISIBLE) != 0);
 
-	ShowControlBar(&m_wndCSGTools, !bVisible, FALSE);
-	RecalcLayout();
+  ShowControlBar(&m_wndCSGTools, !bVisible, FALSE);
+  RecalcLayout();
 }
 
 void CMainFrame::OnUpdateViewCsgtools(CCmdUI* pCmdUI)
 {
-	BOOL bVisible = ((m_wndCSGTools.GetStyle() & WS_VISIBLE) != 0);
-	pCmdUI->SetCheck(bVisible);
+  BOOL bVisible = ((m_wndCSGTools.GetStyle() & WS_VISIBLE) != 0);
+  pCmdUI->SetCheck(bVisible);
 }
 
 void CMainFrame::OnViewProjectionsBar()
 {
-	BOOL bVisible = ((m_wndProjections.GetStyle() & WS_VISIBLE) != 0);
+  BOOL bVisible = ((m_wndProjections.GetStyle() & WS_VISIBLE) != 0);
 
-	ShowControlBar(&m_wndProjections, !bVisible, FALSE);
-	RecalcLayout();
+  ShowControlBar(&m_wndProjections, !bVisible, FALSE);
+  RecalcLayout();
 }
 
 void CMainFrame::OnUpdateViewProjectionsBar(CCmdUI* pCmdUI)
 {
-	BOOL bVisible = ((m_wndProjections.GetStyle() & WS_VISIBLE) != 0);
-	pCmdUI->SetCheck(bVisible);
+  BOOL bVisible = ((m_wndProjections.GetStyle() & WS_VISIBLE) != 0);
+  pCmdUI->SetCheck(bVisible);
 }
 
 void CMainFrame::OnViewWorkBar()
 {
-	BOOL bVisible = ((m_wndWorkTools.GetStyle() & WS_VISIBLE) != 0);
+  BOOL bVisible = ((m_wndWorkTools.GetStyle() & WS_VISIBLE) != 0);
 
-	ShowControlBar(&m_wndWorkTools, !bVisible, FALSE);
-	RecalcLayout();
+  ShowControlBar(&m_wndWorkTools, !bVisible, FALSE);
+  RecalcLayout();
 }
 
 void CMainFrame::OnUpdateViewWorkBar(CCmdUI* pCmdUI)
 {
-	BOOL bVisible = ((m_wndWorkTools.GetStyle() & WS_VISIBLE) != 0);
-	pCmdUI->SetCheck(bVisible);
+  BOOL bVisible = ((m_wndWorkTools.GetStyle() & WS_VISIBLE) != 0);
+  pCmdUI->SetCheck(bVisible);
 }
 
 void CMainFrame::OnViewMipToolsBar()
 {
-	BOOL bVisible = ((m_wndMipTools.GetStyle() & WS_VISIBLE) != 0);
+  BOOL bVisible = ((m_wndMipTools.GetStyle() & WS_VISIBLE) != 0);
 
-	ShowControlBar(&m_wndMipTools, !bVisible, FALSE);
-	RecalcLayout();
+  ShowControlBar(&m_wndMipTools, !bVisible, FALSE);
+  RecalcLayout();
 }
 
 void CMainFrame::OnUpdateViewMipToolsBar(CCmdUI* pCmdUI)
 {
-	BOOL bVisible = ((m_wndMipTools.GetStyle() & WS_VISIBLE) != 0);
-	pCmdUI->SetCheck(bVisible);
+  BOOL bVisible = ((m_wndMipTools.GetStyle() & WS_VISIBLE) != 0);
+  pCmdUI->SetCheck(bVisible);
 }
 
 void CMainFrame::OnActivateApp(BOOL bActive, DWORD hTask)
 {
-	CMDIFrameWnd::OnActivateApp(bActive, hTask);
+  CMDIFrameWnd::OnActivateApp(bActive, hTask);
 
   // if application is activated right now
   if( bActive)
@@ -1321,7 +1334,7 @@ void CMainFrame::OnCreateTexture()
 
 void CMainFrame::StartApplication( CTString strApplicationToRun)
 {
-	// setup necessary data for new process
+  // setup necessary data for new process
   STARTUPINFOA siStartupInfo;
   siStartupInfo.cb = sizeof( STARTUPINFOA);
   siStartupInfo.lpReserved = NULL;
@@ -1356,7 +1369,7 @@ void CMainFrame::StartApplication( CTString strApplicationToRun)
 
 void CMainFrame::OnCallModeler()
 {
-  StartApplication( "Modeler.exe");
+  StartApplication( "SeriousModelerEX.exe");
 }
 
 
@@ -1368,94 +1381,73 @@ void CMainFrame::OnCallTexmaker()
 
 void CMainFrame::OnViewSettingsAndUtilityBar()
 {
-	BOOL bVisible = ((m_wndSettingsAndUtility.GetStyle() & WS_VISIBLE) != 0);
+  BOOL bVisible = ((m_wndSettingsAndUtility.GetStyle() & WS_VISIBLE) != 0);
 
-	ShowControlBar(&m_wndSettingsAndUtility, !bVisible, FALSE);
-	RecalcLayout();
+  ShowControlBar(&m_wndSettingsAndUtility, !bVisible, FALSE);
+  RecalcLayout();
 }
 
 void CMainFrame::OnUpdateViewSettingsAndUtilityBar(CCmdUI* pCmdUI)
 {
-	BOOL bVisible = ((m_wndSettingsAndUtility.GetStyle() & WS_VISIBLE) != 0);
-	pCmdUI->SetCheck(bVisible);
+  BOOL bVisible = ((m_wndSettingsAndUtility.GetStyle() & WS_VISIBLE) != 0);
+  pCmdUI->SetCheck(bVisible);
 }
 
 void CMainFrame::OnViewShadowsAndTextureBar()
 {
-	BOOL bVisible = ((m_wndShadowsAndTexture.GetStyle() & WS_VISIBLE) != 0);
+  BOOL bVisible = ((m_wndShadowsAndTexture.GetStyle() & WS_VISIBLE) != 0);
 
-	ShowControlBar(&m_wndShadowsAndTexture, !bVisible, FALSE);
-	RecalcLayout();
+  ShowControlBar(&m_wndShadowsAndTexture, !bVisible, FALSE);
+  RecalcLayout();
 }
 
 void CMainFrame::OnUpdateViewShadowsAndTextureBar(CCmdUI* pCmdUI)
 {
-	BOOL bVisible = ((m_wndShadowsAndTexture.GetStyle() & WS_VISIBLE) != 0);
-	pCmdUI->SetCheck(bVisible);
+  BOOL bVisible = ((m_wndShadowsAndTexture.GetStyle() & WS_VISIBLE) != 0);
+  pCmdUI->SetCheck(bVisible);
 }
 
 void CMainFrame::OnViewSelectEntityBar()
 {
-	BOOL bVisible = ((m_wndSelectEntity.GetStyle() & WS_VISIBLE) != 0);
+  BOOL bVisible = ((m_wndSelectEntity.GetStyle() & WS_VISIBLE) != 0);
 
-	ShowControlBar(&m_wndSelectEntity, !bVisible, FALSE);
-	RecalcLayout();
+  ShowControlBar(&m_wndSelectEntity, !bVisible, FALSE);
+  RecalcLayout();
 }
 
 void CMainFrame::OnUpdateViewSelectEntityBar(CCmdUI* pCmdUI)
 {
-	BOOL bVisible = ((m_wndSelectEntity.GetStyle() & WS_VISIBLE) != 0);
-	pCmdUI->SetCheck(bVisible);
+  BOOL bVisible = ((m_wndSelectEntity.GetStyle() & WS_VISIBLE) != 0);
+  pCmdUI->SetCheck(bVisible);
 }
 
 void CMainFrame::OnViewViewToolsBar()
 {
-	BOOL bVisible = ((m_wndViewTools.GetStyle() & WS_VISIBLE) != 0);
+  BOOL bVisible = ((m_wndViewTools.GetStyle() & WS_VISIBLE) != 0);
 
-	ShowControlBar(&m_wndViewTools, !bVisible, FALSE);
-	RecalcLayout();
+  ShowControlBar(&m_wndViewTools, !bVisible, FALSE);
+  RecalcLayout();
 }
 
 void CMainFrame::OnUpdateViewViewToolsBar(CCmdUI* pCmdUI)
 {
-	BOOL bVisible = ((m_wndViewTools.GetStyle() & WS_VISIBLE) != 0);
-	pCmdUI->SetCheck(bVisible);
+  BOOL bVisible = ((m_wndViewTools.GetStyle() & WS_VISIBLE) != 0);
+  pCmdUI->SetCheck(bVisible);
 }
 
 void CMainFrame::OnViewViewToolsBar2()
 {
-	BOOL bVisible = ((m_wndViewTools2.GetStyle() & WS_VISIBLE) != 0);
+  BOOL bVisible = ((m_wndViewTools2.GetStyle() & WS_VISIBLE) != 0);
 
-	ShowControlBar(&m_wndViewTools2, !bVisible, FALSE);
-	RecalcLayout();
+  ShowControlBar(&m_wndViewTools2, !bVisible, FALSE);
+  RecalcLayout();
 }
 
 void CMainFrame::OnUpdateViewViewToolsBar2(CCmdUI* pCmdUI)
 {
-	BOOL bVisible = ((m_wndViewTools2.GetStyle() & WS_VISIBLE) != 0);
-	pCmdUI->SetCheck(bVisible);
+  BOOL bVisible = ((m_wndViewTools2.GetStyle() & WS_VISIBLE) != 0);
+  pCmdUI->SetCheck(bVisible);
 }
-
-void CMainFrame::OnGameAudio()
-{
-  _pGameGUI->OnAudioQuality();
-}
-
-void CMainFrame::OnGameVideo()
-{
-  _pGameGUI->OnVideoQuality();
-}
-
-void CMainFrame::OnGamePlayer()
-{
-  _pGameGUI->OnPlayerSettings();
-}
-
-void CMainFrame::OnGameSelectPlayer()
-{
-  _pGameGUI->OnSelectPlayerAndControls();
-}
-
 
 void CMainFrame::OnShowTreeShortcuts()
 {
@@ -1498,7 +1490,8 @@ ON_STORE_MENU_SHORTCUT( OnStoreMenuShortcut10, 9);
 
 void CMainFrame::OnConsole()
 {
-  _pGameGUI->OnInvokeConsole();
+  CDlgConsole dlgConsole;
+  dlgConsole.DoModal();
 }
 
 
@@ -1515,16 +1508,16 @@ void CMainFrame::OnToolRecreateTexture()
 void CMainFrame::OnRecreateCurrentTexture()
 {
   // there must be valid texture
-  if( theApp.m_ptdActiveTexture == NULL) return;
-  CTextureData *pTD = theApp.m_ptdActiveTexture;
+  if( !theApp.m_ptdActiveTexture) return;
+  CTextureDataPtr pTD = theApp.m_ptdActiveTexture;
   CTFileName fnTextureName = pTD->GetName();
   // call recreate texture dialog
   _EngineGUI.CreateTexture( fnTextureName);
   // try to
-  CTextureData *ptdTextureToReload;
+  CTextureDataPtr ptdTextureToReload;
   try {
     // obtain texture
-    ptdTextureToReload = _pTextureStock->Obtain_t( fnTextureName);
+    ptdTextureToReload = _pTextureStock_Obtain_t( fnTextureName);
   }
   catch ( char *err_str) {
     AfxMessageBox( CString(err_str));
@@ -1533,7 +1526,7 @@ void CMainFrame::OnRecreateCurrentTexture()
   // reload the texture
   ptdTextureToReload->Reload();
   // release the texture
-  _pTextureStock->Release( ptdTextureToReload);
+  _pTextureStock_Release( ptdTextureToReload);
   // if browser is valid
   if( ::IsWindow( m_Browser.m_BrowseWindow.m_hWnd))
   {
@@ -1607,7 +1600,7 @@ void CMainFrame::OnTimer(UINT nIDEvent)
     if( hwndParent == ctt.cct_hwndCaller)
     {
       // if game is on, disable tool tips
-      if( _pInput->IsInputEnabled()) return;
+      if( _pInput_IsInputEnabled()) return;
 
       ctt.cct_pCallback( ctt.cct_pThis, achrToolTip);
 
@@ -1632,7 +1625,7 @@ void CMainFrame::OnTimer(UINT nIDEvent)
     KillTimer( 0);
   }
 
-	CMDIFrameWnd::OnTimer(nIDEvent);
+  CMDIFrameWnd::OnTimer(nIDEvent);
 }
 
 LRESULT CMainFrame::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
@@ -1647,7 +1640,7 @@ LRESULT CMainFrame::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
     }
   }
 
-	return CMDIFrameWnd::DefWindowProc(message, wParam, lParam);
+  return CMDIFrameWnd::DefWindowProc(message, wParam, lParam);
 }
 
 void CMainFrame::OnHelpFinder() 
@@ -1662,7 +1655,7 @@ void CMainFrame::OnHelpFinder()
       // if only one entity selected
       if( pDoc->m_selEntitySelection.Count() == 1)
       {
-        CEntity *pen = pDoc->m_selEntitySelection.GetFirstInSelection();  
+        CEntityPtr pen = pDoc->m_selEntitySelection.GetFirstInSelection();  
         CTFileName fnecl = pen->GetClass()->GetName();
         theApp.DisplayHelp(fnecl, HH_DISPLAY_TOPIC, NULL);
         return;
@@ -1672,11 +1665,50 @@ void CMainFrame::OnHelpFinder()
   theApp.DisplayHelp(CTFILENAME("Help\\SeriousEditorDefault.hlk"), HH_DISPLAY_TOPIC, NULL);
 }
 
+void CMainFrame::OnDisplayCameraViewfinder()
+{
+  theApp.m_displayCameraViewfinder = theApp.m_displayCameraViewfinder ? FALSE : TRUE;
+  auto* pDoc = theApp.GetDocument();
+  if (pDoc)
+    pDoc->UpdateAllViews(nullptr);
+}
+
+void CMainFrame::OnUpdateDisplayCameraViewfinder(CCmdUI* pCmdUI)
+{
+  pCmdUI->SetCheck(theApp.m_displayCameraViewfinder);
+}
+
+void CMainFrame::OnEnableCrashDumps()
+{
+  theApp.m_enableCrashDumps = theApp.m_enableCrashDumps ? FALSE : TRUE;
+  if (!theApp.m_enableCrashDumps)
+    theApp.m_enableFullCrashDumps = FALSE;
+  AfxMessageBox(_T("Please restart the application for the changes to take effect."));
+}
+
+void CMainFrame::OnUpdateEnableCrashDumps(CCmdUI* pCmdUI)
+{
+  pCmdUI->SetCheck(theApp.m_enableCrashDumps);
+}
+
+void CMainFrame::OnEnableFullCrashDumps()
+{
+  theApp.m_enableFullCrashDumps = theApp.m_enableFullCrashDumps ? FALSE : TRUE;
+  if (theApp.m_enableFullCrashDumps)
+    theApp.m_enableCrashDumps = TRUE;
+  AfxMessageBox(_T("Please restart the application for the changes to take effect."));
+}
+
+void CMainFrame::OnUpdateEnableFullCrashDumps(CCmdUI* pCmdUI)
+{
+  pCmdUI->SetCheck(theApp.m_enableFullCrashDumps);
+}
+
 void CMainFrame::SetStatusBarMessage( CTString strMessage, INDEX iPane, FLOAT fTime)
 {
   // obtain stop time
-  m_wndStatusBar.SetPaneText( iPane, CString(strMessage), TRUE);
-  FLOAT tmNow = _pTimer->GetHighPrecisionTimer().GetSeconds();
+  m_wndStatusBar.SetPaneText( iPane, CString(static_cast<const char*>(strMessage)), TRUE);
+  FLOAT tmNow = _pTimer_GetHighPrecisionTimer().GetSeconds();
   theApp.m_tmStartStatusLineInfo=tmNow + fTime;
 }
 

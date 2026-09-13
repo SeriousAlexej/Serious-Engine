@@ -29,8 +29,8 @@ class CDlgCreateEffectTexture : public CDialog
 {
 // Construction
 public:
-	CDlgCreateEffectTexture(CTFileName fnInputFile=CTString(""),CWnd* pParent = NULL);   // standard constructor
-	~CDlgCreateEffectTexture();   // standard destructor
+  CDlgCreateEffectTexture(CTFileName fnInputFile=CTString(""),CWnd* pParent = NULL);   // standard constructor
+  ~CDlgCreateEffectTexture();   // standard destructor
   void SetNewBaseTexture( CTFileName fnNewBase);
   void SelectPixSizeCombo(void);
   void InitializeSizeCombo(void);
@@ -46,46 +46,46 @@ public:
   CTextureData m_tdCreated;
 
 // Dialog Data
-	//{{AFX_DATA(CDlgCreateEffectTexture)
-	enum { IDD = IDD_CREATE_EFFECT_TEXTURE };
-	CButton	m_ctrlCheckButton;
-	CComboBox	m_ctrlMexSizeCombo;
-	CComboBox	m_ctrlPixWidthCombo;
-	CComboBox	m_ctrlPixHeightCombo;
-	CComboBox	m_ctrlEffectClassCombo;
-	CComboBox	m_ctrlEffectTypeCombo;
-	CString	m_strCreatedTextureName;
-	CString	m_strBaseTextureName;
-	CString	m_strRendSpeed;
-	//}}AFX_DATA
+  //{{AFX_DATA(CDlgCreateEffectTexture)
+  enum { IDD = IDD_CREATE_EFFECT_TEXTURE };
+  CButton  m_ctrlCheckButton;
+  CComboBox  m_ctrlMexSizeCombo;
+  CComboBox  m_ctrlPixWidthCombo;
+  CComboBox  m_ctrlPixHeightCombo;
+  CComboBox  m_ctrlEffectClassCombo;
+  CComboBox  m_ctrlEffectTypeCombo;
+  CString  m_strCreatedTextureName;
+  CString  m_strBaseTextureName;
+  CString  m_strRendSpeed;
+  //}}AFX_DATA
 
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CDlgCreateEffectTexture)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CDlgCreateEffectTexture)
+  protected:
+  virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+  //}}AFX_VIRTUAL
 
 // Implementation
 protected:
 
-	// Generated message map functions
-	//{{AFX_MSG(CDlgCreateEffectTexture)
-	afx_msg void OnPaint();
-	afx_msg void OnChequeredAlpha();
-	virtual BOOL OnInitDialog();
-	afx_msg void OnBrowseBase();
-	afx_msg void OnCreateAs();
-	afx_msg void OnRemoveAllEffects();
-	afx_msg void OnSelchangePixHeight();
-	afx_msg void OnSelchangePixWidth();
-	afx_msg void OnSelchangeMexSize();
-	afx_msg void OnCreate();
-	afx_msg void OnSelchangeEffectClass();
-	afx_msg void OnSelchangeEffectType();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+  // Generated message map functions
+  //{{AFX_MSG(CDlgCreateEffectTexture)
+  afx_msg void OnPaint();
+  afx_msg void OnChequeredAlpha();
+  virtual BOOL OnInitDialog();
+  afx_msg void OnBrowseBase();
+  afx_msg void OnCreateAs();
+  afx_msg void OnRemoveAllEffects();
+  afx_msg void OnSelchangePixHeight();
+  afx_msg void OnSelchangePixWidth();
+  afx_msg void OnSelchangeMexSize();
+  afx_msg void OnCreate();
+  afx_msg void OnSelchangeEffectClass();
+  afx_msg void OnSelchangeEffectType();
+  //}}AFX_MSG
+  DECLARE_MESSAGE_MAP()
 };
 
 //{{AFX_INSERT_LOCATION}}

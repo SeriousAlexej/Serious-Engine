@@ -25,9 +25,9 @@ class CTextureComboBox : public CComboBox
 {
 // Construction
 public:
-	BOOL OnIdle(LONG lCount);
-  CTextureData *m_ptdSelectedTexture;
-	CTextureComboBox();
+  BOOL OnIdle(LONG lCount);
+  CTextureDataPtr m_ptdSelectedTexture;
+  CTextureComboBox();
 
 // Attributes
 public:
@@ -36,22 +36,22 @@ public:
 public:
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CTextureComboBox)
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CTextureComboBox)
+  //}}AFX_VIRTUAL
 
 // Implementation
 public:
-	virtual ~CTextureComboBox();
+  virtual ~CTextureComboBox();
 
-	// Generated message map functions
+  // Generated message map functions
 protected:
-	//{{AFX_MSG(CTextureComboBox)
-	afx_msg void OnSelchange();
-	afx_msg void OnDropdown();
-	//}}AFX_MSG
+  //{{AFX_MSG(CTextureComboBox)
+  afx_msg void OnSelchange();
+  afx_msg void OnDropdown();
+  //}}AFX_MSG
 
-	DECLARE_MESSAGE_MAP()
+  DECLARE_MESSAGE_MAP()
 };
 
 /////////////////////////////////////////////////////////////////////////////

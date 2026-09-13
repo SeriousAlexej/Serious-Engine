@@ -26,10 +26,13 @@ class ColorWidget : public QWidget
 {
   Q_OBJECT
 public:
-  ColorWidget(QColor col, QWidget* parent);
+  ColorWidget(int hue, int sat, int val, int alp, QWidget* parent);
 
   void SetColor(QColor col);
-  QColor GetColor() const;
+  int Hue() const;
+  int Saturation() const;
+  int Value() const;
+  int Alpha() const;
 
   Q_SIGNAL void clicked();
   Q_SIGNAL void colorChanged();
@@ -60,8 +63,11 @@ private:
   };
 
 private:
-  QColor m_col;
-  EMode  m_mode;
+  int m_hue;
+  int m_sat;
+  int m_val;
+  int m_alp;
+  EMode  m_mode = EMode::Idle;
   QPoint m_edit_start_pos;
 };
 

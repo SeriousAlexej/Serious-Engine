@@ -29,31 +29,31 @@ class CDlgAutoMipModeling : public CDialog
 {
 // Construction
 public:
-	CDlgAutoMipModeling(CWnd* pParent = NULL);   // standard constructor
+  CDlgAutoMipModeling(CWnd* pParent = NULL);   // standard constructor
 
 // Dialog Data
-	//{{AFX_DATA(CDlgAutoMipModeling)
-	enum { IDD = IDD_AUTO_MIP_MODELING };
-	int		m_iVerticesToRemove;
-	int		m_iSurfacePreservingFactor;
-	//}}AFX_DATA
+  //{{AFX_DATA(CDlgAutoMipModeling)
+  enum { IDD = IDD_AUTO_MIP_MODELING };
+  int    m_iVerticesToRemove;
+  int    m_iSurfacePreservingFactor;
+  //}}AFX_DATA
 
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CDlgAutoMipModeling)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CDlgAutoMipModeling)
+  protected:
+  virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+  //}}AFX_VIRTUAL
 
 // Implementation
 protected:
 
-	// Generated message map functions
-	//{{AFX_MSG(CDlgAutoMipModeling)
-		// NOTE: the ClassWizard will add member functions here
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+  // Generated message map functions
+  //{{AFX_MSG(CDlgAutoMipModeling)
+    // NOTE: the ClassWizard will add member functions here
+  //}}AFX_MSG
+  DECLARE_MESSAGE_MAP()
 };
 
 //{{AFX_INSERT_LOCATION}}

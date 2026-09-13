@@ -28,6 +28,7 @@ public:
   bool IsUnderMouse() const;
   CPropertyID* GetSelectedProperty() const;
   void SaveState() const;
+  void Reset();
 
 public:
   CSize m_Size;

@@ -20,8 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class CModelerDoc : public CDocument
 {
 protected: // create from serialization only
-	CModelerDoc();
-	DECLARE_DYNCREATE(CModelerDoc)
+  CModelerDoc();
+  DECLARE_DYNCREATE(CModelerDoc)
 
 // Attributes
 public:
@@ -32,9 +32,9 @@ public:
   void SelectMipModel( INDEX iMipToSelect);
   void ClearAttachments( void);
   void SetupAttachments( void);
-  CAttachmentModelObject *GetAttachmentModelObject( INDEX iAttachment);
-	void OnIdle(void);
-	CEditModel m_emEditModel;
+  CAttachmentModelObjectPtr GetAttachmentModelObject( INDEX iAttachment);
+  void OnIdle(void);
+  CEditModel m_emEditModel;
 
   // overridden from mfc to discard rendering precalculations
   void SetModifiedFlag( BOOL bModified = TRUE );
@@ -61,34 +61,34 @@ public:
   BOOL m_bDocLoadedOk;
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CModelerDoc)
-	public:
-	virtual void Serialize(CArchive& ar);
-	virtual BOOL OnOpenDocument(LPCTSTR lpszPathName);
-	virtual BOOL OnSaveDocument(LPCTSTR lpszPathName);
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CModelerDoc)
+  public:
+  virtual void Serialize(CArchive& ar);
+  virtual BOOL OnOpenDocument(LPCTSTR lpszPathName);
+  virtual BOOL OnSaveDocument(LPCTSTR lpszPathName);
+  //}}AFX_VIRTUAL
 
 // Implementation
 public:
-	virtual ~CModelerDoc();
+  virtual ~CModelerDoc();
 #ifdef _DEBUG
-	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
+  virtual void AssertValid() const;
+  virtual void Dump(CDumpContext& dc) const;
 #endif
 
 protected:
 
 // Generated message map functions
 public:
-	//{{AFX_MSG(CModelerDoc)
-	afx_msg void OnFileAddTexture();
-	afx_msg void OnUpdateFileAddTexture(CCmdUI* pCmdUI);
-	afx_msg void OnNextSurface();
-	afx_msg void OnPrevSurface();
-	afx_msg void OnLinkSurfaces();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+  //{{AFX_MSG(CModelerDoc)
+  afx_msg void OnFileAddTexture();
+  afx_msg void OnUpdateFileAddTexture(CCmdUI* pCmdUI);
+  afx_msg void OnNextSurface();
+  afx_msg void OnPrevSurface();
+  afx_msg void OnLinkSurfaces();
+  //}}AFX_MSG
+  DECLARE_MESSAGE_MAP()
 };
 
 /////////////////////////////////////////////////////////////////////////////

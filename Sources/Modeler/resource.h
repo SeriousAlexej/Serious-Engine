@@ -5,7 +5,6 @@
 #define ID_EXPORT                       3
 #define ID_CLEAR_SELECTION              3
 #define ID_SELECT_ALL                   4
-#define IDD_ABOUTBOX                    100
 #define ID_MAGNIFY_MORE                 106
 #define ID_MAGNIFY_LESS                 107
 #define ID_TEST_MODE_WND                109
@@ -665,6 +664,8 @@
 #define ID_TESSELLATE_LESS              33160
 #define ID_APP_ABOUT_QT                 33161
 #define ID_ALTERNATIVE_MOVING_MODE      33162
+#define ID_ENABLE_CRASH_DUMPS           33163
+#define ID_ENABLE_FULL_CRASH_DUMPS      33164
 #define IDW_TOOLBAR_MAIN                0xE800
 #define IDW_STATUS_BAR                  0xE801
 #define IDW_TOOLBAR_ANIMATION           0xE802
@@ -687,7 +688,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        191
-#define _APS_NEXT_COMMAND_VALUE         33163
+#define _APS_NEXT_COMMAND_VALUE         33165
 #define _APS_NEXT_CONTROL_VALUE         1315
 #define _APS_NEXT_SYMED_VALUE           110
 #endif

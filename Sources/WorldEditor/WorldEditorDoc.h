@@ -64,8 +64,7 @@ enum CSGType
 
 class CUndo
 {
-public:  
-  CListNode m_lnListNode;
+public:
   CTFileName m_fnmUndoFile;     // name of temporary file used for undo/redo
   /* Constructor. */
   CUndo(void);    // throw char * 
@@ -76,18 +75,18 @@ public:
 class CWorldEditorDoc : public CDocument
 {
 protected: // create from serialization only
-	CWorldEditorDoc();
-	DECLARE_DYNCREATE(CWorldEditorDoc)
+  CWorldEditorDoc();
+  DECLARE_DYNCREATE(CWorldEditorDoc)
 
 // Attributes
 public:
-  CDynamicContainer<CTerrainUndo> m_dcTerrainUndo;
+  std::vector<std::unique_ptr<CTerrainUndo>> m_dcTerrainUndo;
   INDEX m_iCurrentTerrainUndo;
   BOOL m_bAskedToCheckOut;
   SLONG m_slDisplaceTexTime;
   INDEX m_iMirror;
   INDEX m_iTexture;
-  CTerrain *m_ptrSelectedTerrain;
+  CTerrainPtr m_ptrSelectedTerrain;
   CTextureObject m_toBackdropUp;
   CTextureObject m_toBackdropFt;
   CTextureObject m_toBackdropRt;
@@ -113,9 +112,10 @@ public:
   enum CSGType m_csgtPreLastUsedCSGOperation;
   enum CSGType m_csgtLastUsedCSGOperation;
   // list head for undo
-  CListHead m_lhUndo;
+  std::list<std::unique_ptr<CUndo>> m_lhUndo;
   // list head for redo
-  CListHead m_lhRedo;
+  std::list<std::unique_ptr<CUndo>> m_lhRedo;
+  BOOL m_absoluteRotation;
   BOOL m_bAutoSnap;
   BOOL m_bOrientationIcons;
   BOOL m_bPrimitiveMode;
@@ -124,24 +124,25 @@ public:
   CPlacement3D m_plSecondLayer;
   CPlacement3D m_plDeltaPlacement;
   CPlacement3D m_plLastPlacement;
+  CPlacement3D m_plMouseMove;   // used for continous mouse editting
   CWorld m_woWorld;
-  CWorld *m_pwoSecondLayer;   // world for holding second layer
-  CEntity *m_penPrimitive;
+  std::unique_ptr<CWorld> m_pwoSecondLayer;   // world for holding second layer
+  CEntityPtr m_penPrimitive;
   // index for holding pre CSG mode
   INDEX m_iPreCSGMode;
   INDEX m_iMode;
 
   // volume selection
-  CDynamicContainer<CEntity> m_cenEntitiesSelectedByVolume;
+  CDynamicContainer_CEntity m_cenEntitiesSelectedByVolume;
   INDEX m_iSelectedEntityInVolume;
   // selections
   NewEntitySelection m_selEntitySelection;
   CBrushSectorSelection m_selSectorSelection;
   CBrushVertexSelection m_selVertexSelection;
-  CStaticArray<DOUBLE3D> m_avStartDragVertices;
+  std::vector<DOUBLE3D> m_avStartDragVertices;
   CBrushPolygonSelection m_selPolygonSelection;
-  CStaticArray<CPlacement3D> m_aSelectedEntityPlacements;
-  CBrushPolygon *m_pbpoLastCentered;
+  std::vector<CPlacement3D> m_aSelectedEntityPlacements;
+  CBrushPolygonPtr m_pbpoLastCentered;
 
   CChangeableRT m_chSelections;
   CChangeableRT m_chDocument;
@@ -153,8 +154,16 @@ public:
   FLOAT3D m_vCutLineEnd;
   FLOAT3D m_vControlLineDragStart;
 
-// Operations
+private:
+  CWorldEditorView* m_exclusive_gizmo_visibility = nullptr;
+  bool m_gizmo_visibility = false;
+
 public:
+  void FlipRotationMode();
+  void UpdateGizmoVisibility();
+  bool GizmoVisible(const CWorldEditorView* view) const;
+
+  void UpdateSelectionCommonPos();
   // Function corects coordinates of vertices that represent box because given vertice is
   // moved and box has invalid geometry
   void CorrectBox(INDEX iMovedVtx, FLOAT3D vNewPosition);
@@ -170,7 +179,7 @@ public:
   void CreateStaircasesPrimitive(void);
   void CreateSpherePrimitive(void);
   void CreateTerrainPrimitive(void);
-  void CreateTerrainObject3D( CImageInfo *piiDisplace, INDEX iSlicesX, INDEX iSlicesZ, INDEX iMip);
+  void CreateTerrainObject3D( CImageInfoPtr piiDisplace, INDEX iSlicesX, INDEX iSlicesZ, INDEX iMip);
   void CreatePrimitive(void);
   // apply auto colorize function
   void ApplyAutoColorize(void);
@@ -206,9 +215,9 @@ public:
   // does "snap to grid" for primitive values
   void SnapPrimitiveValuesToGrid(void);
   // saves curent state of the world as tail of give undo/redo list
-  void SaveWorldIntoUndoRedoList( CListHead &lhList);
+  void SaveWorldIntoUndoRedoList(std::list<std::unique_ptr<CUndo>>& lhList);
   // restores last operation from given undo/redo object
-  void LoadWorldFromUndoRedoList( CUndo *pUndoRedo);
+  void LoadWorldFromUndoRedoList( CUndo& pUndoRedo);
   // remembers last operation into undo buffer
   void RememberUndo(void);
   // undoes last operation
@@ -216,7 +225,7 @@ public:
   // redoes last undoed operation
   void Redo(void);
   // retrieves editing mode
-  inline INDEX GetEditingMode() { return m_iMode;};
+  inline INDEX GetEditingMode() const { return m_iMode;};
   // selects all entities in volume
   void OnSelectAllInVolume(void);
   // sets editing mode
@@ -246,11 +255,11 @@ public:
 
   // show/hide functoins
   void OnHideSelectedEntities(void);
-	void OnHideUnselectedEntities(void);
-	void OnShowAllEntities(void);
+  void OnHideUnselectedEntities(void);
+  void OnShowAllEntities(void);
   void OnHideSelectedSectors(void);
-	void OnHideUnselectedSectors(void);
-	void OnShowAllSectors(void);
+  void OnHideUnselectedSectors(void);
+  void OnShowAllSectors(void);
   void SetModifiedFlag( BOOL bModified = TRUE);
 
   void ReloadWorld(void);
@@ -259,109 +268,109 @@ public:
 
   void OnIdle(void);
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CWorldEditorDoc)
-	public:
-	virtual BOOL OnNewDocument();
-	virtual void Serialize(CArchive& ar);
-	virtual BOOL OnOpenDocument(LPCTSTR lpszPathName);
-	virtual BOOL OnSaveDocument(LPCTSTR lpszPathName);
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CWorldEditorDoc)
+  public:
+  virtual BOOL OnNewDocument();
+  virtual void Serialize(CArchive& ar);
+  virtual BOOL OnOpenDocument(LPCTSTR lpszPathName);
+  virtual BOOL OnSaveDocument(LPCTSTR lpszPathName);
+  //}}AFX_VIRTUAL
 
 // Implementation
 public:
-	virtual ~CWorldEditorDoc();
+  virtual ~CWorldEditorDoc();
 #ifdef _DEBUG
-	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
+  virtual void AssertValid() const;
+  virtual void Dump(CDumpContext& dc) const;
 #endif
 
 protected:
 
 // Generated message map functions
 public:
-	//{{AFX_MSG(CWorldEditorDoc)
-	afx_msg void OnCsgSplitSectors();
-	afx_msg void OnUpdateCsgSplitSectors(CCmdUI* pCmdUI);
-	afx_msg void OnCsgCancel();
-	afx_msg void OnShowOrientation();
-	afx_msg void OnUpdateShowOrientation(CCmdUI* pCmdUI);
-	afx_msg void OnEditUndo();
-	afx_msg void OnEditRedo();
-	afx_msg void OnUpdateEditUndo(CCmdUI* pCmdUI);
-	afx_msg void OnUpdateEditRedo(CCmdUI* pCmdUI);
-	afx_msg void OnWorldSettings();
-	afx_msg void OnCsgJoinSectors();
-	afx_msg void OnUpdateCsgJoinSectors(CCmdUI* pCmdUI);
-	afx_msg void OnAutoSnap();
-	afx_msg void OnCsgAdd();
-	afx_msg void OnUpdateCsgAdd(CCmdUI* pCmdUI);
-	afx_msg void OnCsgRemove();
-	afx_msg void OnUpdateCsgRemove(CCmdUI* pCmdUI);
-	afx_msg void OnCsgSplitPolygons();
-	afx_msg void OnUpdateCsgSplitPolygons(CCmdUI* pCmdUI);
-	afx_msg void OnCsgJoinPolygons();
-	afx_msg void OnUpdateCsgJoinPolygons(CCmdUI* pCmdUI);
-	afx_msg void OnCalculateShadows();
-	afx_msg void OnBrowseEntitiesMode();
-	afx_msg void OnUpdateBrowseEntitiesMode(CCmdUI* pCmdUI);
-	afx_msg void OnPreviousSelectedEntity();
-	afx_msg void OnUpdatePreviousSelectedEntity(CCmdUI* pCmdUI);
-	afx_msg void OnNextSelectedEntity();
-	afx_msg void OnUpdateNextSelectedEntity(CCmdUI* pCmdUI);
-	afx_msg void OnJoinLayers();
-	afx_msg void OnUpdateAutoSnap(CCmdUI* pCmdUI);
-	afx_msg void OnSelectByClass();
-	afx_msg void OnUpdateSelectByClass(CCmdUI* pCmdUI);
-	afx_msg void OnCsgJoinAllPolygons();
-	afx_msg void OnUpdateCsgJoinAllPolygons(CCmdUI* pCmdUI);
-	afx_msg void OnTexture1();
-	afx_msg void OnUpdateTexture1(CCmdUI* pCmdUI);
-	afx_msg void OnTexture2();
-	afx_msg void OnUpdateTexture2(CCmdUI* pCmdUI);
-	afx_msg void OnTexture3();
-	afx_msg void OnUpdateTexture3(CCmdUI* pCmdUI);
-	afx_msg void OnTextureMode1();
-	afx_msg void OnTextureMode2();
-	afx_msg void OnTextureMode3();
-	afx_msg void OnSaveThumbnail();
-	afx_msg void OnUpdateLinks();
-	afx_msg void OnSnapshot();
-	afx_msg void OnMirrorAndStretch();
-	afx_msg void OnFlipLayer();
-	afx_msg void OnUpdateFlipLayer(CCmdUI* pCmdUI);
-	afx_msg void OnFilterSelection();
-	afx_msg void OnUpdateClones();
-	afx_msg void OnUpdateUpdateClones(CCmdUI* pCmdUI);
-	afx_msg void OnSelectByClassAll();
-	afx_msg void OnHideSelected();
-	afx_msg void OnUpdateHideSelected(CCmdUI* pCmdUI);
-	afx_msg void OnHideUnselected();
-	afx_msg void OnShowAll();
-	afx_msg void OnCheckEdit();
-	afx_msg void OnCheckAdd();
-        afx_msg void OnCheckDelete();
-	afx_msg void OnUpdateCheckEdit(CCmdUI* pCmdUI);
-	afx_msg void OnUpdateCheckAdd(CCmdUI* pCmdUI);
-        afx_msg void OnUpdateCheckDelete(CCmdUI* pCmdUI);
-	afx_msg void OnUpdateBrushes();
-	afx_msg void OnSelectByClassImportant();
-	afx_msg void OnInsert3dObject();
-	afx_msg void OnExport3dObject();
-	afx_msg void OnUpdateExport3dObject(CCmdUI* pCmdUI);
-	afx_msg void OnCrossroadForN();
-	afx_msg void OnPopupVtxAllign();
-	afx_msg void OnPopupVtxFilter();
-	afx_msg void OnPopupVtxNumeric();
-	afx_msg void OnTextureMode4();
-	afx_msg void OnTextureMode5();
-	afx_msg void OnTextureMode6();
-	afx_msg void OnTextureMode7();
-	afx_msg void OnTextureMode8();
-	afx_msg void OnTextureMode9();
-	afx_msg void OnTextureMode10();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+  //{{AFX_MSG(CWorldEditorDoc)
+  afx_msg void OnCsgSplitSectors();
+  afx_msg void OnUpdateCsgSplitSectors(CCmdUI* pCmdUI);
+  afx_msg void OnCsgCancel();
+  afx_msg void OnShowOrientation();
+  afx_msg void OnUpdateShowOrientation(CCmdUI* pCmdUI);
+  afx_msg void OnEditUndo();
+  afx_msg void OnEditRedo();
+  afx_msg void OnUpdateEditUndo(CCmdUI* pCmdUI);
+  afx_msg void OnUpdateEditRedo(CCmdUI* pCmdUI);
+  afx_msg void OnWorldSettings();
+  afx_msg void OnCsgJoinSectors();
+  afx_msg void OnUpdateCsgJoinSectors(CCmdUI* pCmdUI);
+  afx_msg void OnAutoSnap();
+  afx_msg void OnCsgAdd();
+  afx_msg void OnUpdateCsgAdd(CCmdUI* pCmdUI);
+  afx_msg void OnCsgRemove();
+  afx_msg void OnUpdateCsgRemove(CCmdUI* pCmdUI);
+  afx_msg void OnCsgSplitPolygons();
+  afx_msg void OnUpdateCsgSplitPolygons(CCmdUI* pCmdUI);
+  afx_msg void OnCsgJoinPolygons();
+  afx_msg void OnUpdateCsgJoinPolygons(CCmdUI* pCmdUI);
+  afx_msg void OnCalculateShadows();
+  afx_msg void OnBrowseEntitiesMode();
+  afx_msg void OnUpdateBrowseEntitiesMode(CCmdUI* pCmdUI);
+  afx_msg void OnPreviousSelectedEntity();
+  afx_msg void OnUpdatePreviousSelectedEntity(CCmdUI* pCmdUI);
+  afx_msg void OnNextSelectedEntity();
+  afx_msg void OnUpdateNextSelectedEntity(CCmdUI* pCmdUI);
+  afx_msg void OnJoinLayers();
+  afx_msg void OnUpdateAutoSnap(CCmdUI* pCmdUI);
+  afx_msg void OnSelectByClass();
+  afx_msg void OnUpdateSelectByClass(CCmdUI* pCmdUI);
+  afx_msg void OnCsgJoinAllPolygons();
+  afx_msg void OnUpdateCsgJoinAllPolygons(CCmdUI* pCmdUI);
+  afx_msg void OnTexture1();
+  afx_msg void OnUpdateTexture1(CCmdUI* pCmdUI);
+  afx_msg void OnTexture2();
+  afx_msg void OnUpdateTexture2(CCmdUI* pCmdUI);
+  afx_msg void OnTexture3();
+  afx_msg void OnUpdateTexture3(CCmdUI* pCmdUI);
+  afx_msg void OnTextureMode1();
+  afx_msg void OnTextureMode2();
+  afx_msg void OnTextureMode3();
+  afx_msg void OnSaveThumbnail();
+  afx_msg void OnUpdateLinks();
+  afx_msg void OnSnapshot();
+  afx_msg void OnMirrorAndStretch();
+  afx_msg void OnFlipLayer();
+  afx_msg void OnUpdateFlipLayer(CCmdUI* pCmdUI);
+  afx_msg void OnFilterSelection();
+  afx_msg void OnUpdateClones();
+  afx_msg void OnUpdateUpdateClones(CCmdUI* pCmdUI);
+  afx_msg void OnSelectByClassAll();
+  afx_msg void OnHideSelected();
+  afx_msg void OnUpdateHideSelected(CCmdUI* pCmdUI);
+  afx_msg void OnHideUnselected();
+  afx_msg void OnShowAll();
+  afx_msg void OnCheckEdit();
+  afx_msg void OnCheckAdd();
+  afx_msg void OnCheckDelete();
+  afx_msg void OnUpdateCheckEdit(CCmdUI* pCmdUI);
+  afx_msg void OnUpdateCheckAdd(CCmdUI* pCmdUI);
+  afx_msg void OnUpdateCheckDelete(CCmdUI* pCmdUI);
+  afx_msg void OnUpdateBrushes();
+  afx_msg void OnSelectByClassImportant();
+  afx_msg void OnInsert3dObject();
+  afx_msg void OnExport3dObject();
+  afx_msg void OnUpdateExport3dObject(CCmdUI* pCmdUI);
+  afx_msg void OnCrossroadForN();
+  afx_msg void OnPopupVtxAllign();
+  afx_msg void OnPopupVtxFilter();
+  afx_msg void OnPopupVtxNumeric();
+  afx_msg void OnTextureMode4();
+  afx_msg void OnTextureMode5();
+  afx_msg void OnTextureMode6();
+  afx_msg void OnTextureMode7();
+  afx_msg void OnTextureMode8();
+  afx_msg void OnTextureMode9();
+  afx_msg void OnTextureMode10();
+  //}}AFX_MSG
+  DECLARE_MESSAGE_MAP()
   afx_msg void OnExportPlacements();
   afx_msg void OnExportEntities();
 };

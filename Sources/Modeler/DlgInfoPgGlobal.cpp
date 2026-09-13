@@ -32,17 +32,17 @@ IMPLEMENT_DYNCREATE(CDlgInfoPgGlobal, CPropertyPage)
 
 CDlgInfoPgGlobal::CDlgInfoPgGlobal() : CPropertyPage(CDlgInfoPgGlobal::IDD)
 {
-	//{{AFX_DATA_INIT(CDlgInfoPgGlobal)
+  //{{AFX_DATA_INIT(CDlgInfoPgGlobal)
   m_strFlat = _T("");
-	m_strTextureSize = _T("");
-	m_strWndSize = _T("");
-	m_strReflections = _T("");
-	m_strDifuse = _T("");
-	m_strHighQuality = _T("");
-	m_strSpecular = _T("");
-	m_strMaxShadow = _T("");
-	m_strBump = _T("");
-	//}}AFX_DATA_INIT
+  m_strTextureSize = _T("");
+  m_strWndSize = _T("");
+  m_strReflections = _T("");
+  m_strDifuse = _T("");
+  m_strHighQuality = _T("");
+  m_strSpecular = _T("");
+  m_strMaxShadow = _T("");
+  m_strBump = _T("");
+  //}}AFX_DATA_INIT
 
   theApp.m_pPgInfoGlobal = this;
   m_colorDiffuse.m_pwndParentDialog = this;
@@ -93,10 +93,10 @@ void CDlgInfoPgGlobal::SetGlobalPageFromView(CModelerView* pModelerView)
   m_colorSpecular.SetColor(pDoc->m_emEditModel.edm_md.md_colSpecular);
   m_colorBump.SetColor(pDoc->m_emEditModel.edm_md.md_colBump);
 
-  m_strDifuse = pModelerView->m_ModelObject.mo_toTexture.GetName();
-  m_strReflections = pModelerView->m_ModelObject.mo_toReflection.GetName();
-  m_strSpecular = pModelerView->m_ModelObject.mo_toSpecular.GetName();
-  m_strBump = pModelerView->m_ModelObject.mo_toBump.GetName();
+  m_strDifuse = *pModelerView->m_ModelObject.mo_toTexture.GetName();
+  m_strReflections = *pModelerView->m_ModelObject.mo_toReflection.GetName();
+  m_strSpecular = *pModelerView->m_ModelObject.mo_toSpecular.GetName();
+  m_strBump = *pModelerView->m_ModelObject.mo_toBump.GetName();
 
   if( m_strDifuse == "") m_strDifuse = "<none>";
   if( m_strReflections == "") m_strReflections = "<none>";
@@ -128,21 +128,21 @@ void CDlgInfoPgGlobal::DoDataExchange(CDataExchange* pDX)
   }
 
   CPropertyPage::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CDlgInfoPgGlobal)
-	DDX_Control(pDX, IDC_DIFUSE_COLOR, m_colorDiffuse);
-	DDX_Control(pDX, IDC_BUMP_COLOR, m_colorBump);
-	DDX_Control(pDX, IDC_SPECULAR_COLOR, m_colorSpecular);
-	DDX_Control(pDX, IDC_REFLECTION_COLOR, m_colorReflection);
-	DDX_Text(pDX, IDC_FLAT, m_strFlat);
-	DDX_Text(pDX, IDC_TEX_SIZE, m_strTextureSize);
-	DDX_Text(pDX, IDC_WINDOW_SIZE, m_strWndSize);
-	DDX_Text(pDX, IDC_REFLECTIONS, m_strReflections);
-	DDX_Text(pDX, IDC_DIFUSE, m_strDifuse);
-	DDX_Text(pDX, IDC_HIGH_QUALITY, m_strHighQuality);
-	DDX_Text(pDX, IDC_SPECULAR, m_strSpecular);
-	DDX_Text(pDX, IDC_MAX_SHADOW, m_strMaxShadow);
-	DDX_Text(pDX, IDC_BUMP, m_strBump);
-	//}}AFX_DATA_MAP
+  //{{AFX_DATA_MAP(CDlgInfoPgGlobal)
+  DDX_Control(pDX, IDC_DIFUSE_COLOR, m_colorDiffuse);
+  DDX_Control(pDX, IDC_BUMP_COLOR, m_colorBump);
+  DDX_Control(pDX, IDC_SPECULAR_COLOR, m_colorSpecular);
+  DDX_Control(pDX, IDC_REFLECTION_COLOR, m_colorReflection);
+  DDX_Text(pDX, IDC_FLAT, m_strFlat);
+  DDX_Text(pDX, IDC_TEX_SIZE, m_strTextureSize);
+  DDX_Text(pDX, IDC_WINDOW_SIZE, m_strWndSize);
+  DDX_Text(pDX, IDC_REFLECTIONS, m_strReflections);
+  DDX_Text(pDX, IDC_DIFUSE, m_strDifuse);
+  DDX_Text(pDX, IDC_HIGH_QUALITY, m_strHighQuality);
+  DDX_Text(pDX, IDC_SPECULAR, m_strSpecular);
+  DDX_Text(pDX, IDC_MAX_SHADOW, m_strMaxShadow);
+  DDX_Text(pDX, IDC_BUMP, m_strBump);
+  //}}AFX_DATA_MAP
 
   if( pDX->m_bSaveAndValidate) {
     SetViewFromGlobalPage( pModelerView);
@@ -150,8 +150,8 @@ void CDlgInfoPgGlobal::DoDataExchange(CDataExchange* pDX)
 }
 
 BEGIN_MESSAGE_MAP(CDlgInfoPgGlobal, CPropertyPage)
-	//{{AFX_MSG_MAP(CDlgInfoPgGlobal)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CDlgInfoPgGlobal)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -172,6 +172,6 @@ BOOL CDlgInfoPgGlobal::OnIdle(LONG lCount)
 BOOL CDlgInfoPgGlobal::OnSetActive() 
 {
   // mark that all values should be updated
-	return CPropertyPage::OnSetActive();
+  return CPropertyPage::OnSetActive();
 }
 

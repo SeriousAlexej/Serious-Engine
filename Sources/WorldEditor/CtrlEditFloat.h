@@ -25,7 +25,7 @@ class CCtrlEditFloat : public CEdit
 {
 // Construction
 public:
-	CCtrlEditFloat();
+  CCtrlEditFloat();
 
 // Attributes
 public:
@@ -38,23 +38,23 @@ public:
   void SetDialogPtr( CPropertyComboBar *pDialog);
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CCtrlEditFloat)
-	public:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CCtrlEditFloat)
+  public:
+  virtual BOOL PreTranslateMessage(MSG* pMsg);
+  //}}AFX_VIRTUAL
 
 // Implementation
 public:
-	virtual ~CCtrlEditFloat();
+  virtual ~CCtrlEditFloat();
 
-	// Generated message map functions
+  // Generated message map functions
 protected:
-	//{{AFX_MSG(CCtrlEditFloat)
-	afx_msg void OnChange();
-	//}}AFX_MSG
+  //{{AFX_MSG(CCtrlEditFloat)
+  afx_msg void OnChange();
+  //}}AFX_MSG
 
-	DECLARE_MESSAGE_MAP()
+  DECLARE_MESSAGE_MAP()
 };
 
 /////////////////////////////////////////////////////////////////////////////

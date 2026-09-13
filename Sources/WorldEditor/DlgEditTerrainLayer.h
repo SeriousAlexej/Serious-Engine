@@ -29,55 +29,55 @@ class CDlgEditTerrainLayer : public CDialog
 {
 // Construction
 public:
-	CDlgEditTerrainLayer(CWnd* pParent = NULL);   // standard constructor 
+  CDlgEditTerrainLayer(CWnd* pParent = NULL);   // standard constructor 
 
 // Dialog Data
-	//{{AFX_DATA(CDlgEditTerrainLayer)
-	enum { IDD = IDD_EDIT_TERRAIN_LAYER };
-	BOOL	m_bAutoGenerate;
-	float	m_fAltitudeMax;
-	float	m_fAltitudeMaxFade;
-	float	m_fAltitudeMin;
-	float	m_fAltitudeMinFade;
-	float	m_fLayerCoverage;
-	CString	m_strLayerName;
-	float	m_fTextureOffsetX;
-	float	m_fTextureOffsetY;
-	float	m_fTextureRotationU;
-	float	m_fTextureRotationV;
-	float	m_fSlopeMax;
-	float	m_fSlopeMaxFade;
-	float	m_fSlopeMin;
-	float	m_fSlopeMinFade;
-	float	m_fTextureStretchX;
-	float	m_fTextureStretchY;
-	float	m_fCoverageFade;
-	float	m_fAltitudeMaxNoise;
-	BOOL	m_bApplyMaxAltitude;
-	BOOL	m_bApplyMaxSlope;
-	BOOL	m_bApplyMinAltitude;
-	BOOL	m_bApplyMinSlope;
-	float	m_fAltitudeMinNoise;
-	float	m_fSlopeMaxNoise;
-	float	m_fSlopeMinNoise;
-	//}}AFX_DATA
+  //{{AFX_DATA(CDlgEditTerrainLayer)
+  enum { IDD = IDD_EDIT_TERRAIN_LAYER };
+  BOOL  m_bAutoGenerate;
+  float  m_fAltitudeMax;
+  float  m_fAltitudeMaxFade;
+  float  m_fAltitudeMin;
+  float  m_fAltitudeMinFade;
+  float  m_fLayerCoverage;
+  CString  m_strLayerName;
+  float  m_fTextureOffsetX;
+  float  m_fTextureOffsetY;
+  float  m_fTextureRotationU;
+  float  m_fTextureRotationV;
+  float  m_fSlopeMax;
+  float  m_fSlopeMaxFade;
+  float  m_fSlopeMin;
+  float  m_fSlopeMinFade;
+  float  m_fTextureStretchX;
+  float  m_fTextureStretchY;
+  float  m_fCoverageFade;
+  float  m_fAltitudeMaxNoise;
+  BOOL  m_bApplyMaxAltitude;
+  BOOL  m_bApplyMaxSlope;
+  BOOL  m_bApplyMinAltitude;
+  BOOL  m_bApplyMinSlope;
+  float  m_fAltitudeMinNoise;
+  float  m_fSlopeMaxNoise;
+  float  m_fSlopeMinNoise;
+  //}}AFX_DATA
 
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CDlgEditTerrainLayer)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CDlgEditTerrainLayer)
+  protected:
+  virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+  //}}AFX_VIRTUAL
 
 // Implementation
 protected:
 
-	// Generated message map functions
-	//{{AFX_MSG(CDlgEditTerrainLayer)
-		// NOTE: the ClassWizard will add member functions here
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+  // Generated message map functions
+  //{{AFX_MSG(CDlgEditTerrainLayer)
+    // NOTE: the ClassWizard will add member functions here
+  //}}AFX_MSG
+  DECLARE_MESSAGE_MAP()
 };
 
 //{{AFX_INSERT_LOCATION}}

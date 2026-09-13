@@ -25,7 +25,7 @@ class CStainsComboBox : public CComboBox
 {
 // Construction
 public:
-	CStainsComboBox();
+  CStainsComboBox();
 
 // Attributes
 public:
@@ -34,22 +34,22 @@ public:
 public:
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CStainsComboBox)
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CStainsComboBox)
+  //}}AFX_VIRTUAL
 
 // Implementation
 public:
-	virtual ~CStainsComboBox();
+  virtual ~CStainsComboBox();
   void Refresh();
 
-	// Generated message map functions
+  // Generated message map functions
 protected:
-	//{{AFX_MSG(CStainsComboBox)
-	afx_msg void OnDropdown();
-	//}}AFX_MSG
+  //{{AFX_MSG(CStainsComboBox)
+  afx_msg void OnDropdown();
+  //}}AFX_MSG
 
-	DECLARE_MESSAGE_MAP()
+  DECLARE_MESSAGE_MAP()
 };
 
 /////////////////////////////////////////////////////////////////////////////

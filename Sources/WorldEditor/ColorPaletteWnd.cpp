@@ -50,27 +50,25 @@ CColorPaletteWnd::CColorPaletteWnd()
   m_iSelectedColor = -1;
 
   _pcolColorToSet = NULL;
-  m_pDrawPort = NULL;
-  m_pViewPort = NULL;
 }
 
 CColorPaletteWnd::~CColorPaletteWnd()
 {
-  if( m_pViewPort != NULL)
+  if( m_pViewPort )
   {
-    _pGfx->DestroyWindowCanvas( m_pViewPort);
-    m_pViewPort = NULL;
+    _pGfx_DestroyWindowCanvas( m_pViewPort);
+    m_pViewPort.Reset();
   }
 }
 
 
 BEGIN_MESSAGE_MAP(CColorPaletteWnd, CWnd)
-	//{{AFX_MSG_MAP(CColorPaletteWnd)
-	ON_WM_PAINT()
-	ON_WM_LBUTTONDOWN()
-	ON_WM_KILLFOCUS()
-	ON_WM_RBUTTONDOWN()
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CColorPaletteWnd)
+  ON_WM_PAINT()
+  ON_WM_LBUTTONDOWN()
+  ON_WM_KILLFOCUS()
+  ON_WM_RBUTTONDOWN()
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 
@@ -106,7 +104,7 @@ void CColorPaletteWnd::OnPaint()
   }
 
   // if there is a valid drawport, and the drawport can be locked
-  if( (m_pDrawPort != NULL) && (m_pDrawPort->Lock()) )
+  if( m_pDrawPort && (m_pDrawPort->Lock()) )
   {
     CWorldEditorView *pWorldEditorView = theApp.GetActiveView();
     ASSERT( pWorldEditorView != NULL);
@@ -141,7 +139,7 @@ void CColorPaletteWnd::OnPaint()
     m_pDrawPort->Unlock();
 
     // if there is a valid viewport
-    if (m_pViewPort!=NULL)
+    if (m_pViewPort)
     {
       m_pViewPort->SwapBuffers();
     }
@@ -232,7 +230,7 @@ void CColorPaletteWnd::OnRButtonDown(UINT nFlags, CPoint point)
       _bCanBeDestroyed = TRUE;
     }
   }
-	CWnd::OnRButtonDown(nFlags, point);
+  CWnd::OnRButtonDown(nFlags, point);
   // destroy color palette
   CMainFrame* pMainFrame = STATIC_DOWNCAST(CMainFrame, AfxGetMainWnd());
   pMainFrame->m_pColorPalette = NULL;

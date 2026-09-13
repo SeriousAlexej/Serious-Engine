@@ -31,7 +31,7 @@ class CTriangularisationCombo : public CComboBox
 {
 // Construction
 public:
-	CTriangularisationCombo();
+  CTriangularisationCombo();
   BOOL OnIdle(LONG lCount);
 
 // Attributes
@@ -41,22 +41,22 @@ public:
 public:
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CTriangularisationCombo)
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CTriangularisationCombo)
+  //}}AFX_VIRTUAL
 
 // Implementation
 public:
-	virtual ~CTriangularisationCombo();
+  virtual ~CTriangularisationCombo();
 
-	// Generated message map functions
+  // Generated message map functions
 protected:
-	//{{AFX_MSG(CTriangularisationCombo)
-	afx_msg void OnSelchange();
-	afx_msg void OnDropdown();
-	//}}AFX_MSG
+  //{{AFX_MSG(CTriangularisationCombo)
+  afx_msg void OnSelchange();
+  afx_msg void OnDropdown();
+  //}}AFX_MSG
 
-	DECLARE_MESSAGE_MAP()
+  DECLARE_MESSAGE_MAP()
 };
 
 /////////////////////////////////////////////////////////////////////////////

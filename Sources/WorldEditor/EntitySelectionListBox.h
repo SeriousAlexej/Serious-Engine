@@ -25,7 +25,7 @@ class CEntitySelectionListBox : public CCheckListBox
 {
 // Construction
 public:
-	CEntitySelectionListBox();
+  CEntitySelectionListBox();
 
 // Attributes
 public:
@@ -34,21 +34,21 @@ public:
 public:
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CEntitySelectionListBox)
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CEntitySelectionListBox)
+  //}}AFX_VIRTUAL
 
 // Implementation
 public:
-	virtual ~CEntitySelectionListBox();
+  virtual ~CEntitySelectionListBox();
 
-	// Generated message map functions
+  // Generated message map functions
 protected:
-	//{{AFX_MSG(CEntitySelectionListBox)
-		// NOTE - the ClassWizard will add and remove member functions here.
-	//}}AFX_MSG
+  //{{AFX_MSG(CEntitySelectionListBox)
+    // NOTE - the ClassWizard will add and remove member functions here.
+  //}}AFX_MSG
 
-	DECLARE_MESSAGE_MAP()
+  DECLARE_MESSAGE_MAP()
 };
 
 /////////////////////////////////////////////////////////////////////////////

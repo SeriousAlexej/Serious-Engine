@@ -184,7 +184,7 @@ CPlacement3D CSlaveViewer::GetTargetPlacement(void) const
 CSlaveViewer::CSlaveViewer(const CMasterViewer &mvMaster, 
                            enum ProjectionType ptProjectionType,
                            const CPlacement3D &plGrid,
-                           CDrawPort *pdpDrawPort)
+                           CDrawPortPtr pdpDrawPort)
 {
   // remember the drawport
   sv_pdpDrawPort = pdpDrawPort;

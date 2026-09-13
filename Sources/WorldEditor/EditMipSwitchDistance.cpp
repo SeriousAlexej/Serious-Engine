@@ -31,7 +31,6 @@ static char THIS_FILE[] = __FILE__;
 
 CEditMipSwitchDistance::CEditMipSwitchDistance()
 {
-  m_pbrmBrushMipSelected = NULL;
   m_fLastValue = -1;
 }
 
@@ -41,26 +40,24 @@ CEditMipSwitchDistance::~CEditMipSwitchDistance()
 
 
 BEGIN_MESSAGE_MAP(CEditMipSwitchDistance, CEdit)
-	//{{AFX_MSG_MAP(CEditMipSwitchDistance)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CEditMipSwitchDistance)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
 // CEditMipSwitchDistance message handlers
 
-CBrushMip *GetMipBrush(void)
+CBrushMipPtr GetMipBrush(void)
 {
   CMainFrame* pMainFrame = STATIC_DOWNCAST(CMainFrame, AfxGetMainWnd());
-  CEntity *penSelected = pMainFrame->m_CSGDesitnationCombo.GetSelectedBrushEntity();
   CWorldEditorView *pWedView = theApp.GetActiveView();
 
   if( pWedView != NULL)
   {
-    CBrushMip *pbmCurrentMip = pWedView->GetCurrentBrushMip();
-    return pbmCurrentMip;
+    return pWedView->GetCurrentBrushMip();
   }
 
-  return NULL;
+  return {};
 }
 
 BOOL IsEditingEnabled(void)
@@ -71,9 +68,9 @@ BOOL IsEditingEnabled(void)
     CChildFrame *pWedChild = pWedView->GetChildFrame();
     if( pWedChild != NULL)
     {
-      CBrushMip *pbrm = GetMipBrush();
+      CBrushMipPtr pbrm = GetMipBrush();
       CWorldEditorDoc *pDoc = pWedView->GetDocument();
-      if( (pDoc != NULL) && (pDoc->GetEditingMode() == ENTITY_MODE) && (pbrm != NULL))
+      if( (pDoc != NULL) && (pDoc->GetEditingMode() == ENTITY_MODE) && (pbrm))
       {
         return !pWedChild->m_bAutoMipBrushingOn;
       }
@@ -84,7 +81,7 @@ BOOL IsEditingEnabled(void)
 
 BOOL CEditMipSwitchDistance::PreTranslateMessage(MSG* pMsg) 
 {
-	// if we caught key down message
+  // if we caught key down message
   if( pMsg->message==WM_KEYDOWN)
   {
     if( ((int)pMsg->wParam==VK_RETURN) && IsEditingEnabled() )
@@ -92,11 +89,11 @@ BOOL CEditMipSwitchDistance::PreTranslateMessage(MSG* pMsg)
       // set new mip switch distance
       CString strWindowText;
       GetWindowText( strWindowText);
-      CTString strValue = CStringA(strWindowText);
+      CTString strValue = static_cast<const char*>(CStringA(strWindowText));
       FLOAT fValue = 100.0f;
-      CBrushMip *pbrm = GetMipBrush();
+      CBrushMipPtr pbrm = GetMipBrush();
       // if value is valid and brush exists
-      if( (strValue.ScanF( "%g", &fValue) == 1) && (pbrm != NULL) )
+      if( (strValue.ScanF( "%g", &fValue) == 1) && (pbrm) )
       {
         pbrm->SetMipDistance( fValue);
         m_fLastValue = fValue;
@@ -115,13 +112,13 @@ BOOL CEditMipSwitchDistance::PreTranslateMessage(MSG* pMsg)
 
     return TRUE;
   }
-	
-	return CEdit::PreTranslateMessage(pMsg);
+  
+  return CEdit::PreTranslateMessage(pMsg);
 }
 
 BOOL CEditMipSwitchDistance::OnIdle(LONG lCount)
 {
-  CBrushMip *pbrmip = GetMipBrush();
+  CBrushMipPtr pbrmip = GetMipBrush();
   // if editing is disabled
   if( !IsEditingEnabled() )
   {
@@ -137,7 +134,7 @@ BOOL CEditMipSwitchDistance::OnIdle(LONG lCount)
       CTString strValue;
       m_fLastValue = fValue;
       strValue.PrintF( "%g", fValue);
-      SetWindowText( CString(strValue));
+      SetWindowText( CString(static_cast<const char*>(strValue)));
     }
   }
   m_pbrmBrushMipSelected = pbrmip;

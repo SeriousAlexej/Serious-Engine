@@ -27,12 +27,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class CDlgPgSector : public CPropertyPage
 {  
-	DECLARE_DYNCREATE(CDlgPgSector)
+  DECLARE_DYNCREATE(CDlgPgSector)
 
 // Construction
 public:
-	CDlgPgSector();
-	~CDlgPgSector();
+  CDlgPgSector();
+  ~CDlgPgSector();
   BOOL OnIdle(LONG lCount);
 
   COLOR m_colLastSectorAmbientColor;
@@ -40,50 +40,50 @@ public:
   CUpdateableRT m_udSectorsData;
 
 // Dialog Data
-	//{{AFX_DATA(CDlgPgSector)
-	enum { IDD = IDD_PG_SECTOR };
-	CCtrlEditFlags	m_ctrlClassificationFlags;
-	CCtrlEditFlags	m_ctrlVisibilityFlags;
-	CComboBox	m_comboEnvironmentType;
-	CComboBox	m_comboHaze;
-	CComboBox	m_comboFog;
-	CComboBox	m_comboForceField;
-	CComboBox	m_comboContentType;
-	CColoredButton	m_SectorAmbientColor;
-	int		m_iBrowseModeRadio;
-	CString	m_strSectorName;
-	int		m_radioInclude;
-	//}}AFX_DATA
+  //{{AFX_DATA(CDlgPgSector)
+  enum { IDD = IDD_PG_SECTOR };
+  CCtrlEditFlags  m_ctrlClassificationFlags;
+  CCtrlEditFlags  m_ctrlVisibilityFlags;
+  CComboBox  m_comboEnvironmentType;
+  CComboBox  m_comboHaze;
+  CComboBox  m_comboFog;
+  CComboBox  m_comboForceField;
+  CComboBox  m_comboContentType;
+  CColoredButton  m_SectorAmbientColor;
+  int    m_iBrowseModeRadio;
+  CString  m_strSectorName;
+  int    m_radioInclude;
+  //}}AFX_DATA
 
 
 // Overrides
-	// ClassWizard generate virtual function overrides
-	//{{AFX_VIRTUAL(CDlgPgSector)
-	public:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
+  // ClassWizard generate virtual function overrides
+  //{{AFX_VIRTUAL(CDlgPgSector)
+  public:
+  virtual BOOL PreTranslateMessage(MSG* pMsg);
+  protected:
+  virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+  //}}AFX_VIRTUAL
 
 // Implementation
 protected:
-	// Generated message map functions
-	//{{AFX_MSG(CDlgPgSector)
-	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
-	afx_msg void OnDropdownContentTypeCombo();
-	afx_msg void OnSelchangeContentTypeCombo();
-	afx_msg void OnSelchangeForceFieldCombo();
-	afx_msg void OnDropdownForceFieldCombo();
-	afx_msg void OnDropdownFogCombo();
-	afx_msg void OnSelchangeFogCombo();
-	afx_msg void OnDropdownHazeCombo();
-	afx_msg void OnSelchangeHazeCombo();
-	afx_msg void OnDropdownStaticEnvironmentType();
-	afx_msg void OnSelchangeStaticEnvironmentType();
-	afx_msg void OnSectorInclude();
-	afx_msg void OnSectorExclude();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+  // Generated message map functions
+  //{{AFX_MSG(CDlgPgSector)
+  afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+  afx_msg void OnDropdownContentTypeCombo();
+  afx_msg void OnSelchangeContentTypeCombo();
+  afx_msg void OnSelchangeForceFieldCombo();
+  afx_msg void OnDropdownForceFieldCombo();
+  afx_msg void OnDropdownFogCombo();
+  afx_msg void OnSelchangeFogCombo();
+  afx_msg void OnDropdownHazeCombo();
+  afx_msg void OnSelchangeHazeCombo();
+  afx_msg void OnDropdownStaticEnvironmentType();
+  afx_msg void OnSelchangeStaticEnvironmentType();
+  afx_msg void OnSectorInclude();
+  afx_msg void OnSectorExclude();
+  //}}AFX_MSG
+  DECLARE_MESSAGE_MAP()
 
 };
 

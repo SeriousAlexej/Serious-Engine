@@ -27,46 +27,46 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class CDlgPgInfoAttachingSound : public CPropertyPage
 {
-	DECLARE_DYNCREATE(CDlgPgInfoAttachingSound)
+  DECLARE_DYNCREATE(CDlgPgInfoAttachingSound)
 
 // Construction
 public:
-	CUpdateable m_udAllValues;
+  CUpdateable m_udAllValues;
 
   BOOL OnIdle(LONG lCount);
 
   CDlgPgInfoAttachingSound();
-	~CDlgPgInfoAttachingSound();
+  ~CDlgPgInfoAttachingSound();
 
 // Dialog Data
-	//{{AFX_DATA(CDlgPgInfoAttachingSound)
-	enum { IDD = IDD_INFO_ATTACHING_SOUND };
-	CString	m_strAttachedSound;
-	BOOL	m_bLooping;
-	BOOL	m_bPlaying;
-	float	m_fDelay;
-	//}}AFX_DATA
+  //{{AFX_DATA(CDlgPgInfoAttachingSound)
+  enum { IDD = IDD_INFO_ATTACHING_SOUND };
+  CString  m_strAttachedSound;
+  BOOL  m_bLooping;
+  BOOL  m_bPlaying;
+  float  m_fDelay;
+  //}}AFX_DATA
 
 
 // Overrides
-	// ClassWizard generate virtual function overrides
-	//{{AFX_VIRTUAL(CDlgPgInfoAttachingSound)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
+  // ClassWizard generate virtual function overrides
+  //{{AFX_VIRTUAL(CDlgPgInfoAttachingSound)
+  protected:
+  virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+  //}}AFX_VIRTUAL
 
 // Implementation
 protected:
-	// Generated message map functions
-	//{{AFX_MSG(CDlgPgInfoAttachingSound)
-	virtual BOOL OnInitDialog();
-	afx_msg void OnBrowseSound();
-	afx_msg void OnIsLooping();
-	afx_msg void OnIsPlaying();
-	afx_msg void OnAttachingSoundNone();
-	afx_msg void OnChangeSoundStartDelay();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+  // Generated message map functions
+  //{{AFX_MSG(CDlgPgInfoAttachingSound)
+  virtual BOOL OnInitDialog();
+  afx_msg void OnBrowseSound();
+  afx_msg void OnIsLooping();
+  afx_msg void OnIsPlaying();
+  afx_msg void OnAttachingSoundNone();
+  afx_msg void OnChangeSoundStartDelay();
+  //}}AFX_MSG
+  DECLARE_MESSAGE_MAP()
 
 };
 

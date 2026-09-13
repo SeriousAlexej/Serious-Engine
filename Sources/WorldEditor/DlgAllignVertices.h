@@ -29,35 +29,35 @@ class CDlgAllignVertices : public CDialog
 {
 // Construction
 public:
-	CDlgAllignVertices(CWnd* pParent = NULL);   // standard constructor
+  CDlgAllignVertices(CWnd* pParent = NULL);   // standard constructor
   DOUBLE3D GetLastSelectedVertex(void);
 
 // Dialog Data
-	//{{AFX_DATA(CDlgAllignVertices)
-	enum { IDD = IDD_ALLIGN_VERTICES };
-		// NOTE: the ClassWizard will add data members here
-	//}}AFX_DATA
+  //{{AFX_DATA(CDlgAllignVertices)
+  enum { IDD = IDD_ALLIGN_VERTICES };
+    // NOTE: the ClassWizard will add data members here
+  //}}AFX_DATA
 
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CDlgAllignVertices)
-	public:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
+  // ClassWizard generated virtual function overrides
+  //{{AFX_VIRTUAL(CDlgAllignVertices)
+  public:
+  virtual BOOL PreTranslateMessage(MSG* pMsg);
+  protected:
+  virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+  //}}AFX_VIRTUAL
 
 // Implementation
 protected:
 
-	// Generated message map functions
-	//{{AFX_MSG(CDlgAllignVertices)
-	afx_msg void OnAllignX();
-	afx_msg void OnAllignY();
-	afx_msg void OnAllignZ();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+  // Generated message map functions
+  //{{AFX_MSG(CDlgAllignVertices)
+  afx_msg void OnAllignX();
+  afx_msg void OnAllignY();
+  afx_msg void OnAllignZ();
+  //}}AFX_MSG
+  DECLARE_MESSAGE_MAP()
 };
 
 //{{AFX_INSERT_LOCATION}}

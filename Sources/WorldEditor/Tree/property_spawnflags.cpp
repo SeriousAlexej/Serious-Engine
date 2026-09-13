@@ -18,6 +18,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "base_entity_property_tree_item.h"
 #include "checklist_widget.h"
 
+#include <QAbstractItemView>
+#include <QPointer>
+
 class Property_SpawnFlags : public BaseEntityPropertyTreeItem
 {
 public:
@@ -30,24 +33,25 @@ public:
   {
     m_flags.clear();
     auto* editor = new CheckListWidget(parent);
-    _AddFlag(editor, "Easy", SPF_EASY);
+    mp_editor = editor;
+    _AddFlag(editor, "Tourist/Easy", SPF_EASY);
     _AddFlag(editor, "Normal", SPF_NORMAL);
-    _AddFlag(editor, "Hard", SPF_HARD);
-    _AddFlag(editor, "Extreme", SPF_EXTREME);
+    _AddFlag(editor, "Hard/Mental", SPF_HARD);
+    _AddFlag(editor, "Serious", SPF_EXTREME);
     _AddFlag(editor, "Singleplayer", SPF_SINGLEPLAYER);
     _AddFlag(editor, "Cooperative", SPF_COOPERATIVE);
-    _AddFlag(editor, "Deathmatch", SPF_DEATHMATCH);
+    _AddFlag(editor, "Fragmatch/Scorematch", SPF_DEATHMATCH);
+    _AddFlag(editor, "Flyover", SPF_FLYOVER);
     _AddFlag(editor, "Difficulty 1", SPF_EXTREME << 1);
     _AddFlag(editor, "Difficulty 2", SPF_EXTREME << 2);
     _AddFlag(editor, "Difficulty 3", SPF_EXTREME << 3);
     _AddFlag(editor, "Difficulty 4", SPF_EXTREME << 4);
     _AddFlag(editor, "Difficulty 5", SPF_EXTREME << 5);
-    _AddFlag(editor, "Game mode 1", SPF_COOPERATIVE << 1);
-    _AddFlag(editor, "Game mode 2", SPF_COOPERATIVE << 2);
-    _AddFlag(editor, "Game mode 3", SPF_COOPERATIVE << 3);
-    _AddFlag(editor, "Game mode 4", SPF_COOPERATIVE << 4);
-    _AddFlag(editor, "Game mode 5", SPF_COOPERATIVE << 5);
-    _AddFlag(editor, "Game mode 6", SPF_COOPERATIVE << 6);
+    _AddFlag(editor, "Game mode 1", SPF_FLYOVER << 1);
+    _AddFlag(editor, "Game mode 2", SPF_FLYOVER << 2);
+    _AddFlag(editor, "Game mode 3", SPF_FLYOVER << 3);
+    _AddFlag(editor, "Game mode 4", SPF_FLYOVER << 4);
+    _AddFlag(editor, "Game mode 5", SPF_FLYOVER << 5);
 
     QObject::connect(editor, &CheckListWidget::Changed, this, [this]
       {
@@ -62,8 +66,9 @@ public:
             bits_to_set |= static_cast<ULONG>(flag->data().toUInt());
         }
 
-        for (auto* entity : m_entities)
+        for (auto* entity_ : m_entities)
         {
+          CEntityPtr entity(entity_);
           entity->SetSpawnFlags(entity->GetSpawnFlags() & bits_to_clear);
           entity->SetSpawnFlags(entity->GetSpawnFlags() | bits_to_set);
         }
@@ -71,6 +76,7 @@ public:
         CWorldEditorDoc* pDoc = theApp.GetDocument();
         pDoc->SetModifiedFlag(TRUE);
         pDoc->UpdateAllViews(NULL);
+        EventHub::instance().PropertyChanged(m_entities, mp_property.get(), this);
       });
 
     return editor;
@@ -86,6 +92,13 @@ public:
   }
 
 private:
+  bool IsVolatile() const override final
+  {
+    if (mp_editor && !mp_editor->view()->isVisible())
+      return true;
+    return false;
+  }
+
   QString _GetTypeName() const override final
   {
     return "SPAWNFLAGS";
@@ -100,10 +113,12 @@ private:
   Qt::CheckState _GetFlagState(ULONG flag) const
   {
     auto it = m_entities.begin();
-    const bool flag_is_set = (*it)->GetSpawnFlags() & flag;
+    CEntity entity(*it, false);
+    const bool flag_is_set = entity.GetSpawnFlags() & flag;
     for (++it; it != m_entities.end(); ++it)
     {
-      const bool curr_flag = (*it)->GetSpawnFlags() & flag;
+      CEntity entity(*it, false);
+      const bool curr_flag = entity.GetSpawnFlags() & flag;
       if (curr_flag != flag_is_set)
         return Qt::PartiallyChecked;
     }
@@ -114,6 +129,7 @@ private:
 
 private:
   std::vector<QStandardItem*> m_flags;
+  QPointer<CheckListWidget> mp_editor;
 };
 
 /*******************************************************************************************/

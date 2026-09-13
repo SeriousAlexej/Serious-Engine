@@ -32,11 +32,16 @@ void BasePropertyTreeItem::Clear()
   m_childItems.clear();
 }
 
-bool BasePropertyTreeItem::EntityPresentInHierarchy(CEntity* entity) const
+bool BasePropertyTreeItem::EntityPresentInHierarchy(CEntity_* entity) const
 {
   if (m_parentItem)
     return m_parentItem->EntityPresentInHierarchy(entity);
   return false;
+}
+
+bool BasePropertyTreeItem::IsVolatile() const
+{
+  return true;
 }
 
 void BasePropertyTreeItem::appendChild(std::unique_ptr<BasePropertyTreeItem>&& item)
@@ -44,16 +49,16 @@ void BasePropertyTreeItem::appendChild(std::unique_ptr<BasePropertyTreeItem>&& i
   m_childItems.push_back(std::move(item));
 }
 
-BasePropertyTreeItem *BasePropertyTreeItem::child(int row)
+BasePropertyTreeItem* BasePropertyTreeItem::child(int row)
 {
-  if (row < 0 || row >= m_childItems.size())
+  if (row < 0 || row >= static_cast<int>(m_childItems.size()))
     return nullptr;
   return m_childItems.at(row).get();
 }
 
 int BasePropertyTreeItem::childCount() const
 {
-  return m_childItems.size();
+  return static_cast<int>(m_childItems.size());
 }
 
 BasePropertyTreeItem* BasePropertyTreeItem::parentItem()

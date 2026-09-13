@@ -39,10 +39,10 @@ CAnimComboBox::~CAnimComboBox()
 
 
 BEGIN_MESSAGE_MAP(CAnimComboBox, CComboBox)
-	//{{AFX_MSG_MAP(CAnimComboBox)
-	ON_CONTROL_REFLECT(CBN_SELCHANGE, OnSelchange)
-	ON_CONTROL_REFLECT(CBN_DROPDOWN, OnDropdown)
-	//}}AFX_MSG_MAP
+  //{{AFX_MSG_MAP(CAnimComboBox)
+  ON_CONTROL_REFLECT(CBN_SELCHANGE, OnSelchange)
+  ON_CONTROL_REFLECT(CBN_DROPDOWN, OnDropdown)
+  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -83,7 +83,7 @@ void CAnimComboBox::OnSelchange()
   if( pModelerView != NULL)
   {
     pModelerView->m_ModelObject.SetAnim( GetCurSel());
-  }	
+  }  
 }
 
 void CAnimComboBox::OnDropdown() 
