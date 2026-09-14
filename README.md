@@ -1,12 +1,49 @@
-# Serious Engine
+<p align="center">
+  <img style="width: 10vw; min-width: 128px;" src="https://raw.githubusercontent.com/SeriousAlexej/Serious-Engine/master/Sources/WorldEditor/res/WorldEditor_uncropped.svg">
+  <img style="width: 10vw; min-width: 128px;" src="https://raw.githubusercontent.com/SeriousAlexej/Serious-Engine/master/Sources/Modeler/res/Modeler_uncropped.svg">
+</p>
+
+# Serious Editor EX / Serious Modeler EX
 
 [![Build status](https://ci.appveyor.com/api/projects/status/32r7s2skrgm9ubva?retina=true)](https://ci.appveyor.com/project/SeriousAlexej/Serious-Engine)
+
+***
+Enhanced and fixed version of the Serious Sam Classic modding tools - **Serious Editor** and **Serious Modeler** with complete forward and backward compatibility with 1.07 engine, mods and custom dlls!
+
+Note that this is **NOT** an updated *Serious Engine 1.10*.
+
+## What's new (since previous release):
+
+### Video Demonstration (YouTube, clickable)
+[![Feature Showcase](https://img.youtube.com/vi/SuW_IoAzXbI/maxresdefault.jpg)](https://youtu.be/SuW_IoAzXbI)
+
+### Serious Editor EX / Serious Modeler EX
+* Added **Gro Browser** to all tools - no need to extract gro files anymore, all archived resources are now directly accessible when picking a file!
+* Integrated an optional crash handler library. It is possible to enable small/big crashdump generation, or disable it completely (via the `File` menu in the Editor/Modeler). Small crashdump generation is enabled by default, they will be generated in the `Bin\CrashRpt` subdirectory and can be used to report issues for future fixes.
+
+### Serious Editor EX
+* Full 1.07 and custom dlls/mods compatibility achieved via [Serious Engine C API](https://github.com/SeriousAlexej/SeriousEngineCAPI) and [Serious Engine Cpp API](https://github.com/SeriousAlexej/SeriousEngineCppAPI) interface libraries, that load vanilla engine for the level editor/modeler
+* Added **Transform Gizmo** to the editor! With ability to perform translation and rotation in absolute, local and relative coordinate systems!
+* Added **Camera Viewfinder** to the Serious Editor - now when camera is selected, a viewfinder can be optionally displayed to easily setup cutscenes!
+* Added **Test Difficulty** and **Test Gamemode** options for quicktest - it is now easy to test the level for all difficulties and in multiplayer!
+* Added **Filter** field to the *Select Entities* dialog - now it is easy to find a particular entity!
+* Added **Edit String** dialog for simple editing of multiline messages/strings in Serious Editor!
+* Improved usability of spawn flags selection in all entities and weapons/ammo selection in Player Marker entity.
+
+### Serious Modeler EX
+* Added **Bézier inter-frame interpolation** for skeletal animations. This is useful when some animation channels have fewer keyframes than others, or when custom number of frames is used to bake the animation (that is greater than the number of keyframes).
+* Added **Relative origin bone** selection for skeletal animations. Very useful when creating animated models with animated attachments (like playermodels) - attached models can pick their parent bone as a relative origin, to properly generate the geometry and animations.
+
+## Installation
+Download the [latest release](https://github.com/SeriousAlexej/Serious-Engine/releases/latest) zip archive with binaries (i.e. `SeriousEditorEX-1.10.51.zip`) and extract it to your `Serious Sam - The Second Encounter` directory (i.e. for steam edition it will be something like `D:\Steam\steamapps\common\Serious Sam Classic The Second Encounter`)
+
+If everything is correct, the `SeriousEditorEX.exe` and `SeriousModelerEX.exe` should appear in the `Bin` directory, next to the old editor and modeler executables.
+
+## Previous release
 
 ### Video Demonstration (YouTube, clickable)
 [![Feature Showcase](https://img.youtube.com/vi/0rrdHwJSGF8/maxresdefault.jpg)](https://youtu.be/0rrdHwJSGF8)
 
-Enhanced and somewhat fixed version of engine tools (Modeler, World Editor)
-* Compatible with 1.07!
 * Engine now supports **A LOT** more image formats for texture creation (such as PNG for example)
 * Serious Modeler can now import skeletal animations! (baked into vertex frame animation during the import for compatibility)
 * Added Property Tree for Serious Editor for more convenient workflow!
@@ -115,81 +152,17 @@ Enhanced and somewhat fixed version of engine tools (Modeler, World Editor)
   </p>
 </details>
 
-Original ReadMe:
-=======================
+## Building
+To build this project, you will need `Visual Studio 2022` with `MFC` and `ATL` packages (all available in Visual Studio installer) and a `CMake` (version >= 3.12).
+Here is a step-by-step instruction on how to build the solution:
+1. Checkout the repository recursively with all submodules
+2. Go into the `Sources` directory and run `GenerateAssimpSLN.bat`, `GenerateQtWinMigrateSLN.bat`, `GenerateSeriousEngineCppAPI.bat` and `GenerateCrashRptSLN.bat` to generate extra project files for the submodules
+3. Open the `All.sln` solution file in `Visual Studio 2022` and run the build, everything should be ready to go
 
-This is the source code for Serious Engine v.1.10, including the following projects:
+## Issue reporting
+If you experience an issue, please [report it here](https://github.com/SeriousAlexej/Serious-Engine/issues).
 
-* `DedicatedServer`
-* `Ecc` The *Entity Class Compiler*, a custom build tool used to compile *.es files
-* `Engine` Serious Engine 1.10
-* `EngineGUI` Common GUI things for game tools
-* `EntitiesMP` All the entity logic
-* `GameGUIMP` Common GUI things for game tools
-* `GameMP` All the game logic
-* `Modeler` Serious Modeler
-* `RCon` Used to connect to servers using an admin password
-* `SeriousSam` The main game executable
-* `SeriousSkaStudio` Serious Ska Studio
-* `WorldEditor` Serious Editor
-* `DecodeReport` Used to decode crash *.rpt files
-* `Depend` Used to build a list of dependency files based on a list of root files
-* `LWSkaExporter` Exporter for use in LightWave
-* `MakeFONT` Used for generating *.fnt files
-* `Shaders` Compiled shaders
-* `GameAgent` The serverlist masterserver written in Python
-* `libogg`, `libvorbis` Third party libraries used for playing OGG-encoded ingame music (see http://www.vorbis.com/ for more information)
+If the issue involves a crash, please attach a crash report as well. Crash dumps are put in the `Bin\CrashRpt` directory. Full crash dumps are always preferable, since they contain much more debugging information.
 
-These have been modified to run correctly under the recent version of Windows. (Tested: Win7 x64, Win8 x64, Win8.1 x64)
-
-Building
---------
-
-To build Serious Engine 1, you'll need Visual Studio 2013 or 2015, Professional or Community edition ( https://www.visualstudio.com/post-download-vs?sku=community ).
-
-Do not use spaces in the path to the solution.
-
-Once you've installed Visual Studio and (optionally) DirectX8 SDK, you can build the engine solution (`/Sources/All.sln`). Press F7 or Build -> Build solution. The libraries and executables will be put into `\Bin\` directory (or `\Bin\Debug\` if you are using the Debug configuration).
-
-Optional features
------------------
-
-DirectX support is disabled by default. If you need DirectX support you'll have to download DirectX8 SDK (headers & libraries) ( http://files.seriouszone.com/download.php?fileid=759 or https://www.microsoft.com/en-us/download/details.aspx?id=6812 ) and then enable the SE1_D3D switch for all projects in the solution (Project properties -> Configuration properties -> C/C++ -> Preprocessor -> Preprocessor definitions -> Add "SE1_D3D" for both Debug and Release builds). You will also need to make sure the DirectX8 headers and libraries are located in the following folders (make the folder structure if it's not existing yet):
-* `/Tools.Win32/Libraries/DX8SDK/Include/..`
-* `/Tools.Win32/Libraries/DX8SDK/Lib/..`
-
-MP3 playback is disabled by default. If you need this feature, you will have to copy amp11lib.dll to the '\Bin\' directory (and '\Bin\Debug\' for MP3 support in debug mode). The amp11lib.dll is distributed with older versions of Serious Sam: The First Encounter.
-
-3D Exploration support is disabled in the open source version of Serious Engine 1 due to copyright issues. In case if you need to create new models you will have to either use editing tools from any of the original games, or write your own code for 3D object import/export.
-
-IFeel support is disabled in the open source version of Serious Engine 1 due to copyright issues. In case if you need IFeel support you will have to copy IFC22.dll and ImmWrapper.dll from the original game into the `\Bin\` folder.
-
-Running
--------
-
-This version of the engine comes with a set of resources (`\SE1_10.GRO`) that allow you to freely use the engine without any additional resources required. However if you want to open or modify levels from Serious Sam Classic: The First Encounter or The Second Encounter (including most user-made levels), you will have to copy the game's resources (.GRO files) into the engine folder. You can buy the original games on Steam, as a part of a bundle with Serious Sam Revolution ( http://store.steampowered.com/app/227780 )
-
-When running a selected project, make sure its project settings on Debugging is set to the right command:
-* For debug:
-    $(SolutionDir)..\Bin\Debug\$(TargetName).exe`
-* For release:
-    $(SolutionDir)..\Bin\$(TargetName).exe`
-And its working directory:
-    $(SolutionDir)..\
-
-Common problems
----------------
-
-Before starting the build process, make sure you have a "Temp" folder in your development directory. If it doesn't exist, create it.
-SeriousSkaStudio has some issues with MFC windows that can prevent the main window from being displayed properly.
-
-License
--------
-
-Serious Engine is licensed under the GNU GPL v2 (see LICENSE file).
-
-Some of the code included with the engine sources is not licensed under the GNU GPL v2:
-
-* zlib (located in `Sources/Engine/zlib`) by Jean-loup Gailly and Mark Adler
-* LightWave SDK (located in `Sources/LWSkaExporter/SDK`) by NewTek Inc.
-* libogg/libvorbis (located in `Sources/libogg` and `Sources/libvorbis`) by Xiph.Org Foundation
+To enable a full crash dump generation, please, tick it in the `File` menu:
+![File\Full crash dumps](https://raw.githubusercontent.com/SeriousAlexej/Serious-Engine/master/Help/fullcrashdumps.png)
