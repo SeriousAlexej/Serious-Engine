@@ -165,4 +165,5 @@ If you experience an issue, please [report it here](https://github.com/SeriousAl
 If the issue involves a crash, please attach a crash report as well. Crash dumps are put in the `Bin\CrashRpt` directory. Full crash dumps are always preferable, since they contain much more debugging information.
 
 To enable a full crash dump generation, please, tick it in the `File` menu:
+
 ![File\Full crash dumps](https://raw.githubusercontent.com/SeriousAlexej/Serious-Engine/master/Help/fullcrashdumps.png)
