@@ -1963,6 +1963,32 @@ void CModelerView::OnAlternativeMovingMode()
   _pShell_SetINDEX("inp_bFilterMouse", 1);
 
   CPlacement3D _plNew = _GetCameraPlacement();
+
+  // snap camera vertically
+  FLOAT3D vX(1.0f, 0.0f, 0.0f);
+  FLOAT3D vY(0.0f, 1.0f, 0.0f);
+  FLOAT3D vZ;
+  AnglesToDirectionVector(_plNew.pl_OrientationAngle, vZ);
+  vZ = -vZ;
+  if (Abs(vZ(2)) < 0.99f)
+  {
+    vX = vY * vZ;
+    vX.Normalize();
+  }
+  vY = vZ * vX;
+  vY.Normalize();
+  FLOATmatrix3D rotMx;
+  rotMx(1, 1) = vX(1);
+  rotMx(2, 1) = vX(2);
+  rotMx(3, 1) = vX(3);
+  rotMx(1, 2) = vY(1);
+  rotMx(2, 2) = vY(2);
+  rotMx(3, 2) = vY(3);
+  rotMx(1, 3) = vZ(1);
+  rotMx(2, 3) = vZ(2);
+  rotMx(3, 3) = vZ(3);
+  DecomposeRotationMatrixNoSnap(_plNew.pl_OrientationAngle, rotMx);
+
   CPlacement3D _plOld = _plNew;
   ANGLE3D _aAbs = _plNew.pl_OrientationAngle;
   TIME timeLastTick = _pTimer_GetRealTimeTick();
