@@ -54,7 +54,7 @@ deploy:
   description: SeriousEditorEX-$(appveyor_build_version)
   provider: GitHub
   auth_token:
-    secure: El4m3Fh87K1KfMgnmCfo4hih09KHfZDUojWI9Sb9Sd0kfYvrrfxDQ77I/5Sg03Zd5Rh72j6hcO5kFSFc5AP4jHug7+1rugWcTSb/U+gIqbp97eXEOErjOfLStj+9DKNs
+    secure: EuCvtJs6WbilBQ3XvLkSwuFpClaQCu3AOZbocHiZXNLjrWYln4F5OCoohE6Gk8Wm
   force_update: true
   on:
     branch: master
