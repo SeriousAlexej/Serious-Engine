@@ -600,15 +600,15 @@ void CModelerView::RenderView( CDrawPortPtr pDrawPort)
   try {
     if( m_ModelObject.mo_toReflection.GetName() != pDoc->m_emEditModel.edm_fnReflectionTexture)
       m_ModelObject.mo_toReflection.SetData_t( pDoc->m_emEditModel.edm_fnReflectionTexture);
-  } catch (char *strError) { (void) strError;}
+  } catch (const char* strError) { (void) strError;}
   try {
     if( m_ModelObject.mo_toSpecular.GetName() != pDoc->m_emEditModel.edm_fnSpecularTexture)
       m_ModelObject.mo_toSpecular.SetData_t( pDoc->m_emEditModel.edm_fnSpecularTexture);
-  } catch (char *strError) { (void) strError;}
+  } catch (const char* strError) { (void) strError;}
   try {
     if( m_ModelObject.mo_toBump.GetName() != pDoc->m_emEditModel.edm_fnBumpTexture)
       m_ModelObject.mo_toBump.SetData_t( pDoc->m_emEditModel.edm_fnBumpTexture);
-  } catch (char *strError) { (void) strError;}
+  } catch (const char* strError) { (void) strError;}
 
   // Calculate light position in absolute sytem 
   CModelInfo MI;
@@ -683,7 +683,7 @@ void CModelerView::RenderView( CDrawPortPtr pDrawPort)
             pDoc->m_soSoundObject.Play_t( asSound.as_fnAttachedSound, SOF_NONGAME);
           _bSoundPlayed = TRUE;
         }
-        catch( char *strError)
+        catch (const char* strError)
         {
           (void) strError;
           //WarningMessage( strError);
@@ -1963,6 +1963,32 @@ void CModelerView::OnAlternativeMovingMode()
   _pShell_SetINDEX("inp_bFilterMouse", 1);
 
   CPlacement3D _plNew = _GetCameraPlacement();
+
+  // snap camera vertically
+  FLOAT3D vX(1.0f, 0.0f, 0.0f);
+  FLOAT3D vY(0.0f, 1.0f, 0.0f);
+  FLOAT3D vZ;
+  AnglesToDirectionVector(_plNew.pl_OrientationAngle, vZ);
+  vZ = -vZ;
+  if (Abs(vZ(2)) < 0.99f)
+  {
+    vX = vY * vZ;
+    vX.Normalize();
+  }
+  vY = vZ * vX;
+  vY.Normalize();
+  FLOATmatrix3D rotMx;
+  rotMx(1, 1) = vX(1);
+  rotMx(2, 1) = vX(2);
+  rotMx(3, 1) = vX(3);
+  rotMx(1, 2) = vY(1);
+  rotMx(2, 2) = vY(2);
+  rotMx(3, 2) = vY(3);
+  rotMx(1, 3) = vZ(1);
+  rotMx(2, 3) = vZ(2);
+  rotMx(3, 3) = vZ(3);
+  DecomposeRotationMatrixNoSnap(_plNew.pl_OrientationAngle, rotMx);
+
   CPlacement3D _plOld = _plNew;
   ANGLE3D _aAbs = _plNew.pl_OrientationAngle;
   TIME timeLastTick = _pTimer_GetRealTimeTick();
@@ -2386,7 +2412,7 @@ BOOL CModelerView::UpdateAnimations(void)
     pMainFrame->m_NewProgress.ShowWindow(SW_SHOW);
     pDoc->m_emEditModel.UpdateAnimations_t( fnScriptName);
   }
-  catch( char *str_err)
+  catch (const char* str_err)
   {
     pMainFrame->m_NewProgress.DestroyWindow();
     pDoc->OnCloseDocument();       // explicit delete on error
@@ -2422,7 +2448,7 @@ void CModelerView::OnScriptUpdateMipmodels()
       pMainFrame->m_NewProgress.ShowWindow(SW_SHOW);
       pDoc->m_emEditModel.UpdateMipModels_t( fnScriptName);
     }
-    catch( char *str_err)
+    catch (const char* str_err)
     {
       AfxMessageBox( CString(str_err));
     }
@@ -2824,7 +2850,7 @@ void CModelerView::OnTakeScreenShoot()
     // save image info into file
     iiImageInfo.SaveTGA_t( fnSSFileName);
   }
-  catch(char *strError) {
+  catch (const char* strError) {
     AfxMessageBox(CString(strError));
   }
   dlg.DestroyWindow();
@@ -3182,7 +3208,7 @@ void CModelerView::SaveThumbnail()
       File.Close();
     }
     // if failed
-    catch (char *strError) {
+    catch (const char* strError) {
       // report error
       AfxMessageBox(CString(strError));
     }
@@ -3514,7 +3540,7 @@ void CModelerView::OnRecreateTexture()
     // obtain texture
     ptdTextureToReload = _pTextureStock_Obtain_t( fnTextureName);
   }
-  catch ( char *err_str) {
+  catch (const char* err_str) {
     AfxMessageBox( CString(err_str));
     return;
   }    
@@ -3616,7 +3642,7 @@ void CModelerView::OnCreateMipModels()
     // destroy progress window
     pMainFrame->m_NewProgress.DestroyWindow();
   }
-  catch( char *pStrError)
+  catch(const char *pStrError)
   {
     // destroy progress window
     pMainFrame->m_NewProgress.DestroyWindow();
@@ -3740,7 +3766,7 @@ void CModelerView::OnAddReflectionTexture()
     m_ModelObject.mo_toReflection.SetData_t( fnChoosedFile);
     GetDocument()->m_emEditModel.edm_fnReflectionTexture = fnChoosedFile;
   }
-  catch( char *strError)
+  catch (const char* strError)
   {
     WarningMessage( strError);
   }
@@ -3757,7 +3783,7 @@ void CModelerView::OnAddSpecular()
     m_ModelObject.mo_toSpecular.SetData_t( fnChoosedFile);
     GetDocument()->m_emEditModel.edm_fnSpecularTexture = fnChoosedFile;
   }
-  catch( char *strError)
+  catch (const char* strError)
   {
     WarningMessage( strError);
   }
@@ -3774,7 +3800,7 @@ void CModelerView::OnAddBumpTexture()
     m_ModelObject.mo_toBump.SetData_t( fnChoosedFile);
     GetDocument()->m_emEditModel.edm_fnBumpTexture = fnChoosedFile;
   }
-  catch( char *strError)
+  catch (const char* strError)
   {
     WarningMessage( strError);
   }
@@ -3787,7 +3813,7 @@ void CModelerView::OnRemoveReflection()
     m_ModelObject.mo_toReflection.SetData_t( CTString(""));
     GetDocument()->m_emEditModel.edm_fnReflectionTexture = CTString("");
   }
-  catch( char *strError) { (void) strError;}
+  catch (const char* strError) { (void) strError;}
   theApp.m_chGlobal.MarkChanged();
 }
 
@@ -3797,7 +3823,7 @@ void CModelerView::OnRemoveSpecular()
     m_ModelObject.mo_toSpecular.SetData_t( CTString(""));
     GetDocument()->m_emEditModel.edm_fnSpecularTexture = CTString("");
   }
-  catch( char *strError) { (void) strError;}
+  catch (const char* strError) { (void) strError;}
   theApp.m_chGlobal.MarkChanged();
 }
 
@@ -3807,7 +3833,7 @@ void CModelerView::OnRemoveBumpMap()
     m_ModelObject.mo_toBump.SetData_t( CTString(""));
     GetDocument()->m_emEditModel.edm_fnBumpTexture = CTString("");
   }
-  catch( char *strError) { (void) strError;}
+  catch (const char* strError) { (void) strError;}
   theApp.m_chGlobal.MarkChanged();
 }
 
@@ -3912,7 +3938,7 @@ void CModelerView::OnExportForSkining()
   {
     fnDirectory.RemoveApplicationPath_t();
   }
-  catch( char *str_err)
+  catch (const char* str_err)
   {
     AfxMessageBox( CString(str_err));
     return;
@@ -3990,7 +4016,7 @@ void CModelerView::OnExportForSkining()
   {
     iiImageInfo.SaveTGA_t( fnExportName);
   }
-  catch (char *strError)
+  catch (const char* strError)
   {
     AfxMessageBox(CString(strError));
   }
@@ -4124,7 +4150,7 @@ void CModelerView::OnToggleMeasureVtx()
     strCoords.PrintF( "(%gf, %gf, %gf)",vDelta(1), vDelta(2), vDelta(3));
     try {
       strCoords.Save_t(CTString("temp\\VertexCoords.txt"));
-    } catch( char *strError) {
+    } catch (const char* strError) {
       WarningMessage( strError);
     }
   }

@@ -608,7 +608,7 @@ void CBrowseWindow::OnDropFiles(HDROP hDropInfo)
           fnDroped.RemoveApplicationPath_t();
           InsertItem( fnDroped, point);
         }
-        catch( char *err_str)
+        catch (const char* err_str)
         {
           AfxMessageBox( CString(err_str));
         }
@@ -713,11 +713,13 @@ void CBrowseWindow::InsertItem( CTFileName fnItem, CPoint pt)
     {
       _pTextureStock_Release( *pvtnToRemove->vtn_pTextureData);
     }
-    auto* pvtnParent = pvtnToRemove->vnt_pvtnParent;
-    pvtnParent->vtn_lhChildren.erase(
-      std::remove_if(pvtnParent->vtn_lhChildren.begin(), pvtnParent->vtn_lhChildren.end(),
-        [=](const auto& p) { return p.get() == pvtnToRemove; }),
-      pvtnParent->vtn_lhChildren.end());
+    if (auto* pvtnParent = pvtnToRemove->vnt_pvtnParent)
+    {
+      pvtnParent->vtn_lhChildren.erase(
+        std::remove_if(pvtnParent->vtn_lhChildren.begin(), pvtnParent->vtn_lhChildren.end(),
+          [=](const auto& p) { return p.get() == pvtnToRemove; }),
+        pvtnParent->vtn_lhChildren.end());
+    }
   }
 
   // if item is texture
@@ -731,7 +733,7 @@ void CBrowseWindow::InsertItem( CTFileName fnItem, CPoint pt)
       ptdTexture = _pTextureStock_Obtain_t( fnItem);
     }
     // catch and
-    catch( char *err_str)
+    catch (const char* err_str)
     {
       // report errors
       AfxMessageBox( CString(err_str));
@@ -793,28 +795,36 @@ void CBrowseWindow::InsertItem( CTFileName fnItem, CPoint pt)
   }
   if( pt.x == -1)
   {
+    pVTNup->vnt_pvtnParent = pVTNDir;
     pVTNDir->vtn_lhChildren.push_back(std::move(pVTNup));
   }
   else
   {
     if( iHittedItem == -1)
     {
+      pVTNup->vnt_pvtnParent = pVTNDir;
       pVTNDir->vtn_lhChildren.push_back(std::move(pVTNup));
     }
     else if( ((m_IconsInLine != 1) && (fHitXRatio < 0.5f)) ||
              ((m_IconsInLine == 1) && (fHitYRatio < 0.5f)) )
     {
       ASSERT( pVTNHit != NULL);
-      auto* parent = pVTNHit->vnt_pvtnParent;
-      auto it = std::find_if(parent->vtn_lhChildren.begin(), parent->vtn_lhChildren.end(), [=](const auto& p) { return p.get() == pVTNHit; });
-      parent->vtn_lhChildren.insert(it, std::move(pVTNup));
+      if (auto* parent = pVTNHit->vnt_pvtnParent)
+      {
+        auto it = std::find_if(parent->vtn_lhChildren.begin(), parent->vtn_lhChildren.end(), [=](const auto& p) { return p.get() == pVTNHit; });
+        pVTNup->vnt_pvtnParent = parent;
+        parent->vtn_lhChildren.insert(it, std::move(pVTNup));
+      }
     }
     else
     {
       ASSERT( pVTNHit != NULL);
-      auto* parent = pVTNHit->vnt_pvtnParent;
-      auto it = std::find_if(parent->vtn_lhChildren.begin(), parent->vtn_lhChildren.end(), [=](const auto& p) { return p.get() == pVTNHit; });
-      parent->vtn_lhChildren.insert(it+1, std::move(pVTNup));
+      if (auto* parent = pVTNHit->vnt_pvtnParent)
+      {
+        auto it = std::find_if(parent->vtn_lhChildren.begin(), parent->vtn_lhChildren.end(), [=](const auto& p) { return p.get() == pVTNHit; });
+        pVTNup->vnt_pvtnParent = parent;
+        parent->vtn_lhChildren.insert(it + 1, std::move(pVTNup));
+      }
     }
   }
 
@@ -1003,7 +1013,7 @@ void CBrowseWindow::OpenDirectory( CVirtualTreeNode *pVTNDir)
         }
       }
     }
-    catch( char *error)
+    catch (const char* error)
     {
       // ingnore errors
       (void) error;
@@ -1078,7 +1088,7 @@ void CBrowseWindow::OnInsertItems()
     {
       InsertItem( *itItem.Current(), CPoint(-1, -1));
     }
-    catch( char *err_str)
+    catch (const char* err_str)
     {
       AfxMessageBox( CString(err_str));
     }
@@ -1174,7 +1184,7 @@ void CBrowseWindow::OnLButtonDblClk(UINT nFlags, CPoint point)
           theApp.m_ctTerrainPageCanvas.MarkChanged();
           ptTerrain->RefreshTerrain();
         }
-        catch(char *strError)
+        catch (const char* strError)
         {
           (void) strError;
         }
@@ -1310,7 +1320,7 @@ void CBrowseWindow::OnConvertClass()
       pWorldEditorView->OnDeleteEntities();
     }
   }
-  catch( char *err_str)
+  catch (const char* err_str)
   {
     AfxMessageBox( CString(err_str));
   }
@@ -1447,7 +1457,7 @@ void CBrowseWindow::OnAddTexturesFromWorld()
               if(to3.GetData())
                 InsertItem( to3.GetData()->GetName(), CPoint(-1, -1));
             }
-            catch( char *err_str)
+            catch (const char* err_str)
             {
               AfxMessageBox( CString(err_str));
             }
@@ -1503,7 +1513,7 @@ void ExportTexture( CTFileName fnTexture)
       }
     }
   }
-  catch( char *strError)
+  catch (const char* strError)
   {
     AfxMessageBox( CString(strError));
     ii.Clear();

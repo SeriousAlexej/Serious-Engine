@@ -159,7 +159,7 @@ void CDlgCreateReflectionTexture::DoDataExchange(CDataExchange* pDX)
       CreateReflectionTexture_t( CTString("temp\\ReflectionTemp.tex"));
       auto pTD = m_moModel.mo_toReflection.GetData();
       if (pTD) pTD->Reload();
-    } catch( char *strError) {
+    } catch (const char* strError) {
       WarningMessage( strError);
     }
     _bTimerEnabled = TRUE;
@@ -223,7 +223,7 @@ void CDlgCreateReflectionTexture::CreateReflectionTexture_t( CTFileName fnTextur
     _EngineGUI.LoadAnyGfxFormat_t(iiF, fnF);
     _EngineGUI.LoadAnyGfxFormat_t(iiC, fnC);
   }
-  catch( char *strError)
+  catch (const char* strError)
   {
     (void) strError;
     bSucesseful = FALSE;
@@ -352,7 +352,7 @@ void CDlgCreateReflectionTexture::CreateReflectionTexture_t( CTFileName fnTextur
     td.Write_t( &fsFile);
     fsFile.Close();
   }
-  catch(char *strError)
+  catch (const char* strError)
   {
     iiEnv.Detach();
     throw strError;
@@ -379,7 +379,7 @@ void CDlgCreateReflectionTexture::DrawPreview( CDrawPortPtr pdp)
     m_moModel.mo_toReflection.SetData_t( CTString("temp\\ReflectionTemp.tex"));
     m_moModel.mo_toSpecular.SetData_t( CTString("temp\\SpecularTemp.tex"));
   }
-  catch( char *strError)
+  catch (const char* strError)
   {
     (void) strError;
     bErrorOcured = TRUE;
@@ -591,7 +591,7 @@ void CDlgCreateReflectionTexture::AutoSetTextures( CTFileName fnFile)
     m_toC.SetData_t( CTString("Temp\\TempC.tex"));
     m_toF.SetData_t( CTString("Temp\\TempF.tex"));
   }
-  catch( char *strError)
+  catch (const char* strError)
   {
     (void) strError;
   }
@@ -660,7 +660,7 @@ BOOL CDlgCreateReflectionTexture::PreTranslateMessage(MSG* pMsg)
     if( *to.GetName() == *m_toBackground.GetName()){\
       m_toBackground.SetData_t( fnBCGTexture);\
     } else { m_toBackground.SetData_t( *to.GetName());};\
-  } catch( char *strError) { (void) strError;};};
+  } catch (const char* strError) { (void) strError;};};
 
   if( pMsg->message == WM_LBUTTONUP)
   {

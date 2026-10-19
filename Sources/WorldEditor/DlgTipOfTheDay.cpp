@@ -46,7 +46,7 @@ CDlgTipOfTheDay::CDlgTipOfTheDay(CWnd* pParent /*=NULL*/)
     while (!strm.AtEOF()) {
       strm.GetLine_t(m_astrTips.emplace_back(), '$');
     }
-  } catch (char *strError) {
+  } catch (const char* strError) {
     WarningMessage("Cannot show Tip of the Day:\n%s", strError);
   }
 }

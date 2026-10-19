@@ -428,7 +428,7 @@ void CChildFrame::TestGame( BOOL bFullScreen)
     try {  
       pDoc->m_woWorld.Save_t(fnmTempWorld);
       fnmWorldToPlay = fnmTempWorld;
-    } catch( char *strError) {
+    } catch (const char* strError) {
       AfxMessageBox( CString(strError));
       pPerspectiveView->EnableToolTips(TRUE);
       return;
@@ -439,7 +439,7 @@ void CChildFrame::TestGame( BOOL bFullScreen)
     fnmWorldToPlay = CTString(CStringA(pDoc->GetPathName()));
     try {
       fnmWorldToPlay.RemoveApplicationPath_t();
-    } catch( char *strError) {
+    } catch (const char* strError) {
       AfxMessageBox( CString(strError));
       pPerspectiveView->EnableToolTips(TRUE);
       return;

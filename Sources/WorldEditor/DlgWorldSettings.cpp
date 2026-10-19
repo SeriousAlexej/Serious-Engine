@@ -190,7 +190,7 @@ void CDlgWorldSettings::DoDataExchange(CDataExchange* pDX)
         FillObject3DFromMesh(pDoc->m_o3dBackdropObject, ImportedMesh(pDoc->m_woWorld.wo_strBackdropObject, mStretch));
       }
       // catch and
-      catch( char *strError)
+      catch (const char* strError)
       {
         // report errors
         AfxMessageBox( CString(strError));

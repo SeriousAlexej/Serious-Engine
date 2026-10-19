@@ -391,6 +391,7 @@ void CSlaveViewer::TranslatePlacement_OtherSystem(CPlacement3D &plToTranslate,
 {
   FLOAT fZoom = GetZoomFactor();
 
+  const ANGLE3D rot_backup = plToTranslate.pl_OrientationAngle;
   // project the placement to the viewer's system
   plToTranslate.AbsoluteToRelative(sv_plViewer);
   // project the placement to the given system
@@ -401,6 +402,7 @@ void CSlaveViewer::TranslatePlacement_OtherSystem(CPlacement3D &plToTranslate,
   plToTranslate.RelativeToAbsolute(plOtherSystem);
   // project the placement back from viewer's system
   plToTranslate.RelativeToAbsolute(sv_plViewer);
+  plToTranslate.pl_OrientationAngle = rot_backup;
 }
 
 // translate a placement in viewer's system
@@ -409,12 +411,14 @@ void CSlaveViewer::TranslatePlacement_OwnSystem(CPlacement3D &plToTranslate,
 {
   FLOAT fZoom = GetZoomFactor();
 
+  const ANGLE3D rot_backup = plToTranslate.pl_OrientationAngle;
   // project the placement to the viewer's system
   plToTranslate.AbsoluteToRelative(sv_plViewer);
   // translate it
   plToTranslate.Translate_AbsoluteSystem( FLOAT3D(pixDI/fZoom, -pixDJ/fZoom, pixDK/fZoom));
   // project the placement back from viewer's system
   plToTranslate.RelativeToAbsolute(sv_plViewer);
+  plToTranslate.pl_OrientationAngle = rot_backup;
 }
 
 // convert offset from pixels to meters
