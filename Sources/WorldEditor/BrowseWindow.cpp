@@ -713,11 +713,13 @@ void CBrowseWindow::InsertItem( CTFileName fnItem, CPoint pt)
     {
       _pTextureStock_Release( *pvtnToRemove->vtn_pTextureData);
     }
-    auto* pvtnParent = pvtnToRemove->vnt_pvtnParent;
-    pvtnParent->vtn_lhChildren.erase(
-      std::remove_if(pvtnParent->vtn_lhChildren.begin(), pvtnParent->vtn_lhChildren.end(),
-        [=](const auto& p) { return p.get() == pvtnToRemove; }),
-      pvtnParent->vtn_lhChildren.end());
+    if (auto* pvtnParent = pvtnToRemove->vnt_pvtnParent)
+    {
+      pvtnParent->vtn_lhChildren.erase(
+        std::remove_if(pvtnParent->vtn_lhChildren.begin(), pvtnParent->vtn_lhChildren.end(),
+          [=](const auto& p) { return p.get() == pvtnToRemove; }),
+        pvtnParent->vtn_lhChildren.end());
+    }
   }
 
   // if item is texture
@@ -793,28 +795,36 @@ void CBrowseWindow::InsertItem( CTFileName fnItem, CPoint pt)
   }
   if( pt.x == -1)
   {
+    pVTNup->vnt_pvtnParent = pVTNDir;
     pVTNDir->vtn_lhChildren.push_back(std::move(pVTNup));
   }
   else
   {
     if( iHittedItem == -1)
     {
+      pVTNup->vnt_pvtnParent = pVTNDir;
       pVTNDir->vtn_lhChildren.push_back(std::move(pVTNup));
     }
     else if( ((m_IconsInLine != 1) && (fHitXRatio < 0.5f)) ||
              ((m_IconsInLine == 1) && (fHitYRatio < 0.5f)) )
     {
       ASSERT( pVTNHit != NULL);
-      auto* parent = pVTNHit->vnt_pvtnParent;
-      auto it = std::find_if(parent->vtn_lhChildren.begin(), parent->vtn_lhChildren.end(), [=](const auto& p) { return p.get() == pVTNHit; });
-      parent->vtn_lhChildren.insert(it, std::move(pVTNup));
+      if (auto* parent = pVTNHit->vnt_pvtnParent)
+      {
+        auto it = std::find_if(parent->vtn_lhChildren.begin(), parent->vtn_lhChildren.end(), [=](const auto& p) { return p.get() == pVTNHit; });
+        pVTNup->vnt_pvtnParent = parent;
+        parent->vtn_lhChildren.insert(it, std::move(pVTNup));
+      }
     }
     else
     {
       ASSERT( pVTNHit != NULL);
-      auto* parent = pVTNHit->vnt_pvtnParent;
-      auto it = std::find_if(parent->vtn_lhChildren.begin(), parent->vtn_lhChildren.end(), [=](const auto& p) { return p.get() == pVTNHit; });
-      parent->vtn_lhChildren.insert(it+1, std::move(pVTNup));
+      if (auto* parent = pVTNHit->vnt_pvtnParent)
+      {
+        auto it = std::find_if(parent->vtn_lhChildren.begin(), parent->vtn_lhChildren.end(), [=](const auto& p) { return p.get() == pVTNHit; });
+        pVTNup->vnt_pvtnParent = parent;
+        parent->vtn_lhChildren.insert(it + 1, std::move(pVTNup));
+      }
     }
   }
 
