@@ -1066,7 +1066,7 @@ void CWorldEditorView::RenderView( CDrawPortPtr pDP)
       m_toBcgPicture.SetData_t(CTString(m_vpViewPrefs.m_achrBcgPicture));
     }
     // if failed
-    catch (char *strError)
+    catch (const char* strError)
     {
       (void) strError;
     }
@@ -2864,7 +2864,7 @@ void CWorldEditorView::RenderAndApplyTerrainEditBrush(FLOAT3D vHit)
         ShowSelection(ptrTerrain, rect, ptdBrush, colSelection, 0.25f+fStrengthRatio*0.75f, sf);
       }
     }
-    catch( char *strError)
+    catch (const char* strError)
     {
       (void) strError;
     }
@@ -3101,7 +3101,7 @@ void CWorldEditorView::OnLButtonDown(UINT nFlags, CPoint point)
         m_DataSource.DoDragDrop( DROPEFFECT_COPY);
       }
       // if failed
-      catch (char *strError)
+      catch (const char* strError)
       {
         // report error
         AfxMessageBox(CString(strError));
@@ -5440,7 +5440,7 @@ void CWorldEditorView::OnDropFiles(HDROP hDropInfo)
     // remove application path
     fnDropped.RemoveApplicationPath_t();
   }
-  catch( char* err_str)
+  catch (const char* err_str)
   {
     AfxMessageBox( CString(err_str));
     return;
@@ -5494,7 +5494,7 @@ void CWorldEditorView::OnDropFiles(HDROP hDropInfo)
       // mark that document changeable was changed
       pDoc->m_chDocument.MarkChanged();
     }
-    catch(char *err_str)
+    catch (const char* err_str)
     {
       _bInOnDraw = FALSE;
       AfxMessageBox(CString(err_str));
@@ -5561,7 +5561,7 @@ void CWorldEditorView::OnDropFiles(HDROP hDropInfo)
         }
       }
       // if failed
-      catch( char *err_str)
+      catch (const char* err_str)
       {
         // report error
         AfxMessageBox( CString(err_str));
@@ -6299,7 +6299,7 @@ void CWorldEditorView::OnTakeSs()
     // save screen shot as TGA
     iiImageInfo.SaveTGA_t( fnScreenShoot);
   } // if failed
-  catch (char *strError) {
+  catch (const char* strError) {
     // report error
     AfxMessageBox(CString(strError));
   }
@@ -6458,7 +6458,7 @@ void CWorldEditorView::EditCopy( BOOL bAlternative)
           // save entity clipboard world
           woEntityClipboard.Save_t(CTString("Temp\\ClipboardEntityWorld.wld"));
         }
-        catch( char *strError)
+        catch (const char* strError)
         {
           AfxMessageBox( CString(strError));
           return;
@@ -6530,7 +6530,7 @@ void CWorldEditorView::EditCopy( BOOL bAlternative)
         penWorldBase = woClipboard.CreateEntity_t(plWorld, CTFILENAME("Classes\\WorldBase.ecl"));
       }
       // catch and
-      catch( char *err_str)
+      catch (const char* err_str)
       {
         // report errors
         WarningMessage( err_str);
@@ -6547,7 +6547,7 @@ void CWorldEditorView::EditCopy( BOOL bAlternative)
         // save world to clipboard
         woClipboard.Save_t(CTString("Temp\\ClipboardSectorWorld.wld"));
       }
-      catch( char *strError)
+      catch (const char* strError)
       {
         AfxMessageBox( CString(strError));
         return;
@@ -6564,7 +6564,7 @@ void CWorldEditorView::EditCopy( BOOL bAlternative)
       // save world into clipboard file
       pDoc->m_woWorld.Save_t( (CTString)"Temp\\ClipboardWorld.wld");
     }
-    catch( char *strError)
+    catch (const char* strError)
     {
       AfxMessageBox( CString(strError));
     }
@@ -6628,7 +6628,7 @@ void CWorldEditorView::OnEditPaste()
       // load clipboard entity World
       woEntityClipboard.Load_t( (CTString)"Temp\\ClipboardEntityWorld.wld");
     }
-    catch( char *err_str)
+    catch (const char* err_str)
     {
       AfxMessageBox( CString(err_str));
       return;
@@ -7895,7 +7895,7 @@ void CWorldEditorView::OnDropMarker(CPlacement3D plMarker)
     penSpawned = pDoc->m_woWorld.CreateEntity_t( plMarker, fnDropClass);
     penSpawned->Initialize();
   }
-  catch( char *strError)
+  catch (const char* strError)
   {
     AfxMessageBox( CString(strError));
     return;
@@ -10220,7 +10220,7 @@ void CWorldEditorView::PasteTexture( CBrushPolygonPtr pbpoPolygon)
     pDoc->m_chSelections.MarkChanged();
     pDoc->SetModifiedFlag( TRUE);
   }
-  catch( char *strError)
+  catch (const char* strError)
   {
     AfxMessageBox( CString(strError));
     return;
@@ -10522,7 +10522,7 @@ void CWorldEditorView::OnSavePicturesForEnvironment()
   RenderView( pdp);\
   pdp->GrabScreen(II);\
   try { II.SaveTGA_t( fnBase+ext); } \
-  catch (char *strError)\
+  catch (const char* strError)\
   { AfxMessageBox(CString(strError)); }
 
       GRAB_BCG( "N.tga", ANGLE3D( 0, 0, 0));
@@ -11105,7 +11105,7 @@ void CWorldEditorView::OnRemoveUnusedTextures()
     }
   }
   // if failed
-  catch( char *err_str)
+  catch (const char* err_str)
   {
     // report error
     AfxMessageBox( CString(err_str));
@@ -12050,7 +12050,7 @@ void CWorldEditorView::OnExportDisplaceMap()
   {
     fnDirectory.RemoveApplicationPath_t();
   }
-  catch( char *str_err)
+  catch (const char* str_err)
   {
     AfxMessageBox( CString(str_err));
     return;
@@ -12137,7 +12137,7 @@ void CWorldEditorView::OnExportDisplaceMap()
     // save displace map as TGA
     ii.SaveTGA_t( fnDisplaceMap);
   } // if failed
-  catch (char *strError) {
+  catch (const char* strError) {
     // report error
     AfxMessageBox(CString(strError));
   }
@@ -13654,7 +13654,7 @@ BOOL CWorldEditorView::SaveAutoTexture(FLOATaabbox3D boxBrush, CTFileName &fnTex
                        dlg.m_pixWidth, MAX_MEX_LOG2+1, FALSE);
       _EngineGUI.CreateTexture( fnTex);
     } // if failed
-    catch (char *strError) {
+    catch (const char* strError) {
       // report error
       AfxMessageBox(CString(strError));
     }
@@ -13702,7 +13702,7 @@ BOOL CWorldEditorView::SetAutoTextureBoxParams(FLOATaabbox3D boxBrush, CTFileNam
   {
     pTD=_pTextureStock_Obtain_t( fnTex);
   }
-  catch (char *strError)
+  catch (const char* strError)
   {
     WarningMessage(strError);
     return FALSE;
@@ -13796,7 +13796,7 @@ void CWorldEditorView::AutoApplyTextureOntoPolygon(CBrushPolygon &bpo, FLOATaabb
     bpo.bpo_smShadowMap.Uncache();
     bpo.DiscardShadows();
   }
-  catch (char *strError)
+  catch (const char* strError)
   {
     WarningMessage(strError);
   }

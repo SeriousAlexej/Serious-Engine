@@ -761,7 +761,7 @@ void CDlgPgPrimitive::OnLoadPrimitiveSettings()
     strmFile.Open_t( _fnPrimitiveSettingsSavedAs);
     theApp.m_vfpCurrent.Read_t( strmFile);
   }
-  catch( char *strError)
+  catch (const char* strError)
   {
     WarningMessage( strError);
     return;
@@ -784,7 +784,7 @@ void CDlgPgPrimitive::OnSavePrimitiveSettings()
     strmFile.Create_t( _fnPrimitiveSettingsSavedAs);
     theApp.m_vfpCurrent.Write_t( strmFile);
   }
-  catch( char *strError)
+  catch (const char* strError)
   {
     WarningMessage( strError);
   }

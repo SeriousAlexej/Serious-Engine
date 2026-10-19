@@ -496,7 +496,7 @@ BOOL SetupContinousNoiseTexture( void)
     _ptdContinousRandomNoise=_pTextureStock_Obtain_t( theApp.m_fnContinousNoiseTexture);
     _ptdContinousRandomNoise->Force(TEX_STATIC|TEX_CONSTANT);
   }
-  catch( char *strError)
+  catch (const char* strError)
   {
     (void) strError;
     WarningMessage("Unable to obtain continous random noise texture!\nError: %s", strError);
@@ -517,7 +517,7 @@ BOOL SetupDistributionNoiseTexture( void)
     _ptdDistributionRandomNoise=_pTextureStock_Obtain_t( theApp.m_fnDistributionNoiseTexture);
     _ptdDistributionRandomNoise->Force(TEX_STATIC|TEX_CONSTANT);
   }
-  catch( char *strError)
+  catch (const char* strError)
   {
     (void) strError;
     WarningMessage("Unable to obtain distribution random noise texture!\nError: %s", strError);
@@ -1271,7 +1271,7 @@ void ObtainLayerTileInfo(std::vector<std::unique_ptr<CTileInfo>>& pdcTileInfo, C
       dcTokens.clear();
     }
   }
-  catch(char *strError)
+  catch (const char* strError)
   {
     (void) strError;
   }

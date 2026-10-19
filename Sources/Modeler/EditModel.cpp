@@ -639,7 +639,7 @@ void CEditModel::Load_t( CTFileName fnFileName)
   {
     Load_t_base( fnIniFileName);
   }
-  catch(char *strError)
+  catch (const char* strError)
   {
     // ignore errors
     (void) strError;
@@ -698,7 +698,7 @@ CTextureDataInfo *CEditModel::AddTexture_t(const CTFileName &fnFileName, const M
   {
     pNewTDI->tdi_TextureData = _pTextureStock_Obtain_t( pNewTDI->tdi_FileName);
   }
-  catch(char *strError)
+  catch (const char* strError)
   {
     (void) strError;
     return NULL;
@@ -756,14 +756,14 @@ void CAttachedModel::Read_t( CTStream *pstrmFile) // throw char *
   {
     SetModel_t( fnModel);
   }
-  catch(char *strError)
+  catch (const char* strError)
   {
     (void) strError;
     try
     {
       SetModel_t( CTFILENAME("Models\\Editor\\Axis.mdl"));
     }
-    catch(char *strError)
+    catch (const char* strError)
     {
       FatalError( strError);
     }
@@ -835,7 +835,7 @@ void CEditModel::Read_t( CTStream *pFile) // throw char *
       AddTexture_t( fnFileName, edm_md.md_Width, edm_md.md_Height);
     }
     // This is here because we want to load model even if its texture is not valid
-    catch( char *err_str){ (char *) err_str;}
+    catch (const char* err_str){ (char *) err_str;}
   }
 
   // skip patches saved in old format (patches do not exist inside EditModel any more)
@@ -888,7 +888,7 @@ void CEditModel::Read_t( CTStream *pFile) // throw char *
       atmDummy.Read_t(pFile);
     }
   }
-  catch( char *strError)
+  catch (const char* strError)
   {
     (void) strError;
     // clear attached models
@@ -921,7 +921,7 @@ void CEditModel::Read_t( CTStream *pFile) // throw char *
       asDummy.Read_t(pFile);
     }
   }
-  catch( char *strError)
+  catch (const char* strError)
   {
     (void) strError;
   }
@@ -932,7 +932,7 @@ void CEditModel::Read_t( CTStream *pFile) // throw char *
     pFile->ExpectID_t( CChunkID( "TBST"));
     edm_tsThumbnailSettings.Read_t( pFile);
   }
-  catch( char *strError)
+  catch (const char* strError)
   {
     // ignore errors
     (void) strError;
@@ -943,19 +943,19 @@ void CEditModel::Read_t( CTStream *pFile) // throw char *
   try {
     pFile->ExpectID_t( CChunkID( "FXTS"));
     *pFile >> edm_fnSpecularTexture;
-  } catch( char *strError) { (void) strError; }
+  } catch (const char* strError) { (void) strError; }
 
   // --- reflection texture
   try {
     pFile->ExpectID_t( CChunkID( "FXTR"));
     *pFile >> edm_fnReflectionTexture;
-  } catch( char *strError) { (void) strError; }
+  } catch (const char* strError) { (void) strError; }
 
   // --- bump texture
   try {
     pFile->ExpectID_t( CChunkID( "FXTB"));
     *pFile >> edm_fnBumpTexture;
-  } catch( char *strError) { (void) strError; }
+  } catch (const char* strError) { (void) strError; }
 
   // load bone-triangle mapping
   try
@@ -1139,7 +1139,7 @@ void CEditModel::LoadFromScript_t(CTFileName &fnScriptName) // throw char *
     LoadMapping_t( CTString(fnScriptName.NoExt()+".map"));
   }
   // if not successful
-  catch (char *strError)
+  catch (const char* strError)
   {
     // ignore error message
     (void)strError;
@@ -1651,7 +1651,7 @@ void CEditModel::ExportSurfaceNumbersAndNames( CTFileName fnFile)
   {
     strExport.Save_t( fnFile);
   }
-  catch(char *strError)
+  catch (const char* strError)
   {
     // report error
     WarningMessage( strError);
@@ -1774,7 +1774,7 @@ BOOL CEditModel::EditAddPatch( CTFileName fnPatchName, MEX2D mexPos, INDEX &iMas
   {
     edm_md.md_mpPatches[ iMaskBit].mp_toTexture.SetData_t( fnPatchName);
   }
-  catch (char *strError)
+  catch (const char* strError)
   {
     (void)strError;
     return FALSE;
@@ -2168,7 +2168,7 @@ void CEditModel::LoadMapping_t( CTFileName fnFileName, INDEX iMip /*=-1*/)
         {
           itam->Read_t( &strmMappingFile);
         }
-        catch( char *strError)
+        catch (const char* strError)
         {
           (void) strError;
           edm_aamAttachedModels.clear();

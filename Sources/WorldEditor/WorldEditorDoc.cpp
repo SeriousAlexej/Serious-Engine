@@ -439,7 +439,7 @@ BOOL CWorldEditorDoc::OnNewDocument()
   {
     penWorldBase = m_woWorld.CreateEntity_t(plWorld, CTFILENAME("Classes\\WorldBase.ecl"));
   }
-  catch( char *err_str)
+  catch (const char* err_str)
   {
     AfxMessageBox( CString(err_str));
     return FALSE;
@@ -500,7 +500,7 @@ void CWorldEditorDoc::SetupBackdropTextureObject( CTFileName fnPicture, CTexture
       to.SetData_t( fnTexture);
     }
   }
-  catch( char *strError)
+  catch (const char* strError)
   {
     (void) strError;
   }
@@ -553,7 +553,7 @@ BOOL CWorldEditorDoc::OnOpenDocument(LPCTSTR lpszPathName)
     pWedChild->m_mvViewer.mv_plViewer = m_woWorld.wo_plFocus;
     pWedChild->m_mvViewer.mv_fTargetDistance = m_woWorld.wo_fTargetDistance;
   }
-  catch( char *strError)
+  catch (const char* strError)
   {
     AfxMessageBox( CString(strError));
     return FALSE;
@@ -571,7 +571,7 @@ BOOL CWorldEditorDoc::OnOpenDocument(LPCTSTR lpszPathName)
       FillObject3DFromMesh(m_o3dBackdropObject, ImportedMesh(m_woWorld.wo_strBackdropObject, mStretch));
     }
     // catch and
-    catch( char *strError)
+    catch (const char* strError)
     {
       // report errors
       AfxMessageBox( CString(strError));
@@ -612,7 +612,7 @@ void CWorldEditorDoc::SetModifiedFlag( BOOL bModified /*= TRUE*/ )
       }
     }
   }
-  catch( char *strError)
+  catch (const char* strError)
   {
     AfxMessageBox( CString(strError));
     return;
@@ -644,7 +644,7 @@ BOOL CWorldEditorDoc::OnSaveDocument(LPCTSTR lpszPathName)
     m_woWorld.Save_t( fnSaveFileName);
     SetModifiedFlag(FALSE);
   }
-  catch( char *strError)
+  catch (const char* strError)
   {
     AfxMessageBox( CString(strError));
     return FALSE;
@@ -722,7 +722,7 @@ void CWorldEditorDoc::StartPrimitiveCSG( CPlacement3D plPrimitive, BOOL bResetAn
     m_penPrimitive = m_pwoSecondLayer->CreateEntity_t( plPrimitiveEntity,
       CTFILENAME("Classes\\WorldBase.ecl"));
   }
-  catch( char *err_str)
+  catch (const char* err_str)
   {
     AfxMessageBox( CString(err_str));
     // discard initialized variables needed for CSG
@@ -782,7 +782,7 @@ void CWorldEditorDoc::StartTemplateCSG( CPlacement3D plTemplate,
     // load the World
     m_pwoSecondLayer->Load_t( fnWorld);
   }
-  catch( char *err_str)
+  catch (const char* err_str)
   {
     AfxMessageBox( CString(err_str));
     m_pwoSecondLayer.reset();
@@ -912,7 +912,7 @@ void CWorldEditorDoc::ApplyCSG(enum CSGType CSGType)
         itPrim->Write_t( strmFile);
       }
     }
-    catch( char *strError)
+    catch (const char* strError)
     {
       WarningMessage( strError);
     }
@@ -1155,7 +1155,7 @@ void CWorldEditorDoc::OnIdle(void)
         UpdateAllViews( NULL);
       }
     }
-    catch(char *strError)
+    catch (const char* strError)
     {
       (void) strError;
     }
@@ -1484,7 +1484,7 @@ void CWorldEditorDoc::ConvertObject3DToBrush(CObject3D &ob, BOOL bApplyProjected
     pbr->CalculateBoundingBoxes();
   }
   // report errors
-  catch( char *err_str)
+  catch (const char* err_str)
   {
     AfxMessageBox( CString(err_str));
   }
@@ -2069,7 +2069,7 @@ void CWorldEditorDoc::CreateTerrainPrimitive(void)
       _EngineGUI.LoadAnyGfxFormat_t(iiDisplace, theApp.m_vfpCurrent.vfp_fnDisplacement);
       m_slDisplaceTexTime=GetFileTimeStamp_t(theApp.m_vfpCurrent.vfp_fnDisplacement);
     }
-    catch( char *strError)
+    catch (const char* strError)
     {
       (void) strError;
       piiDisplace = NULL;
@@ -2732,7 +2732,7 @@ void CWorldEditorDoc::LoadWorldFromUndoRedoList( CUndo& pUndoRedo)
     UpdateAllViews( NULL);
   }
   // report errors
-  catch( char *err_str)
+  catch (const char* err_str)
   {
     AfxMessageBox( CString(err_str));
   }
@@ -2754,7 +2754,7 @@ void CWorldEditorDoc::SaveWorldIntoUndoRedoList(std::list<std::unique_ptr<CUndo>
     lhList.push_back(std::move(pUndoRedo));
   }
   // report errors
-  catch( char *err_str)
+  catch (const char* err_str)
   {
     AfxMessageBox( CString(err_str));
   }
@@ -3004,7 +3004,7 @@ void CWorldEditorDoc::OnWorldSettings()
   {
 // !!!!    m_woWorld.SetBackgroundTexture_t(CTString(dlgWorldSettings.m_fnBackgroundPicture));
   }
-  catch( char *strError)
+  catch (const char* strError)
   {
     AfxMessageBox( CString(strError));
   }
@@ -3977,7 +3977,7 @@ void CWorldEditorDoc::SaveThumbnail()
       File.Close();
     }
     // if failed
-    catch (char *strError) {
+    catch (const char* strError) {
       // report error
       AfxMessageBox(CString(strError));
     }
@@ -4160,7 +4160,7 @@ void CWorldEditorDoc::ApplyMirrorAndStretch(INDEX iMirror, FLOAT fStretch)
       SetModifiedFlag();
     }
   }
-  catch (char *strError)
+  catch (const char* strError)
   {
     AfxMessageBox(CString(strError));
   }
@@ -4475,7 +4475,7 @@ void CWorldEditorDoc::ApplyCut( void)
   {
     penCutter = woCutter.CreateEntity_t( plOrigin, CTFILENAME("Classes\\WorldBase.ecl"));
   }
-  catch( char *err_str)
+  catch (const char* err_str)
   {
     AfxMessageBox( CString(err_str));
     return;
@@ -4525,7 +4525,7 @@ void CWorldEditorDoc::ApplyCut( void)
       pbr->CalculateBoundingBoxes();
     }
     // report errors
-    catch( char *err_str)
+    catch (const char* err_str)
     {
       AfxMessageBox( CString(err_str));
     }
@@ -4572,7 +4572,7 @@ void CWorldEditorDoc::ReloadWorld(void)
     UpdateAllViews( NULL);
   }
   // report errors
-  catch( char *err_str)
+  catch (const char* err_str)
   {
     AfxMessageBox( CString(err_str));
   }
@@ -4738,7 +4738,7 @@ void CWorldEditorDoc::OnExport3dObject()
     }
     strmFile.Close();
   }
-  catch( char *err_str)
+  catch (const char* err_str)
   {
     AfxMessageBox( CString(err_str));
   }
@@ -4868,7 +4868,7 @@ void CWorldEditorDoc::OnExportPlacements()
 
     AfxMessageBox(L"Placements exported!", MB_OK|MB_ICONINFORMATION);
   }
-  catch( char *err_str)
+  catch (const char* err_str)
   {
     AfxMessageBox( CString(err_str));
   }
@@ -5560,7 +5560,7 @@ void ExportEntityToAMF_t(CWorldEditorDoc *pDoc, CEntityPtr en, const CTFileName 
     }
     strmAmf.PutLine_t("}");
   }
-  catch( char *err_str) {
+  catch (const char* err_str) {
     AfxMessageBox( CString(err_str));
   }
 
@@ -5814,7 +5814,7 @@ void CWorldEditorDoc::OnExportEntities()
 
     AfxMessageBox(L"Entities exported!", MB_OK|MB_ICONINFORMATION);
   }
-  catch( char *err_str)
+  catch (const char* err_str)
   {
     AfxMessageBox( CString(err_str));
   }

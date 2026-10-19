@@ -399,7 +399,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
   {
     m_Browser.LoadVirtualTree_t( m_fnLastVirtualTree, NULL);
   }
-  catch( char *strError)
+  catch (const char* strError)
   {
     (void) strError;
     CTString strMessage;
@@ -1519,7 +1519,7 @@ void CMainFrame::OnRecreateCurrentTexture()
     // obtain texture
     ptdTextureToReload = _pTextureStock_Obtain_t( fnTextureName);
   }
-  catch ( char *err_str) {
+  catch (const char* err_str) {
     AfxMessageBox( CString(err_str));
     return;
   }

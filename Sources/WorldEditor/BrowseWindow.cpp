@@ -608,7 +608,7 @@ void CBrowseWindow::OnDropFiles(HDROP hDropInfo)
           fnDroped.RemoveApplicationPath_t();
           InsertItem( fnDroped, point);
         }
-        catch( char *err_str)
+        catch (const char* err_str)
         {
           AfxMessageBox( CString(err_str));
         }
@@ -731,7 +731,7 @@ void CBrowseWindow::InsertItem( CTFileName fnItem, CPoint pt)
       ptdTexture = _pTextureStock_Obtain_t( fnItem);
     }
     // catch and
-    catch( char *err_str)
+    catch (const char* err_str)
     {
       // report errors
       AfxMessageBox( CString(err_str));
@@ -1003,7 +1003,7 @@ void CBrowseWindow::OpenDirectory( CVirtualTreeNode *pVTNDir)
         }
       }
     }
-    catch( char *error)
+    catch (const char* error)
     {
       // ingnore errors
       (void) error;
@@ -1078,7 +1078,7 @@ void CBrowseWindow::OnInsertItems()
     {
       InsertItem( *itItem.Current(), CPoint(-1, -1));
     }
-    catch( char *err_str)
+    catch (const char* err_str)
     {
       AfxMessageBox( CString(err_str));
     }
@@ -1174,7 +1174,7 @@ void CBrowseWindow::OnLButtonDblClk(UINT nFlags, CPoint point)
           theApp.m_ctTerrainPageCanvas.MarkChanged();
           ptTerrain->RefreshTerrain();
         }
-        catch(char *strError)
+        catch (const char* strError)
         {
           (void) strError;
         }
@@ -1310,7 +1310,7 @@ void CBrowseWindow::OnConvertClass()
       pWorldEditorView->OnDeleteEntities();
     }
   }
-  catch( char *err_str)
+  catch (const char* err_str)
   {
     AfxMessageBox( CString(err_str));
   }
@@ -1447,7 +1447,7 @@ void CBrowseWindow::OnAddTexturesFromWorld()
               if(to3.GetData())
                 InsertItem( to3.GetData()->GetName(), CPoint(-1, -1));
             }
-            catch( char *err_str)
+            catch (const char* err_str)
             {
               AfxMessageBox( CString(err_str));
             }
@@ -1503,7 +1503,7 @@ void ExportTexture( CTFileName fnTexture)
       }
     }
   }
-  catch( char *strError)
+  catch (const char* strError)
   {
     AfxMessageBox( CString(strError));
     ii.Clear();

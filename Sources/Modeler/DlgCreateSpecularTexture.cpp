@@ -178,7 +178,7 @@ void CDlgCreateSpecularTexture::CreateTexture( CTFileName fnTexture, FLOAT fExp)
     fsFile.Close();
   }
   // if failed
-  catch (char *strError)
+  catch (const char* strError)
   {
     // report error
     AfxMessageBox(CString(strError));
@@ -205,7 +205,7 @@ void CDlgCreateSpecularTexture::DrawPreview( CDrawPortPtr pdp, FLOAT fExp)
     m_moModel.mo_toTexture.SetData_t( fnTeapotTexture);
     m_moModel.mo_toSpecular.SetData_t( CTString("temp\\SpecularTemp.tex"));
   }
-  catch( char *strError)
+  catch (const char* strError)
   {
     (void) strError;
     bErrorOcured = TRUE;
